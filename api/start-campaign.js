@@ -1,0 +1,161 @@
+// Vercel Serverless Function: /api/start-campaign
+// تستقبل سلّة الشركة (مؤثرين + شروط كل واحد) وتُنشئ لكل مؤثر:
+//   حملة مباشرة (مخفية من تصفّح المعلنين عبر is_direct) + طلب تفاوض + إشعار للمؤثر.
+// تعمل بمفتاح service_role (خادم فقط) عشان تتجاوز RLS بأمان وتقرأ سعر المؤثر السري.
+// لا تشغّل الوكيل هنا — رسالة الافتتاح تتولّد تلقائياً أول ما يفتح المعلن المحادثة (مثل التدفّق الحالي).
+
+const SUPABASE_URL = 'https://chpzecgpylxqsutjydkb.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNocHplY2dweWx4cXN1dGp5ZGtiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQyODgxNzQsImV4cCI6MjA5OTg2NDE3NH0.q4wmWKtJ5IPx8AgzMkp3SuFLZL9F10qKc3qiX5LB7kI';
+const SUPABASE_SERVICE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY || SUPABASE_ANON_KEY;
+
+function headers() {
+  return {
+    'apikey': SUPABASE_SERVICE_KEY,
+    'Authorization': `Bearer ${SUPABASE_SERVICE_KEY}`,
+    'Content-Type': 'application/json'
+  };
+}
+
+async function sbGet(path) {
+  const res = await fetch(`${SUPABASE_URL}/rest/v1/${path}`, { headers: headers() });
+  if (!res.ok) { console.error('sbGet error:', await res.text()); throw new Error('GET failed'); }
+  return res.json();
+}
+
+async function sbInsert(table, data) {
+  const res = await fetch(`${SUPABASE_URL}/rest/v1/${table}`, {
+    method: 'POST',
+    headers: { ...headers(), 'Prefer': 'return=representation' },
+    body: JSON.stringify(data)
+  });
+  if (!res.ok) { console.error(`sbInsert ${table} error:`, await res.text()); throw new Error('INSERT failed'); }
+  return res.json();
+}
+
+// يتحقق من توكن جلسة Supabase (Authorization: Bearer …) ويُرجّع صف المستخدم المطابق — أو null.
+// الهوية تُشتقّ من التوكن الموثّق فقط، لا من جسم الطلب (يمنع انتحال أي شركة).
+async function getAuthedUser(req) {
+  try {
+    const authz = req.headers['authorization'] || req.headers['Authorization'] || '';
+    const token = authz.startsWith('Bearer ') ? authz.slice(7).trim() : '';
+    if (!token) return null;
+    const r = await fetch(`${SUPABASE_URL}/auth/v1/user`, {
+      headers: { 'apikey': SUPABASE_ANON_KEY, 'Authorization': `Bearer ${token}` }
+    });
+    if (!r.ok) return null;
+    const authUser = await r.json();
+    if (!authUser || !authUser.id) return null; // authUser.id = UUID موثّق من Supabase Auth
+    const rows = await sbGet(`users?auth_id=eq.${authUser.id}&select=id,role,company_name,industry,is_test`);
+    return (rows && rows[0]) || null;
+  } catch (e) {
+    console.error('getAuthedUser error:', e);
+    return null;
+  }
+}
+
+export default async function handler(req, res) {
+  if (req.method !== 'POST') {
+    return res.status(405).json({ error: 'Method not allowed' });
+  }
+
+  // ===== مصادقة: هوية الشركة تُشتقّ من توكن الجلسة، لا من جسم الطلب =====
+  const brand = await getAuthedUser(req);
+  if (!brand) {
+    return res.status(401).json({ error: 'يلزم تسجيل الدخول من جديد' });
+  }
+  if (brand.role !== 'brand') {
+    return res.status(403).json({ error: 'غير مصرّح' });
+  }
+  const brandId = brand.id;
+
+  const { items } = req.body || {};
+  if (!Array.isArray(items) || items.length === 0) {
+    return res.status(400).json({ error: 'بيانات ناقصة' });
+  }
+  if (items.length > 50) {
+    return res.status(400).json({ error: 'الحد الأقصى 50 مؤثر في المرة' });
+  }
+
+  let created = 0;
+  const results = [];
+
+  for (const it of items) {
+    const creatorId = it && it.creatorId;
+    try {
+      // نقرأ الجزء الصحيح فقط: نُبقي الأرقام والنقطة العشرية ثم نأخذ القيمة الصحيحة
+      // (يمنع تضخّم السقف 10× لو أُدخلت ميزانية بفاصلة عشرية مثل "3000.5" → 3000).
+      const ceiling = Math.floor(parseFloat(String((it && it.budget) || '').replace(/[^\d.]/g, '')) || 0);
+      if (!creatorId || !ceiling || ceiling <= 0) {
+        results.push({ creatorId, ok: false, reason: 'ميزانية غير صحيحة' });
+        continue;
+      }
+      const timing = (it.timing) || '1w';
+      const date = it.date || null;
+      const brief = String(it.brief || '').slice(0, 1000);
+
+      // اجلب المؤثر (السعر السري + المنصة) عبر مفتاح الخدمة
+      const crs = await sbGet(`users?id=eq.${creatorId}&select=id,name,platform,followers,price,is_test,role`);
+      const cr = crs && crs[0];
+      if (!cr || cr.role !== 'creator') {
+        results.push({ creatorId, ok: false, reason: 'مؤثر غير موجود' });
+        continue;
+      }
+
+      // الميزانية المُدخلة = السقف. نعطي الوكيل مجالاً يفتح أقل (≈70٪) ويقفل تحت السقف.
+      const low = Math.max(50, Math.round(ceiling * 0.7));
+      const budgetRange = (low < ceiling) ? (low + ' - ' + ceiling) : String(ceiling);
+
+      // حملة مباشرة (is_direct = مخفية من تصفّح المعلنين، يراها المدعو فقط عبر طلبه)
+      const campRows = await sbInsert('campaigns', {
+        title: 'حملة ' + (brand.company_name || 'الشركة'),
+        description: brief || 'حملة إعلانية',
+        brand_industry: brand.industry || null,
+        budget: budgetRange,
+        publish_timing: timing,
+        publish_date: date,
+        platform: cr.platform || null,
+        follower_range: null,
+        campaign_size: 1,
+        city: null,
+        payment_min_days: 7,
+        payment_max_days: 30,
+        tags: brand.industry ? [brand.industry] : [],
+        brand_id: brandId,
+        status: 'active',
+        is_direct: true,
+        is_test: !!brand.is_test
+      });
+      const camp = campRows && campRows[0];
+      if (!camp || !camp.id) {
+        results.push({ creatorId, ok: false, reason: 'تعذّر إنشاء الحملة' });
+        continue;
+      }
+
+      // طلب التفاوض (نفس شكل تقديم المعلن: السعر سقف مبدئي يحدّده الوكيل)
+      await sbInsert('applications', {
+        campaign_id: camp.id,
+        creator_id: creatorId,
+        price: ceiling,
+        note: brief || null,
+        status: 'pending'
+      });
+
+      // إشعار المؤثر بالدعوة
+      await sbInsert('notifications', {
+        user_id: creatorId,
+        type: 'new_campaign',
+        title: 'عرض حملة جديد من ' + (brand.company_name || 'شركة'),
+        message: brief ? brief.slice(0, 120) : 'لديك دعوة للتفاوض على حملة',
+        link: '/creator.html'
+      });
+
+      created++;
+      results.push({ creatorId, ok: true, campaignId: camp.id });
+    } catch (e) {
+      console.error('start-campaign item error:', e);
+      results.push({ creatorId, ok: false, reason: 'خطأ غير متوقّع' });
+    }
+  }
+
+  return res.status(200).json({ created, total: items.length, results });
+}

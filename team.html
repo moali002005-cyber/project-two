@@ -1,0 +1,540 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"/>
+<title>مشروعنا الثاني · أعضاء الفريق</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>document.write('<script src="supabase-config.js?v=' + Date.now() + '"><\/script>');</script>
+<style>
+  :root{
+    --page:#f6faf9; --canvas:#ffffff; --ink:#0f1a17; --muted:#6f867f; --line:#e7edeb;
+    --teal:#12b5a3; --tint:#e3f6f1; --tint2:#c9ecE4; --deep:#0a5f56; --idle:#b3c2bd; --black:#0f1512;
+    font-family:"Tajawal",system-ui,sans-serif;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;height:100%;overflow:hidden;color:var(--ink);background:var(--canvas)}
+  .app{height:100vh;display:flex;flex-direction:column}
+
+  header{display:flex;align-items:center;justify-content:space-between;padding:13px 20px;
+    background:#fff;border-bottom:1px solid var(--line);z-index:20}
+  .logo{display:flex;align-items:center;gap:10px;font-family:"Cairo";font-weight:800;font-size:18px}
+  .logo .badge{width:34px;height:34px;background:#fff;border:1px solid var(--line);border-radius:9px;
+    display:inline-flex;align-items:center;justify-content:center}
+  .logo small{font-family:"Tajawal";font-weight:500;color:var(--muted);font-size:12.5px}
+  .live{display:flex;align-items:center;gap:8px;font-size:12.5px;color:var(--deep);background:var(--tint);padding:7px 13px;border-radius:999px}
+  .live i{width:8px;height:8px;border-radius:50%;background:var(--teal);animation:pl 1.9s infinite}
+  @keyframes pl{0%{box-shadow:0 0 0 0 rgba(18,181,163,.4)}70%{box-shadow:0 0 0 8px rgba(18,181,163,0)}100%{box-shadow:0 0 0 0 rgba(18,181,163,0)}}
+
+  .viewas{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;padding:12px 14px 2px}
+  .viewas .lab{align-self:center;color:var(--muted);font-size:12.5px}
+  .vw{cursor:pointer;border:1px solid var(--line);background:#fff;color:var(--ink);padding:8px 14px;border-radius:999px;
+    font-size:12.5px;font-weight:600;transition:.18s;display:flex;flex-direction:column;align-items:center;min-width:82px}
+  .vw span{font-size:10px;color:var(--muted);font-weight:400}
+  .vw:hover{border-color:var(--teal)}
+  .vw.on{background:var(--black);color:#fff;border-color:transparent}
+  .vw.on span{color:#9fd8ce}
+  .caption{text-align:center;color:var(--muted);font-size:12.5px;padding:6px 20px 0}
+  .caption b{color:var(--ink);font-family:"Cairo";font-weight:700}
+
+  .stage{flex:1;position:relative;overflow:hidden}
+  .links{position:absolute;inset:0;pointer-events:none}
+  .node{position:absolute;transform:translate(-50%,-50%);cursor:pointer;transition:opacity .3s}
+  .circle{border-radius:50%;background:#fff;border:1.5px solid var(--teal);position:relative;transition:.16s;margin:0 auto}
+  .node.mgr .circle{background:var(--tint2);border:none}
+  .node.owner .circle{border:9px solid var(--teal);background:#fff}
+  .node:hover .circle{transform:scale(1.08)}
+  .node .dot{position:absolute;bottom:0;left:0;width:12px;height:12px;border-radius:50%;border:2px solid #fff}
+  .badge2{position:absolute;top:-3px;right:-3px;width:15px;height:15px;border-radius:50%;background:#fff;
+    border:1.5px solid var(--teal);color:var(--deep);font-size:9px;font-weight:800;display:flex;align-items:center;justify-content:center;font-family:"Cairo"}
+  .label{position:absolute;left:50%;transform:translateX(-50%);text-align:center;white-space:nowrap;margin-top:8px}
+  .label .nm{font-family:"Cairo";font-weight:700;font-size:12.5px;color:var(--ink);line-height:1.25}
+  .node.owner .label .nm{font-size:14px}
+  .label .rl{font-size:10.5px;color:var(--muted);margin-top:1px}
+  .tip{position:absolute;left:50%;transform:translate(-50%,6px);width:180px;background:#fff;border:1px solid var(--line);
+    border-radius:12px;padding:9px 11px;box-shadow:0 12px 30px rgba(15,26,23,.12);opacity:0;pointer-events:none;transition:.15s;z-index:6}
+  .node:hover .tip{opacity:1}
+  .tip .a{font-size:11.5px;color:var(--ink);line-height:1.5}
+  .tip .s{font-size:10.5px;color:var(--muted);margin-top:4px;display:flex;align-items:center;gap:5px;justify-content:center}
+  .tip .s i{width:7px;height:7px;border-radius:50%}
+
+  .legend{position:absolute;bottom:14px;inset-inline-end:16px;display:flex;gap:13px;background:rgba(255,255,255,.85);
+    border:1px solid var(--line);border-radius:12px;padding:9px 13px}
+  .legend div{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--muted)}
+  .legend i{width:9px;height:9px;border-radius:50%}
+  .hint{position:absolute;bottom:16px;inset-inline-start:16px;font-size:12px;color:var(--muted)}
+
+  .scrim{position:fixed;inset:0;background:rgba(15,26,23,.22);opacity:0;pointer-events:none;transition:.25s;z-index:40}
+  .scrim.on{opacity:1;pointer-events:auto}
+  .persp{position:fixed;inset-block:0;inset-inline-start:0;width:min(400px,92vw);z-index:50;background:#fff;
+    border-inline-end:1px solid var(--line);transform:translateX(105%);transition:.34s cubic-bezier(.2,.7,.2,1);
+    display:flex;flex-direction:column;box-shadow:14px 0 46px rgba(15,26,23,.12)}
+  .persp.on{transform:none}
+  .p-head{padding:22px 22px 16px;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:13px}
+  .p-av{width:46px;height:46px;border-radius:13px;background:var(--tint);color:var(--deep);display:flex;align-items:center;justify-content:center;font-family:"Cairo";font-weight:800;font-size:16px;flex:none}
+  .p-head .nm{font-family:"Cairo";font-weight:800;font-size:18px}
+  .p-head .rl{color:var(--muted);font-size:12.5px}
+  .p-head .close{margin-inline-start:auto;border:1px solid var(--line);background:#fff;width:32px;height:32px;border-radius:50%;cursor:pointer;font-size:16px;color:var(--muted)}
+  .p-note{padding:13px 22px;background:var(--tint);color:var(--deep);font-size:12.5px}
+  .p-body{padding:18px 22px;overflow:auto;display:flex;flex-direction:column;gap:16px}
+  .p-body h5{margin:0 0 10px;font-family:"Cairo";font-size:12.5px;color:var(--muted);font-weight:700}
+  .camp{border:1px solid var(--line);border-radius:14px;padding:13px;margin-bottom:9px}
+  .camp .cn{font-family:"Cairo";font-weight:700;font-size:14px;margin-bottom:9px;display:flex;justify-content:space-between}
+  .camp .cn small{color:var(--muted);font-weight:500;font-size:10px}
+  .stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+  .stat{background:var(--page);border-radius:10px;padding:8px;text-align:center}
+  .stat b{font-family:"Cairo";font-size:17px;display:block} .stat span{font-size:10px;color:var(--muted)}
+  .neg-row{display:flex;align-items:center;gap:10px;padding:11px 0;border-bottom:1px solid var(--line)}
+  .neg-row:last-child{border:none}
+  .neg-row .st{width:8px;height:8px;border-radius:50%;flex:none}
+  .neg-row .who{font-weight:700;font-size:13px} .neg-row .cc{color:var(--muted);font-size:11px}
+  .neg-row .stt{margin-inline-start:auto;font-size:11px;font-weight:700}
+  .p-foot{padding:16px 22px;border-top:1px solid var(--line)}
+  .p-foot button{width:100%;background:var(--black);color:#fff;border:none;border-radius:13px;padding:13px;font-family:"Tajawal";font-weight:700;font-size:13.5px;cursor:pointer}
+  @media(max-width:560px){.hint{display:none}.viewas .lab{display:none}.legend{inset-inline:16px}}
+</style>
+</head>
+<body>
+<div class="app">
+  <header>
+    <div class="logo">
+      <span class="badge"><svg viewBox="0 0 100 60" width="26" height="26" aria-label="مشروعنا الثاني">
+        <g fill="none" stroke="#0c0f0e" stroke-width="7" stroke-linecap="round"><path d="M7,30 Q35,11 63,30 Q35,49 7,30 Z"/><path d="M37,30 Q65,11 93,30 Q65,49 37,30 Z"/></g>
+        <path d="M34,30 Q50,22 66,30 Q50,38 34,30 Z" fill="#17b0a5"/><circle cx="50" cy="30" r="4.3" fill="#0c0f0e"/></svg></span>
+      مشروعنا الثاني <small>· خريطة الفريق</small>
+    </div>
+    <div style="display:flex;align-items:center;gap:10px">
+      <button id="openBoardBtn" onclick="openPerfBoard()" style="cursor:pointer;border:none;background:var(--black);color:#fff;padding:9px 16px;border-radius:999px;font-family:'Tajawal';font-weight:700;font-size:13px;display:flex;align-items:center;gap:7px">📊 لوحة الأداء</button>
+      <div class="live"><i></i> <span id="liveCount">—</span> نشِط الآن</div>
+    </div>
+  </header>
+  <div class="viewas" id="viewas"><span class="lab">شاهِد باسم:</span></div>
+  <div class="caption" id="caption"></div>
+  <div class="stage" id="stage">
+    <svg class="links" id="links"></svg>
+    <div class="legend">
+      <div><i style="background:var(--teal)"></i>يعمل الآن</div>
+      <div><i style="background:var(--idle)"></i>خامل</div>
+    </div>
+    <div class="hint">اضغط أي شخص لتفتح منظوره · جرّب «شاهِد باسم»</div>
+  </div>
+</div>
+
+<div class="scrim" id="scrim"></div>
+<aside class="persp" id="persp">
+  <div class="p-head"><div class="p-av" id="pAv"></div>
+    <div><div class="nm" id="pName"></div><div class="rl" id="pRole"></div></div>
+    <button class="close" id="pClose">×</button></div>
+  <div class="p-note" id="pNote"></div>
+  <div class="p-body" id="pBody"></div>
+  <div class="p-foot"><button id="pOpen"></button></div>
+</aside>
+
+<script>
+const PLAT={snap:'سناب شات',tiktok:'تيك توك',both:'سناب + تيك توك',gen:'أداء عام',mgmt:'إدارة'};
+const ST={online:'نشِط',negotiating:'يفاوض',reviewing:'يراجع',idle:'خامل'};
+const stCol=s=>s==='idle'?'#b3c2bd':'#12b5a3';
+const BRANDS={
+  reef:{name:'ريف',campaigns:[{n:'عطر الصحراء',approved:12,neg:4,wait:8},{n:'مسك 24',approved:9,neg:3,wait:5}]},
+  osma:{name:'اوسما',campaigns:[{n:'أمبر تتش',approved:14,neg:6,wait:91},{n:'روج و نوار',approved:13,neg:5,wait:65},{n:'تندر بلوم',approved:9,neg:4,wait:57}]},
+  buyar:{name:'بويار',campaigns:[{n:'بويار سبرنغ',approved:7,neg:3,wait:22},{n:'لمسة بويار',approved:5,neg:2,wait:14}]},
+};
+const P={
+  owner:{name:'عبدالعزيز الماجد',role:'الأونر',mgr:null,brand:null,plat:'mgmt',status:'online',mgmt:true,act:'يراقب أداء العلامات الثلاث والفريق كامل'},
+  gm:{name:'محمد فيصل',role:'المدير العام',mgr:'owner',brand:null,plat:'mgmt',status:'online',mgmt:true,act:'يراجع تقارير الحملات النشطة'},
+  reef:{name:'عبدالعزيز الحقباني',role:'مدير علامة ريف',mgr:'gm',brand:'reef',plat:'mgmt',status:'online',mgmt:true,act:'يعتمد صفقات حملة عطر الصحراء'},
+  osma:{name:'لمى غدار',role:'مديرة علامة اوسما',mgr:'gm',brand:'osma',plat:'mgmt',status:'reviewing',mgmt:true,act:'تتابع قائمة انتظار روج و نوار'},
+  buyar:{name:'منى حاج',role:'مديرة علامة بويار',mgr:'gm',brand:'buyar',plat:'mgmt',status:'online',mgmt:true,act:'تجهّز إطلاق حملة لمسة بويار'},
+  shaymaa:{name:'شيماء',role:'مديرة قسم الديجتال',mgr:'gm',brand:null,plat:'mgmt',status:'online',mgmt:true,act:'تتابع أداء القسم الرقمي عبر العلامات'},
+  shahad:{name:'شهد العصيمي',role:'أخصائية سناب · ريف+بويار',mgr:'reef',brand:'reef',shared:['buyar'],plat:'snap',status:'online',act:'تدير سناب لريف وبويار (شاشة مدموجة)',
+    negs:[{c:'عطر الصحراء · ريف',w:'@rana.g',s:'negotiating'},{c:'بويار سبرنغ · بويار',w:'@sultan_k',s:'online'}]},
+  tamim:{name:'تميم العجلان',role:'سناب وتيك توك · ريف',mgr:'reef',brand:'reef',plat:'both',status:'negotiating',act:'يفاوض معلن — حملة مسك 24',
+    negs:[{c:'مسك 24 · ريف',w:'@noura_v',s:'negotiating'},{c:'عطر الصحراء · ريف',w:'@fahad',s:'reviewing'}]},
+  mohammed:{name:'محمد العلي',role:'أخصائي تيك توك · الديجتال',mgr:'shaymaa',brand:null,plat:'tiktok',status:'online',act:'يحسّن أداء تيك توك عبر العلامات',
+    negs:[{c:'مسك 24 · ريف',w:'@dana.t',s:'online'},{c:'لمسة بويار · بويار',w:'@majed',s:'negotiating'}]},
+  bashar:{name:'بشار الأسعدي',role:'سناب وتيك توك · اوسما',mgr:'osma',brand:'osma',plat:'both',status:'negotiating',act:'يفاوض مؤثري تيك توك — أمبر تتش',
+    negs:[{c:'أمبر تتش · اوسما',w:'@lulu.k',s:'negotiating'},{c:'تندر بلوم · اوسما',w:'@sara_m',s:'online'}]},
+  rawan:{name:'روان',role:'سناب وتيك توك · اوسما',mgr:'osma',brand:'osma',plat:'both',status:'reviewing',act:'تراجع فيديوهات سناب — روج و نوار',
+    negs:[{c:'روج و نوار · اوسما',w:'@reem.a',s:'reviewing'}]},
+  reema:{name:'ريما القحطاني',role:'متابعة أداء · الديجتال',mgr:'shaymaa',brand:null,plat:'gen',status:'online',act:'تتابع أداء الحملات عبر العلامات',negs:[]},
+};
+const IDS=Object.keys(P);
+IDS.forEach(id=>P[id].sees=new Set());
+IDS.forEach(id=>{let m=P[id].mgr;while(m){P[m].sees.add(id);m=P[m].mgr;}});
+IDS.forEach(id=>(P[id].shared||[]).forEach(b=>{P[b].sees.add(id);let u=P[b].mgr;while(u){P[u].sees.add(id);u=P[u].mgr;}}));
+const initials=n=>n.trim().split(' ').slice(0,2).map(w=>w[0]).join('');
+
+/* مواقع نسبية للشجرة (rx, ry) */
+const POS={
+  owner:[.46,.10], gm:[.46,.31],
+  osma:[.14,.56], reef:[.40,.56], buyar:[.58,.56], shaymaa:[.78,.56],
+  bashar:[.08,.84], rawan:[.20,.84], shahad:[.34,.84], tamim:[.46,.84], mohammed:[.72,.84], reema:[.84,.84],
+};
+const SIZE={owner:56, mgmt:40, spec:26};
+const SOLID=[['owner','gm'],['gm','reef'],['gm','osma'],['gm','buyar'],['gm','shaymaa'],
+  ['reef','shahad'],['reef','tamim'],
+  ['osma','bashar'],['osma','rawan'],
+  ['shaymaa','mohammed'],['shaymaa','reema']];
+const SHARED=[['buyar','shahad']];
+
+const stage=document.getElementById('stage'), linksSvg=document.getElementById('links');
+const nodes={};
+IDS.forEach(id=>{ const p=P[id]; const el=document.createElement('div');
+  el.className='node'+(id==='owner'?' owner':p.mgmt?' mgr':'');
+  const sz = id==='owner'?SIZE.owner:p.mgmt?SIZE.mgmt:SIZE.spec;
+  const b2 = (p.shared||[]).length? `<span class="badge2">2</span>`:'';
+  el.innerHTML=`<div class="circle" style="width:${sz}px;height:${sz}px">
+      <span class="dot" style="background:${stCol(p.status)}"></span>${b2}</div>
+    <div class="label" style="top:${sz/2+6}px"><div class="nm">${p.name}</div><div class="rl">${p.role}</div>
+      <div class="tip" style="top:${sz/2+42}px"><div class="a">${p.act}</div>
+        <div class="s"><i style="background:${stCol(p.status)}"></i>${ST[p.status]}</div></div></div>`;
+  el.onclick=()=>openPersp(id); stage.appendChild(el);
+  nodes[id]={el, sz}; });
+
+const lineEls={}; 
+function mkLine(a,b,dash,key){ const l=document.createElementNS('http://www.w3.org/2000/svg','line');
+  l.setAttribute('stroke',dash?'#9fd8ce':'#c3ddd6'); l.setAttribute('stroke-width',dash?'1.4':'1.4');
+  if(dash) l.setAttribute('stroke-dasharray','5 5'); linksSvg.appendChild(l); lineEls[key]={a,b,l,dash}; }
+SOLID.forEach(([a,b])=>mkLine(a,b,false,a+'-'+b));
+SHARED.forEach(([a,b])=>mkLine(a,b,true,a+'-'+b));
+
+let W=0,H=0;
+function place(){ const r=stage.getBoundingClientRect(); W=r.width;H=r.height;
+  linksSvg.setAttribute('width',W);linksSvg.setAttribute('height',H);linksSvg.setAttribute('viewBox',`0 0 ${W} ${H}`);
+  const cw=Math.min(W-56, 1000);            // عرض الشجرة الأقصى (تبقى متمركزة)
+  const ch=Math.min(H-90, 620);             // ارتفاع الشجرة الأقصى
+  const ox=(W-cw)/2, oy=Math.max(24,(H-ch)/2 - 8);
+  IDS.forEach(id=>{ const [rx,ry]=POS[id]; const x=ox+rx*cw, y=oy+ry*ch;
+    nodes[id].x=x; nodes[id].y=y; nodes[id].el.style.left=x+'px'; nodes[id].el.style.top=y+'px'; });
+  drawLines(); }
+function drawLines(){ Object.values(lineEls).forEach(o=>{ const A=nodes[o.a],B=nodes[o.b];
+  o.l.setAttribute('x1',A.x);o.l.setAttribute('y1',A.y);o.l.setAttribute('x2',B.x);o.l.setAttribute('y2',B.y); }); }
+addEventListener('resize',place);
+
+/* شاهِد باسم / التظليل */
+let scope='owner';
+const VIEWERS=[{id:'owner',l:'الأونر',s:'الماجد'},{id:'gm',l:'المدير العام',s:'محمد فيصل'},
+  {id:'reef',l:'ريف',s:'الحقباني'},{id:'osma',l:'اوسما',s:'لمى'},{id:'buyar',l:'بويار',s:'منى'},
+  {id:'shaymaa',l:'الديجتال',s:'شيماء'},{id:'shahad',l:'مشترَك',s:'شهد'}];
+const vwBar=document.getElementById('viewas');
+VIEWERS.forEach((v,i)=>{const b=document.createElement('div');b.className='vw'+(i===0?' on':'');b.dataset.id=v.id;
+  b.innerHTML=`${v.l}<span>${v.s}</span>`;b.onclick=()=>setScope(v.id);vwBar.appendChild(b);});
+function setScope(id){ scope=id;
+  document.querySelectorAll('.vw').forEach(x=>x.classList.toggle('on',x.dataset.id===id));
+  const vis=new Set([id,...P[id].sees]); const p=P[id]; const sh=(p.shared||[]).length>0;
+  if(sh){ vis.add(p.mgr); (p.shared||[]).forEach(b=>vis.add(b)); }
+  IDS.forEach(x=>{ nodes[x].el.style.opacity=vis.has(x)?1:.18; });
+  Object.values(lineEls).forEach(o=>{ const on=vis.has(o.a)&&vis.has(o.b);
+    o.l.setAttribute('opacity', on? (o.dash? ((id==='buyar'||id==='owner'||id==='gm')?.9:.25) : 1) : .06); });
+  const n=P[id].sees.size;
+  cap(id==='owner'?`الأونر <b>${p.name}</b> فوق، وكل الفريق تحته. اضغط أي شخص لتفتح منظوره.`
+    : sh? `مسار <b>${p.name}</b> المشترَك — يخدم علامتَي ريف وبويار.`
+    : `مسار <b>${p.name}</b> — ${n? n+' تحت إشرافه':'يرى مهامه فقط'}، والباقي يخفت.`,'خريطة الفريق');
+}
+function cap(t,ttl){document.getElementById('caption').innerHTML=`<b>${ttl}</b> — ${t}`;}
+
+/* لوح المنظور */
+const scrim=document.getElementById('scrim'),persp=document.getElementById('persp');
+function openPersp(id){ const p=P[id];
+  document.getElementById('pAv').textContent=initials(p.name);
+  document.getElementById('pName').textContent=p.name; document.getElementById('pRole').textContent=p.role;
+  document.getElementById('pNote').textContent=`هذا بالضبط اللي يشوفه ${p.name} لو دخل مشروعنا الثاني الآن.`;
+  const body=document.getElementById('pBody'); body.innerHTML='';
+  if(id==='owner'||id==='gm') body.innerHTML=`<div><h5>كل العلامات — نظرة شاملة</h5>${blocks(['reef','osma','buyar'])}</div>`;
+  else if(p.mgmt){ body.innerHTML = p.brand
+      ? `<div><h5>حملات علامة ${BRANDS[p.brand].name}</h5>${blocks([p.brand])}</div>`
+      : deptView(id); }
+  else{ const sh=(p.shared||[]).length>0; const bl=sh?[p.brand,...p.shared]:(p.brand?[p.brand]:[]);
+    const sc=sh?`شاشة مدموجة — ${PLAT[p.plat]} في ${bl.map(b=>BRANDS[b].name).join(' و ')}`
+             :(p.brand?`${PLAT[p.plat]} — علامة ${BRANDS[p.brand].name}`:`${PLAT[p.plat]} — قسم الديجتال (عبر العلامات)`);
+    const ng=p.negs.length?p.negs.map(n=>`<div class="neg-row"><span class="st" style="background:${stCol(n.s)}"></span>
+      <div><div class="who">${n.w}</div><div class="cc">${n.c}</div></div><span class="stt" style="color:${stCol(n.s)}">${ST[n.s]}</span></div>`).join('')
+      :`<div class="cc" style="color:var(--muted)">لا مفاوضات نشطة الآن</div>`;
+    body.innerHTML=`<div><h5>نطاق العمل</h5><div class="camp"><div class="cn">${sc}</div></div></div><div><h5>مهامه الجارية</h5>${ng}</div>`; }
+  const canScope=P[id].sees.size>0||id==='owner';
+  const btn=document.getElementById('pOpen'); btn.textContent=canScope?`اعرض مسار ${p.name} ←`:'يرى مهامه الخاصة فقط';
+  btn.style.opacity=canScope?1:.5; btn.style.cursor=canScope?'pointer':'default';
+  btn.onclick=()=>{ if(canScope){ if(VIEWERS.find(v=>v.id===id))setScope(id); closePersp(); } };
+  scrim.classList.add('on'); persp.classList.add('on');
+}
+function blocks(keys){return keys.map(k=>BRANDS[k].campaigns.map(c=>`
+  <div class="camp"><div class="cn">${c.n}<small>${BRANDS[k].name}</small></div>
+   <div class="stats"><div class="stat"><b>${c.approved}</b><span>معتمد</span></div>
+   <div class="stat"><b style="color:var(--teal)">${c.neg}</b><span>قيد تفاوض</span></div>
+   <div class="stat"><b style="color:var(--muted)">${c.wait}</b><span>انتظار</span></div></div></div>`).join('')).join('');}
+function deptView(id){ const team=IDS.filter(x=>P[x].mgr===id);
+  const rows=team.map(t=>`<div class="neg-row"><span class="st" style="background:${stCol(P[t].status)}"></span>
+    <div><div class="who">${P[t].name}</div><div class="cc">${P[t].act}</div></div>
+    <span class="stt" style="color:${stCol(P[t].status)}">${ST[P[t].status]}</span></div>`).join('');
+  return `<div><h5>فريق قسم الديجتال — ${team.length} أعضاء</h5>${rows||'<div class="cc" style="color:var(--muted)">لا أعضاء</div>'}</div>`; }
+function closePersp(){scrim.classList.remove('on');persp.classList.remove('on');}
+document.getElementById('pClose').onclick=closePersp; scrim.onclick=closePersp;
+
+document.getElementById('liveCount').textContent=IDS.filter(x=>P[x].status!=='idle').length;
+place(); setScope('owner');
+</script>
+
+<style>
+  .pb-overlay{position:fixed;inset:0;z-index:60;background:var(--page);display:none;flex-direction:column}
+  .pb-overlay.on{display:flex}
+  .pb-top{display:flex;align-items:center;justify-content:space-between;padding:15px 24px;background:#fff;border-bottom:1px solid var(--line)}
+  .pb-title{font-family:'Cairo';font-weight:800;font-size:19px;color:var(--ink)}
+  .pb-actions{display:flex;align-items:center;gap:12px}
+  .pb-stamp{color:var(--muted);font-size:12px}
+  .pb-btn{cursor:pointer;border:1px solid var(--line);background:#fff;color:var(--ink);padding:7px 14px;border-radius:999px;font-family:'Tajawal';font-weight:700;font-size:12.5px}
+  .pb-btn:hover{border-color:var(--teal)}
+  .pb-close{cursor:pointer;border:none;background:var(--tint);color:var(--deep);width:36px;height:36px;border-radius:50%;font-size:20px;line-height:1}
+  .pb-scroll{flex:1;overflow:auto;padding:22px}
+  .pb-wrap{max-width:1160px;margin-inline:auto;display:flex;flex-direction:column;gap:16px}
+  .pb-loading,.pb-error,.pb-empty{padding:34px;text-align:center;color:var(--muted);font-size:14px}
+  .pb-error{color:#b23b3b}
+  .pb-click{cursor:pointer}
+  /* بطاقة الملخّص الذكي */
+  .pb-brief{background:#fff;border:1px solid var(--line);border-radius:20px;padding:22px 24px}
+  .pb-brief-h{display:flex;align-items:center;gap:9px;margin-bottom:12px}
+  .pb-brief-ic{width:34px;height:34px;border-radius:10px;background:var(--tint);color:var(--deep);display:flex;align-items:center;justify-content:center;font-size:18px}
+  .pb-brief-t{font-family:'Cairo';font-weight:800;font-size:17px;color:var(--ink)}
+  .pb-brief-x{font-size:15.5px;line-height:1.85;color:var(--ink);margin:0 0 14px;font-weight:500}
+  .pb-notes{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px}
+  .pb-note{background:#fff7e8;color:#96690c;border-radius:999px;padding:6px 13px;font-size:12.5px;font-weight:600}
+  .pb-kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;border-top:1px solid var(--line);padding-top:16px}
+  .pb-kpi{text-align:center}
+  .pb-kpi-v{font-family:'Cairo';font-weight:800;font-size:27px;line-height:1;color:var(--ink)}
+  .pb-kpi-l{font-size:11.5px;color:var(--muted);margin-top:6px}
+  .pb-kpi.bad .pb-kpi-v{color:#c0392b}.pb-kpi.warn .pb-kpi-v{color:#c98a12}.pb-kpi.good .pb-kpi-v{color:var(--deep)}
+  /* بينتو */
+  .pb-bento{display:grid;grid-template-columns:2fr 1fr;gap:16px}
+  .pb-tile{background:#fff;border:1px solid var(--line);border-radius:20px;padding:18px 20px}
+  .pb-tile-h{font-family:'Cairo';font-weight:800;font-size:14px;color:var(--ink);margin-bottom:14px;display:flex;align-items:center;gap:8px}
+  .pb-tile-h .sub{font-family:'Tajawal';font-weight:500;font-size:12px;color:var(--muted)}
+  /* قمع */
+  .pb-fn-row{display:grid;grid-template-columns:96px 1fr 42px;align-items:center;gap:12px;padding:5px 0}
+  .pb-fn-name{font-size:12.5px;font-weight:600;color:var(--ink);text-align:right}
+  .pb-fn-bar{background:var(--page);border-radius:8px;height:20px;overflow:hidden}
+  .pb-fn-fill{height:100%;background:var(--teal);border-radius:8px;min-width:2px}
+  .pb-fn-c{font-family:'Cairo';font-weight:700;font-size:14px;color:var(--ink);text-align:left}
+  .pb-fn-row.bn .pb-fn-fill{background:#d9662a}
+  .pb-fn-row.bn .pb-fn-c{color:#c0392b}
+  .pb-bn-tag{font-size:9.5px;background:#fdeeee;color:#c0392b;border-radius:999px;padding:1px 7px;font-weight:700;margin-inline-start:5px}
+  /* اتجاه */
+  .pb-trend{display:grid;grid-template-columns:repeat(7,1fr);gap:8px;align-items:end;height:132px}
+  .pb-tr-col{display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%;gap:5px}
+  .pb-tr-bar{width:66%;max-width:34px;background:var(--teal);border-radius:6px 6px 0 0;min-height:5px}
+  .pb-tr-lbl{font-size:10px;color:var(--muted)}
+  .pb-tr-n{font-family:'Cairo';font-weight:700;font-size:11.5px;color:var(--ink)}
+  /* بطاقات العلامات */
+  .pb-cards{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+  .pb-card{background:#fff;border:1px solid var(--line);border-radius:20px;padding:18px}
+  .pb-card-head{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;padding-bottom:14px;border-bottom:1px solid var(--line)}
+  .pb-brand{font-family:'Cairo';font-weight:800;font-size:18px;color:var(--ink)}
+  .pb-mgr{color:var(--muted);font-size:12.5px;margin-top:2px}
+  .pb-today{text-align:center;background:var(--tint);border-radius:14px;padding:9px 15px;min-width:74px}
+  .pb-today-v{font-family:'Cairo';font-weight:800;font-size:25px;color:var(--deep);line-height:1}
+  .pb-today-l{color:var(--deep);font-size:10px;margin-top:3px}
+  .pb-mini{margin-top:14px}
+  .pb-mini-h{font-size:11px;color:var(--muted);margin-bottom:7px}
+  .pb-mini-strip{display:grid;grid-template-columns:repeat(7,1fr);gap:5px;align-items:end;height:52px}
+  .pb-ms{display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%;gap:3px}
+  .pb-ms-bar{width:78%;background:var(--tint2);border-radius:4px 4px 0 0;min-height:3px}
+  .pb-ms-c{font-size:10px;font-weight:700;color:var(--ink)}
+  .pb-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:14px}
+  .pb-stat{background:var(--page);border:1px solid var(--line);border-radius:13px;padding:11px 8px;text-align:center}
+  .pb-stat-v{font-family:'Cairo';font-weight:700;font-size:19px;color:var(--ink);line-height:1}
+  .pb-stat-l{color:var(--muted);font-size:10.5px;margin-top:5px}
+  .pb-stat.bad{background:#fdeeee;border-color:#f2c9c9}.pb-stat.bad .pb-stat-v{color:#c0392b}
+  .pb-stat.warn{background:#fff7e8;border-color:#f0d9a8}.pb-stat.warn .pb-stat-v{color:#c98a12}
+  .pb-warn{margin-top:10px;background:#fff7e8;color:#96690c;border-radius:11px;padding:7px 11px;font-size:12px;text-align:center}
+  /* مودال */
+  .pb-detail{position:fixed;inset:0;z-index:70;background:rgba(15,26,23,.55);display:none;align-items:center;justify-content:center;padding:18px}
+  .pb-detail.on{display:flex}
+  .pb-detail-box{background:#fff;border-radius:18px;width:min(560px,100%);max-height:82vh;display:flex;flex-direction:column;overflow:hidden}
+  .pb-detail-head{display:flex;align-items:center;justify-content:space-between;padding:15px 18px;border-bottom:1px solid var(--line);font-family:'Cairo';font-weight:800;font-size:16px;color:var(--ink)}
+  .pb-detail-body{overflow:auto;padding:8px 16px 18px}
+  .pb-item{display:grid;grid-template-columns:1fr auto;gap:4px 10px;padding:12px 4px;border-bottom:1px solid var(--line)}
+  .pb-item:last-child{border-bottom:none}
+  .pb-item-c{font-weight:700;color:var(--ink);font-size:14px}
+  .pb-item-t{color:var(--muted);font-size:11.5px;text-align:left;align-self:center}
+  .pb-item-s{grid-column:1/-1;color:var(--muted);font-size:12.5px}
+  @media(max-width:880px){.pb-bento{grid-template-columns:1fr}.pb-cards{grid-template-columns:1fr}.pb-kpis{grid-template-columns:repeat(2,1fr)}}
+</style>
+
+<div class="pb-overlay" id="perfBoard">
+  <div class="pb-top">
+    <div class="pb-title">📊 لوحة أداء المجموعة</div>
+    <div class="pb-actions">
+      <span class="pb-stamp" id="pbStamp"></span>
+      <button class="pb-btn" onclick="loadPerfBoard()">↻ تحديث</button>
+      <button class="pb-close" onclick="closePerfBoard()">×</button>
+    </div>
+  </div>
+  <div class="pb-scroll"><div class="pb-wrap" id="pbBody"></div></div>
+</div>
+
+<div class="pb-detail" id="pbDetail">
+  <div class="pb-detail-box">
+    <div class="pb-detail-head"><span id="pbDetailTitle"></span><button class="pb-close" onclick="closeBrandDetail()">×</button></div>
+    <div class="pb-detail-body" id="pbDetailBody"></div>
+  </div>
+</div>
+
+<script>
+const PB_MGR   = { reef:'عبدالعزيز الحقباني', osma:'لمى غدار', buyar:'منى حاج' };
+const PB_LABEL = { reef:'ريف', osma:'اوسما', buyar:'بويار' };
+const PB_STAGES = [{s:1,n:'العنوان'},{s:2,n:'الشحن'},{s:3,n:'الاستلام'},{s:5,n:'المحتوى'},{s:6,n:'الموافقة'},{s:7,n:'النشر'},{s:8,n:'البنكية'}];
+const PB_STAGE_NAME = {1:'العنوان',2:'الشحن',3:'الاستلام',5:'المحتوى',6:'الموافقة',7:'النشر',8:'البنكية'};
+const PB_DOW = ['أحد','إثنين','ثلاثاء','أربعاء','خميس','جمعة','سبت'];
+window.PB_DETAIL_CACHE = window.PB_DETAIL_CACHE || {};
+
+function pbNum(n){ return (typeof n==='number'? n : (n||0)).toLocaleString('en-US'); }
+function openPerfBoard(){ document.getElementById('perfBoard').classList.add('on'); loadPerfBoard(); }
+function closePerfBoard(){ document.getElementById('perfBoard').classList.remove('on'); }
+
+async function loadPerfBoard(){
+  const body = document.getElementById('pbBody');
+  const stamp = document.getElementById('pbStamp');
+  for(const k in window.PB_DETAIL_CACHE) delete window.PB_DETAIL_CACHE[k];
+  body.innerHTML = '<div class="pb-loading">جاري تحميل الأرقام الحيّة…</div>';
+  try{
+    if(!window.supabaseClient) throw new Error('لم يتحمّل عميل قاعدة البيانات');
+    const { data, error } = await window.supabaseClient.rpc('team_overview');
+    if(error) throw error;
+    renderPerfBoard(data);
+    const t = (data && data.generated_at) ? new Date(data.generated_at) : new Date();
+    stamp.textContent = 'آخر تحديث: ' + t.toLocaleTimeString('ar-SA');
+  }catch(e){
+    let human = String((e && (e.message||e.hint||e.details)) || e);
+    if(human.indexOf('forbidden')>=0) human = 'غير مصرّح — لازم تكون داخل بحساب الأونر.';
+    body.innerHTML = '<div class="pb-error">تعذّر التحميل: '+human+'</div>';
+  }
+}
+
+function pbGroupStages(brands){
+  const g={}; brands.forEach(b=>{const s=b.stages||{};Object.keys(s).forEach(k=>{g[k]=(g[k]||0)+(s[k]||0);});});
+  return g;
+}
+
+function buildSummary(data){
+  const brands=data.brands||[]; const sum=k=>brands.reduce((a,b)=>a+(b[k]||0),0);
+  const g=pbGroupStages(brands);
+  const entries=Object.keys(g).map(k=>({s:+k,n:g[k]})).filter(x=>x.n>0);
+  const inProg=sum('in_progress'), stuck=sum('stuck'), awaiting=sum('awaiting_approval'),
+        rej=sum('rejected_week'), doneToday=sum('completed_today'), doneWeek=sum('completed_week');
+  const daily=data.daily||[];
+  const avg = daily.length ? Math.round(daily.reduce((a,x)=>a+(x.n||0),0)/daily.length) : 0;
+  const ranked=[...brands].sort((a,b)=>(b.completed_week||0)-(a.completed_week||0));
+  const top=ranked[0], bottom=ranked[ranked.length-1];
+  const parts=[], notes=[];
+
+  if(entries.length){
+    const bn=entries.reduce((m,x)=>x.n>m.n?x:m);
+    const pct=inProg?Math.round(bn.n/inProg*100):0;
+    parts.push(`أكبر تكدّس عند «${PB_STAGE_NAME[bn.s]||('مرحلة '+bn.s)}» — ${pbNum(bn.n)} صفقة (${pbNum(pct)}٪ من قيد التنفيذ)، يستحق مراجعة السبب.`);
+  }
+  if(awaiting>0) parts.push(`${pbNum(awaiting)} صفقة بانتظار اعتماد المدير.`);
+  if(doneToday<avg) parts.push(`الإنجاز اليوم ${pbNum(doneToday)}، أقل من متوسط الأسبوع (~${pbNum(avg)}).`);
+  else if(doneToday>0) parts.push(`الإنجاز اليوم ${pbNum(doneToday)}، ضمن المتوسط أو فوقه (~${pbNum(avg)}).`);
+  if(top && bottom && top.label!==bottom.label && (top.completed_week||0)!==(bottom.completed_week||0))
+    parts.push(`${PB_LABEL[top.label]||top.label} الأعلى هذا الأسبوع (${pbNum(top.completed_week||0)})، و${PB_LABEL[bottom.label]||bottom.label} الأدنى (${pbNum(bottom.completed_week||0)}).`);
+
+  if(stuck>0) notes.push(`${pbNum(stuck)} صفقة عالقة 5+ أيام`);
+  if(rej>doneWeek && rej>0) notes.push(`استبدال مرتفع (${pbNum(rej)}) مقابل ${pbNum(doneWeek)} إنجاز — يستحق نظرة`);
+
+  return { text: parts.join(' ') || 'لا توجد ملاحظات بارزة اليوم — الوضع مستقر.',
+           notes, inProg, stuck, awaiting, doneToday };
+}
+
+function renderPerfBoard(data){
+  const brands=(data&&data.brands)?data.brands:[];
+  const S=buildSummary(data);
+
+  // KPIs
+  const kpi=(v,l,cls)=>`<div class="pb-kpi ${cls||''}"><div class="pb-kpi-v">${pbNum(v)}</div><div class="pb-kpi-l">${l}</div></div>`;
+  const notesHtml=S.notes.map(n=>`<span class="pb-note">⚠ ${n}</span>`).join('');
+  const brief=`<div class="pb-brief">
+    <div class="pb-brief-h"><div class="pb-brief-ic">🧠</div><div class="pb-brief-t">ملخّص اليوم</div></div>
+    <p class="pb-brief-x">${S.text}</p>
+    ${notesHtml?`<div class="pb-notes">${notesHtml}</div>`:''}
+    <div class="pb-kpis">
+      ${kpi(S.doneToday,'اكتمل اليوم','good')}
+      ${kpi(S.inProg,'قيد التنفيذ','')}
+      ${kpi(S.stuck,'عالقة 5+ أيام',S.stuck>0?'bad':'')}
+      ${kpi(S.awaiting,'بانتظار اعتماد',S.awaiting>0?'warn':'')}
+    </div>
+  </div>`;
+
+  // funnel
+  const g=pbGroupStages(brands);
+  const stageArr=PB_STAGES.map(o=>({...o,c:g[o.s]||0}));
+  const bnMax=Math.max(...stageArr.map(o=>o.c),0);
+  const fmax=Math.max(1,...stageArr.map(o=>o.c));
+  const totalInProg=brands.reduce((a,b)=>a+(b.in_progress||0),0);
+  const funnel=stageArr.map(o=>{
+    const pct=Math.round(o.c/fmax*100), bn=(o.c===bnMax&&o.c>0);
+    return `<div class="pb-fn-row ${bn?'bn':''}"><div class="pb-fn-name">${o.n}${bn?'<span class="pb-bn-tag">اختناق</span>':''}</div><div class="pb-fn-bar"><div class="pb-fn-fill" style="width:${pct}%"></div></div><div class="pb-fn-c">${pbNum(o.c)}</div></div>`;
+  }).join('');
+
+  // trend
+  const daily=(data&&data.daily)?data.daily:[]; const days=[]; const today=new Date();
+  for(let i=6;i>=0;i--){const d=new Date(today);d.setDate(d.getDate()-i);
+    const key=d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+    const f=daily.find(x=>x.d===key); days.push({date:d,n:f?f.n:0});}
+  const tmax=Math.max(1,...days.map(x=>x.n));
+  const doneWeek=brands.reduce((a,b)=>a+(b.completed_week||0),0);
+  const trend=days.map(x=>`<div class="pb-tr-col"><div class="pb-tr-bar" style="height:${Math.max(4,Math.round(x.n/tmax*100))}%"></div><div class="pb-tr-lbl">${PB_DOW[x.date.getDay()]}</div><div class="pb-tr-n">${pbNum(x.n)}</div></div>`).join('');
+
+  const bento=`<div class="pb-bento">
+    <div class="pb-tile"><div class="pb-tile-h">🏭 خط الإنتاج <span class="sub">— وين تتكدّس (${pbNum(totalInProg)} قيد التنفيذ)</span></div>${funnel||'<div class="pb-empty">لا صفقات قيد التنفيذ</div>'}</div>
+    <div class="pb-tile"><div class="pb-tile-h">📈 الإنجاز <span class="sub">— 7 أيام (${pbNum(doneWeek)})</span></div><div class="pb-trend">${trend}</div></div>
+  </div>`;
+
+  // brand cards
+  const cards=brands.map(b=>{
+    const label=PB_LABEL[b.label]||b.company_name||b.label, mgr=PB_MGR[b.label]||'';
+    const notLinked=b.linked===false?'<div class="pb-warn">⚠ الحساب غير مربوط — راجع الإيميل</div>':'';
+    const st=b.stages||{}; const bmax=Math.max(1,...PB_STAGES.map(o=>st[o.s]||0));
+    const strip=PB_STAGES.map(o=>{const c=st[o.s]||0;const h=c>0?Math.max(10,Math.round(c/bmax*100)):3;
+      return `<div class="pb-ms" title="${o.n}: ${c}"><div class="pb-ms-bar" style="height:${h}%"></div><div class="pb-ms-c">${c>0?pbNum(c):''}</div></div>`;}).join('');
+    return `<div class="pb-card">
+      <div class="pb-card-head"><div><div class="pb-brand">${label}</div><div class="pb-mgr">${mgr}</div></div>
+        <div class="pb-today"><div class="pb-today-v">${pbNum(b.completed_today)}</div><div class="pb-today-l">اكتمل اليوم</div></div></div>
+      ${notLinked}
+      <div class="pb-mini"><div class="pb-mini-h">توزيع ${pbNum(b.in_progress)} صفقة قيد التنفيذ على المراحل</div><div class="pb-mini-strip">${strip}</div></div>
+      <div class="pb-grid">
+        <div class="pb-stat ${b.stuck>0?'bad pb-click':''}" ${b.stuck>0?`onclick="openBrandDetail('${b.label}','stuck')"`:''}><div class="pb-stat-v">${pbNum(b.stuck)}</div><div class="pb-stat-l">عالقة ${b.stuck>0?'🔎':''}</div></div>
+        <div class="pb-stat ${b.awaiting_approval>0?'warn pb-click':''}" ${b.awaiting_approval>0?`onclick="openBrandDetail('${b.label}','awaiting')"`:''}><div class="pb-stat-v">${pbNum(b.awaiting_approval)}</div><div class="pb-stat-l">بانتظار اعتماد ${b.awaiting_approval>0?'🔎':''}</div></div>
+        <div class="pb-stat"><div class="pb-stat-v">${pbNum(b.completed_week)}</div><div class="pb-stat-l">اكتمل الأسبوع</div></div>
+        <div class="pb-stat"><div class="pb-stat-v">${pbNum(b.completed_total)}</div><div class="pb-stat-l">إجمالي مكتمل</div></div>
+      </div>
+    </div>`;
+  }).join('');
+
+  document.getElementById('pbBody').innerHTML = brief + bento + `<div class="pb-cards">${cards||'<div class="pb-empty">لا بيانات</div>'}</div>`;
+}
+
+async function openBrandDetail(label, kind){
+  document.getElementById('pbDetail').classList.add('on');
+  const title=document.getElementById('pbDetailTitle'), body=document.getElementById('pbDetailBody');
+  title.textContent=(PB_LABEL[label]||label)+' — '+(kind==='awaiting'?'بانتظار اعتمادك':'صفقات عالقة (5+ أيام)');
+  body.innerHTML='<div class="pb-loading">جاري التحميل…</div>';
+  try{
+    let d=window.PB_DETAIL_CACHE[label];
+    if(!d){ const {data,error}=await window.supabaseClient.rpc('team_brand_detail',{p_label:label}); if(error) throw error; d=data; window.PB_DETAIL_CACHE[label]=d; }
+    const list=(kind==='awaiting'?d.awaiting:d.stuck)||[];
+    if(!list.length){ body.innerHTML='<div class="pb-loading">لا يوجد عناصر حاليًا ✓</div>'; return; }
+    body.innerHTML=list.map(it=>{
+      const when=it.closed_at?new Date(it.closed_at).toLocaleDateString('ar-SA'):'';
+      if(kind==='awaiting'){ const price=it.price?(' · '+pbNum(it.price)+' ر.س'):'';
+        return `<div class="pb-item"><div class="pb-item-c">${it.creator||'—'}</div><div class="pb-item-t">${when}</div><div class="pb-item-s">${it.campaign||''}${price}</div></div>`; }
+      const sname=PB_STAGE_NAME[it.stage]||('مرحلة '+it.stage);
+      return `<div class="pb-item"><div class="pb-item-c">${it.creator||'—'}</div><div class="pb-item-t">منذ ${when}</div><div class="pb-item-s">${it.campaign||''} · واقفة عند: ${sname}</div></div>`;
+    }).join('');
+  }catch(e){ let h=String((e&&(e.message||e.hint))||e); if(h.indexOf('forbidden')>=0)h='غير مصرّح (حساب الأونر فقط).'; body.innerHTML='<div class="pb-error">تعذّر التحميل: '+h+'</div>'; }
+}
+function closeBrandDetail(){ document.getElementById('pbDetail').classList.remove('on'); }
+document.getElementById('pbDetail').addEventListener('click', function(e){ if(e.target===this) closeBrandDetail(); });
+</script>
+</body>
+</html>

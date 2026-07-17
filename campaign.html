@@ -1,0 +1,821 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl" data-i18n-title="campaign_title">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>الحملة - مشروعنا الثاني</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="/translations.js?v=3"></script>
+<script src="/i18n.js?v=3"></script>
+<style>
+:root {
+  --cream: #ffffff;
+  --cream-darker: #f5f5f4;
+  --ink: #0a0a0a;
+  --ink-soft: #3a3a3a;
+  --ink-muted: #6b6b6b;
+  --ink-faint: #a0a0a0;
+  --accent: #13B9B2;
+  --accent-soft: #7fd6d2;
+  --accent-ink: #0c4f4b;
+  --olive: #13B9B2;
+  --gold: #6b6b6b;
+  --line: rgba(10, 10, 10, 0.08);
+  --line-strong: rgba(10, 10, 10, 0.16);
+  --success: #13B9B2;
+  --font-display: 'IBM Plex Sans Arabic', 'Segoe UI', Tahoma, sans-serif;
+  --font-serif: 'IBM Plex Sans Arabic', 'Segoe UI', Tahoma, sans-serif;
+  --font-body: 'IBM Plex Sans Arabic', 'Segoe UI', Tahoma, sans-serif;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  background: var(--cream);
+  color: var(--ink);
+  font-family: var(--font-body);
+  font-weight: 400;
+  min-height: 100vh;
+}
+.container { max-width: 1100px; margin: 0 auto; padding: 0 24px; position: relative; z-index: 1; }
+.nav { background: var(--cream); padding: 18px 0; border-bottom: 1px solid var(--line); }
+.nav-inner { display: flex; justify-content: space-between; align-items: center; }
+.logo { display: flex; align-items: center; gap: 12px; text-decoration: none; color: var(--ink); }
+.logo-eye { width: 42px; height: 42px; display: block; flex-shrink: 0; }
+.logo-mark {
+  font-family: var(--font-display);
+  font-size: 24px; font-weight: 600; letter-spacing: 0;
+  position: relative;
+}
+.logo-mark::after {
+  content: ''; position: absolute; bottom: 5px; inset-inline-end: -8px;
+  width: 5px; height: 5px; background: var(--accent); border-radius: 50%;
+}
+.back-link { color: var(--ink-muted); text-decoration: none; font-size: 14px; }
+.back-link:hover { color: var(--accent); }
+
+.page { padding: 0 0 8px; }
+
+@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.4} }
+
+/* ============ Claude-style chat ============ */
+.chat-wrap {
+  max-width: 720px;
+  width: 100%;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  min-height: calc(100vh - 90px);
+}
+.messages {
+  flex: 1;
+  padding: 16px 4px 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 26px;
+}
+.cmsg { max-width: 100%; }
+.cmsg.user { align-self: flex-end; max-width: 85%; }
+.chat-start {
+  text-align: center;
+  font-size: 11px;
+  color: var(--ink-faint);
+  background: var(--cream-darker);
+  align-self: center;
+  padding: 5px 14px;
+  border-radius: 100px;
+  margin-bottom: 4px;
+}
+.cmsg-label {
+  font-family: var(--font-display);
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--accent-ink);
+  margin-bottom: 7px;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+.cmsg-label::before {
+  content: '';
+  width: 18px; height: 18px;
+  border-radius: 50%;
+  background: var(--accent);
+  flex-shrink: 0;
+}
+.cmsg-text {
+  font-size: 15px;
+  line-height: 1.75;
+  color: var(--ink);
+  white-space: pre-wrap;
+  overflow-wrap: break-word;
+  word-break: break-word;
+  padding-inline-start: 25px;
+}
+.cmsg-bubble {
+  background: var(--cream-darker);
+  padding: 12px 16px;
+  border-radius: 18px;
+  font-size: 15px;
+  line-height: 1.65;
+  color: var(--ink);
+  white-space: pre-wrap;
+}
+
+/* ============ Payment pledge banner (تعهّد الشركة بالدفع — يظهر للطرفين أثناء التفاوض) ============ */
+.pay-pledge-banner {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: rgba(19, 185, 178, 0.08);
+  border: 1px solid rgba(19, 185, 178, 0.28);
+  border-radius: 14px;
+  padding: 11px 16px;
+  margin: 4px 4px 0;
+  font-size: 13px;
+  line-height: 1.6;
+  color: var(--accent-ink);
+}
+.pay-pledge-banner .ppb-ic { font-size: 16px; flex-shrink: 0; line-height: 1; }
+.pay-pledge-banner strong { font-weight: 600; }
+
+.typing {
+  display: flex; gap: 5px;
+  padding: 4px 25px 0;
+  align-items: center;
+}
+.typing span { width: 7px; height: 7px; border-radius: 50%; background: var(--ink-faint); animation: bounce 1.4s infinite; }
+.typing span:nth-child(2) { animation-delay: 0.2s; }
+.typing span:nth-child(3) { animation-delay: 0.4s; }
+@keyframes bounce {
+  0%, 60%, 100% { transform: translateY(0); opacity: 0.4; }
+  30% { transform: translateY(-7px); opacity: 1; }
+}
+
+/* خانة الكتابة تحت */
+.chat-input {
+  position: sticky;
+  bottom: 0;
+  background: var(--cream);
+  padding: 10px 4px max(14px, env(safe-area-inset-bottom));
+  display: flex;
+  gap: 10px;
+  align-items: flex-end;
+  border-top: 1px solid var(--line);
+}
+.chat-input textarea {
+  flex: 1;
+  padding: 14px 18px;
+  border: 1px solid var(--line-strong);
+  border-radius: 22px;
+  font-family: var(--font-body);
+  font-size: 15px;
+  resize: none;
+  min-height: 50px;
+  max-height: 140px;
+  background: #fff;
+  color: var(--ink);
+  box-shadow: 0 2px 12px -6px rgba(10,10,10,0.12);
+}
+.chat-input textarea:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px rgba(19,185,178,0.14); }
+.chat-input button {
+  background: var(--accent);
+  color: #fff;
+  border: none;
+  width: 46px; height: 46px;
+  border-radius: 50%;
+  cursor: pointer;
+  font-size: 20px;
+  font-weight: 700;
+  flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+  transition: background .2s, transform .15s;
+}
+.chat-input button:hover { background: var(--accent-ink); transform: translateY(-1px); }
+.chat-input button:disabled { background: var(--ink-faint); cursor: not-allowed; transform: none; }
+
+.chat-foot {
+  position: sticky;
+  bottom: 0;
+  background: var(--cream);
+  padding: 16px 4px max(20px, env(safe-area-inset-bottom));
+  text-align: center;
+  font-size: 13px;
+  color: var(--ink-muted);
+  border-top: 1px solid var(--line);
+}
+.chat-foot.done { color: var(--accent-ink); font-weight: 500; }
+.chat-foot.awaiting { color: #0c4f4b; font-weight: 500; }
+.chat-foot .foot-link {
+  display: inline-block; margin-right: 10px;
+  color: var(--accent); text-decoration: none; font-weight: 600;
+}
+
+/* اعتماد الشركة (سحب) */
+.approve-wrap { padding: 14px 0 20px; }
+.approve-info { font-size: 14px; color: var(--ink-soft); line-height: 1.6; margin-bottom: 12px; text-align: center; }
+.approve-info strong { color: var(--accent-ink); }
+.ag-btn { border: 0; padding: 14px 22px; border-radius: 100px; font-family: inherit; font-size: 14.5px; font-weight: 700; cursor: pointer; transition: transform .15s, filter .2s; display: flex; align-items: center; justify-content: center; gap: 6px; width: 100%; }
+.ag-btn:hover { transform: translateY(-1px); }
+.ag-btn.approve { background: linear-gradient(135deg, #16c2ba, #0e9a94); color: #fff; box-shadow: 0 8px 20px -8px rgba(14,154,148,.75); }
+.ag-btn.approve:hover { filter: brightness(1.06); }
+
+.deal-closed-banner {
+  background: linear-gradient(135deg, #13B9B2, #0e9a94);
+  color: #fff;
+  padding: 24px 28px;
+  border-radius: 20px;
+  margin-top: 20px;
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 20px;
+  align-items: center;
+}
+.deal-icon {
+  width: 56px; height: 56px;
+  background: rgba(255,255,255,0.2);
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--font-display);
+  font-size: 28px;
+  font-weight: 600;
+}
+.deal-content h3 { font-family: var(--font-display); font-size: 20px; margin-bottom: 6px; }
+.deal-content p { font-size: 14px; opacity: 0.95; line-height: 1.6; }
+.deal-content .price { font-family: var(--font-display); font-size: 26px; font-weight: 600; margin-top: 8px; }
+
+/* ============ Awaiting brand approval banner ============ */
+.deal-awaiting-banner {
+  background: rgba(19, 185, 178, 0.04);
+  border: 1px solid rgba(19, 185, 178, 0.28);
+  color: var(--ink);
+  padding: 24px 28px;
+  border-radius: 20px;
+  margin-top: 20px;
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 20px;
+  align-items: center;
+}
+.deal-awaiting-banner .deal-icon {
+  background: rgba(19, 185, 178, 0.16);
+  color: #0c4f4b;
+  font-size: 26px;
+}
+.deal-awaiting-banner h3 { font-family: var(--font-display); font-size: 20px; margin-bottom: 6px; color: var(--ink); }
+.deal-awaiting-banner p { font-size: 14px; color: var(--ink-soft); line-height: 1.6; }
+.deal-awaiting-banner .price {
+  font-family: var(--font-display);
+  font-size: 26px;
+  font-weight: 600;
+  margin-top: 8px;
+  color: var(--accent-ink);
+}
+.deal-awaiting-banner .approve-cta {
+  display: inline-block;
+  margin-top: 16px;
+  background: var(--ink);
+  color: #fff;
+  padding: 12px 28px;
+  border-radius: 100px;
+  border: 0;
+  font-weight: 500;
+  font-family: var(--font-body);
+  font-size: 14px;
+  cursor: pointer;
+  transition: background .2s, transform .15s;
+}
+.deal-awaiting-banner .approve-cta:hover { background: var(--accent); transform: translateY(-1px); }
+.deal-awaiting-banner .approve-cta:disabled { opacity: 0.6; cursor: not-allowed; }
+
+/* Swipe to approve */
+.swipe-track {
+  background: #fff;
+  border: 1.5px solid rgba(19, 185, 178, 0.35);
+  border-radius: 100px;
+  position: relative;
+  height: 64px;
+  overflow: hidden;
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: none;
+  margin-top: 16px;
+  max-width: 380px;
+}
+.swipe-hint {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  color: #0c4f4b;
+  font-weight: 500;
+  pointer-events: none;
+  z-index: 1;
+  transition: opacity .15s, color .25s;
+  font-family: var(--font-body);
+}
+.swipe-hint::before {
+  content: '\2190';
+  display: inline-block;
+  margin-left: 8px;
+  font-size: 17px;
+  animation: swipe-nudge 1.4s ease-in-out infinite;
+}
+@keyframes swipe-nudge {
+  0%, 100% { transform: translateX(0); opacity: 0.45; }
+  50% { transform: translateX(-8px); opacity: 1; }
+}
+.swipe-track.done .swipe-hint::before { display: none; }
+.swipe-thumb {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  width: 48px; height: 48px;
+  background: var(--ink);
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  color: #fff;
+  font-size: 18px;
+  cursor: grab;
+  z-index: 2;
+  transition: background .2s, right .25s cubic-bezier(0.4, 0, 0.2, 1);
+  font-weight: 600;
+}
+.swipe-thumb:hover { background: var(--accent); }
+.swipe-thumb.dragging { cursor: grabbing; transition: background .2s; }
+.swipe-fill {
+  position: absolute;
+  top: 0; right: 0; bottom: 0;
+  width: 0;
+  background: rgba(19, 185, 178, 0.15);
+  border-radius: 100px 0 0 100px;
+  z-index: 0;
+  transition: width .25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.swipe-track.done {
+  background: rgba(19, 185, 178, 0.1);
+  border-color: rgba(19, 185, 178, 0.45);
+}
+.swipe-track.done .swipe-thumb { background: var(--accent); }
+.swipe-track.done .swipe-hint { color: var(--accent-ink); }
+
+.loading { text-align: center; padding: 60px; color: var(--ink-muted); }
+
+@media (max-width: 640px) {
+  .container { padding: 0 16px; }
+  .deal-closed-banner, .deal-awaiting-banner { grid-template-columns: 1fr; text-align: center; }
+  .deal-icon { margin: 0 auto; }
+  .logo-eye { width: 36px; height: 36px; }
+}
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <div class="container nav-inner">
+    <a href="/" class="logo">
+      <svg class="logo-eye" viewBox="0 0 200 200" aria-hidden="true">
+        <g fill="none" stroke-linejoin="miter" stroke-miterlimit="6" stroke-linecap="round">
+          <path d="M30 100 C61.5 78 138.5 78 170 100 C138.5 122 61.5 122 30 100 Z" stroke="#0a0a0a" stroke-width="8" transform="rotate(25 100 100)"/>
+          <path d="M30 100 C61.5 78 138.5 78 170 100 C138.5 122 61.5 122 30 100 Z" stroke="#0a0a0a" stroke-width="8" transform="rotate(-25 100 100)"/>
+          <path d="M76 100 Q100 88 124 100 Q100 112 76 100 Z" fill="#ffffff" stroke="#13B9B2" stroke-width="6"/>
+          <circle cx="100" cy="100" r="7" fill="#0a0a0a"/>
+        </g>
+      </svg>
+      <span class="logo-mark">مشروعنا الثاني</span>
+    </a>
+    <span style="display:inline-flex;align-items:center;gap:12px;"><button type="button" data-i18n-toggle onclick="simblI18n.toggle()" style="background:#fff;border:1.5px solid rgba(10,10,10,0.28);color:var(--ink);padding:8px 16px;border-radius:100px;font-family:inherit;font-size:13px;font-weight:600;cursor:pointer;">EN</button><a href="javascript:history.back()" class="back-link">← العودة</a></span>
+  </div>
+</nav>
+
+<main class="page">
+  <div class="container" id="content">
+    <div class="loading">جاري التحميل...</div>
+  </div>
+</main>
+
+<script>document.write('<script src="supabase-config.js?v=' + Date.now() + '"><\/script>');</script>
+<script>
+let currentUser = null;
+let campaign = null;
+let application = null;
+let messages = [];
+let isAgentThinking = false;
+let dealClosed = false;
+let approvedClose = false;
+let dealDetails = null;
+let pollInterval = null;
+
+// ====== خرائط عرض الحقول الجديدة ======
+const PUBLISH_TIMING_LABELS = {
+  '24h': 'خلال 24 ساعة (مستعجل)',
+  '3d': 'خلال 3 أيام',
+  '1w': 'خلال أسبوع',
+  '2w': 'خلال أسبوعين',
+  'custom': 'تاريخ محدّد'
+};
+const PLATFORM_LABELS = {
+  tiktok: 'تيك توك', snapchat: 'سناب شات', x: 'إكس', instagram: 'انستقرام', youtube: 'يوتيوب'
+};
+const FOLLOWER_RANGE_LABELS = {
+  '20-50k': 'من 20 ألف إلى 50 ألف متابع',
+  '50-200k': 'من 50 ألف إلى 200 ألف متابع',
+  '200-500k': 'من 200 ألف إلى 500 ألف متابع',
+  '500k+': 'أكثر من 500 ألف متابع',
+  '10000': 'من 10 آلاف إلى 20 ألف متابع',
+  '20000': 'من 20 ألف إلى 50 ألف متابع',
+  '50000': 'من 50 ألف إلى 100 ألف متابع',
+  '100000': 'من 100 ألف إلى 200 ألف متابع',
+  '200000': 'من 200 ألف إلى 300 ألف متابع',
+  '300000': 'من 300 ألف إلى 500 ألف متابع',
+  '500000': 'من 500 ألف إلى 700 ألف متابع',
+  '700000': 'من 700 ألف إلى مليون متابع',
+  '1000000': 'من مليون إلى مليونين',
+  '2000000': 'فوق 2 مليون',
+  '3000000': 'فوق 3 مليون',
+  '4000000': 'فوق 4 مليون'
+};
+const CITY_LABELS = { riyadh: 'الرياض', jeddah: 'جدة', dammam: 'الدمام', all: 'كل المناطق' };
+function publishTimingText(c) {
+  if (!c) return '-';
+  if (c.publish_timing === 'custom' && c.publish_date) {
+    try { return 'بتاريخ ' + new Date(c.publish_date).toLocaleDateString('ar-SA'); }
+    catch (e) { return c.publish_date; }
+  }
+  return PUBLISH_TIMING_LABELS[c.publish_timing] || c.publish_timing || '-';
+}
+function followerRangeText(c) {
+  if (!c || !c.follower_range) return '';
+  return String(c.follower_range).split(',').map(s => s.trim()).filter(Boolean)
+    .map(v => FOLLOWER_RANGE_LABELS[v] || v).join('، ');
+}
+
+// ====== تعهّد الدفع: نطاق المدة بالأرقام العربية (هذه الصفحة ما فيها toArabic، فنحوّل محليًا) ======
+const __arDigits = ['٠','١','٢','٣','٤','٥','٦','٧','٨','٩'];
+function toArabicNum(n) {
+  return String(n);
+}
+// يرجّع نص المدّة مثل «7–30 يوم» أو «30 يوم»، أو '' لو ما فيه قيم (حملات قديمة)
+function paymentRangeText(c) {
+  if (!c) return '';
+  const mn = parseInt(c.payment_min_days, 10);
+  const mx = parseInt(c.payment_max_days, 10);
+  const hasMn = !isNaN(mn) && mn > 0;
+  const hasMx = !isNaN(mx) && mx > 0;
+  if (!hasMn && !hasMx) return '';
+  if (hasMn && hasMx && mn !== mx) return `${toArabicNum(mn)}–${toArabicNum(mx)} يوم`;
+  const d = hasMx ? mx : mn;
+  return `${toArabicNum(d)} يوم`;
+}
+
+async function init() {
+  currentUser = getCurrentUser();
+  if (!currentUser) {
+    window.location.href = '/login.html';
+    return;
+  }
+
+  const params = new URLSearchParams(window.location.search);
+  const applicationId = params.get('app');
+
+  if (!applicationId) {
+    document.getElementById('content').innerHTML = '<div class="loading">رابط غير صحيح. <a href="/" style="color:var(--accent-ink)">العودة للرئيسية</a></div>';
+    return;
+  }
+
+  try {
+    const { data: appData, error: appErr } = await supabaseClient
+      .from('applications')
+      .select('*, users!applications_creator_id_fkey(name, platform, handle, followers, category), campaigns(*, users!campaigns_brand_id_fkey(company_name, name))')
+      .eq('id', applicationId)
+      .single();
+
+    if (appErr || !appData) {
+      document.getElementById('content').innerHTML = '<div class="loading">لم يتم العثور على الحملة</div>';
+      return;
+    }
+
+    application = {
+      ...appData,
+      creator_name: appData.users?.name,
+      platform: appData.users?.platform,
+      handle: appData.users?.handle,
+      followers: appData.users?.followers,
+      category: appData.users?.category
+    };
+
+    campaign = {
+      ...appData.campaigns,
+      brand_name: appData.campaigns?.users?.company_name
+    };
+
+    const isOwner = (currentUser.role === 'brand' && currentUser.id === campaign.brand_id) ||
+                    (currentUser.role === 'creator' && currentUser.id === application.creator_id);
+    if (!isOwner) {
+      document.getElementById('content').innerHTML = '<div class="loading">ليس لديك صلاحية لمشاهدة هذه الصفحة</div>';
+      return;
+    }
+
+    dealClosed = application.status === 'closed';
+    approvedClose = application.brand_approved === true;
+    dealDetails = application.deal_details;
+
+    await loadMessagesFromDB();
+    render();
+
+    // لو ما فيه رسائل بعد، شغّل أول رسالة من الوكيل (العرض المبدئي)
+    if (messages.length === 0 && !dealClosed) {
+      await startNegotiation();
+    }
+
+    // واصل التحديث إذا لم تكتمل الصفقة (status أو الاعتماد)
+    if (!dealClosed || !approvedClose) {
+      pollInterval = setInterval(checkNewMessages, 5000);
+    }
+  } catch (err) {
+    console.error(err);
+    document.getElementById('content').innerHTML = '<div class="loading">حصل خطأ. حدث الصفحة.</div>';
+  }
+}
+
+async function loadMessagesFromDB() {
+  try {
+    const { data, error } = await supabaseClient
+      .from('negotiations')
+      .select('*')
+      .eq('application_id', application.id)
+      .order('created_at', { ascending: true });
+
+    if (error) throw error;
+
+    messages = (data || []).map(n => ({
+      from: n.from_role,
+      text: n.message,
+      time: n.created_at
+    }));
+  } catch (err) {
+    console.error('Failed to load messages:', err);
+    messages = [];
+  }
+}
+
+async function checkNewMessages() {
+  const previousCount = messages.length;
+  const wasDealClosed = dealClosed;
+  const wasApproved = approvedClose;
+  await loadMessagesFromDB();
+
+  try {
+    const { data } = await supabaseClient
+      .from('applications')
+      .select('status, deal_details, final_price, brand_approved')
+      .eq('id', application.id)
+      .single();
+    if (data) {
+      if (data.status === 'closed' && !dealClosed) {
+        dealClosed = true;
+        dealDetails = data.deal_details;
+        application.final_price = data.final_price;
+      }
+      if (data.brand_approved === true && !approvedClose) {
+        approvedClose = true;
+        application.brand_approved = true;
+      }
+      // أوقف التحديث لما يتم الإقفال والاعتماد معًا
+      if (dealClosed && approvedClose && pollInterval) {
+        clearInterval(pollInterval);
+        pollInterval = null;
+      }
+    }
+  } catch (err) {}
+
+  if (messages.length > previousCount || dealClosed !== wasDealClosed || approvedClose !== wasApproved) {
+    render();
+  }
+}
+
+function render() {
+  const isCreator = currentUser.role === 'creator';
+  const isBrand = currentUser.role === 'brand';
+  const isAwaiting = dealClosed && !approvedClose;
+  const isFullyClosed = dealClosed && approvedClose;
+
+  // بانر تعهّد الدفع (يظهر للطرفين طول ما الصفقة ما اكتملت تسليمها)
+  const pledgeRange = paymentRangeText(campaign);
+  const pledgeBanner = pledgeRange
+    ? `<div class="pay-pledge-banner"><span class="ppb-ic">💸</span><span><strong>الشركة متعهّدة بالدفع</strong> خلال ${pledgeRange} بعد إكمال الحملة.</span></div>`
+    : '';
+
+  let footer;
+  if (isFullyClosed) {
+    footer = `<div class="chat-foot done">✓ تم إقفال الاتفاق${dealDetails ? ' — ' + escapeHtml(dealDetails) : ''}
+      <a class="foot-link" href="/${isBrand ? 'brand' : 'creator'}.html">بدء التسليم ←</a></div>`;
+  } else if (isAwaiting) {
+    if (isBrand) {
+      footer = `<div class="approve-wrap">
+        <div class="approve-info">الوكيل توصّل لاتفاق${application.final_price ? ' عند <strong>' + application.final_price.toLocaleString('en-US') + ' ر.س</strong>' : ''}. اعتمد المعلن لبدء التنفيذ.</div>
+        <button class="ag-btn approve" onclick="event.stopPropagation(); approveDeal()">✓ اعتماد المعلن</button>
+      </div>`;
+    } else {
+      footer = `<div class="chat-foot awaiting">⏳ تم الاتفاق${application.final_price ? ' عند ' + application.final_price.toLocaleString('en-US') + ' ر.س' : ''} · بانتظار تعميد الشركة</div>`;
+    }
+  } else if (!isCreator) {
+    footer = `<div class="chat-foot">أنت تشاهد المفاوضة كمراقب.</div>`;
+  } else {
+    footer = `<div class="chat-input">
+      <textarea id="creator-input" placeholder="اكتب رسالتك..." rows="1"
+                onkeydown="if(event.key==='Enter' && !event.shiftKey){event.preventDefault();sendCreatorMessage();}"></textarea>
+      <button onclick="sendCreatorMessage()" id="send-btn" aria-label="إرسال">↑</button>
+    </div>`;
+  }
+
+  document.getElementById('content').innerHTML = `
+    <div class="chat-wrap">
+      ${pledgeBanner}
+      <div class="messages" id="messages">${renderMessages()}</div>
+      ${footer}
+    </div>
+  `;
+
+  scrollToBottom();
+}
+
+function renderMessages() {
+  let html = messages.length
+    ? '<div class="chat-start">بدأ التفاوض مع وكيل مشروعنا الثاني</div>'
+    : '';
+  html += messages.map(m => {
+    if (m.from === 'agent') {
+      return `
+        <div class="cmsg agent">
+          <div class="cmsg-label">وكيل مشروعنا الثاني</div>
+          <div class="cmsg-text">${escapeHtml(m.text)}</div>
+        </div>`;
+    }
+    return `
+      <div class="cmsg user">
+        <div class="cmsg-bubble">${escapeHtml(m.text)}</div>
+      </div>`;
+  }).join('');
+
+  if (isAgentThinking) {
+    html += `
+      <div class="cmsg agent">
+        <div class="cmsg-label">وكيل مشروعنا الثاني</div>
+        <div class="typing"><span></span><span></span><span></span></div>
+      </div>
+    `;
+  }
+
+  return html;
+}
+
+function escapeHtml(text) {
+  const div = document.createElement('div');
+  div.textContent = text || '';
+  return div.innerHTML;
+}
+
+function formatTime(iso) {
+  const d = new Date(iso);
+  return d.toLocaleTimeString('ar-SA', { hour: '2-digit', minute: '2-digit' });
+}
+
+function scrollToBottom() {
+  requestAnimationFrame(() => {
+    window.scrollTo(0, document.body.scrollHeight);
+  });
+}
+
+async function startNegotiation() {
+  isAgentThinking = true;
+  render();
+
+  try {
+    const res = await fetch('/api/negotiate', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ campaign, application, history: [] })
+    });
+
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || 'Failed');
+
+    isAgentThinking = false;
+    await loadMessagesFromDB();
+
+    if (data.dealClosed) {
+      dealClosed = true;
+      dealDetails = data.dealDetails;
+      // approvedClose يظل false، الشركة لازم تعتمد
+    }
+
+    render();
+  } catch (err) {
+    console.error(err);
+    isAgentThinking = false;
+    render();
+    alert('حصل خطأ في الاتصال بالوكيل. حدث الصفحة وحاول من جديد.');
+  }
+}
+
+async function sendCreatorMessage() {
+  const input = document.getElementById('creator-input');
+  const text = input.value.trim();
+  if (!text || isAgentThinking || dealClosed) return;
+
+  input.value = '';
+  isAgentThinking = true;
+  render();
+
+  messages.push({ from: 'creator', text, time: new Date().toISOString() });
+  render();
+
+  try {
+    const historyBeforeNew = messages.slice(0, -1);
+    const res = await fetch('/api/negotiate', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        campaign,
+        application,
+        history: historyBeforeNew,
+        creatorMessage: text
+      })
+    });
+
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || 'Failed');
+
+    isAgentThinking = false;
+    await loadMessagesFromDB();
+
+    if (data.dealClosed) {
+      dealClosed = true;
+      dealDetails = data.dealDetails;
+    }
+
+    render();
+  } catch (err) {
+    console.error(err);
+    isAgentThinking = false;
+    render();
+    alert('حصل خطأ. حاول مرة أخرى.');
+  }
+}
+
+async function approveDeal() {
+  try {
+    // حملة الزيارة تبدأ من مرحلة 5 (بانتظار تصوير المعلن)؛ المنزلية تبدأ من 1 (الافتراضي)
+    const isVisit = campaign && campaign.campaign_type === 'visit';
+    const patch = isVisit ? { brand_approved: true, stage: 5 } : { brand_approved: true };
+    const { data, error } = await supabaseClient
+      .from('applications')
+      .update(patch)
+      .eq('id', application.id)
+      .select();
+    if (error) throw error;
+    if (!data || data.length === 0) {
+      throw new Error('لم يتم التحديث. تحقق من سياسات الحماية.');
+    }
+
+    approvedClose = true;
+    application.brand_approved = true;
+    if (isVisit) application.stage = 5;
+    if (pollInterval) { clearInterval(pollInterval); pollInterval = null; }
+
+    // إشعار المعلن
+    if (application.creator_id) {
+      const title = '🎉 تم اعتماد الصفقة';
+      const body = `${campaign.title || 'صفقة'}: الشركة اعتمدت الاتفاق! نبدأ التنفيذ.`;
+      try {
+        await createNotification(application.creator_id, 'deal_approved', title, body, '/creator.html');
+      } catch (e) { console.error(e); }
+      fetch('https://chpzecgpylxqsutjydkb.supabase.co/functions/v1/send-push', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + supabaseClient.supabaseKey },
+        body: JSON.stringify({ title, body, url: '/creator.html', target_users: [application.creator_id] })
+      }).catch(console.error);
+    }
+
+    render();
+  } catch (err) {
+    console.error('Approve error:', err);
+    alert('حصل خطأ في الاعتماد: ' + (err.message || 'حاول مرة أخرى'));
+    // أعد رسم السحب للحالة الأصلية
+    render();
+  }
+}
+
+window.addEventListener('beforeunload', () => {
+  if (pollInterval) clearInterval(pollInterval);
+});
+
+init();
+</script>
+
+</body>
+</html>

@@ -1,0 +1,561 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl" data-i18n-title="top_title">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>أفضل المعلنين - مشروعنا الثاني</title>
+<link rel="manifest" href="/manifest.json">
+<meta name="theme-color" content="#ffffff">
+<link rel="apple-touch-icon" href="/icon-192.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="/translations.js?v=3"></script>
+<script src="/i18n.js?v=3"></script>
+<style>
+:root{--cream:#ffffff;--cream-darker:#f5f5f4;--ink:#0a0a0a;--ink-soft:#3a3a3a;--ink-muted:#6b6b6b;--ink-faint:#a0a0a0;--accent:#13B9B2;--accent-ink:#0c4f4b;--gold:#E8B84B;--line:rgba(10,10,10,0.08);--line-strong:rgba(10,10,10,0.16);--font-display:'IBM Plex Sans Arabic','Segoe UI',Tahoma,sans-serif;--font-body:'IBM Plex Sans Arabic','Segoe UI',Tahoma,sans-serif;}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:var(--cream);color:var(--ink);font-family:var(--font-body);font-size:16px;line-height:1.7;min-height:100vh;}
+.container{max-width:900px;margin:0 auto;padding:0 20px;}
+
+.nav{background:var(--cream);padding:16px 0;border-bottom:1px solid var(--line);position:sticky;top:0;z-index:50;}
+.nav-inner{display:flex;justify-content:space-between;align-items:center;max-width:900px;margin:0 auto;padding:0 20px;}
+.logo{display:flex;flex-direction:column;align-items:center;gap:2px;text-decoration:none;color:var(--ink);}
+.logo-eye{width:40px;height:40px;display:block;}
+.logo-mark{font-family:var(--font-display);font-size:16px;font-weight:500;position:relative;padding-left:10px;line-height:1;}
+.logo-mark::after{content:'';position:absolute;bottom:0;left:0;width:4px;height:4px;background:var(--accent);border-radius:50%;}
+.nav-right{display:flex;align-items:center;gap:10px;}
+.btn-back{background:#fff;color:var(--ink);border:1px solid var(--line-strong);padding:8px 16px;border-radius:100px;font-family:inherit;font-size:13px;font-weight:500;cursor:pointer;text-decoration:none;}
+.btn-back:hover{border-color:var(--ink-soft);}
+
+.hero{padding:36px 20px 12px;text-align:center;}
+.hero-title{font-family:var(--font-display);font-size:30px;font-weight:600;margin:0 0 8px;letter-spacing:-0.3px;}
+.hero-sub{font-size:14.5px;color:var(--ink-soft);max-width:560px;margin:0 auto 16px;}
+.count-pill{display:inline-flex;align-items:center;gap:8px;padding:7px 16px;border-radius:100px;border:1px solid rgba(19,185,178,0.30);color:var(--accent-ink);background:#fff;font-size:13px;font-weight:600;}
+.count-dot{width:8px;height:8px;border-radius:50%;background:var(--accent);animation:cd 1.6s ease-in-out infinite;}
+@keyframes cd{0%,100%{transform:scale(1);opacity:1;}50%{transform:scale(1.6);opacity:.4;}}
+
+.tools{display:flex;flex-direction:column;gap:12px;margin:18px 0 8px;}
+.scope-tabs{display:inline-flex;background:var(--cream-darker);border-radius:100px;padding:4px;margin:16px auto 0;gap:4px;}
+.scope-tab{border:0;background:transparent;color:var(--ink-muted);font-family:inherit;font-size:13.5px;font-weight:600;padding:8px 20px;border-radius:100px;cursor:pointer;transition:all .15s;white-space:nowrap;}
+.scope-tab.active{background:var(--accent);color:#fff;box-shadow:0 4px 12px -4px rgba(19,185,178,0.6);}
+.rank-mena{width:auto!important;min-width:52px;padding:0 12px;border-radius:100px;font-size:13px;background:var(--cream-darker);color:var(--accent-ink);}
+.search-input{width:100%;padding:12px 18px;border:1px solid var(--line-strong);border-radius:100px;font-family:inherit;font-size:15px;background:#fff;color:var(--ink);text-align:center;}
+.search-input:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px rgba(19,185,178,0.14);}
+.chips{display:flex;flex-wrap:wrap;gap:7px;justify-content:center;}
+.chip{background:#fff;border:1px solid var(--line);color:var(--ink-muted);padding:7px 14px;border-radius:100px;font-family:inherit;font-size:12.5px;font-weight:500;cursor:pointer;transition:all .15s;white-space:nowrap;}
+.chip:hover{border-color:var(--ink-soft);color:var(--ink);}
+.chip.active{background:var(--ink);color:#fff;border-color:var(--ink);}
+
+.tools-row{display:flex;gap:10px;align-items:stretch;}
+.tools-row .search-input{flex:1;text-align:right;}
+.filter-btn{display:inline-flex;align-items:center;gap:7px;background:#fff;border:1px solid var(--line-strong);border-radius:100px;padding:0 18px;font-family:inherit;font-size:14px;font-weight:600;color:var(--ink);cursor:pointer;white-space:nowrap;transition:border-color .15s,color .15s;}
+.filter-btn:hover{border-color:var(--ink-soft);}
+.filter-btn.active{border-color:var(--accent);color:var(--accent-ink);}
+.filter-count{background:var(--accent);color:#fff;font-size:11px;font-weight:700;min-width:18px;height:18px;border-radius:100px;display:none;align-items:center;justify-content:center;padding:0 5px;}
+.filter-btn.active .filter-count{display:inline-flex;}
+
+.sheet-overlay{position:fixed;inset:0;background:rgba(10,10,10,0.42);z-index:200;display:none;align-items:flex-end;justify-content:center;}
+.sheet-overlay.open{display:flex;}
+.sheet{background:#fff;width:100%;max-width:560px;border-radius:22px 22px 0 0;padding:10px 22px 26px;max-height:82vh;overflow-y:auto;animation:sheetUp .25s ease;}
+@keyframes sheetUp{from{transform:translateY(40px);opacity:.5;}to{transform:translateY(0);opacity:1;}}
+.sheet-handle{width:42px;height:4px;background:var(--line-strong);border-radius:100px;margin:6px auto 16px;}
+.sheet-head{display:flex;align-items:center;gap:9px;font-family:var(--font-display);font-size:18px;font-weight:700;color:var(--ink);margin-bottom:18px;}
+.sheet-section{margin-bottom:22px;}
+.sheet-label{font-size:13px;font-weight:600;color:var(--ink-muted);margin-bottom:11px;}
+.sheet .chips{justify-content:flex-start;}
+.sheet-actions{display:flex;gap:10px;margin-top:4px;}
+.sheet-actions button{flex:1;padding:13px;border-radius:100px;font-family:inherit;font-size:14px;font-weight:700;cursor:pointer;border:0;}
+.btn-clear{background:#fff;border:1px solid var(--line-strong)!important;color:var(--ink);}
+.btn-apply{background:var(--accent);color:#fff;}
+.btn-apply:hover{background:var(--accent-ink);}
+
+.list{display:flex;flex-direction:column;gap:10px;padding:14px 0 60px;}
+.titem{}
+.trow{display:grid;grid-template-columns:auto auto 1fr auto;gap:13px;align-items:center;background:#fff;border:1px solid var(--line);border-radius:16px;padding:13px 15px;cursor:pointer;transition:transform .15s,border-color .15s,box-shadow .25s;}
+.trow:hover{transform:translateY(-2px);border-color:rgba(19,185,178,0.4);box-shadow:0 8px 24px -14px rgba(10,10,10,0.2);}
+.titem.open .trow{transform:none;border-bottom-color:transparent;border-bottom-left-radius:0;border-bottom-right-radius:0;box-shadow:none;}
+.tdetail{display:none;background:#fff;border:1px solid var(--line);border-top:0;border-radius:0 0 16px 16px;margin-top:-1px;padding:6px 16px 14px;}
+.titem.open .tdetail{display:block;}
+.tdetail-note{font-size:12px;color:var(--ink-faint);padding:8px 0;text-align:center;}
+.tchev{font-size:10px;color:var(--ink-faint);margin-top:3px;cursor:pointer;}
+.tchev:hover{color:var(--accent-ink);}
+.cbar-row{display:flex;align-items:center;gap:10px;margin:9px 0;}
+.cbar-label{font-size:12px;color:var(--ink-soft);min-width:128px;}
+.cbar-track{flex:1;height:7px;background:var(--cream-darker);border-radius:100px;overflow:hidden;}
+.cbar-fill{height:100%;background:var(--accent);border-radius:100px;transition:width .3s;}
+.cbar-val{font-size:12px;font-weight:700;color:var(--accent-ink);min-width:26px;text-align:left;}
+
+.rank{width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:var(--font-display);font-weight:700;font-size:14px;background:var(--cream-darker);color:var(--ink-muted);flex-shrink:0;}
+.rank.r1{background:var(--gold);color:#5a4500;}
+.rank.r2{background:#cfd2d6;color:#41464d;}
+.rank.r3{background:#dfa878;color:#5a3216;}
+
+/* ===== هيبة النخبة: أول 3 (ميداليات) وأول 10 ===== */
+.medal{position:relative;width:90px;height:84px;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin:2px 0 0;}
+.medal::before{content:'';position:absolute;inset:2px;border-radius:50%;z-index:0;}
+.m1::before{background:radial-gradient(circle,rgba(232,184,75,0.40),transparent 64%);}
+.m2::before{background:radial-gradient(circle,rgba(199,204,209,0.46),transparent 64%);}
+.m3::before{background:radial-gradient(circle,rgba(205,139,92,0.40),transparent 64%);}
+.emblem{position:relative;z-index:2;width:90px;height:84px;overflow:visible;filter:drop-shadow(0 4px 6px rgba(60,40,0,0.30));}
+.crown{position:absolute;top:-15px;left:50%;transform:translateX(-50%);z-index:3;width:32px;height:22px;}
+.crown svg{width:100%;height:100%;filter:drop-shadow(0 1px 1px rgba(140,95,0,0.45));}
+
+.titem.podium .trow{padding:16px;border-width:1.5px;}
+.titem.rank1 .trow{border-color:#E8B84B;background:linear-gradient(135deg,#fffdf6,#fff7e3);box-shadow:0 14px 36px -16px rgba(232,184,75,0.75);}
+.titem.rank2 .trow{border-color:#CDD2D7;background:linear-gradient(135deg,#fdfdfe,#f2f4f6);box-shadow:0 14px 32px -18px rgba(150,160,170,0.65);}
+.titem.rank3 .trow{border-color:#DBA774;background:linear-gradient(135deg,#fffbf7,#fcefe1);box-shadow:0 14px 32px -18px rgba(205,139,92,0.6);}
+.titem.podium .trow:hover{transform:translateY(-3px);}
+.titem.podium .tscore .num{font-size:27px;}
+.titem.podium .tav{width:56px;height:56px;}
+.titem.rank1 .tav{box-shadow:0 0 0 2.5px #E8B84B;}
+.titem.rank2 .tav{box-shadow:0 0 0 2.5px #CDD2D7;}
+.titem.rank3 .tav{box-shadow:0 0 0 2.5px #DBA774;}
+
+.titem.elite .trow{border-color:rgba(19,185,178,0.32);background:linear-gradient(180deg,#fff,#f8fdfd);}
+.titem.elite .rank{background:rgba(19,185,178,0.13);color:var(--accent-ink);box-shadow:0 0 0 1.5px rgba(19,185,178,0.28);}
+
+.tav{width:48px;height:48px;border-radius:50%;overflow:hidden;flex-shrink:0;}
+.tmain{min-width:0;}
+.tname{font-family:var(--font-display);font-weight:600;font-size:15px;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:flex;align-items:center;gap:7px;}
+.cflag{width:19px;height:13px;border-radius:2px;overflow:hidden;object-fit:cover;display:inline-block;vertical-align:middle;flex-shrink:0;box-shadow:0 0 0 1px rgba(10,10,10,0.10);}
+.thandle{font-size:12px;color:var(--ink-muted);direction:ltr;text-align:right;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.tmeta{display:flex;gap:6px;flex-wrap:wrap;margin-top:5px;}
+.ttag{font-size:10.5px;padding:3px 9px;background:var(--cream-darker);border-radius:100px;color:var(--accent-ink);font-weight:500;white-space:nowrap;}
+.ttag.foll{background:rgba(19,185,178,0.10);}
+.ttag.done{background:rgba(19,185,178,0.16);color:var(--accent-ink);font-weight:700;}
+.ttag.fast{background:rgba(232,184,75,0.18);color:#8a6500;font-weight:700;}
+.ttag.active{background:rgba(19,185,178,0.08);color:var(--accent-ink);}
+
+.vbadge{font-size:10px;font-weight:700;padding:3px 9px;border-radius:100px;white-space:nowrap;}
+.vbadge.verified{background:rgba(19,185,178,0.14);color:var(--accent-ink);}
+.vbadge.promising{background:rgba(232,184,75,0.16);color:#8a6500;}
+
+.tside{display:flex;flex-direction:column;align-items:center;gap:5px;flex-shrink:0;min-width:62px;}
+.tscore{display:flex;flex-direction:column;align-items:center;line-height:1;}
+.tscore .num{font-family:var(--font-display);font-weight:700;font-size:22px;color:var(--accent-ink);}
+.tscore .lbl{font-size:9.5px;color:var(--ink-faint);margin-top:2px;}
+.row-stars{display:flex;align-items:center;gap:1px;direction:ltr;}
+.row-stars .ts{font-size:12px;color:var(--line-strong);}
+.row-stars .ts.on{color:var(--gold);}
+.row-ravg{font-size:11px;font-weight:700;color:var(--ink-soft);margin-inline-start:3px;}
+.row-rcount{font-size:10px;color:var(--ink-faint);}
+.row-rcount.seed{color:#8a6500;background:rgba(232,184,75,0.12);padding:1px 6px;border-radius:100px;font-weight:600;}
+.row-new{font-size:10.5px;color:#8a6500;font-weight:600;background:rgba(232,184,75,0.12);padding:3px 8px;border-radius:100px;}
+
+.empty{text-align:center;padding:70px 24px;color:var(--ink-muted);}
+.empty .ic{font-size:42px;opacity:.5;margin-bottom:12px;}
+.empty h3{font-family:var(--font-display);font-size:19px;color:var(--ink);margin-bottom:6px;}
+.loading{display:flex;justify-content:center;padding:60px 20px;}
+.lpill{display:inline-flex;align-items:center;gap:10px;background:#fff;border:1px solid rgba(19,185,178,0.2);border-radius:100px;padding:10px 22px;font-family:var(--font-display);font-size:13px;font-weight:500;color:var(--accent-ink);box-shadow:0 0 30px 6px rgba(19,185,178,0.13);}
+.lpill .d{width:8px;height:8px;border-radius:50%;background:var(--accent);animation:cd 1s ease-in-out infinite;}
+
+.note{max-width:620px;margin:6px auto 0;font-size:12px;color:var(--ink-faint);text-align:center;line-height:1.6;}
+
+@media (max-width:560px){
+  .hero-title{font-size:24px;}
+  .trow{grid-template-columns:auto auto 1fr auto;gap:10px;padding:11px 12px;}
+  .tav{width:42px;height:42px;}
+  .rank{width:28px;height:28px;font-size:12px;}
+  .medal,.emblem{width:74px;height:70px;}
+  .titem.podium .tav{width:50px;height:50px;}
+  .tscore .num{font-size:19px;}
+  .tside{min-width:54px;}
+}
+</style>
+</head>
+<body>
+
+<div class="toast-wrap" id="toast-wrap" style="position:fixed;top:20px;left:50%;transform:translateX(-50%);z-index:2000;"></div>
+
+<nav class="nav">
+  <div class="nav-inner">
+    <a href="/" class="logo">
+      <svg class="logo-eye" viewBox="0 0 200 200" aria-hidden="true">
+        <g fill="none" stroke-linejoin="miter" stroke-miterlimit="6" stroke-linecap="round">
+          <path d="M30 100 C61.5 78 138.5 78 170 100 C138.5 122 61.5 122 30 100 Z" stroke="#0a0a0a" stroke-width="10" transform="rotate(25 100 100)"/>
+          <path d="M30 100 C61.5 78 138.5 78 170 100 C138.5 122 61.5 122 30 100 Z" stroke="#0a0a0a" stroke-width="10" transform="rotate(-25 100 100)"/>
+          <path d="M76 100 Q100 88 124 100 Q100 112 76 100 Z" fill="#ffffff" stroke="#13B9B2" stroke-width="7"/>
+          <circle cx="100" cy="100" r="8" fill="#0a0a0a"/>
+        </g>
+      </svg>
+      <span class="logo-mark">مشروعنا الثاني</span>
+    </a>
+    <div class="nav-right">
+      <a href="/creators.html" class="btn-back">تصفّح الكل</a>
+      <a href="/" class="btn-back">→ الرئيسية</a>
+    </div>
+  </div>
+</nav>
+
+<main class="container">
+  <section class="hero">
+    <h1 class="hero-title">أفضل 500 مؤثر هذا الأسبوع</h1>
+    <p class="hero-sub">مرتّبون بأداء الصفقات الحقيقي: سرعة الإنجاز، عدد الحملات المكتملة، والاستمرارية.</p>
+    <div class="count-pill"><span class="count-dot"></span><span id="count-text">جاري التحميل...</span></div>
+
+    <div class="scope-tabs">
+      <button class="scope-tab active" data-scope="sa" onclick="setScope('sa')">الترتيب المحلي</button>
+      <button class="scope-tab" data-scope="mena" onclick="setScope('mena')">الشرق الأوسط</button>
+    </div>
+
+    <div class="tools">
+      <div class="tools-row">
+        <input type="text" class="search-input" id="search" placeholder="ابحث باسم المؤثر أو معرّفه..." oninput="applyFilters()">
+        <button class="filter-btn" id="filter-btn" onclick="openFilters()">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="7" x2="20" y2="7"/><line x1="4" y1="17" x2="20" y2="17"/><circle cx="9" cy="7" r="2.4" fill="#fff"/><circle cx="15" cy="17" r="2.4" fill="#fff"/></svg>
+          <span>فلتر</span><span class="filter-count" id="filter-count"></span>
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- لوحة الفلتر المنبثقة (مثل تيك توك) -->
+  <div class="sheet-overlay" id="filter-sheet" onclick="if(event.target===this) closeFilters()">
+    <div class="sheet">
+      <div class="sheet-handle"></div>
+      <div class="sheet-head">
+        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="7" x2="20" y2="7"/><line x1="4" y1="17" x2="20" y2="17"/><circle cx="9" cy="7" r="2.4" fill="#fff"/><circle cx="15" cy="17" r="2.4" fill="#fff"/></svg>
+        <span>الفلاتر</span>
+      </div>
+      <div class="sheet-section">
+        <div class="sheet-label">المنصة</div>
+        <div class="chips" id="plat-chips"></div>
+      </div>
+      <div class="sheet-section">
+        <div class="sheet-label">التصنيف</div>
+        <div class="chips" id="cat-chips"></div>
+      </div>
+      <div class="sheet-actions">
+        <button class="btn-clear" onclick="clearFilters()">مسح الكل</button>
+        <button class="btn-apply" onclick="closeFilters()">عرض النتائج</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="list" id="list">
+    <div class="loading"><div class="lpill"><span class="d"></span>جاري بناء القائمة...</div></div>
+  </div>
+
+  <p class="note">الترتيب يتحدّث تلقائيًا مع كل صفقة — الأسرع إنجازًا والأكثر إكمالًا يتصدّر.</p>
+</main>
+
+<script>document.write('<script src="supabase-config.js?v=' + Date.now() + '"><\/script>');</script>
+<script>document.write('<script src="notifications.js?v=' + Date.now() + '"><\/script>');</script>
+<script>
+let RANKED = [];   // أفضل 500 بعد الترتيب (مع رقم الترتيب)
+let filters = { plat:'all', cat:'all' };
+let scope = 'sa';
+let MAX_ACHIEVEMENT = 0;   // أعلى درجة إنجاز (لتطبيع درجات المكمّلين)
+
+const arabicDigits=['٠','١','٢','٣','٤','٥','٦','٧','٨','٩'];
+function toArabic(n){ return String(n); }
+const CAT = { general:'عام', lifestyle:'لايف ستايل', beauty:'جمال وعناية', fashion:'موضة', food:'طعام', travel:'سفر', fitness:'رياضة', tech:'تقنية', parenting:'أمومة وأطفال' };
+const PLAT = { tiktok:'تيك توك', snapchat:'سناب شات', instagram:'انستقرام', x:'إكس', youtube:'يوتيوب' };
+const FLAG_SVGS = {
+  SA:'<rect width="24" height="16" fill="#0c7c3e"/><path d="M5 6 q3 -1.6 6 0 q3 1.6 6 0" stroke="#fff" stroke-width="1.1" fill="none" stroke-linecap="round"/><rect x="5" y="9.3" width="12.5" height="1.1" rx="0.5" fill="#fff"/><path d="M17 10 l2.2 -0.8 -0.6 1.6 z" fill="#fff"/>',
+  AE:'<rect width="24" height="16" fill="#fff"/><rect width="24" height="5.34" fill="#00843d"/><rect y="10.66" width="24" height="5.34" fill="#000"/><rect width="6" height="16" fill="#ce1126"/>',
+  KW:'<rect width="24" height="16" fill="#fff"/><rect width="24" height="5.34" fill="#007a3d"/><rect y="10.66" width="24" height="5.34" fill="#ce1126"/><path d="M0 0 L6 5.34 L6 10.66 L0 16 Z" fill="#000"/>',
+  QA:'<rect width="24" height="16" fill="#8d1b3d"/><rect width="8" height="16" fill="#fff"/>',
+  BH:'<rect width="24" height="16" fill="#ce1126"/><rect width="8" height="16" fill="#fff"/>',
+  OM:'<rect width="24" height="16" fill="#db161b"/><rect x="6" width="18" height="5.34" fill="#fff"/><rect x="6" y="10.66" width="18" height="5.34" fill="#16753a"/><rect width="6" height="16" fill="#db161b"/>',
+  YE:'<rect width="24" height="16" fill="#fff"/><rect width="24" height="5.34" fill="#ce1126"/><rect y="10.66" width="24" height="5.34" fill="#000"/>',
+  EG:'<rect width="24" height="16" fill="#fff"/><rect width="24" height="5.34" fill="#ce1126"/><rect y="10.66" width="24" height="5.34" fill="#000"/><circle cx="12" cy="8" r="1.3" fill="#c09a2b"/>',
+  JO:'<rect width="24" height="16" fill="#fff"/><rect width="24" height="5.34" fill="#000"/><rect y="10.66" width="24" height="5.34" fill="#007a3d"/><path d="M0 0 L9 8 L0 16 Z" fill="#ce1126"/>',
+  LB:'<rect width="24" height="16" fill="#fff"/><rect width="24" height="4" fill="#ce1126"/><rect y="12" width="24" height="4" fill="#ce1126"/><path d="M12 5.5 l1.4 3.5 -3.6 -2.1 h4.4 l-3.6 2.1 z" fill="#16753a"/>',
+  SY:'<rect width="24" height="16" fill="#fff"/><rect width="24" height="5.34" fill="#ce1126"/><rect y="10.66" width="24" height="5.34" fill="#000"/><circle cx="10" cy="8" r="1" fill="#16753a"/><circle cx="14" cy="8" r="1" fill="#16753a"/>',
+  IQ:'<rect width="24" height="16" fill="#fff"/><rect width="24" height="5.34" fill="#ce1126"/><rect y="10.66" width="24" height="5.34" fill="#000"/><rect x="9" y="7" width="6" height="2" rx="0.5" fill="#16753a"/>',
+  PS:'<rect width="24" height="16" fill="#fff"/><rect width="24" height="5.34" fill="#000"/><rect y="10.66" width="24" height="5.34" fill="#007a3d"/><path d="M0 0 L9 8 L0 16 Z" fill="#ce1126"/>',
+  SD:'<rect width="24" height="16" fill="#fff"/><rect width="24" height="5.34" fill="#ce1126"/><rect y="10.66" width="24" height="5.34" fill="#000"/><path d="M0 0 L9 8 L0 16 Z" fill="#007a3d"/>',
+  LY:'<rect width="24" height="16" fill="#000"/><rect width="24" height="5.34" fill="#e70013"/><rect y="10.66" width="24" height="5.34" fill="#239e46"/><circle cx="12" cy="8" r="1.7" fill="#fff"/><circle cx="12.7" cy="8" r="1.4" fill="#000"/>',
+  TN:'<rect width="24" height="16" fill="#e70013"/><circle cx="12" cy="8" r="4.3" fill="#fff"/><circle cx="12.8" cy="8" r="3.2" fill="#e70013"/><circle cx="13.9" cy="8" r="2.3" fill="#fff"/>',
+  DZ:'<rect width="24" height="16" fill="#fff"/><rect width="12" height="16" fill="#006233"/><circle cx="12" cy="8" r="3.3" fill="#d21034"/><circle cx="12.8" cy="8" r="2.5" fill="#fff"/>',
+  MA:'<rect width="24" height="16" fill="#c1272d"/><path d="M12 5 l1.4 4.3 -3.6 -2.6 h4.4 l-3.6 2.6 z" fill="#006233"/>'
+};
+const SA_FLAG = 'data:image/png;base64,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';
+function flagOf(code){ if(code==='SA' || !FLAG_SVGS[code]) return '<img class="cflag" src="'+SA_FLAG+'" alt="">'; return '<svg class="cflag" viewBox="0 0 24 16" preserveAspectRatio="none">'+FLAG_SVGS[code]+'</svg>'; }
+
+function escHtml(s){ return String(s||'').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+function fmtFollowers(n){ n=parseInt(n)||0; if(n>=1000000) return (n%1000000===0?n/1000000:(n/1000000).toFixed(1))+'M'; if(n>=1000) return Math.round(n/1000)+'K'; return String(n); }
+function avatarInner(c, size, fs){
+  if (c.avatar_url) return '<img src="'+escHtml(c.avatar_url)+'" alt="" style="width:'+size+'px;height:'+size+'px;border-radius:50%;object-fit:cover;">';
+  var initial = ((c.name||'؟').trim().charAt(0))||'؟';
+  return '<div style="width:'+size+'px;height:'+size+'px;border-radius:50%;background:rgba(19,185,178,0.14);color:#0c4f4b;display:flex;align-items:center;justify-content:center;font-weight:600;font-size:'+fs+'px;">'+escHtml(initial)+'</div>';
+}
+
+/* ===================== الأداء الحقيقي ونظام الترتيب ===================== */
+/*
+  الترتيب النهائي يعتمد على الأداء الفعلي من جدول الصفقات (view: simbl_creator_performance):
+   - الطبقة 2 (مكمّلون): أنجزوا حملة أو أكثر — يتصدّرون، مرتّبين بدرجة الإنجاز (سرعة × عدد).
+   - الطبقة 1 (مشاركون): دخلوا حملات لكن لسا ما أكملوا — فوق غير المشاركين.
+   - الطبقة 0 (غير مشاركين): درجة أساس محترمة حسب المتابعين — دائمًا تحت المشاركين.
+*/
+function perfTier(c){
+  if ((Number(c.completed_deals)||0) > 0) return 2;
+  if ((Number(c.active_deals)||0) > 0) return 1;
+  return 0;
+}
+
+function hashId(id){ let h=0; const s=String(id||''); for(let i=0;i<s.length;i++){ h=(h*31+s.charCodeAt(i))>>>0; } return h; }
+function followerBonus(f){ f=parseInt(f)||0; if(f<=0) return 0; return Math.max(0, Math.min(5, Math.log10(f+1)-3)); }
+
+// تقييم الشركات المعروض (يبقى كما هو: نجوم من creator_trust) — يُستخدم كلمسة جودة ثانوية
+const PRIOR_MEAN = 4.4;
+const PRIOR_STRENGTH = 4;
+function seedRating(id){ return 4.3 + (hashId(id + 'r') % 7) / 10; }
+function displayRating(c){
+  const ratings = Number(c.ratings_count)||0;
+  const avg = Number(c.avg_rating)||0;
+  const seed = seedRating(c.id);
+  return (PRIOR_STRENGTH*seed + avg*ratings) / (PRIOR_STRENGTH + ratings);
+}
+
+// درجة الثقة النهائية (0..100) — بطبقات واضحة تعكس الأداء الحقيقي
+function trustScore(c){
+  const tier = perfTier(c);
+  if (tier === 2){
+    // مكمّلون: 72..100 حسب درجة الإنجاز نسبةً لأعلى إنجاز (منحنى يرفع الأسفل قليلًا)
+    const norm = MAX_ACHIEVEMENT > 0 ? (Number(c.achievement)||0) / MAX_ACHIEVEMENT : 0;
+    let s = 72 + 28 * Math.pow(Math.max(0, Math.min(1, norm)), 0.6);
+    // لمسة جودة من تقييم الشركات (±2) لمن عنده تقييمات فعلية
+    if ((Number(c.ratings_count)||0) > 0){ s += (displayRating(c) - PRIOR_MEAN) * 2; }
+    return Math.max(70, Math.min(100, s));
+  }
+  if (tier === 1){
+    // مشاركون جارون: 56..66 حسب عدد الحملات الجارية
+    return 56 + Math.min(Number(c.active_deals)||0, 3) * 3.3;
+  }
+  // غير مشاركين: 40..54 حسب المتابعين — تحت المشاركين دائمًا
+  return 40 + followerBonus(c.followers) * 2.8;
+}
+
+function badgeHtml(c){
+  return '';
+}
+function starsHtml(c){
+  const ratings = Number(c.ratings_count)||0;
+  const dr = displayRating(c);
+  const full = Math.round(dr);
+  let s=''; for(let i=1;i<=5;i++) s += '<span class="ts'+(i<=full?' on':'')+'">★</span>';
+  const tail = ratings > 0
+    ? '<span class="row-rcount">('+toArabic(ratings)+' تقييم)</span>'
+    : '';
+  return '<div class="row-stars">'+s+'<span class="row-ravg">'+dr.toFixed(1)+'</span>'+tail+'</div>';
+}
+
+// وسم الأداء الظاهر في الصف (حملات مكتملة + سرعة)
+function perfTags(c){
+  const completed = Number(c.completed_deals)||0;
+  const active = Number(c.active_deals)||0;
+  const speed = Number(c.speed_points)||0;
+  let out = '';
+  if (completed > 0){
+    out += '<span class="ttag done">✓ '+toArabic(completed)+' حملة مكتملة</span>';
+    if (speed >= 80) out += '<span class="ttag fast">⚡ سريع</span>';
+  }
+  if (active > 0){
+    out += '<span class="ttag active">'+toArabic(active)+' جارية</span>';
+  }
+  return out;
+}
+
+/* ===================== جلب البيانات ===================== */
+async function init(){
+  if (typeof tryRestoreSession === 'function') { try { await tryRestoreSession(); } catch(e){} }
+  const user = getCurrentUser();
+  if (typeof initNotifications === 'function') { try { initNotifications('nav-right'); } catch(e){} }
+
+  buildChips();
+
+  try{
+    const [dirRes, trustRes, perfRes] = await Promise.all([
+      supabaseClient.from('creator_directory').select('id, name, handle, platform, followers, category, bio, website, avatar_url, country'),
+      supabaseClient.from('creator_trust').select('creator_id, deals_count, ratings_count, avg_rating, avg_content, avg_punctuality, avg_communication, avg_results'),
+      supabaseClient.from('simbl_creator_performance').select('creator_id, completed_deals, active_deals, avg_hours, speed_points, achievement')
+    ]);
+    if (dirRes.error) throw dirRes.error;
+
+    const creators = dirRes.data || [];
+    const tmap = {};
+    (trustRes.data || []).forEach(t => { tmap[t.creator_id] = t; });
+    const pmap = {};
+    if (!perfRes.error) (perfRes.data || []).forEach(p => { pmap[p.creator_id] = p; });
+    else console.warn('performance view unavailable:', perfRes.error);
+
+    // دمج بيانات الثقة + الأداء
+    creators.forEach(c => {
+      const t = tmap[c.id] || {};
+      c.ratings_count = Number(t.ratings_count)||0;
+      c.avg_rating = Number(t.avg_rating)||0;
+      c.avg_content = Number(t.avg_content)||0;
+      c.avg_punctuality = Number(t.avg_punctuality)||0;
+      c.avg_communication = Number(t.avg_communication)||0;
+      c.avg_results = Number(t.avg_results)||0;
+
+      const p = pmap[c.id] || {};
+      c.completed_deals = Number(p.completed_deals)||0;
+      c.active_deals = Number(p.active_deals)||0;
+      c.avg_hours = (p.avg_hours==null) ? null : Number(p.avg_hours);
+      c.speed_points = Number(p.speed_points)||0;
+      c.achievement = Number(p.achievement)||0;
+      c.deals_count = c.completed_deals; // للتوافق مع أي استخدام قديم
+    });
+
+    // أعلى درجة إنجاز (لتطبيع درجات المكمّلين)
+    MAX_ACHIEVEMENT = creators.reduce((m,c)=> Math.max(m, Number(c.achievement)||0), 0);
+
+    // حساب درجة الثقة بعد معرفة MAX_ACHIEVEMENT
+    creators.forEach(c => { c.tier = perfTier(c); c.score = trustScore(c); });
+
+    // الترتيب: الطبقة أولًا، ثم درجة الإنجاز، ثم عدد المكتمل، ثم الأسرع، ثم الجارية، ثم المتابعون
+    creators.sort((a,b) =>
+      (b.tier - a.tier) ||
+      ((Number(b.achievement)||0) - (Number(a.achievement)||0)) ||
+      ((Number(b.completed_deals)||0) - (Number(a.completed_deals)||0)) ||
+      (((a.avg_hours==null?1e12:a.avg_hours)) - ((b.avg_hours==null?1e12:b.avg_hours))) ||
+      ((Number(b.active_deals)||0) - (Number(a.active_deals)||0)) ||
+      (b.score - a.score) ||
+      ((parseInt(b.followers)||0) - (parseInt(a.followers)||0))
+    );
+
+    // أفضل 500 + ترقيم
+    RANKED = creators.slice(0, 500).map((c, i) => { c.rank = i + 1; return c; });
+
+    applyFilters();
+  }catch(err){
+    console.error(err);
+    document.getElementById('list').innerHTML = '<div class="empty"><div class="ic">!</div><h3>تعذّر تحميل القائمة</h3><p>حدّث الصفحة وحاول مرة أخرى.</p></div>';
+  }
+}
+
+function buildChips(){
+  const platItems = [{key:'all',label:'كل المنصات'}].concat(Object.keys(PLAT).map(k=>({key:k,label:PLAT[k]})));
+  const catItems  = [{key:'all',label:'كل التصنيفات'}].concat(Object.keys(CAT).map(k=>({key:k,label:CAT[k]})));
+  const pc = document.getElementById('plat-chips');
+  const cc = document.getElementById('cat-chips');
+  pc.innerHTML = platItems.map(it=>'<button class="chip'+(it.key==='all'?' active':'')+'" data-key="'+it.key+'" onclick="pickPlat(\''+it.key+'\')">'+it.label+'</button>').join('');
+  cc.innerHTML = catItems.map(it=>'<button class="chip'+(it.key==='all'?' active':'')+'" data-key="'+it.key+'" onclick="pickCat(\''+it.key+'\')">'+it.label+'</button>').join('');
+}
+function pickPlat(k){ filters.plat=k; document.querySelectorAll('#plat-chips .chip').forEach(c=>c.classList.toggle('active',c.dataset.key===k)); applyFilters(); }
+function pickCat(k){ filters.cat=k; document.querySelectorAll('#cat-chips .chip').forEach(c=>c.classList.toggle('active',c.dataset.key===k)); applyFilters(); }
+
+function openFilters(){ const s=document.getElementById('filter-sheet'); if(s) s.classList.add('open'); }
+function closeFilters(){ const s=document.getElementById('filter-sheet'); if(s) s.classList.remove('open'); }
+function clearFilters(){
+  filters.plat='all'; filters.cat='all';
+  document.querySelectorAll('#plat-chips .chip').forEach(c=>c.classList.toggle('active',c.dataset.key==='all'));
+  document.querySelectorAll('#cat-chips .chip').forEach(c=>c.classList.toggle('active',c.dataset.key==='all'));
+  applyFilters();
+}
+function updateFilterBadge(){
+  let n=0; if(filters.plat!=='all') n++; if(filters.cat!=='all') n++;
+  const btn=document.getElementById('filter-btn'); const cnt=document.getElementById('filter-count');
+  if(cnt) cnt.textContent = n ? toArabic(n) : '';
+  if(btn) btn.classList.toggle('active', n>0);
+}
+
+function applyFilters(){
+  updateFilterBadge();
+  const q = (document.getElementById('search').value||'').trim().toLowerCase();
+  const list = RANKED.filter(c=>{
+    if (filters.plat!=='all' && c.platform!==filters.plat) return false;
+    if (filters.cat!=='all' && c.category!==filters.cat) return false;
+    if (q){
+      const hay = ((c.name||'')+' '+(c.handle||'')).toLowerCase();
+      if (hay.indexOf(q)===-1) return false;
+    }
+    return true;
+  });
+  render(list);
+}
+
+const CROWN_SVG = '<svg viewBox="0 0 100 72"><path d="M8 62 L17 24 L34 46 L50 10 L66 46 L83 24 L92 62 Z" fill="#E8B84B" stroke="#C2901F" stroke-width="3" stroke-linejoin="round"/><circle cx="50" cy="10" r="6" fill="#F6DC8A"/><circle cx="17" cy="24" r="5" fill="#F6DC8A"/><circle cx="83" cy="24" r="5" fill="#F6DC8A"/><rect x="8" y="60" width="84" height="9" rx="3" fill="#C2901F"/></svg>';
+const STAR_SVG = '<svg viewBox="0 0 24 24"><path d="M12 2l2.9 6.2 6.8.9-5 4.7 1.3 6.8L12 17.8 5.7 21.3 7 14.5l-5-4.7 6.8-.9z" fill="currentColor"/></svg>';
+
+function setScope(s){
+  scope = s;
+  document.querySelectorAll('.scope-tab').forEach(t=>t.classList.toggle('active', t.dataset.scope===s));
+  applyFilters();
+}
+const MEDAL = {
+  1:{aL:'#FBE7A6',aM:'#E8B84B',aD:'#A9760F',bL:'#F6DC8A',bD:'#C2901F',sA:'#7a5410',sB:'#9C6F1A',tw:'#F6DC8A'},
+  2:{aL:'#F7F9FB',aM:'#CBD0D5',aD:'#8E969F',bL:'#EDF0F2',bD:'#9AA2AB',sA:'#6E767F',sB:'#858D96',tw:'#EDF0F2'},
+  3:{aL:'#EECBA4',aM:'#CD8B5C',aD:'#9C5F33',bL:'#E3B488',bD:'#A9683A',sA:'#7A4A28',sB:'#8D5731',tw:'#E3B488'}
+};
+const LENS_MAIN = 'M-54 0 C-20 -9 20 -9 54 0 C20 9 -20 9 -54 0 Z';
+const LENS_SEC = 'M-32 0 C-12 -6 12 -6 32 0 C12 6 -12 6 -32 0 Z';
+function medallion(r){
+  var c = MEDAL[r] || MEDAL[1];
+  return '<div class="medal m'+r+'">'
+    + '<svg class="emblem" viewBox="0 0 140 140">'
+    +   '<defs>'
+    +     '<linearGradient id="mA'+r+'" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="'+c.aL+'"/><stop offset="0.5" stop-color="'+c.aM+'"/><stop offset="1" stop-color="'+c.aD+'"/></linearGradient>'
+    +     '<linearGradient id="mB'+r+'" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="'+c.bL+'"/><stop offset="1" stop-color="'+c.bD+'"/></linearGradient>'
+    +   '</defs>'
+    +   '<g transform="translate(70,70)">'
+    +     '<path d="'+LENS_SEC+'" transform="rotate(70)" fill="url(#mB'+r+')" stroke="'+c.sB+'" stroke-width="1.6" stroke-linejoin="round"/>'
+    +     '<path d="'+LENS_SEC+'" transform="rotate(-70)" fill="url(#mB'+r+')" stroke="'+c.sB+'" stroke-width="1.6" stroke-linejoin="round"/>'
+    +     '<path d="'+LENS_MAIN+'" transform="rotate(25)" fill="url(#mA'+r+')" stroke="'+c.sA+'" stroke-width="2.2" stroke-linejoin="round"/>'
+    +     '<path d="'+LENS_MAIN+'" transform="rotate(-25)" fill="url(#mA'+r+')" stroke="'+c.sA+'" stroke-width="2.2" stroke-linejoin="round"/>'
+    +     '<circle r="18" fill="#fffaf0" stroke="#13B9B2" stroke-width="3"/>'
+    +     '<ellipse cx="0" cy="-6" rx="10" ry="4" fill="#ffffff" opacity="0.45"/>'
+    +     '<text x="0" y="1" text-anchor="middle" dominant-baseline="central" font-family="var(--font-display),sans-serif" font-size="26" font-weight="800" fill="#0c4f4b">'+toArabic(r)+'</text>'
+    +   '</g>'
+    +   '<g fill="'+c.tw+'"><path d="M116 34 l1.7 4.2 4.2 1.7 -4.2 1.7 -1.7 4.2 -1.7 -4.2 -4.2 -1.7 4.2 -1.7 Z"/><path d="M24 106 l1.4 3.6 3.6 1.4 -3.6 1.4 -1.4 3.6 -1.4 -3.6 -3.6 -1.4 3.6 -1.4 Z"/></g>'
+    + '</svg></div>';
+}
+
+function render(list){
+  const el = document.getElementById('list');
+  const ct = document.getElementById('count-text');
+  let rows = list;
+  if (ct) ct.textContent = (scope === 'sa') ? 'أفضل 500 مؤثر محليًا' : 'أفضل 500 مؤثر في الشرق الأوسط';
+
+  if (!rows.length){
+    el.innerHTML = '<div class="empty"><div class="ic">○</div><h3>لا يوجد مطابقون</h3><p>جرّب تغيير الفلاتر أو البحث</p></div>';
+    return;
+  }
+
+  el.innerHTML = rows.map(c=>{
+    const r = c.rank;
+    let itemCls = 'titem';
+    if (r <= 3) itemCls += ' podium rank' + r;
+    else if (r <= 10) itemCls += ' elite';
+    const catLabel = CAT[c.category]||c.category||'';
+    const platLabel = PLAT[c.platform]||c.platform||'';
+    const avSize = r <= 3 ? 56 : 48;
+    const rankEl = r <= 3 ? medallion(r) : '<div class="rank">'+toArabic(r)+'</div>';
+    return '<div class="'+itemCls+'" id="ti-'+escHtml(c.id)+'">'
+      + '<div class="trow" onclick="goProfile(\''+escHtml(c.id)+'\')">'
+      + rankEl
+      + '<div class="tav">'+avatarInner(c,avSize,r<=3?22:18)+'</div>'
+      + '<div class="tmain">'
+      +   '<div class="tname">'+flagOf(c.country||'SA')+' '+escHtml(c.name||'مؤثر')+' '+badgeHtml(c)+'</div>'
+      +   (c.handle?'<div class="thandle">'+escHtml(c.handle)+'</div>':'')
+      +   '<div class="tmeta">'
+      +     perfTags(c)
+      +     (platLabel?'<span class="ttag">'+escHtml(platLabel)+'</span>':'')
+      +     (catLabel?'<span class="ttag">'+escHtml(catLabel)+'</span>':'')
+      +     '<span class="ttag foll">'+fmtFollowers(c.followers)+' متابع</span>'
+      +   '</div>'
+      + '</div>'
+      + '<div class="tside">'
+      +   '<div class="tscore"><span class="num">'+Math.round(c.score)+'</span><span class="lbl">درجة الثقة</span></div>'
+      +   starsHtml(c)
+      + '</div>'
+      + '</div>'
+      + '</div>';
+  }).join('');
+
+  if (window.simblI18n && document.documentElement.lang==='en') simblI18n.apply();
+}
+
+function goProfile(id){ window.location.href = 'creators.html?id=' + encodeURIComponent(id); }
+
+init();
+</script>
+
+<script src="push-subscribe.js?v=3"></script>
+</body>
+</html>

@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>مشروعنا الثاني — وكيل التفاوض الأذكى في العالم</title>
+<link rel="manifest" href="/manifest.json">
+<meta name="theme-color" content="#ffffff">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="مشروعنا الثاني">
+<link rel="apple-touch-icon" href="/icon-192.png">
+
+<script src="/splash.js?v=2"></script>
+
+<script defer src="/translations.js?v=3"></script>
+<script defer src="/i18n.js?v=3"></script>
+
+<script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --cream: #ffffff;
+  --cream-darker: #f5f5f4;
+  --ink: #0a0a0a;
+  --ink-soft: #3a3a3a;
+  --ink-muted: #6b6b6b;
+  --ink-faint: #a0a0a0;
+  --accent: #13B9B2;
+  --accent-soft: #7fd6d2;
+  --accent-ink: #0c4f4b;
+  --olive: #5b5b5b;
+  --gold: #6b6b6b;
+  --line: rgba(10, 10, 10, 0.08);
+  --line-strong: rgba(10, 10, 10, 0.16);
+  --font-display: 'IBM Plex Sans Arabic', 'Segoe UI', Tahoma, sans-serif;
+  --font-serif: 'IBM Plex Sans Arabic', 'Segoe UI', Tahoma, sans-serif;
+  --font-body: 'IBM Plex Sans Arabic', 'Segoe UI', Tahoma, sans-serif;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body {
+  background: var(--cream);
+  color: var(--ink);
+  font-family: var(--font-body);
+  font-weight: 400;
+  font-size: 16px;
+  line-height: 1.7;
+  overflow-x: hidden;
+}
+.container { max-width: 1280px; margin: 0 auto; padding: 0 32px; position: relative; z-index: 2; }
+.nav {
+  padding: 32px 0;
+  position: sticky;
+  top: 0;
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(12px);
+  z-index: 50;
+  border-bottom: 1px solid transparent;
+  transition: border-color 0.3s;
+}
+.nav.scrolled { border-bottom-color: var(--line); }
+.nav-inner { display: flex; justify-content: space-between; align-items: center; }
+.logo {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  text-decoration: none;
+  color: var(--ink);
+}
+.logo-eye { width: 72px; height: 72px; display: block; flex-shrink: 0; }
+.logo-pupil {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: logoLook 6s ease-in-out infinite;
+}
+@keyframes logoLook {
+  0%, 12% { transform: translate(0, 0); }
+  24% { transform: translate(6px, 0); }
+  40% { transform: translate(-6px, 0); }
+  52% { transform: translate(0, 2px); }
+  64% { transform: translate(0, 0); }
+  72% { transform: translate(0, 0) scaleY(0.15); }
+  76% { transform: translate(0, 0) scaleY(1); }
+  100% { transform: translate(0, 0); }
+}
+@media (prefers-reduced-motion: reduce) { .logo-pupil { animation: none; } }
+.logo-mark {
+  font-family: var(--font-display);
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  position: relative;
+}
+.logo-mark::after {
+  content: '';
+  position: absolute;
+  bottom: 3px;
+  inset-inline-end: -6px;
+  width: 4px;
+  height: 4px;
+  background: var(--accent);
+  border-radius: 50%;
+}
+.nav-links { display: flex; gap: 32px; align-items: center; }
+.nav-links a:not(.btn) {
+  color: var(--ink-soft);
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 400;
+  transition: color 0.2s;
+}
+.nav-links a:not(.btn):hover { color: var(--accent); }
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 24px;
+  border-radius: 100px;
+  font-family: var(--font-body);
+  font-size: 14px;
+  font-weight: 500;
+  text-decoration: none;
+  cursor: pointer;
+  border: none;
+  transition: all 0.2s;
+}
+.btn-primary { background: var(--ink); color: #fff; }
+.btn-primary:hover { background: #262626; transform: translateY(-1px); }
+.btn-ghost { background: #fff; color: var(--ink); border: 1.5px solid rgba(10, 10, 10, 0.28); }
+.btn-ghost:hover { border-color: var(--ink); }
+.lang-toggle { padding: 10px 16px; font-weight: 600; min-width: 54px; justify-content: center; }
+.hero {
+  min-height: calc(100vh - 140px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 0 56px;
+  position: relative;
+}
+.hero-grid { max-width: 760px; margin: 0 auto; text-align: center; }
+.hero-eyebrow {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 14px;
+  font-family: var(--font-body);
+  font-size: clamp(17px, 2.6vw, 23px);
+  font-weight: 500;
+  letter-spacing: 0;
+  color: var(--accent-ink);
+  background: #fff;
+  border: 1.5px solid rgba(19, 185, 178, 0.45);
+  padding: 12px 26px;
+  border-radius: 999px;
+  margin-bottom: 64px;
+}
+.hero-eyebrow::before {
+  content: '';
+  position: absolute;
+  inset: -22px;
+  border-radius: 999px;
+  background: radial-gradient(ellipse, rgba(19, 185, 178, 0.6), rgba(19, 185, 178, 0) 70%);
+  filter: blur(18px);
+  z-index: -1;
+  animation: badgeGlow 3.4s ease-in-out infinite;
+}
+@keyframes badgeGlow {
+  0%, 100% { opacity: 0.45; transform: scale(0.92); }
+  50% { opacity: 1; transform: scale(1.12); }
+}
+.hero-eq { display: inline-flex; gap: 4px; align-items: center; height: 22px; }
+.hero-eq i {
+  width: 4px; height: 8px;
+  background: var(--accent); border-radius: 2px;
+  animation: eq 1s ease-in-out infinite;
+}
+.hero-eq i:nth-child(2) { animation-delay: 0.18s; }
+.hero-eq i:nth-child(3) { animation-delay: 0.36s; }
+.hero-eq i:nth-child(4) { animation-delay: 0.1s; }
+@keyframes eq { 0%, 100% { height: 7px; } 50% { height: 22px; } }
+.hero-desc {
+  font-size: 16px;
+  color: var(--ink-soft);
+  font-weight: 400;
+  max-width: 440px;
+  margin: 0 auto 36px;
+  line-height: 1.7;
+}
+.hero-ctas { display: flex; gap: 14px; flex-wrap: wrap; justify-content: center; }
+.hero-cta-lg { padding: 17px 30px; font-size: 15px; }
+.hero-steps {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  margin-top: 56px;
+  padding-top: 36px;
+  border-top: 1px solid var(--line);
+  flex-wrap: wrap;
+}
+.hstep {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 18px;
+  background: #fff;
+  border: 1.5px solid var(--line);
+  border-radius: 999px;
+  animation: stepFlow 3s ease-in-out infinite;
+}
+.hstep .ic {
+  width: 34px; height: 34px;
+  flex: none; border-radius: 50%;
+  background: rgba(19, 185, 178, 0.12);
+  color: var(--accent);
+  display: flex; align-items: center; justify-content: center;
+  animation: stepIc 3s ease-in-out infinite;
+}
+.hstep .ic svg { width: 18px; height: 18px; display: block; }
+.hstep .t { font-size: 14px; font-weight: 600; color: var(--ink); }
+.hstep:nth-child(2), .hstep:nth-child(2) .ic { animation-delay: 1s; }
+.hstep:nth-child(3), .hstep:nth-child(3) .ic { animation-delay: 2s; }
+@keyframes stepFlow {
+  0%, 25%, 100% { border-color: var(--line); box-shadow: none; transform: translateY(0); }
+  8%, 17% { border-color: var(--accent); box-shadow: 0 8px 20px rgba(19, 185, 178, 0.18); transform: translateY(-4px); }
+}
+@keyframes stepIc {
+  0%, 25%, 100% { background: rgba(19, 185, 178, 0.12); color: var(--accent); }
+  8%, 17% { background: var(--accent); color: #fff; }
+}
+.footer { padding: 56px 0 40px; border-top: 1px solid var(--line); }
+.footer-inner { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 24px; }
+.footer-info { display: flex; align-items: center; gap: 14px; color: var(--ink-muted); font-size: 13px; }
+.footer-info .logo-eye { width: 28px; height: 28px; }
+.footer-links { display: flex; gap: 28px; }
+.footer-links a { color: var(--ink-muted); text-decoration: none; font-size: 13px; transition: color 0.2s; }
+.footer-links a:hover { color: var(--ink); }
+@media (max-width: 980px) {
+  .nav-links a:not(.btn) { display: none; }
+  .hero-steps { gap: 24px; }
+  .hero { padding: 32px 0 48px; }
+}
+@media (max-width: 600px) {
+  .container { padding: 0 20px; }
+  .logo-eye { width: 52px; height: 52px; }
+  .logo-mark { font-size: 13px; }
+  .hero-steps { gap: 12px; }
+}
+.reveal { opacity: 0; transform: translateY(20px); transition: opacity 0.8s, transform 0.8s; }
+.reveal.visible { opacity: 1; transform: translateY(0); }
+</style>
+</head>
+<body>
+
+<nav class="nav" id="nav">
+  <div class="container nav-inner">
+    <a href="#" class="logo">
+      <svg class="logo-eye" viewBox="0 0 200 200" aria-hidden="true">
+        <g fill="none" stroke-linejoin="miter" stroke-miterlimit="6" stroke-linecap="round">
+          <path d="M30 100 C61.5 78 138.5 78 170 100 C138.5 122 61.5 122 30 100 Z" stroke="#0a0a0a" stroke-width="8" transform="rotate(25 100 100)"/>
+          <path d="M30 100 C61.5 78 138.5 78 170 100 C138.5 122 61.5 122 30 100 Z" stroke="#0a0a0a" stroke-width="8" transform="rotate(-25 100 100)"/>
+          <path d="M76 100 Q100 88 124 100 Q100 112 76 100 Z" fill="#ffffff" stroke="#13B9B2" stroke-width="6"/>
+          <circle class="logo-pupil" cx="100" cy="100" r="7" fill="#0a0a0a"/>
+        </g>
+      </svg>
+      <span class="logo-mark">مشروعنا الثاني</span>
+    </a>
+    <div class="nav-links">
+      <button type="button" class="btn btn-ghost lang-toggle" data-i18n-toggle onclick="simblI18n.toggle()">EN</button>
+      <div id="nav-actions" style="display:inline-flex; gap:32px; align-items:center;">
+        <a href="/login.html" class="btn btn-ghost" data-i18n="nav_login">تسجيل دخول</a>
+        <a href="/signup.html" class="btn btn-primary" data-i18n="nav_start">ابدأ الآن ←</a>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<section class="hero">
+  <div class="container">
+    <div class="hero-grid">
+      <div>
+        <div class="hero-eyebrow"><span class="hero-eq"><i></i><i></i><i></i><i></i></span><span data-i18n="hero_eyebrow">وكيل تفاوض مدعوم بالذكاء الاصطناعي</span></div>
+        <p class="hero-desc" data-i18n="hero_desc">
+          الشركات تطلق حملاتها الإعلانية، والمعلنون يختارون ما يناسبهم،
+          ووكيل ذكاء اصطناعي يتفاوض ويقفل الصفقة لصالح الطرفين.
+        </p>
+        <div class="hero-ctas" id="hero-ctas">
+          <a href="/signup.html?role=creator" class="btn btn-primary hero-cta-lg" data-i18n="hero_cta_creator">ابدأ كمعلن ←</a>
+          <a href="/signup.html?role=brand" class="btn btn-ghost hero-cta-lg" data-i18n="hero_cta_brand">ابدأ كشركة</a>
+        </div>
+
+        <div style="margin-top:26px;">
+          <a href="/top.html" style="display:inline-flex;align-items:center;gap:9px;background:#13B9B2;color:#fff;text-decoration:none;font-weight:600;font-size:15.5px;padding:16px 30px;border-radius:100px;box-shadow:0 14px 30px -12px rgba(19,185,178,0.75);font-family:'IBM Plex Sans Arabic',sans-serif;">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor" aria-hidden="true"><path d="M12 2l2.9 6.2 6.8.9-5 4.7 1.3 6.8L12 17.8 5.7 21.3 7 14.5l-5-4.7 6.8-.9z"/></svg>
+            أفضل المؤثرين وترتيبهم ←
+          </a>
+        </div>
+
+        <div class="hero-steps">
+          <div class="hstep">
+            <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l18-8-8 18-2-7-8-3z"/></svg></span>
+            <span class="t" data-i18n="step_launch">تُطلق الحملة</span>
+          </div>
+          <div class="hstep">
+            <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5h16v10H9l-4 4v-4H4z"/></svg></span>
+            <span class="t" data-i18n="step_negotiate">يتفاوض الوكيل</span>
+          </div>
+          <div class="hstep">
+            <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12l5 5L20 6"/></svg></span>
+            <span class="t" data-i18n="step_close">تُقفل الصفقة</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<script>document.write('<script src="supabase-config.js?v=' + Date.now() + '"><\/script>');</script>
+<script>
+// ============ موجّه تثبيت التطبيق (PWA) ============
+(function installPrompt() {
+  // لا تظهر لو التطبيق مثبّت ومفتوح من الأيقونة أصلاً
+  var isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
+  if (isStandalone) return;
+  // لا تظهر لو المستخدم رفضها قبل
+  if (localStorage.getItem('simbl_install_dismissed')) return;
+
+  var ua = navigator.userAgent || '';
+  var isIOS = /iPad|iPhone|iPod/.test(ua) && !window.MSStream;
+  var isAndroid = /Android/.test(ua);
+  // أجهزة الجوال فقط (الكمبيوتر ما يحتاج)
+  if (!isIOS && !isAndroid) return;
+
+  var deferredPrompt = null;
+
+  // أندرويد/كروم: نلتقط حدث التثبيت التلقائي
+  window.addEventListener('beforeinstallprompt', function(e) {
+    e.preventDefault();
+    deferredPrompt = e;
+    showBanner('android');
+  });
+
+  // آيفون: ما فيه حدث تلقائي، نعرض التعليمات بعد ثانيتين
+  if (isIOS) {
+    setTimeout(function(){ showBanner('ios'); }, 2500);
+  }
+
+  function dismiss(banner) {
+    localStorage.setItem('simbl_install_dismissed', '1');
+    if (banner) {
+      banner.style.opacity = '0';
+      banner.style.transform = 'translateY(20px)';
+      setTimeout(function(){ banner.remove(); }, 300);
+    }
+  }
+
+  function showBanner(type) {
+    if (document.getElementById('simbl-install-banner')) return;
+
+    var banner = document.createElement('div');
+    banner.id = 'simbl-install-banner';
+    banner.style.cssText = 'position:fixed;bottom:18px;left:16px;right:16px;max-width:480px;margin:0 auto;background:#0a0a0a;color:#fff;border-radius:20px;padding:16px 18px;z-index:9998;display:flex;gap:14px;align-items:center;box-shadow:0 16px 48px rgba(0,0,0,0.28);font-family:"IBM Plex Sans Arabic",sans-serif;opacity:0;transform:translateY(20px);transition:opacity .35s cubic-bezier(0.22,1,0.36,1),transform .35s cubic-bezier(0.22,1,0.36,1);';
+
+    var eye = '<svg viewBox="0 0 200 200" style="width:38px;height:38px;flex-shrink:0;" aria-hidden="true"><g fill="none" stroke-linejoin="miter" stroke-miterlimit="6" stroke-linecap="round"><path d="M30 100 C61.5 78 138.5 78 170 100 C138.5 122 61.5 122 30 100 Z" stroke="#fff" stroke-width="9" transform="rotate(25 100 100)"/><path d="M30 100 C61.5 78 138.5 78 170 100 C138.5 122 61.5 122 30 100 Z" stroke="#fff" stroke-width="9" transform="rotate(-25 100 100)"/><path d="M76 100 Q100 88 124 100 Q100 112 76 100 Z" fill="#0a0a0a" stroke="#13B9B2" stroke-width="7"/><circle cx="100" cy="100" r="8" fill="#fff"/></g></svg>';
+
+    if (type === 'android') {
+      banner.innerHTML = eye +
+        '<div style="flex:1;min-width:0;">' +
+          '<div style="font-weight:600;font-size:15px;margin-bottom:2px;">ثبّت مشروعنا الثاني على جوالك</div>' +
+          '<div style="font-size:12px;opacity:0.8;line-height:1.5;">وصول أسرع وإشعارات فورية</div>' +
+        '</div>' +
+        '<button id="simbl-install-go" style="background:#13B9B2;color:#fff;border:none;padding:10px 20px;border-radius:100px;font-family:inherit;font-size:13px;font-weight:600;cursor:pointer;white-space:nowrap;flex-shrink:0;">تثبيت</button>' +
+        '<button id="simbl-install-x" style="background:transparent;color:#fff;border:none;padding:4px 6px;font-size:22px;cursor:pointer;opacity:0.6;line-height:1;flex-shrink:0;" aria-label="إغلاق">&times;</button>';
+      document.body.appendChild(banner);
+      requestAnimationFrame(function(){ banner.style.opacity = '1'; banner.style.transform = 'translateY(0)'; });
+
+      document.getElementById('simbl-install-go').onclick = async function() {
+        if (!deferredPrompt) { dismiss(banner); return; }
+        deferredPrompt.prompt();
+        try { await deferredPrompt.userChoice; } catch (e) {}
+        deferredPrompt = null;
+        dismiss(banner);
+      };
+      document.getElementById('simbl-install-x').onclick = function(){ dismiss(banner); };
+    } else {
+      // آيفون: تعليمات يدوية
+      banner.innerHTML = eye +
+        '<div style="flex:1;min-width:0;">' +
+          '<div style="font-weight:600;font-size:15px;margin-bottom:2px;">أضِف مشروعنا الثاني لشاشتك</div>' +
+          '<div style="font-size:12px;opacity:0.85;line-height:1.6;">اضغط زر المشاركة <span style="display:inline-block;border:1px solid rgba(255,255,255,0.5);border-radius:5px;padding:0 5px;">&#8593;</span> بالأسفل، ثم اختر <strong>«إضافة إلى الشاشة الرئيسية»</strong></div>' +
+        '</div>' +
+        '<button id="simbl-install-x" style="background:transparent;color:#fff;border:none;padding:4px 6px;font-size:22px;cursor:pointer;opacity:0.6;line-height:1;flex-shrink:0;" aria-label="إغلاق">&times;</button>';
+      document.body.appendChild(banner);
+      requestAnimationFrame(function(){ banner.style.opacity = '1'; banner.style.transform = 'translateY(0)'; });
+      document.getElementById('simbl-install-x').onclick = function(){ dismiss(banner); };
+    }
+  }
+})();
+</script>
+<script>
+window.addEventListener('scroll', () => {
+  document.getElementById('nav').classList.toggle('scrolled', window.scrollY > 20);
+});
+
+const observer = new IntersectionObserver(entries => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) entry.target.classList.add('visible');
+  });
+}, { threshold: 0.15 });
+
+document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+// ============ تعديل الأزرار حسب حالة المستخدم ============
+// لا تحويل تلقائي - المستخدم يشوف الصفحة الرئيسية دائماً
+// لكن الأزرار تتغيّر إذا كان مسجّل دخول
+document.addEventListener('DOMContentLoaded', async function () {
+  try {
+    if (typeof tryRestoreSession === 'function') {
+      await tryRestoreSession();
+    }
+    const user = (typeof getCurrentUser === 'function') ? getCurrentUser() : null;
+    if (!user || !user.role) return; // زائر — اخلي الأزرار الافتراضية
+
+    const dashboardUrl = user.role === 'creator' ? '/creator.html' : '/brand.html';
+    const dashKey = user.role === 'creator' ? 'dash_creator' : 'dash_brand';
+    const dashLabel = (window.simblI18n)
+      ? simblI18n.t(dashKey)
+      : (user.role === 'creator' ? 'الانتقال إلى لوحتي ←' : 'الانتقال إلى حملاتي الإعلانية ←');
+
+    // 1) أزرار النافبار — استبدل بزر واحد
+    const navActions = document.getElementById('nav-actions');
+    if (navActions) {
+      navActions.innerHTML = `<a href="${dashboardUrl}" class="btn btn-primary" data-i18n="${dashKey}">${dashLabel}</a>`;
+    }
+
+    // 2) أزرار الهيرو — استبدل بزر واحد
+    const heroCtas = document.getElementById('hero-ctas');
+    if (heroCtas) {
+      heroCtas.innerHTML = `<a href="${dashboardUrl}" class="btn btn-primary hero-cta-lg" data-i18n="${dashKey}">${dashLabel}</a>`;
+    }
+    // أعد تطبيق اللغة على الأزرار الجديدة
+    if (window.simblI18n) simblI18n.apply();
+  } catch (err) {
+    console.error('UI update failed:', err);
+  }
+});
+</script>
+
+
+</body>
+</html>

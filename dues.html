@@ -1,0 +1,956 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl" data-i18n-title="dues_title">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>متابعة الحملات والمستحقات - مشروعنا الثاني</title>
+<link rel="manifest" href="/manifest.json">
+<meta name="theme-color" content="#ffffff">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="مشروعنا الثاني">
+<link rel="apple-touch-icon" href="/icon-192.png">
+<script src="/splash.js?v=2"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="/translations.js?v=3"></script>
+<script src="/i18n.js?v=3"></script>
+<style>
+:root {
+  --cream: #ffffff;
+  --cream-darker: #f5f5f4;
+  --ink: #0a0a0a;
+  --ink-soft: #3a3a3a;
+  --ink-muted: #6b6b6b;
+  --ink-faint: #a0a0a0;
+  --accent: #13B9B2;
+  --accent-soft: #7fd6d2;
+  --accent-ink: #0c4f4b;
+  --line: rgba(10, 10, 10, 0.08);
+  --line-strong: rgba(10, 10, 10, 0.16);
+  --font-display: 'IBM Plex Sans Arabic', 'Segoe UI', Tahoma, sans-serif;
+  --font-body: 'IBM Plex Sans Arabic', 'Segoe UI', Tahoma, sans-serif;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { background: var(--cream); color: var(--ink); font-family: var(--font-body); font-weight: 400; font-size: 16px; line-height: 1.7; min-height: 100vh; }
+.container { max-width: 1280px; margin: 0 auto; padding: 0 32px; position: relative; z-index: 1; }
+
+.nav { background: var(--cream); padding: 16px 0; border-bottom: 1px solid var(--line); position: sticky; top: 0; z-index: 50; }
+.nav-inner { display: flex; justify-content: space-between; align-items: center; }
+.logo { display: flex; flex-direction: column; align-items: center; gap: 2px; text-decoration: none; color: var(--ink); transition: transform .3s ease-out; }
+.logo:hover { transform: scale(1.05); }
+.logo-eye { width: 40px; height: 40px; display: block; flex-shrink: 0; }
+.logo-mark { font-family: var(--font-display); font-size: 16px; font-weight: 500; color: var(--ink); position: relative; padding-left: 10px; line-height: 1; }
+.logo-mark::after { content: ''; position: absolute; bottom: 0; left: 0; width: 4px; height: 4px; background: var(--accent); border-radius: 50%; }
+.user-menu { display: flex; align-items: center; gap: 10px; }
+.btn-back { background: var(--ink); color: #fff; border: 0; padding: 9px 18px; border-radius: 100px; font-family: var(--font-body); font-size: 13px; font-weight: 500; cursor: pointer; transition: background .2s, transform .15s; display: inline-flex; align-items: center; gap: 6px; text-decoration: none; }
+.btn-back:hover { background: var(--accent); transform: translateY(-1px); }
+
+.page-head { padding: 36px 0 8px; }
+.ph-row { display: flex; align-items: flex-end; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
+.btn-export { background: var(--accent); color: #fff; border: 0; padding: 11px 20px; border-radius: 100px; font-family: var(--font-body); font-size: 14px; font-weight: 600; cursor: pointer; transition: background .2s, transform .15s; white-space: nowrap; }
+.btn-export:hover { background: var(--accent-ink); transform: translateY(-1px); }
+.page-title { font-family: var(--font-display); font-size: 28px; font-weight: 600; letter-spacing: -0.4px; margin: 0 0 6px; display: flex; align-items: center; gap: 10px; }
+.page-sub { font-size: 14px; color: var(--ink-soft); margin: 0; }
+
+.loading-wrap { display: flex; justify-content: center; padding: 60px 20px; }
+.loading-pill { display: inline-flex; align-items: center; gap: 10px; background: #fff; border: 1px solid rgba(19,185,178,0.2); border-radius: 100px; padding: 10px 22px; font-family: var(--font-display); font-size: 13px; font-weight: 500; color: var(--accent-ink); box-shadow: 0 0 30px 6px rgba(19,185,178,0.15); animation: lp-glow 2s ease-in-out infinite; }
+@keyframes lp-glow { 0%,100% { box-shadow: 0 0 20px 4px rgba(19,185,178,0.12); } 50% { box-shadow: 0 0 32px 8px rgba(19,185,178,0.20); } }
+.loading-pill-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--accent); animation: lp-blink 1s ease-in-out infinite; }
+@keyframes lp-blink { 0%,100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.4; transform: scale(0.8); } }
+
+/* ============ شيت الإكسل ============ */
+.dues-wrap { background:#fff; border:1px solid var(--line); border-radius:18px; padding:18px 20px; margin:18px 0 40px; }
+.dues-head { display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap; margin-bottom:6px; }
+.dues-head h3 { font-size:16px; font-weight:600; display:flex; align-items:center; gap:8px; margin:0; }
+.dues-sum { display:flex; gap:8px; flex-wrap:wrap; }
+.dues-chip { font-size:12px; font-weight:500; border-radius:100px; padding:5px 12px; background:var(--cream-darker); color:var(--ink-soft); }
+.dues-chip.due { background:rgba(201,48,48,0.08); color:#b32d2d; }
+.dues-chip.paid { background:rgba(19,185,178,0.12); color:var(--accent-ink); }
+.dues-hint { font-size:11.5px; color:var(--ink-faint); margin:0 0 12px; display:flex; align-items:center; gap:5px; flex-wrap:wrap; }
+.dues-grid-wrap { overflow-x:auto; border:1px solid #c9ccc9; border-radius:6px; }
+.xl td:last-child, .xl th:last-child { position: sticky; left: 0; background:#fff; z-index:3; box-shadow: 2px 0 5px rgba(0,0,0,0.05); }
+table.xl { width:100%; border-collapse:collapse; font-size:12.5px; white-space:nowrap; background:#fff; }
+table.xl th, table.xl td { border:1px solid #d7dad7; padding:7px 11px; text-align:right; }
+table.xl .xl-corner, table.xl .xl-colh, table.xl .xl-rowh { background:#f1f3f1; color:#7a807c; font-weight:500; text-align:center; font-size:11px; user-select:none; }
+table.xl .xl-rowh { min-width:30px; }
+table.xl thead .xl-label { background:#e7eceb; color:var(--ink-soft); font-weight:600; }
+table.xl td.cell { cursor:pointer; transition:background .12s; }
+table.xl td.cell:hover { background:#eef6f5; }
+table.xl td.cell.copied { background:#13B9B2; color:#fff; }
+table.xl td.cell.copied .dp, table.xl td.cell.copied .dues-link { color:#fff; }
+.xl-iban { direction:ltr; text-align:right; color:var(--accent-ink); font-weight:600; font-variant-numeric:tabular-nums; }
+.dues-editable[contenteditable="true"]{ outline:2px solid #12b5a3; outline-offset:-2px; background:#f0fbf9; cursor:text; min-width:80px; }
+td.iban-bad{ background:#fff2f2 !important; color:#c0392b !important; box-shadow:inset 0 0 0 1.5px #f0b4b4; }
+.xl-amount { font-variant-numeric:tabular-nums; font-weight:600; }
+.dp { display:inline-block; padding:2px 9px; border-radius:100px; font-size:11px; font-weight:600; }
+.dp-paid { background:rgba(19,185,178,0.14); color:var(--accent-ink); }
+.dp-wait { background:rgba(184,134,11,0.15); color:#8a6500; }
+.dp-due  { background:rgba(201,48,48,0.12); color:#b32d2d; }
+.dp-prog { background:var(--cream-darker); color:var(--ink-muted); }
+.dp-fixwait { background:rgba(184,134,11,0.18); color:#8a6500; }
+.dp-fixdone { background:rgba(29,158,117,0.16); color:#12805f; }
+.camp-exports { display:flex; gap:8px; margin-top:8px; flex-wrap:wrap; }
+.camp-exp-btn { cursor:pointer; border:1px solid #e0e7e5; background:#fff; border-radius:100px; padding:6px 12px; font-family:inherit; font-size:12px; font-weight:600; color:#0f1512; }
+.camp-exp-btn.pay { background:#1D9E75; color:#fff; border-color:#1D9E75; }
+.camp-exp-btn.edit { background:#0f1512; color:#fff; border-color:#0f1512; }
+.camp-exp-btn:hover { filter:brightness(0.97); }
+.dim { color:var(--ink-faint); }
+.dues-mark { background:var(--accent); color:#fff; border:0; border-radius:7px; padding:5px 12px; font-family:var(--font-body); font-size:11.5px; font-weight:600; cursor:pointer; }
+.dues-mark:hover { background:var(--accent-ink); }
+.dues-fix { background:#fff; color:#c0392b; border:1.5px solid #e6b0aa; border-radius:7px; padding:5px 10px; font-family:var(--font-body); font-size:11.5px; font-weight:600; cursor:pointer; margin-inline-start:6px; }
+.dues-fix:hover { background:#fdecea; }
+.dues-link { color:var(--accent-ink); font-weight:600; text-decoration:none; }
+.dues-link:hover { text-decoration:underline; }
+.dues-empty { padding:30px 22px; text-align:center; color:var(--ink-faint); font-size:13.5px; line-height:1.8; }
+
+/* بلوك الحملة */
+.camp-block { margin-bottom:26px; }
+.camp-block:last-child { margin-bottom:0; }
+.camp-bar { display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap; padding:14px 16px; background:rgba(19,185,178,0.06); border:1px solid rgba(19,185,178,0.28); border-radius:12px 12px 0 0; border-bottom:0; }
+.camp-titles { min-width:0; }
+.camp-title { font-family:var(--font-display); font-size:16px; font-weight:600; color:var(--ink); display:flex; align-items:center; gap:8px; }
+.camp-meta { font-size:12px; color:var(--ink-muted); margin-top:3px; display:flex; gap:6px 14px; flex-wrap:wrap; }
+.camp-meta strong { color:var(--accent-ink); font-weight:600; }
+.camp-block .dues-grid-wrap { border-radius:0 0 6px 6px; }
+/* الصفوف الفاضية */
+table.xl tr.xl-empty td { color:var(--ink-faint); background:#fcfcfc; }
+table.xl tr.xl-empty .xl-rowh { color:#b8bdba; }
+table.xl td.xl-rowcopy { cursor:pointer; }
+table.xl td.xl-rowcopy:hover { background:#e2efed; color:var(--accent-ink); }
+table.xl td.xl-rowcopy.copied { background:#13B9B2; color:#fff; }
+
+/* Toast */
+.toast-wrap { position: fixed; top: 20px; left: 50%; transform: translateX(-50%); z-index: 2000; display: flex; flex-direction: column; gap: 10px; width: max-content; max-width: calc(100vw - 32px); pointer-events: none; }
+.toast { display: flex; align-items: center; gap: 10px; background: #fff; color: var(--ink); border: 1px solid var(--line); border-right: 4px solid var(--accent); border-radius: 14px; padding: 13px 18px; font-family: var(--font-body); font-size: 14px; font-weight: 500; line-height: 1.5; box-shadow: 0 14px 36px -12px rgba(10,10,10,0.28); pointer-events: auto; opacity: 0; transform: translateY(-12px); transition: opacity .28s cubic-bezier(0.22,1,0.36,1), transform .28s cubic-bezier(0.22,1,0.36,1); }
+.toast.show { opacity: 1; transform: translateY(0); }
+.toast.error { border-right-color: #c93030; }
+.toast .toast-ic { width: 24px; height: 24px; border-radius: 50%; flex-shrink: 0; display: flex; align-items: center; justify-content: center; background: rgba(19,185,178,0.14); color: var(--accent-ink); font-size: 13px; font-weight: 700; }
+.toast.error .toast-ic { background: rgba(201,48,48,0.12); color: #c93030; }
+
+@media (max-width: 740px) {
+  .container { padding: 0 16px; }
+  .page-title { font-size: 22px; }
+  .logo-eye { width: 36px; height: 36px; }
+  .logo-mark { font-size: 14px; }
+}
+
+.dues-cards { display:grid; grid-template-columns:repeat(auto-fit,minmax(230px,1fr)); gap:16px; margin-top:16px; }
+.dues-card { position:relative; background:linear-gradient(135deg, rgba(19,185,178,0.10), #ffffff 72%); border:1px solid rgba(19,185,178,0.26); border-radius:16px; padding:18px 20px; cursor:pointer; transition:transform .16s ease, box-shadow .16s ease, border-color .16s ease; }
+.dues-card:hover { transform:translateY(-3px); border-color:var(--accent); box-shadow:0 10px 26px rgba(19,185,178,0.18); }
+.dues-card-h { display:flex; align-items:center; justify-content:space-between; gap:10px; margin-bottom:16px; }
+.dues-card-name { font-family:var(--font-display); font-size:17px; font-weight:700; color:var(--ink); }
+.dues-card-go { color:var(--accent); font-size:16px; opacity:.65; transition:opacity .16s ease, transform .16s ease; }
+.dues-card:hover .dues-card-go { opacity:1; transform:translateX(-3px); }
+.dues-card-meta { display:flex; align-items:center; gap:16px; font-size:13px; flex-wrap:wrap; }
+.dues-card-meta .m-users { color:var(--ink-muted); display:inline-flex; align-items:center; gap:5px; }
+.dues-card-meta .m-amount { color:var(--accent-ink); font-weight:700; display:inline-flex; align-items:center; gap:5px; }
+.dues-search-wrap { margin-top:14px; }
+.dues-search { width:100%; max-width:340px; padding:11px 14px; border:1px solid var(--line,#e7edeb); border-radius:12px; font-family:inherit; font-size:14px; box-sizing:border-box; }
+.dues-search:focus { outline:none; border-color:var(--accent,#13b5a3); }
+.dues-back { cursor:pointer; border:1px solid var(--line,#e7edeb); background:#fff; border-radius:100px; padding:8px 16px; font-family:inherit; font-size:13px; font-weight:600; color:var(--ink,#0f1512); }
+.dues-back:hover { border-color:var(--accent,#13b5a3); }
+.dues-noresult { padding:30px; text-align:center; color:var(--ink-muted,#5b6b66); }
+</style>
+</head>
+<body>
+
+<div class="toast-wrap" id="toast-wrap"></div>
+
+<nav class="nav">
+  <div class="container nav-inner">
+    <a href="/" class="logo">
+      <svg class="logo-eye" viewBox="0 0 200 200" aria-hidden="true">
+        <g fill="none" stroke-linejoin="miter" stroke-miterlimit="6" stroke-linecap="round">
+          <path d="M30 100 C61.5 78 138.5 78 170 100 C138.5 122 61.5 122 30 100 Z" stroke="#0a0a0a" stroke-width="10" transform="rotate(25 100 100)"/>
+          <path d="M30 100 C61.5 78 138.5 78 170 100 C138.5 122 61.5 122 30 100 Z" stroke="#0a0a0a" stroke-width="10" transform="rotate(-25 100 100)"/>
+          <path d="M76 100 Q100 88 124 100 Q100 112 76 100 Z" fill="#ffffff" stroke="#13B9B2" stroke-width="7"/>
+          <circle cx="100" cy="100" r="8" fill="#0a0a0a"/>
+        </g>
+      </svg>
+      <span class="logo-mark">مشروعنا الثاني</span>
+    </a>
+    <div class="user-menu">
+      <span style="display:inline-flex;align-items:center;gap:12px;"><button type="button" data-i18n-toggle onclick="simblI18n.toggle()" style="background:#fff;border:1.5px solid rgba(10,10,10,0.28);color:var(--ink);padding:8px 16px;border-radius:100px;font-family:inherit;font-size:13px;font-weight:600;cursor:pointer;">EN</button><a class="btn-back" href="/brand.html">→ رجوع للوحة</a></span>
+    </div>
+  </div>
+</nav>
+
+<main class="container">
+  <div class="page-head">
+    <div class="ph-row">
+      <div>
+        <h1 class="page-title">📋 متابعة الحملات والمستحقات</h1>
+        <p class="page-sub">كل صفقاتك المعتمدة في مكان واحد — اضغط أي خانة لنسخها، أو رقم الصف لنسخه كامل.</p>
+      </div>
+      <div style="display:flex;gap:10px;flex-wrap:wrap;">
+      </div>
+    </div>
+  </div>
+
+  <div id="dues-section">
+    <div class="loading-wrap"><div class="loading-pill"><span class="loading-pill-dot"></span>جاري التحميل...</div></div>
+  </div>
+</main>
+
+<script>document.write('<script src="supabase-config.js?v=' + Date.now() + '"><\/script>');</script>
+<script>document.write('<script src="notifications.js?v=' + Date.now() + '"><\/script>');</script>
+<script>
+let currentUser = null;
+let WORKSPACE_ID = null; // مساحة العمل الفعّالة (المالك لو عضو فريق)
+let myCampaigns = [];
+let campaignApps = {};
+
+const arabicDigits = ['٠','١','٢','٣','٤','٥','٦','٧','٨','٩'];
+const toArabic = n => String(n);
+
+const DUES_STAGE_NAMES = { 1:'العنوان', 2:'الشحن', 3:'الاستلام', 4:'البريف', 5:'المحتوى', 6:'الموافقة', 7:'النشر', 8:'البيانات البنكية', 9:'مكتمل' };
+
+function escHtml(s) {
+  return String(s || '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+
+function showToast(message, type = 'success', duration = 3500) {
+  const wrap = document.getElementById('toast-wrap');
+  if (!wrap) return;
+  const toast = document.createElement('div');
+  toast.className = 'toast ' + (type === 'error' ? 'error' : '');
+  toast.innerHTML = `<span class="toast-ic">${type === 'error' ? '!' : '✓'}</span><span>${message}</span>`;
+  wrap.appendChild(toast);
+  requestAnimationFrame(() => toast.classList.add('show'));
+  setTimeout(() => { toast.classList.remove('show'); setTimeout(() => toast.remove(), 320); }, duration);
+}
+
+function duesCampMap() {
+  const m = {};
+  (myCampaigns || []).forEach(c => { m[c.id] = c; });
+  return m;
+}
+function duesIsOverdue(a, camp) {
+  if (!a || (a.stage || 0) < 9) return false;
+  if (a.payment_status === 'confirmed') return false;
+  const days = camp ? parseInt(camp.payment_max_days, 10) : NaN;
+  if (!a.completed_at || isNaN(days) || days <= 0) return false;
+  const d = new Date(a.completed_at); if (isNaN(d.getTime())) return false;
+  d.setDate(d.getDate() + days);
+  return Date.now() > d.getTime();
+}
+function duesDateText(iso) {
+  if (!iso) return '—';
+  const d = new Date(iso); if (isNaN(d.getTime())) return '—';
+  return toArabic(d.toLocaleDateString('en-GB'));
+}
+
+function findAppById(applicationId) {
+  for (const campaignId in campaignApps) {
+    const apps = campaignApps[campaignId] || [];
+    const found = apps.find(a => a.id === applicationId);
+    if (found) return { app: found, campaign: myCampaigns.find(c => c.id === campaignId) };
+  }
+  return { app: null, campaign: null };
+}
+
+function duesAccountLink(creator) {
+  if (!creator) return '';
+  for (const k of ['account_link', 'profile_link', 'profile_url', 'link']) {
+    if (creator[k] && /^https?:\/\//i.test(creator[k])) return creator[k];
+  }
+  if (creator.website && /^https?:\/\//i.test(creator.website)) return creator.website;
+  let h = (creator.handle || creator.username || '').toString().trim().replace(/^@/, '');
+  const p = (creator.platform || '').toString().toLowerCase();
+  if (h && /^https?:\/\//i.test(h)) return h;
+  if (!h) return '';
+  if (p.includes('tiktok')) return 'https://www.tiktok.com/@' + h;
+  if (p.includes('insta')) return 'https://instagram.com/' + h;
+  if (p.includes('snap')) return 'https://snapchat.com/add/' + h;
+  if (p.includes('youtube') || p.includes('يوتيوب')) return 'https://youtube.com/@' + h;
+  if (p === 'x' || p.includes('twitter') || p.includes('إكس') || p.includes('اكس')) return 'https://x.com/' + h;
+  return '';
+}
+
+// تحويل رقم الجوال السعودي إلى رابط واتساب دولي (05xxxxxxxx → 9665xxxxxxxx)
+function duesWaLink(raw) {
+  let d = String(raw || '').replace(/[^\d+]/g, '');
+  if (d.startsWith('+')) d = d.slice(1);
+  if (d.startsWith('00')) d = d.slice(2);
+  if (d.startsWith('05')) d = '966' + d.slice(1);      // 05xxxxxxxx → 9665xxxxxxxx
+  else if (d.startsWith('5') && d.length === 9) d = '966' + d; // 5xxxxxxxx → 9665xxxxxxxx
+  return 'https://wa.me/' + d;
+}
+
+function duesCopy(el) {
+  const _blk = (el && el.closest) ? el.closest('.camp-block') : null;
+  if (_blk && _blk.classList.contains('editing')) return;   // وضع تعديل هذي الحملة: لا ننسخ
+  if (typeof duesEditing !== 'undefined' && duesEditing) return;   // (احتياط) وضع تعديل عام
+  const txt = el.getAttribute('data-copy') || el.textContent || '';
+  const done = () => {
+    el.classList.add('copied');
+    setTimeout(() => el.classList.remove('copied'), 700);
+    try { showToast('تم نسخ: ' + txt); } catch (e) {}
+  };
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(txt).then(done).catch(() => fallbackCopy(txt, done));
+  } else { fallbackCopy(txt, done); }
+}
+function fallbackCopy(txt, done) {
+  try {
+    const ta = document.createElement('textarea');
+    ta.value = txt; ta.style.position = 'fixed'; ta.style.opacity = '0';
+    document.body.appendChild(ta); ta.focus(); ta.select();
+    document.execCommand('copy'); document.body.removeChild(ta);
+    done();
+  } catch (e) { try { showToast('تعذّر النسخ تلقائيًا'); } catch (e2) {} }
+}
+
+// ============ تعديل وتنظيف المستحقات قبل التصدير ============
+let duesOverrides = {};                            // { appId: { name, iban, holder } }
+try { const _dov = localStorage.getItem('simblDuesOverrides'); if (_dov) duesOverrides = JSON.parse(_dov) || {}; } catch (e) {}
+function saveDuesOverrides() { try { localStorage.setItem('simblDuesOverrides', JSON.stringify(duesOverrides)); } catch (e) {} }
+let duesEditing = false;
+
+function cleanField(v) {                          // يشيل الأسطر الطويلة اللي تكبّر الصف في إكسل
+  return String(v == null ? '' : v).replace(/[\r\n\t]+/g, ' ').replace(/\s{2,}/g, ' ').trim();
+}
+// ===== استنتاج اسم البنك من الآيبان السعودي =====
+// رمز البنك = الخانتان 5–6 من الآيبان (بعد SA + خانتَي التحقق)، حسب معيار ساما.
+const SA_BANK_CODES = {
+  '10': 'البنك الأهلي السعودي',
+  '15': 'مصرف الإنماء',
+  '20': 'بنك الرياض',
+  '30': 'البنك العربي الوطني',
+  '40': 'بنك الجزيرة',
+  '45': 'بنك البلاد',
+  '50': 'البنك السعودي البريطاني (ساب)',
+  '55': 'البنك السعودي الفرنسي',
+  '60': 'البنك العربي الوطني',
+  '65': 'البنك السعودي للاستثمار',
+  '76': 'بنك الإمارات دبي الوطني',
+  '80': 'مصرف الراجحي',
+  '90': 'بنك الخليج الدولي'
+};
+function bankFromIban(iban) {
+  const s = String(iban || '').replace(/\s+/g, '').toUpperCase();
+  if (!/^SA\d{22}$/.test(s)) return '';                 // ليس آيبانًا سعوديًا صالحًا
+  const code = s.slice(4, 6);                            // رمز البنك (خانتان)
+  return SA_BANK_CODES[code] || ('بنك (رمز ' + code + ')');
+}
+
+function ibanLooksValid(v) {
+  return /^SA\d{22}$/.test(String(v || '').toUpperCase().replace(/[\s\-]/g, ''));
+}
+function cleanIban(v) {                           // يستخرج SA + الأرقام من أي كلام/اسم ملتصق
+  const s = String(v || '').toUpperCase().replace(/[\s\-]/g, '');
+  const m = s.match(/SA\d{22}/); if (m) return m[0];
+  const m2 = s.match(/SA\d+/);   if (m2) return m2[0];
+  return String(v || '').trim();
+}
+function cleanUrl(v) {                            // يستخرج أول رابط http(s) من أي نص ملتصق
+  const s = String(v || '');
+  const m = s.match(/https?:\/\/[^\s"'<>()]+/);
+  return m ? m[0].replace(/[.,;،]+$/, '') : s.trim();
+}
+
+function toggleCampEdit(campId, btn) {
+  const block = document.querySelector('.camp-block[data-campid="' + campId + '"]');
+  if (!block) return;
+  const on = !block.classList.contains('editing');
+  block.classList.toggle('editing', on);
+  block.querySelectorAll('.dues-editable').forEach(td => td.setAttribute('contenteditable', on ? 'true' : 'false'));
+  block.querySelectorAll('.dues-masklabel').forEach(td => {
+    const real = td.getAttribute('data-real') || '';
+    if (on) { td.textContent = real; }
+    else { td.innerHTML = real ? '<span class="dues-link">انسخ كود الترويج \u2398</span>' : ''; }
+  });
+  if (btn) btn.textContent = on ? '\u2705 تم' : '\u270F\uFE0F تعديل';
+  try { showToast(on ? 'وضع التعديل مفعّل لهذي الحملة \u2014 صلّح ثم صدّر' : 'تم إيقاف التعديل \u2014 محفوظ للتصدير', 'success', 3500); } catch (e) {}
+}
+
+function toggleDuesEdit() {
+  duesEditing = !duesEditing;
+  document.querySelectorAll('.dues-editable').forEach(td => td.setAttribute('contenteditable', duesEditing ? 'true' : 'false'));
+  // خانات ذات لصيقة مقنّعة (كود الترويج): أظهر الكود الفعلي للتعديل، وأرجع اللصيقة عند الإيقاف
+  document.querySelectorAll('.dues-masklabel').forEach(td => {
+    const real = td.getAttribute('data-real') || '';
+    if (duesEditing) { td.textContent = real; }
+    else { td.innerHTML = real ? '<span class="dues-link">انسخ كود الترويج ⎘</span>' : ''; }
+  });
+  const btn = document.getElementById('dues-edit-btn');
+  if (btn) btn.textContent = duesEditing ? '✅ تم — أوقف التعديل' : '✏️ تعديل قبل التصدير';
+  try { showToast(duesEditing ? 'وضع التعديل مفعّل — صلّح الآيبان/الاسم/الكود ثم صدّر' : 'تم إيقاف التعديل — تعديلاتك محفوظة للتصدير', 'success', 4000); } catch (e) {}
+}
+function autoCleanIbans() {
+  let fixed = 0, bad = 0;
+  document.querySelectorAll('.dues-editable[data-field="iban"]').forEach(td => {
+    const id = td.getAttribute('data-appid');
+    const raw = (td.textContent || '').trim();
+    if (!raw) { td.classList.remove('iban-bad'); return; }   // خانة فاضية = مقعد لم يُعتمد، تجاهلها
+    const cleaned = cleanIban(td.textContent);
+    if (ibanLooksValid(cleaned)) {
+      if (cleaned !== td.textContent.trim()) td.textContent = cleaned;
+      td.classList.remove('iban-bad');
+      duesOverrides[id] = duesOverrides[id] || {}; duesOverrides[id].iban = cleaned; fixed++;
+    } else { td.classList.add('iban-bad'); bad++; }
+  });
+  saveDuesOverrides();
+}
+// التقاط التعديلات اليدوية
+document.addEventListener('input', function (e) {
+  const td = e.target && e.target.closest ? e.target.closest('.dues-editable') : null;
+  if (!td) return;
+  const id = td.getAttribute('data-appid'), f = td.getAttribute('data-field');
+  if (!id || !f) return;
+  duesOverrides[id] = duesOverrides[id] || {};
+  duesOverrides[id][f] = td.textContent.trim();
+  if (td.classList.contains('dues-masklabel')) { td.setAttribute('data-real', td.textContent.trim()); td.setAttribute('data-copy', td.textContent.trim()); }
+  if (f === 'iban') td.classList.toggle('iban-bad', td.textContent.trim() !== '' && !ibanLooksValid(td.textContent));
+  saveDuesOverrides();
+});
+
+// حالة طلب التصحيح: يبحث في stage_data عن مرحلة عليها طلب تصحيح لم يُراجَع بعد
+function getDuesFixInfo(a){
+  const sd = (a && typeof a.stage_data === 'object' && a.stage_data) ? a.stage_data : {};
+  for (const k of Object.keys(sd)) {
+    const s = sd[k];
+    if (s && s._fix_requested === true && !s._fix_cleared) {
+      return { requested:true, stage:(parseInt(k,10)||k), at:(s._fix_at||''), note:(s._fix_note||''), done:(s._fix_done===true) };
+    }
+  }
+  return { requested:false };
+}
+
+// صف معبّأ (صفقة معتمدة)
+function duesRowFilled(a, camp, idx, totals) {
+  const ov = duesOverrides[a.id] || {};
+  const creator = a.users || {};
+  const nameRaw = ov.name != null ? ov.name : (creator.name || 'معلن');
+  const name = escHtml(nameRaw);
+  const phoneRaw = (creator.whatsapp || creator.phone || '').trim();
+  const amountNum = Number(a.final_price || a.price || 0);
+  const amountDisp = amountNum.toLocaleString('en-US') + ' ر.س';
+  const sd = (typeof a.stage_data === 'object' && a.stage_data) ? a.stage_data : {};
+  const bank = sd[8] || sd['8'] || {};
+  const ibanRaw = ov.iban != null ? ov.iban : (bank.iban || '');
+  const holderRaw = ov.holder != null ? ov.holder : (bank.account_holder || '');
+  const stage7 = sd[7] || sd['7'] || {};
+  const pub = cleanUrl(stage7.publish_link || '');
+  const promo = ov.promo != null ? ov.promo : (stage7.promo_code || '');
+  const publishIso = stage7._at || a.completed_at || '';
+  const acctLink = duesAccountLink(creator);
+  const stg = a.stage || 1;
+  const ps = a.payment_status || 'unpaid';
+  const fix = getDuesFixInfo(a);
+
+  let statusHtml, statusPlain, dateDisp = '—', dateCopy = '', action = '';
+  {
+    const d = publishIso ? new Date(publishIso) : null;
+    if (d && !isNaN(d.getTime())) { dateCopy = d.toLocaleDateString('en-GB'); dateDisp = duesDateText(publishIso); }
+  }
+  if (stg < 9) {
+    statusPlain = 'قيد التنفيذ - ' + (DUES_STAGE_NAMES[stg] || ('مرحلة ' + stg));
+    statusHtml = '<span class="dp dp-prog">' + escHtml(statusPlain) + '</span>';
+  } else {
+    if (ps === 'confirmed') {
+      statusPlain = 'تم الدفع'; statusHtml = '<span class="dp dp-paid">تم الدفع ✓</span>'; totals.paid += amountNum;
+    } else if (ps === 'marked_paid') {
+      statusPlain = 'حوّلت - بانتظار التأكيد'; statusHtml = '<span class="dp dp-wait">حوّلت — بانتظار التأكيد</span>'; totals.due += amountNum;
+    } else if (ps === 'disputed') {
+      statusPlain = 'نزاع استلام'; statusHtml = '<span class="dp dp-due">نزاع استلام</span>'; totals.due += amountNum;
+      action = '<button class="dues-mark" onclick="setBrandPaid(\'' + a.id + '\')">تم التحويل ✓</button>';
+    } else {
+      const overdue = duesIsOverdue(a, camp);
+      statusPlain = 'باقي' + (overdue ? ' - متأخر' : ''); statusHtml = '<span class="dp dp-due">' + escHtml(statusPlain) + '</span>'; totals.due += amountNum;
+      action = '<button class="dues-mark" onclick="setBrandPaid(\'' + a.id + '\')">تم التحويل ✓</button>';
+    }
+  }
+
+  // تجاوز الحالة عند وجود طلب تصحيح: بانتظار تعديل المعلن (كهرماني) → عُدّل جاهز للمراجعة (أخضر)
+  if (fix.requested) {
+    if (!fix.done) {
+      statusPlain = 'بانتظار تعديل المعلن';
+      statusHtml = '<span class="dp dp-fixwait">🔧 بانتظار تعديل المعلن</span>';
+      action = ''; // إخفاء زر "تم التحويل" حتى يصحّح المؤثر بياناته (منع الدفع على بيانات قديمة/غلط)
+    } else {
+      statusPlain = 'عُدّل - جاهز للمراجعة';
+      statusHtml = '<span class="dp dp-fixdone">✅ عُدّل — جاهز للمراجعة</span>';
+      action = '<button class="dues-mark" style="background:#1D9E75" onclick="clearFix(\'' + a.id + '\',' + fix.stage + ')">✓ راجعت</button>' + (action || '');
+    }
+  }
+
+  const nameCell = '<td class="cell dues-editable" data-appid="' + a.id + '" data-field="name" data-copy="' + escHtml(nameRaw) + '" onclick="duesCopy(this)">' + name + '</td>';
+  const phoneCell = phoneRaw
+    ? '<td><div style="display:flex;gap:8px;align-items:center;justify-content:center;white-space:nowrap;"><a class="dues-link" href="' + escHtml(duesWaLink(phoneRaw)) + '" target="_blank" rel="noopener">واتساب ↗</a><span style="color:var(--line,#ddd);">|</span><span class="dues-link" data-copy="' + escHtml(phoneRaw) + '" onclick="duesCopy(this)" style="cursor:pointer;">' + escHtml(phoneRaw) + '</span></div></td>'
+    : '<td class="dim">—</td>';
+  const acctCell = acctLink
+    ? '<td><a class="dues-link" href="' + escHtml(acctLink) + '" target="_blank" rel="noopener">رابط الحساب ↗</a></td>'
+    : '<td class="dim">—</td>';
+  const dateCell = '<td class="cell" data-copy="' + escHtml(dateCopy) + '" onclick="duesCopy(this)">' + dateDisp + '</td>';
+  const videoCell = pub
+    ? '<td><div style="display:flex;gap:8px;align-items:center;justify-content:center;white-space:nowrap;"><a class="dues-link" href="' + escHtml(pub) + '" target="_blank" rel="noopener">فتح ↗</a><span style="color:var(--line,#ddd);">|</span><span class="dues-link" data-copy="' + escHtml(pub) + '" onclick="duesCopy(this)" style="cursor:pointer;">نسخ ⎘</span></div></td>'
+    : '<td class="dim">—</td>';
+  const promoCell = '<td class="cell dues-editable dues-masklabel" data-appid="' + a.id + '" data-field="promo" data-copy="' + escHtml(promo) + '" data-real="' + escHtml(promo) + '" onclick="duesCopy(this)">' + (promo ? '<span class="dues-link">انسخ كود الترويج ⎘</span>' : '') + '</td>';
+  const ibanBad = (ibanRaw && !ibanLooksValid(ibanRaw)) ? ' iban-bad' : '';
+  const ibanCell = '<td class="cell xl-iban dues-editable' + ibanBad + '" data-appid="' + a.id + '" data-field="iban" data-copy="' + escHtml(ibanRaw) + '" onclick="duesCopy(this)">' + escHtml(ibanRaw || '') + '</td>';
+  const bankName = bankFromIban(ibanRaw);
+  const bankCell = '<td class="cell dim" style="white-space:nowrap;">' + escHtml(bankName || '—') + '</td>';
+  const holderCell = '<td class="cell dues-editable" data-appid="' + a.id + '" data-field="holder" data-copy="' + escHtml(holderRaw) + '" onclick="duesCopy(this)">' + escHtml(holderRaw || '') + '</td>';
+  const amountCell = '<td class="cell xl-amount" data-copy="' + amountNum + '" onclick="duesCopy(this)">' + amountDisp + '</td>';
+  const statusCell = '<td class="cell" data-copy="' + escHtml(statusPlain) + '" onclick="duesCopy(this)">' + statusHtml + '</td>';
+  const fixBtn = (stg >= 9) ? '<button class="dues-fix" onclick="requestFix(\'' + a.id + '\')">↩︎ طلب تصحيح</button>' : '';
+  const actionCell = '<td><div style="display:flex;gap:4px;align-items:center;justify-content:center;flex-wrap:wrap;">' + (action || '') + fixBtn + ((action || fixBtn) ? '' : '<span class="dim">—</span>') + '</div></td>';
+
+  const rowTSV = [nameRaw, phoneRaw || '—', acctLink || '—', dateCopy || '—', pub || '—', promo || '—', ibanRaw || '—', bankName || '—', holderRaw || '—', amountNum, statusPlain].join('\t');
+  return '<tr><td class="xl-rowh xl-rowcopy" data-copy="' + escHtml(rowTSV) + '" onclick="duesCopyRow(this)" title="نسخ الصف كامل">' + toArabic(idx) + '</td>'
+    + nameCell + phoneCell + acctCell + dateCell + videoCell + promoCell + ibanCell + bankCell + holderCell + amountCell + statusCell + actionCell + '</tr>';
+}
+
+// نسخ الصف كامل (مفصول بـ Tab — جاهز للّصق في إكسل)
+function duesCopyRow(el) {
+  const txt = el.getAttribute('data-copy') || '';
+  const done = () => {
+    el.classList.add('copied');
+    setTimeout(() => el.classList.remove('copied'), 700);
+    try { showToast('تم نسخ الصف كامل ✓'); } catch (e) {}
+  };
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(txt).then(done).catch(() => fallbackCopy(txt, done));
+  } else { fallbackCopy(txt, done); }
+}
+
+// تصدير كل الصفقات المعتمدة إلى ملف CSV يفتح في إكسل
+function csvCell(v) {
+  const s = String(v == null ? '' : v);
+  return /[",\r\n]/.test(s) ? '"' + s.replace(/"/g, '""') + '"' : s;
+}
+function exportDuesCSV(onlyCampId) {
+  let camps = (myCampaigns || []).slice().sort((a, b) => new Date(b.created_at || 0) - new Date(a.created_at || 0));
+  if (onlyCampId) camps = camps.filter(c => c.id === onlyCampId);
+  const header = ['الحملة', 'تاريخ انطلاق الحملة', 'الاسم', 'الجوال', 'رابط الحساب', 'تاريخ النشر', 'رابط الفيديو', 'كود الترويج', 'الآيبان', 'البنك', 'الاسم بالبنك', 'المبلغ', 'حالة الدفع'];
+  const lines = [header];
+  let count = 0;
+  camps.forEach(c => {
+    const deals = (campaignApps[c.id] || []).filter(a => a.status === 'closed' && a.brand_approved === true);
+    let launch = '';
+    const ld = c.created_at ? new Date(c.created_at) : null;
+    if (ld && !isNaN(ld.getTime())) launch = ld.toLocaleDateString('en-GB');
+    deals.forEach(a => {
+      const ov = duesOverrides[a.id] || {};
+      const creator = a.users || {};
+      const amountNum = Number(a.final_price || a.price || 0);
+      const sd = (typeof a.stage_data === 'object' && a.stage_data) ? a.stage_data : {};
+      const bank = sd[8] || sd['8'] || {};
+      const st7 = sd[7] || sd['7'] || {};
+      const publishIso = st7._at || a.completed_at || '';
+      let dateCsv = '';
+      const d = publishIso ? new Date(publishIso) : null;
+      if (d && !isNaN(d.getTime())) dateCsv = d.toLocaleDateString('en-GB');
+      const stg = a.stage || 1, ps = a.payment_status || 'unpaid';
+      let statusPlain;
+      if (stg < 9) statusPlain = 'قيد التنفيذ - ' + (DUES_STAGE_NAMES[stg] || ('مرحلة ' + stg));
+      else if (ps === 'confirmed') statusPlain = 'تم الدفع';
+      else if (ps === 'marked_paid') statusPlain = 'حوّلت - بانتظار التأكيد';
+      else if (ps === 'disputed') statusPlain = 'نزاع استلام';
+      else statusPlain = 'باقي' + (duesIsOverdue(a, c) ? ' - متأخر' : '');
+      const nameOut = cleanField(ov.name != null ? ov.name : (creator.name || 'معلن'));
+      const ibanOut = cleanIban(ov.iban != null ? ov.iban : (bank.iban || ''));
+      const holderOut = cleanField(ov.holder != null ? ov.holder : (bank.account_holder || ''));
+      lines.push([cleanField(c.title || 'حملة'), launch, nameOut, cleanField(creator.whatsapp || creator.phone || ''), cleanField(duesAccountLink(creator) || ''), dateCsv,
+        cleanUrl(st7.publish_link || ''), cleanField(ov.promo != null ? ov.promo : (st7.promo_code || '')), ibanOut, bankFromIban(ibanOut), holderOut, amountNum, statusPlain]);
+      count++;
+    });
+  });
+  if (!count) { showToast('ما فيه صفقات معتمدة للتصدير', 'error'); return; }
+  const csv = '\uFEFF' + lines.map(r => r.map(csvCell).join(',')).join('\r\n');
+  const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement('a');
+  const today = new Date().toLocaleDateString('en-GB').replace(/\//g, '-');
+  const _fn = onlyCampId ? String((camps[0]&&camps[0].title)||'حملة').replace(/[\\/:*?"<>|]/g,'') : 'الكل';
+  link.href = url; link.download = 'مستحقات-' + _fn + '-' + today + '.csv';
+  document.body.appendChild(link); link.click(); document.body.removeChild(link);
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
+  showToast('تم تصدير ' + toArabic(count) + ' صف ✓');
+}
+
+// صف فاضي (مقعد معلن لم يُملأ بعد)
+function duesRowEmpty(idx) {
+  let tds = '';
+  for (let k = 0; k < 11; k++) tds += '<td>&nbsp;</td>';
+  return '<tr class="xl-empty"><td class="xl-rowh">' + toArabic(idx) + '</td>' + tds
+    + '<td><span class="dim">—</span></td></tr>';
+}
+
+// بلوك حملة واحدة: عنوان + تاريخ الانطلاق + جدول بعدد المعلنين
+function renderCampaignBlock(camp, deals) {
+  const totals = { due: 0, paid: 0 };
+
+  // ترتيب: المتأخر/النزاع أولًا، ثم بانتظار التأكيد، ثم قيد التنفيذ، ثم المدفوع
+  function groupRank(a) {
+    const stg = a.stage || 1;
+    const ps = a.payment_status || 'unpaid';
+    if (stg >= 9) { if (ps === 'confirmed') return 4; if (ps === 'marked_paid') return 1; return 0; }
+    return 2;
+  }
+  deals = deals.slice().sort((a, b) => {
+    const ra = groupRank(a), rb = groupRank(b);
+    if (ra !== rb) return ra - rb;
+    return new Date(b.completed_at || b.created_at || 0) - new Date(a.completed_at || a.created_at || 0);
+  });
+
+  const size = parseInt(camp.campaign_size, 10) || 0;
+  const slots = Math.max(size, deals.length);
+
+  let body = '';
+  for (let i = 0; i < slots; i++) {
+    body += deals[i] ? duesRowFilled(deals[i], camp, i + 1, totals) : duesRowEmpty(i + 1);
+  }
+
+  const colLetters = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K'].map(L => '<th class="xl-colh">' + L + '</th>').join('');
+  const launch = duesDateText(camp.created_at);
+  const sumChips =
+    '<span class="dues-chip due">المتبقّي: ' + totals.due.toLocaleString('en-US') + ' ر.س</span>' +
+    '<span class="dues-chip paid">المدفوع: ' + totals.paid.toLocaleString('en-US') + ' ر.س</span>';
+
+  return '<div class="camp-block" data-campid="' + camp.id + '">'
+    + '<div class="camp-bar">'
+    +   '<div class="camp-titles">'
+    +     '<div class="camp-title">📦 ' + escHtml(camp.title || 'حملة') + '</div>'
+    +     '<div class="camp-meta">'
+    +       '<span>🗓️ انطلقت: <strong>' + launch + '</strong></span>'
+    +       (size ? '<span>👥 المطلوب: <strong>' + toArabic(size) + ' معلن</strong></span>' : '')
+    +       '<span>✅ معتمد: <strong>' + toArabic(deals.length) + (size ? '/' + toArabic(size) : '') + '</strong></span>'
+    +     '</div>'
+    +   '</div>'
+    +   '<div class="dues-sum">' + sumChips + '<div class="camp-exports"><button class="camp-exp-btn edit" onclick="toggleCampEdit(\'' + camp.id + '\', this)">✏️ تعديل</button><button class="camp-exp-btn pay" onclick="exportPaySheetCSV(\'' + camp.id + '\')">💳 شيت الدفع</button><button class="camp-exp-btn xls" onclick="exportDuesCSV(\'' + camp.id + '\')">📥 Excel</button></div></div>'
+    + '</div>'
+    + '<div class="dues-grid-wrap"><table class="xl">'
+    + '<thead>'
+    + '<tr><th class="xl-corner"></th>' + colLetters + '</tr>'
+    + '<tr><th class="xl-rowh"></th><th class="xl-label">الاسم</th><th class="xl-label">الجوال</th><th class="xl-label">رابط الحساب</th><th class="xl-label">تاريخ النشر</th><th class="xl-label">رابط الفيديو</th><th class="xl-label">كود الترويج</th><th class="xl-label">الآيبان</th><th class="xl-label">البنك</th><th class="xl-label">الاسم بالبنك</th><th class="xl-label">المبلغ</th><th class="xl-label">حالة الدفع</th><th class="xl-label">إجراء</th></tr>'
+    + '</thead><tbody>' + body + '</tbody></table></div>'
+    + '</div>';
+}
+
+// ============ عرض المستحقات: شبكة بطاقات (افتراضي) ↔ شيت حملة واحدة ============
+let duesView = 'grid';   // 'grid' أو معرّف الحملة المفتوحة
+
+function duesCampStats(c) {
+  const deals = (campaignApps[c.id] || []).filter(a => a.status === 'closed' && a.brand_approved === true);
+  const creators = deals.length;
+  const total = deals.reduce((s, a) => s + Number(a.final_price || a.price || 0), 0);
+  return { deals, creators, total };
+}
+
+function duesCardHTML(c) {
+  const st = duesCampStats(c);
+  const name = escHtml(c.title || 'حملة');
+  return '<div class="dues-card" data-name="' + name + '" onclick="openDuesCamp(\'' + c.id + '\')">'
+    + '<div class="dues-card-h"><span class="dues-card-name">' + name + '</span><span class="dues-card-go">\u2190</span></div>'
+    + '<div class="dues-card-meta">'
+    +   '<span class="m-users">\uD83D\uDC65 ' + toArabic(st.creators) + ' معلن</span>'
+    +   '<span class="m-amount">\uD83D\uDCB0 ' + st.total.toLocaleString('en-US') + ' ر.س</span>'
+    + '</div></div>';
+}
+
+function filterDuesCards(q) {
+  q = (q || '').trim().toLowerCase();
+  const cards = document.querySelectorAll('#dues-cards .dues-card');
+  let shown = 0;
+  cards.forEach(card => {
+    const name = (card.getAttribute('data-name') || '').toLowerCase();
+    const on = !q || name.indexOf(q) >= 0;
+    card.style.display = on ? '' : 'none';
+    if (on) shown++;
+  });
+  const nr = document.getElementById('dues-noresult');
+  if (nr) nr.style.display = shown ? 'none' : 'block';
+}
+
+function openDuesCamp(campId) { duesView = campId; renderDues(); try { window.scrollTo(0, 0); } catch (e) {} }
+function backToDuesCards() { duesView = 'grid'; renderDues(); try { window.scrollTo(0, 0); } catch (e) {} }
+
+function renderDues() {
+  const host = document.getElementById('dues-section');
+  if (!host) return;
+
+  const camps = (myCampaigns || []).slice().sort((a, b) =>
+    new Date(b.created_at || 0) - new Date(a.created_at || 0));
+
+  if (!camps.length) {
+    host.innerHTML =
+      '<div class="dues-wrap"><div class="dues-empty">ما عندك حملات بعد. أنشئ حملة من اللوحة وبتظهر هنا.</div></div>';
+    return;
+  }
+
+  // عرض شيت حملة واحدة
+  if (duesView !== 'grid') {
+    const c = camps.find(x => x.id === duesView);
+    if (c) {
+      const deals = (campaignApps[c.id] || []).filter(a => a.status === 'closed' && a.brand_approved === true);
+      host.innerHTML =
+        '<div class="dues-wrap">'
+        + '<div class="dues-head" style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;">'
+        +   '<button class="dues-back" onclick="backToDuesCards()">← رجوع للبطاقات</button>'
+        +   '<h3 style="margin:0">📋 ' + escHtml(c.title || 'حملة') + '</h3>'
+        + '</div>'
+        + '<p class="dues-hint">👆 اضغط أي خانة لنسخها · 🔗 «رابط الحساب» أو «رابط الفيديو» للفتح · الصفوف الفاضية = مقاعد لم تُعتمد بعد</p>'
+        + renderCampaignBlock(c, deals)
+        + '</div>';
+      autoCleanIbans();
+      return;
+    }
+    duesView = 'grid';   // الحملة غير موجودة → رجوع للشبكة
+  }
+
+  // شبكة البطاقات
+  const cards = camps.map(duesCardHTML).join('');
+  host.innerHTML =
+    '<div class="dues-wrap">'
+    + '<div class="dues-head"><h3>📋 الحملات (' + toArabic(camps.length) + ')</h3></div>'
+    + '<div class="dues-search-wrap"><input id="dues-search" type="text" placeholder="🔍 ابحث باسم الحملة..." oninput="filterDuesCards(this.value)" class="dues-search"></div>'
+    + '<div class="dues-cards" id="dues-cards">' + cards + '</div>'
+    + '<div class="dues-noresult" id="dues-noresult" style="display:none">ما فيه حملة بهذا الاسم.</div>'
+    + '</div>';
+}
+
+// ============ تصدير شيت الدفع المختصر: رابط الفيديو + الاسم بالبنك + الآيبان ============
+// يُبنى لحظة الضغط من أحدث البيانات (يشمل أي تنظيف/تعديل سويته) — فهو محدّث تلقائيًا.
+function exportPaySheetCSV(onlyCampId) {
+  let camps = (myCampaigns || []).slice().sort((a, b) => new Date(b.created_at || 0) - new Date(a.created_at || 0));
+  if (onlyCampId) camps = camps.filter(c => c.id === onlyCampId);
+  const header = ['#', 'رابط الفيديو', 'الاسم بالبنك', 'الآيبان', 'البنك', 'المبلغ'];
+  const lines = [header];
+  let count = 0;
+  camps.forEach(c => {
+    // شيت الدفع = الصفقات الجاهزة للدفع فقط (مكتملة: المرحلة ≥ 9 وبياناتها البنكية مُدخلة)،
+    // نستبعد الصفقات المعتمدة اللي لسّا قيد التنفيذ حتى ما تُدفع مبكرًا ببيانات ناقصة.
+    const deals = (campaignApps[c.id] || []).filter(a => a.status === 'closed' && a.brand_approved === true && (a.stage || 1) >= 9);
+    deals.forEach(a => {
+      const ov = duesOverrides[a.id] || {};
+      const sd = (typeof a.stage_data === 'object' && a.stage_data) ? a.stage_data : {};
+      const bank = sd[8] || sd['8'] || {};
+      const st7 = sd[7] || sd['7'] || {};
+      const video = cleanUrl(st7.publish_link || '');
+      const videoCell = video ? ('=HYPERLINK("' + video.replace(/"/g, '') + '","▶ فتح الفيديو")') : '';
+      const holder = cleanField(ov.holder != null ? ov.holder : (bank.account_holder || ''));
+      const iban = cleanIban(ov.iban != null ? ov.iban : (bank.iban || ''));
+      const amount = Number(a.final_price || a.price || 0);
+      count++;
+      lines.push([count, videoCell, holder, iban, bankFromIban(iban), amount]);
+    });
+  });
+  if (!count) { showToast('ما فيه صفقات معتمدة للتصدير', 'error'); return; }
+  const csv = '\uFEFF' + lines.map(r => r.map(csvCell).join(',')).join('\r\n');
+  const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement('a');
+  const today = new Date().toLocaleDateString('en-GB').replace(/\//g, '-');
+  const _fn = onlyCampId ? String((camps[0]&&camps[0].title)||'حملة').replace(/[\\/:*?"<>|]/g,'') : 'الكل';
+  link.href = url; link.download = 'شيت-الدفع-' + _fn + '-' + today + '.csv';
+  document.body.appendChild(link); link.click(); document.body.removeChild(link);
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
+  showToast('تم تصدير شيت الدفع المختصر (' + toArabic(count) + ' صف) ✓');
+}
+
+async function clearFix(appId, stage){
+  try{
+    const { data: row, error:e1 } = await supabaseClient.from('applications').select('stage_data').eq('id', appId).single();
+    if(e1) throw e1;
+    const sd = (row && typeof row.stage_data==='object' && row.stage_data) ? { ...row.stage_data } : {};
+    if (sd[stage]) sd[stage] = { ...sd[stage], _fix_cleared:true };
+    const { error:e2 } = await supabaseClient.from('applications').update({ stage_data: sd }).eq('id', appId);
+    if(e2) throw e2;
+    showToast('تمّت المراجعة ✓', 'success');
+    if (typeof loadData==='function') loadData();
+  }catch(err){ console.error('clearFix failed:', err); showToast('حصل خطأ، حاول مرة أخرى', 'error'); }
+}
+
+async function setBrandPaid(applicationId) {
+  try {
+    const { data, error } = await supabaseClient
+      .from('applications')
+      .update({ payment_status: 'marked_paid', paid_marked_at: new Date().toISOString() })
+      .eq('id', applicationId)
+      .select();
+    if (error) throw error;
+    if (!data || data.length === 0) throw new Error('لم يتم التحديث. تحقق من سياسات الحماية.');
+
+    const { app, campaign } = findAppById(applicationId);
+    if (app && app.creator_id) {
+      const title = '💸 تم تحويل مستحقاتك';
+      const body = `${campaign?.title || 'صفقة'}: الشركة أبلغت بتحويل المبلغ. افتح صفقتك وأكّد الاستلام.`;
+      try { createNotification(app.creator_id, 'payment_marked', title, body, '/creator.html').catch(console.error); } catch (e) {}
+      fetch('https://chpzecgpylxqsutjydkb.supabase.co/functions/v1/send-push', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + supabaseClient.supabaseKey },
+        body: JSON.stringify({ title, body, url: '/creator.html', target_users: [app.creator_id] })
+      }).catch(console.error);
+    }
+
+    await loadData();
+    showToast('تم تسجيل التحويل ✓ — بانتظار تأكيد المعلن.');
+  } catch (err) {
+    console.error('Brand paid error:', err);
+    showToast('حصل خطأ: ' + (err.message || 'حاول مرة أخرى'), 'error');
+  }
+}
+
+let _fixAppId = null, _fixStage = null;
+const FIX_STAGE_LABEL = { 3: 'الاستلام', 5: 'المحتوى / الفيديو', 7: 'رابط النشر / كود الترويج', 8: 'البيانات البنكية' };
+function requestFix(applicationId) {
+  _fixAppId = applicationId; _fixStage = null;
+  document.querySelectorAll('.fix-opt').forEach(b => b.classList.remove('sel'));
+  const ta = document.getElementById('fix-note'); if (ta) ta.value = '';
+  const m = document.getElementById('fix-modal'); if (m) m.style.display = 'flex';
+}
+function chooseFixStage(s, btn) {
+  _fixStage = s;
+  document.querySelectorAll('.fix-opt').forEach(b => b.classList.remove('sel'));
+  if (btn) btn.classList.add('sel');
+}
+function closeFixModal() { const m = document.getElementById('fix-modal'); if (m) m.style.display = 'none'; }
+async function submitFix() {
+  const applicationId = _fixAppId; if (!applicationId) return;
+  if (!_fixStage) { showToast('اختر المرحلة اللي فيها الخطأ', 'error'); return; }
+  const note = (document.getElementById('fix-note').value || '').trim();
+  const label = FIX_STAGE_LABEL[_fixStage] || 'مرحلة';
+  const btn = document.getElementById('fix-confirm'); const o = btn.textContent; btn.disabled = true; btn.textContent = 'جاري الإرسال...';
+  try {
+    const { data: row, error: e1 } = await supabaseClient.from('applications').select('stage_data, creator_id').eq('id', applicationId).single();
+    if (e1) throw e1;
+    const existing = (row && typeof row.stage_data === 'object' && row.stage_data) ? { ...row.stage_data } : {};
+    existing[_fixStage] = { ...(existing[_fixStage] || {}), _fix_requested: true, _fix_note: note, _fix_at: new Date().toISOString() };
+    const { error: e2 } = await supabaseClient.from('applications').update({ stage_data: existing }).eq('id', applicationId).select();
+    if (e2) throw e2;
+    const creatorId = row && row.creator_id;
+    const body = 'صحّح بيانات مرحلة «' + label + '»' + (note ? ' — ' + note : '') + '، وبتكمل الصفقة تلقائيًا.';
+    if (creatorId) {
+      try { if (typeof createNotification === 'function') createNotification(creatorId, 'fix_requested', 'مطلوب تصحيح: ' + label, body, '/creator.html'); } catch (e) {}
+      fetch('https://chpzecgpylxqsutjydkb.supabase.co/functions/v1/send-push', { method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + supabaseClient.supabaseKey }, body: JSON.stringify({ title: 'مطلوب تصحيح: ' + label, body: body, url: '/creator.html', target_users: [creatorId] }) }).catch(function () {});
+    }
+    showToast('تم إرجاع «' + label + '» للمعلن للتصحيح', 'success');
+    closeFixModal();
+    if (typeof loadData === 'function') loadData();
+  } catch (err) {
+    console.error('fix request failed:', err);
+    showToast('حصل خطأ: ' + (err.message || 'حاول مرة أخرى'), 'error');
+  } finally { btn.disabled = false; btn.textContent = o; }
+}
+
+async function loadData() {
+  try {
+    myCampaigns = await dbGetMyCampaigns(WORKSPACE_ID || currentUser.id);
+
+    // جلب عروض كل الحملات بطلب واحد بدل طلب لكل حملة (إصلاح N+1)
+    const campIds = myCampaigns.map(c => c.id);
+    let allApps = [];
+    if (campIds.length) {
+      const { data, error } = await supabaseClient
+        .from('applications')
+        .select('*, users!applications_creator_id_fkey(name, platform, handle, followers, category, website)')
+        .in('campaign_id', campIds)
+        .order('created_at', { ascending: false });
+      if (error) throw error;
+      allApps = data || [];
+      // بيانات التواصل (واتساب/جوال) تُجلب عبر دالة آمنة deal-scoped بدل قراءة الأعمدة الحسّاسة مباشرة
+      try {
+        const { data: contacts } = await supabaseClient.rpc('simbl_deal_contacts');
+        if (Array.isArray(contacts)) {
+          const cmap = {};
+          contacts.forEach(function (r) { cmap[r.creator_id] = r; });
+          allApps.forEach(function (a) {
+            const ct = cmap[a.creator_id];
+            if (ct && a.users) { a.users.whatsapp = ct.whatsapp; a.users.phone = ct.phone; }
+          });
+        }
+      } catch (e) { console.error('deal contacts load failed:', e); }
+    }
+    const grouped = {};
+    myCampaigns.forEach(c => { grouped[c.id] = []; });
+    allApps.forEach(a => { (grouped[a.campaign_id] = grouped[a.campaign_id] || []).push(a); });
+    campaignApps = grouped;
+    renderDues();
+  } catch (err) {
+    console.error(err);
+    const host = document.getElementById('dues-section');
+    if (host) host.innerHTML = '<div class="dues-wrap"><div class="dues-empty" style="color:var(--accent)">حصل خطأ في التحميل. حدّث الصفحة.</div></div>';
+  }
+}
+
+async function init() {
+  await tryRestoreSession();
+  currentUser = getCurrentUser();
+  if (!currentUser) {
+    alert('يرجى تسجيل الدخول أولاً');
+    window.location.href = '/signup.html';
+    return;
+  }
+  if (currentUser.role !== 'brand') {
+    window.location.href = '/creator.html';
+    return;
+  }
+
+  // ====== مساحة الفريق + صلاحية المستحقات ======
+  WORKSPACE_ID = currentUser.id; window.TEAM_WS = null;
+  try {
+    const { data: ws } = await supabaseClient.rpc('team_my_workspace');
+    if (ws && ws.is_member && ws.owner_id) { WORKSPACE_ID = ws.owner_id; window.TEAM_WS = ws; }
+  } catch (e) {}
+  if (window.TEAM_WS && (window.TEAM_WS.permissions || []).indexOf('payments') < 0) {
+    alert('ما عندك صلاحية الاطلاع على المستحقات والدفع.');
+    window.location.href = '/company.html';
+    return;
+  }
+
+  // بوابة الموافقة (أعضاء الفريق يتبعون تفعيل المالك)
+  let approvalStatus = currentUser.approval_status;
+  try {
+    const { data: meRow } = await supabaseClient
+      .from('users').select('approval_status').eq('id', currentUser.id).maybeSingle();
+    if (meRow && meRow.approval_status) {
+      approvalStatus = meRow.approval_status;
+      currentUser.approval_status = approvalStatus;
+      saveCurrentUser(currentUser);
+    }
+  } catch (e) {}
+  if (!window.TEAM_WS && (approvalStatus === 'pending' || approvalStatus === 'rejected' || approvalStatus === 'suspended')) {
+    window.location.href = '/brand.html';
+    return;
+  }
+
+  await loadData();
+  // تحديث تلقائي كل 30 ثانية
+  setInterval(() => { if (document.visibilityState === 'visible') loadData(); }, 30000);
+}
+
+init();
+</script>
+
+<div id="fix-modal" style="display:none;position:fixed;inset:0;background:rgba(10,10,10,0.5);backdrop-filter:blur(4px);align-items:center;justify-content:center;z-index:200;padding:20px;">
+  <style>
+    .fix-opt{background:#f6f9f8;border:1.5px solid #e7edeb;border-radius:12px;padding:11px 10px;font-family:inherit;font-size:13px;font-weight:600;color:#33413c;cursor:pointer;text-align:center;transition:.15s;}
+    .fix-opt.sel{border-color:#c0392b;background:#fdecea;color:#a93226;}
+  </style>
+  <div style="background:#fff;border-radius:20px;padding:26px;max-width:460px;width:100%;font-family:var(--font-body,sans-serif);">
+    <h3 style="margin:0 0 6px;">طلب تصحيح من المعلن</h3>
+    <p style="color:#6f867f;font-size:13px;margin:0 0 12px;">اختر المرحلة اللي فيها الخطأ — يرجع المعلن لها فقط، يصحّح، ويكمل الباقي تلقائيًا.</p>
+    <div id="fix-opts" style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px;">
+      <button type="button" class="fix-opt" onclick="chooseFixStage(3,this)">📍 الاستلام</button>
+      <button type="button" class="fix-opt" onclick="chooseFixStage(5,this)">🎬 المحتوى / الفيديو</button>
+      <button type="button" class="fix-opt" onclick="chooseFixStage(7,this)">🔗 رابط النشر / كود الترويج</button>
+      <button type="button" class="fix-opt" onclick="chooseFixStage(8,this)">🏦 البيانات البنكية</button>
+    </div>
+    <label style="font-size:12px;font-weight:600;">ملاحظة (اختياري — تظهر للمعلن)</label>
+    <textarea id="fix-note" rows="2" placeholder="مثلًا: الآيبان غلط، أو كود الترويج ما يشتغل..." style="width:100%;box-sizing:border-box;margin-top:6px;padding:10px;border:1px solid #e7edeb;border-radius:10px;font-family:inherit;"></textarea>
+    <div style="display:flex;gap:10px;justify-content:flex-end;margin-top:16px;">
+      <button type="button" onclick="closeFixModal()" style="background:#f1f5f4;border:0;border-radius:10px;padding:10px 18px;font-family:inherit;font-weight:600;cursor:pointer;">إلغاء</button>
+      <button type="button" id="fix-confirm" onclick="submitFix()" style="background:#c0392b;color:#fff;border:0;border-radius:10px;padding:10px 18px;font-family:inherit;font-weight:600;cursor:pointer;">↩︎ إرسال للمعلن</button>
+    </div>
+  </div>
+</div>
+    </div>
+  </div>
+</div>
+</body>
+</html>
