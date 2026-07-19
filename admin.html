@@ -4,7 +4,8 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="robots" content="noindex, nofollow">
-<title>لوحة تحكّم مشروعنا الثاني — الأدمن</title>
+<title>لوحة تحكّم ريتش — الأدمن</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%230F1420'/%3E%3Ccircle cx='32' cy='32' r='20' fill='none' stroke='%2317C3B2' stroke-width='6'/%3E%3Ccircle cx='32' cy='32' r='9' fill='none' stroke='%23F3EEE4' stroke-width='4'/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -12,9 +13,9 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
 :root{
-  --bg:#f7f8f7; --panel:#ffffff; --panel2:#f1f3f2; --line:rgba(10,10,10,.09);
-  --line2:rgba(10,10,10,.16); --text:#0a0a0a; --muted:#5f6b66; --faint:#9aa3a0;
-  --accent:#13B9B2; --accent-dim:#0f6e56; --accent-bg:rgba(19,185,178,.12);
+  --bg:#f7f8f7; --panel:#ffffff; --panel2:#f1f3f2; --line:rgba(15,20,32,.09);
+  --line2:rgba(15,20,32,.16); --text:#0F1420; --muted:#5f6b66; --faint:#9aa3a0;
+  --accent:#17C3B2; --accent-dim:#0f6e56; --accent-bg:rgba(19,185,178,.12);
   --good:#0f9d58; --warn:#b8860b; --danger:#d23b3b;
   --font:'IBM Plex Sans Arabic','Segoe UI',Tahoma,sans-serif;
 }
@@ -58,7 +59,7 @@ a{color:var(--accent);text-decoration:none}
 .kpi .ic{position:absolute;top:13px;left:14px;font-size:18px;color:var(--faint)}
 
 /* ===== leader summary bar (موحّد على كل التبويبات) ===== */
-.lead-bar{position:relative;background:linear-gradient(135deg,#15C2BA 0%,#13B9B2 42%,#0b8f88 100%);border-radius:18px;padding:18px 22px;color:#fff;margin-bottom:22px;overflow:hidden;box-shadow:0 18px 42px -28px rgba(19,185,178,.6);text-shadow:0 1px 2px rgba(6,60,57,.16)}
+.lead-bar{position:relative;background:linear-gradient(135deg,#15C2BA 0%,#17C3B2 42%,#0b8f88 100%);border-radius:18px;padding:18px 22px;color:#fff;margin-bottom:22px;overflow:hidden;box-shadow:0 18px 42px -28px rgba(19,185,178,.6);text-shadow:0 1px 2px rgba(6,60,57,.16)}
 .lead-bar::after{content:'';position:absolute;top:-45%;inset-inline-start:-6%;width:280px;height:280px;background:radial-gradient(circle,rgba(255,255,255,.14),transparent 70%);pointer-events:none}
 .lead-top{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:16px;position:relative;z-index:1}
 .lead-top .t{font-size:18px;font-weight:700}
@@ -184,7 +185,7 @@ pre.json{background:var(--bg);border:1px solid var(--line);border-radius:9px;pad
 .msg.creator{background:var(--accent-bg);border:1px solid rgba(19,185,178,.3);align-self:flex-end;border-bottom-inline-end-radius:3px}
 .msg .who{font-size:11px;color:var(--faint);margin-bottom:3px}
 .err-box{background:rgba(248,81,73,.1);border:1px solid rgba(248,81,73,.3);color:#ff9d97;border-radius:11px;padding:14px 16px;font-size:13.5px;margin-bottom:18px;display:none}
-/* ===== لوحة القيادة (نظرة عامة) — ألوان مشروعنا الثاني الرسمية ===== */
+/* ===== لوحة القيادة (نظرة عامة) — ألوان ريتش الرسمية ===== */
 .dsh-up{color:#0e9a94;font-weight:700}
 .dsh-grid{display:grid;gap:16px;margin-bottom:16px}.dsh-g2{grid-template-columns:1fr 1fr}
 @media(max-width:820px){.dsh-g2{grid-template-columns:1fr}}
@@ -198,7 +199,7 @@ pre.json{background:var(--bg);border:1px solid var(--line);border-radius:9px;pad
 .dsh-lg b{font-weight:700;color:#14201e}.dsh-lg span{color:var(--muted)}
 .dsh-fun{display:flex;flex-direction:column;gap:8px}.dsh-fr{display:flex;align-items:center;gap:10px}
 .dsh-fl{width:90px;font-size:12px;color:var(--muted);flex-shrink:0}
-.dsh-fb{height:24px;border-radius:6px;background:linear-gradient(90deg,#0e9a94,#13B9B2);display:flex;align-items:center;padding:0 9px;color:#fff;font-size:12px;font-weight:700;min-width:34px}
+.dsh-fb{height:24px;border-radius:6px;background:linear-gradient(90deg,#0e9a94,#17C3B2);display:flex;align-items:center;padding:0 9px;color:#fff;font-size:12px;font-weight:700;min-width:34px}
 .dsh-fp{font-size:11px;color:var(--faint);flex-shrink:0}
 .dsh-vb{display:flex;align-items:flex-end;gap:20px;height:140px;padding:0 6px}
 .dsh-vbi{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;gap:7px;height:100%}
@@ -209,9 +210,9 @@ pre.json{background:var(--bg);border:1px solid var(--line);border-radius:9px;pad
 .dsh-hr{display:grid;grid-template-columns:88px 1fr auto;align-items:center;gap:9px}
 .dsh-hn{font-size:12px;font-weight:500;color:#14201e;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .dsh-ht{background:#e3f4f2;border-radius:6px;height:20px;overflow:hidden}
-.dsh-hf{height:100%;border-radius:6px;background:linear-gradient(90deg,#7fd6d2,#13B9B2)}
-.dsh-hf.lite{background:linear-gradient(90deg,#83d7d2,#13B9B2)}
-.dsh-hv{font-size:11.5px;font-weight:700;color:#0c4f4b;white-space:nowrap}.dsh-ho{font-size:10.5px;color:#13B9B2;font-weight:700}
+.dsh-hf{height:100%;border-radius:6px;background:linear-gradient(90deg,#7fd6d2,#17C3B2)}
+.dsh-hf.lite{background:linear-gradient(90deg,#83d7d2,#17C3B2)}
+.dsh-hv{font-size:11.5px;font-weight:700;color:#0c4f4b;white-space:nowrap}.dsh-ho{font-size:10.5px;color:#17C3B2;font-weight:700}
 .dsh-dwrap{display:flex;align-items:center;gap:18px;flex-wrap:wrap}
 .dsh-donut{width:120px;height:120px;border-radius:50%;flex-shrink:0;position:relative}
 .dsh-donut::after{content:'';position:absolute;inset:19px;background:#fff;border-radius:50%}
@@ -236,8 +237,8 @@ pre.json{background:var(--bg);border:1px solid var(--line);border-radius:9px;pad
 <body>
 
 <!-- ===== overlay: الدخول كالمستخدم ===== -->
-<div id="imp-overlay" style="display:none;position:fixed;inset:0;z-index:100000;background:rgba(10,10,10,.82);backdrop-filter:blur(3px);align-items:center;justify-content:center;flex-direction:column;gap:16px;color:#fff;font-family:inherit">
-  <div class="spinner" style="border-top-color:#13B9B2"></div>
+<div id="imp-overlay" style="display:none;position:fixed;inset:0;z-index:100000;background:rgba(15,20,32,.82);backdrop-filter:blur(3px);align-items:center;justify-content:center;flex-direction:column;gap:16px;color:#fff;font-family:inherit">
+  <div class="spinner" style="border-top-color:#17C3B2"></div>
   <div id="imp-overlay-msg" style="font-size:15px;font-weight:600">جاري الدخول…</div>
 </div>
 <style>
@@ -252,7 +253,7 @@ pre.json{background:var(--bg);border:1px solid var(--line);border-radius:9px;pad
     <g fill="none" stroke-linejoin="miter" stroke-miterlimit="6" stroke-linecap="round">
       <path d="M30 100 C61.5 78 138.5 78 170 100 C138.5 122 61.5 122 30 100 Z" stroke="currentColor" stroke-width="8" transform="rotate(25 100 100)"/>
       <path d="M30 100 C61.5 78 138.5 78 170 100 C138.5 122 61.5 122 30 100 Z" stroke="currentColor" stroke-width="8" transform="rotate(-25 100 100)"/>
-      <path d="M76 100 Q100 88 124 100 Q100 112 76 100 Z" fill="none" stroke="#13B9B2" stroke-width="6"/>
+      <path d="M76 100 Q100 88 124 100 Q100 112 76 100 Z" fill="none" stroke="#17C3B2" stroke-width="6"/>
       <circle cx="100" cy="100" r="7" fill="currentColor"/>
     </g>
   </symbol>
@@ -276,7 +277,7 @@ pre.json{background:var(--bg);border:1px solid var(--line);border-radius:9px;pad
     <div class="brand">
       <svg class="brand-eye" style="color:var(--text)"><use href="#eye"/></svg>
       <div>
-        <div class="brand-name">لوحة تحكّم مشروعنا الثاني</div>
+        <div class="brand-name">لوحة تحكّم ريتش</div>
         <div class="brand-sub">كل اللي يصير في منصتك</div>
       </div>
     </div>
@@ -340,7 +341,7 @@ pre.json{background:var(--bg);border:1px solid var(--line);border-radius:9px;pad
     </div>
 
     <div class="section">
-      <h2><i class="ti ti-robot"></i> قيمة وكيل مشروعنا الثاني</h2>
+      <h2><i class="ti ti-robot"></i> قيمة وكيل ريتش</h2>
       <div class="mini-grid" id="agent-value"></div>
       <p class="dim" style="font-size:12px;margin-top:10px"><i class="ti ti-info-circle"></i> «الفرق» = السعر المبدئي للمعلن مقابل السعر النهائي بعد تفاوض الوكيل (للصفقات المقفلة).</p>
     </div>
@@ -1149,7 +1150,7 @@ function renderLeaderBar(){
   const fig = (ic,l,v,s,cls)=> '<div class="lead-fig '+(cls||'')+'"><div class="l">'+ic+' '+l+'</div><div class="v">'+v+'</div><div class="sub">'+s+'</div></div>';
   const r = x => money(x).replace(' ر.س','')+'<small> ر.س</small>';
   box.innerHTML =
-    '<div class="lead-top"><div><div class="t">لوحة قيادة مشروعنا الثاني ✦</div><div class="s">كل اللي يصير في منصتك — بمكان واحد</div></div>'
+    '<div class="lead-top"><div><div class="t">لوحة قيادة ريتش ✦</div><div class="s">كل اللي يصير في منصتك — بمكان واحد</div></div>'
     + '<span class="lead-live"><span class="d"></span> مباشر · محدّث الآن</span></div>'
     + '<div class="lead-figs">'
     +   fig('💰','قيمة الصفقات (GMV)', r(gmv), num(approved.length)+' صفقة معتمدة')
@@ -1198,7 +1199,7 @@ function renderOverview(){
   // حالة الطلبات (دونات)
   const sc = {}; APPS.forEach(a=>{ sc[a.status]=(sc[a.status]||0)+1; });
   const scOrder = Object.entries(sc).sort((a,b)=>b[1]-a[1]);
-  const shades = ['#13B9B2','#0e9a94','#5fd0ca','#a5e3df'];
+  const shades = ['#17C3B2','#0e9a94','#5fd0ca','#a5e3df'];
   let acc=0, stops=[], dleg=[]; const totApps=APPS.length||1;
   scOrder.slice(0,4).forEach((e,i)=>{ const pct=e[1]/totApps*100; stops.push(shades[i]+' '+acc.toFixed(2)+'% '+(acc+pct).toFixed(2)+'%'); acc+=pct; dleg.push({c:shades[i],n:DSH_STATUS[e[0]]||e[0],v:e[1]}); });
   if(acc<100) stops.push('#b6e7e4 '+acc.toFixed(2)+'% 100%');
@@ -1238,9 +1239,9 @@ function renderOverview(){
   box.innerHTML =
   // FINANCIAL FLOW (الأرقام الرئيسية صارت بشريط القيادة الموحّد فوق)
   '<div class="dsh-grid"><div class="dsh-card"><h4>💸 تدفّق الأموال — حقوق المؤثرين</h4><div class="hint">من إجمالي GMV '+money(gmv)+': المدفوع فعليًا، المستحق، وقيد التنفيذ'+(growthSub?' · '+growthSub:'')+'</div>'
-  +   '<div class="dsh-flow">'+(paid>0?'<div style="flex:'+paid+';background:#0e9a94">✓ مدفوع</div>':'')+(owed>0?'<div style="flex:'+owed+';background:#13B9B2">⚠ مستحق</div>':'')+(inprog>0?'<div style="flex:'+inprog+';background:#a5e3df;color:#0e6b66">قيد التنفيذ</div>':'')+'</div>'
+  +   '<div class="dsh-flow">'+(paid>0?'<div style="flex:'+paid+';background:#0e9a94">✓ مدفوع</div>':'')+(owed>0?'<div style="flex:'+owed+';background:#17C3B2">⚠ مستحق</div>':'')+(inprog>0?'<div style="flex:'+inprog+';background:#a5e3df;color:#0e6b66">قيد التنفيذ</div>':'')+'</div>'
   +   '<div class="dsh-leg"><div class="dsh-lg"><span class="sw" style="background:#0e9a94"></span><b>'+money(paid)+'</b><span>✓ مدفوع</span></div>'
-  +   '<div class="dsh-lg"><span class="sw" style="background:#13B9B2"></span><b>'+money(owed)+'</b><span>⚠ مستحق غير مدفوع</span></div>'
+  +   '<div class="dsh-lg"><span class="sw" style="background:#17C3B2"></span><b>'+money(owed)+'</b><span>⚠ مستحق غير مدفوع</span></div>'
   +   '<div class="dsh-lg"><span class="sw" style="background:#a5e3df"></span><b>'+money(inprog)+'</b><span>قيد التنفيذ</span></div></div></div></div>'
   // PAYMENTS & RECEIPT
   + '<div class="dsh-grid"><div class="dsh-card"><h4>💳 المدفوعات ومتابعة الاستلام</h4><div class="hint">التحويلات وتأكيد المؤثرين لاستلام حقوقهم</div>'

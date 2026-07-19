@@ -3,12 +3,13 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>لوحة الشركة - مشروعنا الثاني</title>
+<title>لوحة الشركة - ريتش</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%230F1420'/%3E%3Ccircle cx='32' cy='32' r='20' fill='none' stroke='%2317C3B2' stroke-width='6'/%3E%3Ccircle cx='32' cy='32' r='9' fill='none' stroke='%23F3EEE4' stroke-width='4'/%3E%3C/svg%3E">
 <link rel="manifest" href="/manifest.json">
 <meta name="theme-color" content="#ffffff">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
-<meta name="apple-mobile-web-app-title" content="مشروعنا الثاني">
+<meta name="apple-mobile-web-app-title" content="ريتش">
 <link rel="apple-touch-icon" href="/icon-192.png">
 <script src="/splash.js?v=2"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -20,19 +21,19 @@
 <style>
 :root {
   --cream: #ffffff;
-  --cream-darker: #f5f5f4;
-  --ink: #0a0a0a;
-  --ink-soft: #3a3a3a;
-  --ink-muted: #6b6b6b;
-  --ink-faint: #a0a0a0;
-  --accent: #13B9B2;
+  --cream-darker: #F3EEE4;
+  --ink: #0F1420;
+  --ink-soft: #2C3548;
+  --ink-muted: #8A93A6;
+  --ink-faint: #AAB2C0;
+  --accent: #17C3B2;
   --accent-soft: #7fd6d2;
   --accent-ink: #0c4f4b;
-  --line: rgba(10, 10, 10, 0.08);
-  --line-strong: rgba(10, 10, 10, 0.16);
-  --success: #13B9B2;
-  --gold: #6b6b6b;
-  --olive: #13B9B2;
+  --line: rgba(15, 20, 32, 0.08);
+  --line-strong: rgba(15, 20, 32, 0.16);
+  --success: #17C3B2;
+  --gold: #8A93A6;
+  --olive: #17C3B2;
   --font-display: 'IBM Plex Sans Arabic', 'Segoe UI', Tahoma, sans-serif;
   --font-body: 'IBM Plex Sans Arabic', 'Segoe UI', Tahoma, sans-serif;
 }
@@ -172,7 +173,7 @@ body {
   font-family: var(--font-body); font-size: 14px; font-weight: 500;
   cursor: pointer; transition: all .2s;
   background: #fff; color: var(--ink);
-  border: 1.5px solid rgba(10, 10, 10, 0.18);
+  border: 1.5px solid rgba(15, 20, 32, 0.18);
   margin-right: 12px;
 }
 .hero-link:hover {
@@ -347,7 +348,7 @@ body {
   50%      { box-shadow: 0 0 0 4px rgba(217, 119, 6, 0.15); }
 }
 .tab-count {
-  background: rgba(10, 10, 10, 0.05);
+  background: rgba(15, 20, 32, 0.05);
   color: var(--ink-soft);
   padding: 1px 8px;
   border-radius: 100px;
@@ -444,7 +445,7 @@ body {
   background: #fff;
   border: 1px solid var(--line);
   border-radius: 14px;
-  box-shadow: 0 12px 30px -10px rgba(10,10,10,0.18);
+  box-shadow: 0 12px 30px -10px rgba(15,20,32,0.18);
   padding: 6px;
   z-index: 20;
   animation: actionMenuIn 0.18s cubic-bezier(0.22, 1, 0.36, 1);
@@ -636,7 +637,7 @@ body {
 .acc-top { display: flex; align-items: center; gap: 8px; margin-bottom: 4px; flex-wrap: wrap; }
 .acc-top h4 { font-family: var(--font-display); font-size: 14px; font-weight: 600; margin: 0; }
 .acc-pill { font-size: 10px; font-weight: 500; padding: 2px 9px; border-radius: 100px; white-space: nowrap; }
-.acc-stage { font-size: 10px; font-weight: 500; padding: 2px 9px; border-radius: 100px; background: rgba(10, 10, 10, 0.06); color: var(--ink-muted); white-space: nowrap; }
+.acc-stage { font-size: 10px; font-weight: 500; padding: 2px 9px; border-radius: 100px; background: rgba(15, 20, 32, 0.06); color: var(--ink-muted); white-space: nowrap; }
 .acc-meta { font-size: 11px; color: var(--ink-muted); display: flex; gap: 8px; flex-wrap: wrap; }
 
 .app-price-c { text-align: left; }
@@ -653,7 +654,7 @@ body {
   border-radius: 8px;
   transition: transform .25s, background .15s, color .15s;
 }
-.app-expand-btn:hover { background: rgba(10, 10, 10, 0.04); color: var(--ink); }
+.app-expand-btn:hover { background: rgba(15, 20, 32, 0.04); color: var(--ink); }
 .app-block.is-expanded .app-expand-btn { transform: rotate(180deg); }
 
 .app-expanded {
@@ -946,7 +947,7 @@ body {
   background: var(--ink);
   color: #fff;
   border-color: var(--ink);
-  box-shadow: 0 0 0 4px rgba(10, 10, 10, 0.08);
+  box-shadow: 0 0 0 4px rgba(15, 20, 32, 0.08);
 }
 .ws-label {
   font-size: 12px;
@@ -1155,7 +1156,7 @@ body {
 
 .modal-backdrop {
   position: fixed; inset: 0;
-  background: rgba(10, 10, 10, 0.5);
+  background: rgba(15, 20, 32, 0.5);
   backdrop-filter: blur(4px);
   display: none; align-items: center; justify-content: center;
   z-index: 100; padding: 20px;
@@ -1165,12 +1166,12 @@ body {
 .modal-x {
   position: absolute; inset-inline-start: 20px; top: 20px;
   width: 38px; height: 38px; border-radius: 50%;
-  border: 1px solid var(--line, rgba(10,10,10,.1)); background: #fff;
-  font-size: 22px; line-height: 1; color: var(--ink-muted, #6b6b6b);
+  border: 1px solid var(--line, rgba(15,20,32,.1)); background: #fff;
+  font-size: 22px; line-height: 1; color: var(--ink-muted, #8A93A6);
   cursor: pointer; display: flex; align-items: center; justify-content: center;
   transition: border-color .15s, color .15s;
 }
-.modal-x:hover { border-color: var(--ink, #0a0a0a); color: var(--ink, #0a0a0a); }
+.modal-x:hover { border-color: var(--ink, #0F1420); color: var(--ink, #0F1420); }
 .modal h3 { font-family: var(--font-display); font-size: 22px; font-weight: 600; margin-bottom: 8px; }
 .modal .sub { color: var(--ink-muted); font-size: 14px; margin-bottom: 24px; }
 .field { margin-bottom: 20px; }
@@ -1273,7 +1274,7 @@ table.xl thead .xl-label { background:#e7eceb; color:var(--ink-soft); font-weigh
 /* الخانات القابلة للنسخ */
 table.xl td.cell { cursor:pointer; transition:background .12s; }
 table.xl td.cell:hover { background:#eef6f5; }
-table.xl td.cell.copied { background:#13B9B2; color:#fff; }
+table.xl td.cell.copied { background:#17C3B2; color:#fff; }
 table.xl td.cell.copied .dp, table.xl td.cell.copied .dues-link { color:#fff; }
 .xl-iban { direction:ltr; text-align:right; color:var(--accent-ink); font-weight:600; font-variant-numeric:tabular-nums; }
 .xl-amount { font-variant-numeric:tabular-nums; font-weight:600; }
@@ -1407,7 +1408,7 @@ table.xl td.cell.copied .dp, table.xl td.cell.copied .dues-link { color:#fff; }
 .ac-status.awaiting { background: rgba(19,185,178,0.12); color: #0c4f4b; }
 .stage-badge { white-space: nowrap; }
 .stage-badge.mine { background: var(--accent); color: #fff; }
-.stage-badge.waiting { background: rgba(10,10,10,0.05); color: var(--ink-muted); }
+.stage-badge.waiting { background: rgba(15,20,32,0.05); color: var(--ink-muted); }
 @media (max-width: 480px) {
   .ac-head { grid-template-columns: auto 1fr auto; gap: 10px; }
   .ac-chev { display: none; }
@@ -1441,7 +1442,7 @@ table.xl td.cell.copied .dp, table.xl td.cell.copied .dues-link { color:#fff; }
   font-size: 14px;
   font-weight: 500;
   line-height: 1.5;
-  box-shadow: 0 14px 36px -12px rgba(10,10,10,0.28);
+  box-shadow: 0 14px 36px -12px rgba(15,20,32,0.28);
   pointer-events: auto;
   opacity: 0;
   transform: translateY(-12px);
@@ -1497,9 +1498,9 @@ table.xl td.cell.copied .dp, table.xl td.cell.copied .dues-link { color:#fff; }
 <body>
 
 <!-- ===== شريط المعاينة (impersonation) — يظهر فقط أثناء دخول الأدمن كمستخدم ===== -->
-<div id="simbl-imp-bar" style="display:none;position:sticky;top:0;z-index:99999;background:#0a0a0a;color:#fff;font-family:inherit;font-size:13.5px;font-weight:600;padding:9px 16px;align-items:center;justify-content:center;gap:14px;box-shadow:0 2px 12px rgba(0,0,0,.28)">
+<div id="simbl-imp-bar" style="display:none;position:sticky;top:0;z-index:99999;background:#0F1420;color:#fff;font-family:inherit;font-size:13.5px;font-weight:600;padding:9px 16px;align-items:center;justify-content:center;gap:14px;box-shadow:0 2px 12px rgba(0,0,0,.28)">
   <span id="simbl-imp-label" style="display:inline-flex;align-items:center;gap:7px">👁 وضع المعاينة</span>
-  <button onclick="simblExitImpersonation()" style="background:#13B9B2;color:#fff;border:0;padding:6px 15px;border-radius:100px;font-family:inherit;font-size:12.5px;font-weight:700;cursor:pointer;white-space:nowrap">↩︎ رجوع لحسابك</button>
+  <button onclick="simblExitImpersonation()" style="background:#17C3B2;color:#fff;border:0;padding:6px 15px;border-radius:100px;font-family:inherit;font-size:12.5px;font-weight:700;cursor:pointer;white-space:nowrap">↩︎ رجوع لحسابك</button>
 </div>
 <script>
 (function(){
@@ -1547,10 +1548,10 @@ async function simblExitImpersonation(){
     <div class="lr-blip" style="top:160px; left:150px; animation-delay:2s;"></div>
     <svg class="lr-eye lr-c" viewBox="0 0 200 200" aria-hidden="true">
       <g fill="none" stroke-linejoin="miter" stroke-miterlimit="6" stroke-linecap="round">
-        <path d="M30 100 C61.5 78 138.5 78 170 100 C138.5 122 61.5 122 30 100 Z" stroke="#0a0a0a" stroke-width="10" transform="rotate(25 100 100)"/>
-        <path d="M30 100 C61.5 78 138.5 78 170 100 C138.5 122 61.5 122 30 100 Z" stroke="#0a0a0a" stroke-width="10" transform="rotate(-25 100 100)"/>
-        <path d="M76 100 Q100 88 124 100 Q100 112 76 100 Z" fill="#ffffff" stroke="#13B9B2" stroke-width="7"/>
-        <circle cx="100" cy="100" r="8" fill="#0a0a0a"/>
+        <path d="M30 100 C61.5 78 138.5 78 170 100 C138.5 122 61.5 122 30 100 Z" stroke="#0F1420" stroke-width="10" transform="rotate(25 100 100)"/>
+        <path d="M30 100 C61.5 78 138.5 78 170 100 C138.5 122 61.5 122 30 100 Z" stroke="#0F1420" stroke-width="10" transform="rotate(-25 100 100)"/>
+        <path d="M76 100 Q100 88 124 100 Q100 112 76 100 Z" fill="#ffffff" stroke="#17C3B2" stroke-width="7"/>
+        <circle cx="100" cy="100" r="8" fill="#0F1420"/>
       </g>
     </svg>
   </div>
@@ -1566,15 +1567,8 @@ async function simblExitImpersonation(){
 <nav class="nav">
   <div class="container nav-inner">
     <a href="/" class="logo">
-      <svg class="logo-eye" viewBox="0 0 200 200" aria-hidden="true">
-        <g fill="none" stroke-linejoin="miter" stroke-miterlimit="6" stroke-linecap="round">
-          <path d="M30 100 C61.5 78 138.5 78 170 100 C138.5 122 61.5 122 30 100 Z" stroke="#0a0a0a" stroke-width="10" transform="rotate(25 100 100)"/>
-          <path d="M30 100 C61.5 78 138.5 78 170 100 C138.5 122 61.5 122 30 100 Z" stroke="#0a0a0a" stroke-width="10" transform="rotate(-25 100 100)"/>
-          <path d="M76 100 Q100 88 124 100 Q100 112 76 100 Z" fill="#ffffff" stroke="#13B9B2" stroke-width="7"/>
-          <circle cx="100" cy="100" r="8" fill="#0a0a0a"/>
-        </g>
-      </svg>
-      <span class="logo-mark">مشروعنا الثاني</span>
+      <svg class="logo-eye" viewBox="0 0 200 200" aria-hidden="true"><circle cx="100" cy="100" r="70" fill="none" stroke="#17C3B2" stroke-width="12"/><circle cx="100" cy="100" r="38" fill="none" stroke="#0F1420" stroke-width="9"/></svg>
+      <span class="logo-mark">ريتش</span>
     </a>
     <div class="user-menu" id="user-menu">
       <button class="btn-push" id="btn-push" onclick="manualEnablePush()" title="تفعيل الإشعارات">
@@ -1585,7 +1579,7 @@ async function simblExitImpersonation(){
         <div class="user-avatar" id="user-initial">ش</div>
         <span class="user-name" id="user-name">شركة</span>
       </div>
-      <span style="display:inline-flex;align-items:center;gap:12px;"><button type="button" data-i18n-toggle onclick="simblI18n.toggle()" style="background:#fff;border:1.5px solid rgba(10,10,10,0.28);color:var(--ink);padding:8px 16px;border-radius:100px;font-family:inherit;font-size:13px;font-weight:600;cursor:pointer;">EN</button><button class="btn-logout" onclick="logout()">خروج</button></span>
+      <span style="display:inline-flex;align-items:center;gap:12px;"><button type="button" data-i18n-toggle onclick="simblI18n.toggle()" style="background:#fff;border:1.5px solid rgba(15,20,32,0.28);color:var(--ink);padding:8px 16px;border-radius:100px;font-family:inherit;font-size:13px;font-weight:600;cursor:pointer;">EN</button><button class="btn-logout" onclick="logout()">خروج</button></span>
     </div>
   </div>
 </nav>
@@ -1602,7 +1596,7 @@ async function simblExitImpersonation(){
       <button class="hero-cta" onclick="openCampaignModal()">+ حملة جديدة</button>
       <button class="hero-cta" onclick="goToCampaigns()">صفقات أقفلها الوكيل</button>
       <button class="hero-cta" onclick="window.location.href='/dues.html'">📋 متابعة الحملات والمستحقات</button>
-      <button class="hero-cta" onclick="openTeamMembers()" style="background:#fff;color:var(--ink);border:1.5px solid rgba(10,10,10,0.18);">👥 أعضاء الفريق</button>
+      <button class="hero-cta" onclick="openTeamMembers()" style="background:#fff;color:var(--ink);border:1.5px solid rgba(15,20,32,0.18);">👥 أعضاء الفريق</button>
     </div>
     <style>@media (max-width:640px){#creators-teaser{flex-direction:column!important;align-items:center!important;text-align:center!important;gap:12px!important;}#creators-teaser #teaser-avatars{justify-content:center!important;}}</style>
     <div id="creators-teaser" onclick="window.location.href='/top.html'" style="max-width:640px;margin:22px auto 0;cursor:pointer;background:#fff;border:1px solid var(--line);border-radius:18px;padding:16px 20px;display:flex;align-items:center;gap:14px;text-align:right;transition:border-color .2s,transform .2s;" onmouseover="this.style.borderColor='rgba(19,185,178,0.45)';this.style.transform='translateY(-2px)'" onmouseout="this.style.borderColor='var(--line)';this.style.transform='none'">
@@ -1628,7 +1622,7 @@ async function simblExitImpersonation(){
   <div class="modal">
     <button type="button" class="modal-x" onclick="closeModal()" aria-label="إغلاق">×</button>
     <h3 style="text-align:center;">إنشاء حملة جديدة</h3>
-    <p class="sub" style="text-align:center;">عبّئ تفاصيل الحملة وراح تظهر للمؤثرين المسجّلين في مشروعنا الثاني.</p>
+    <p class="sub" style="text-align:center;">عبّئ تفاصيل الحملة وراح تظهر للمؤثرين المسجّلين في ريتش.</p>
 
     <form onsubmit="submitCampaign(event)">
       <style>
@@ -1825,7 +1819,7 @@ async function simblExitImpersonation(){
         <div class="pledge-box">
           <label class="pledge-label">
             <input type="checkbox" name="payment_pledge" id="payment-pledge">
-            <span><strong>إقرار وتعهّد بالدفع:</strong> تتعهّد الشركة بدفع المبلغ المتفق عليه للمعلن خلال المدة المحددة أعلاه بعد إكمال الحملة، وتُقرّ بأنه في حال عدم إتمام الدفع خلال المدة يحق لمشروعنا الثاني إيقاف حساب الشركة حتى تسوية المستحقّات.</span>
+            <span><strong>إقرار وتعهّد بالدفع:</strong> تتعهّد الشركة بدفع المبلغ المتفق عليه للمعلن خلال المدة المحددة أعلاه بعد إكمال الحملة، وتُقرّ بأنه في حال عدم إتمام الدفع خلال المدة يحق لريتش إيقاف حساب الشركة حتى تسوية المستحقّات.</span>
           </label>
         </div>
       </div>
@@ -1922,7 +1916,7 @@ function showToast(message, type = 'success', duration = 3500) {
 }
 
 // ============ بوّابة «أعضاء الفريق» (وصول مبكّر لحساب الأدمن) ============
-// حساب أيجنت مشروعنا الثاني فقط يدخل خريطة الفريق؛ باقي الشركات تشوف رسالة قيد التطوير.
+// حساب أيجنت ريتش فقط يدخل خريطة الفريق؛ باقي الشركات تشوف رسالة قيد التطوير.
 const TEAM_ADMIN_EMAILS = ['hello@agentsimpleai.com'];
 function openTeamMembers() {
   window.location.href = '/myteam.html';
@@ -2262,7 +2256,7 @@ function showPendingScreen(status) {
       <div style="max-width:520px;margin:0 auto;text-align:center">
         <div style="width:84px;height:84px;border-radius:50%;background:rgba(210,59,59,0.1);display:flex;align-items:center;justify-content:center;margin:0 auto 24px;font-size:38px">⏸️</div>
         <h1 class="hero-title" style="font-size:30px">حسابكم موقوف مؤقتًا</h1>
-        <p class="hero-sub">تم إيقاف الحساب لوجود مستحقات دفع غير مُسوّاة لأحد المعلنين. بعد تسوية المبلغ وتأكيد المعلن استلامه، يعيد فريق مشروعنا الثاني تفعيل الحساب.</p>
+        <p class="hero-sub">تم إيقاف الحساب لوجود مستحقات دفع غير مُسوّاة لأحد المعلنين. بعد تسوية المبلغ وتأكيد المعلن استلامه، يعيد فريق ريتش تفعيل الحساب.</p>
         <p style="font-size:13px;color:var(--ink-muted);margin-top:6px">للتواصل وتسوية الوضع: hello@agentsimpleai.com</p>
       </div>
     </section>`;
@@ -2274,11 +2268,11 @@ function showPendingScreen(status) {
         <div style="width:84px;height:84px;border-radius:50%;background:${rejected ? 'var(--cream-darker)' : 'rgba(19,185,178,0.12)'};display:flex;align-items:center;justify-content:center;margin:0 auto 24px;font-size:38px">${rejected ? '✕' : '🔎'}</div>
         <h1 class="hero-title" style="font-size:30px">${rejected ? 'لم يتم تفعيل حسابكم' : 'حسابكم قيد المراجعة'}</h1>
         <p class="hero-sub">${rejected
-          ? 'نعتذر، ما تم تفعيل حسابكم حاليًا. لأي استفسار تواصلوا مع فريق مشروعنا الثاني عبر hello@agentsimpleai.com'
-          : 'فريق مشروعنا الثاني يراجع حسابكم الآن للتأكد منه. بمجرد التفعيل بتقدرون تطلقون حملاتكم وتستقبلون العروض. شكرًا لصبركم 🌿'}</p>
+          ? 'نعتذر، ما تم تفعيل حسابكم حاليًا. لأي استفسار تواصلوا مع فريق ريتش عبر hello@agentsimpleai.com'
+          : 'فريق ريتش يراجع حسابكم الآن للتأكد منه. بمجرد التفعيل بتقدرون تطلقون حملاتكم وتستقبلون العروض. شكرًا لصبركم 🌿'}</p>
         ${rejected ? '' : '<p style="font-size:13px;color:var(--ink-muted);margin-top:6px">تقدرون ترجعون لاحقًا — حسابكم بيشتغل تلقائيًا فور التفعيل.</p>'}
         <div style="margin-top:22px;padding-top:20px;border-top:1px solid var(--line)">
-          <p style="font-size:13.5px;color:var(--ink-soft);margin-bottom:12px">👥 عندك رمز دعوة من شركة على مشروعنا الثاني؟ انضم لمساحتهم واشتغل معهم فوراً — بدون انتظار تفعيل.</p>
+          <p style="font-size:13.5px;color:var(--ink-soft);margin-bottom:12px">👥 عندك رمز دعوة من شركة على ريتش؟ انضم لمساحتهم واشتغل معهم فوراً — بدون انتظار تفعيل.</p>
           <a href="/myteam.html" class="hero-cta" style="display:inline-block;text-decoration:none">انضم لفريق برمز دعوة ←</a>
         </div>
       </div>
@@ -3408,7 +3402,7 @@ function setModalMode(mode, campaign) {
     updateBudgetBounds();
   } else {
     h3.textContent = 'إنشاء حملة جديدة';
-    sub.textContent = 'عبّئ تفاصيل الحملة وراح تظهر للمؤثرين المسجّلين في مشروعنا الثاني.';
+    sub.textContent = 'عبّئ تفاصيل الحملة وراح تظهر للمؤثرين المسجّلين في ريتش.';
     submitBtn.textContent = 'نشر الحملة';
 
     form.reset();

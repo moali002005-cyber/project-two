@@ -3,10 +3,11 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ملف المؤثر · مشروعنا الثاني</title>
+<title>ملف المؤثر · ريتش</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%230F1420'/%3E%3Ccircle cx='32' cy='32' r='20' fill='none' stroke='%2317C3B2' stroke-width='6'/%3E%3Ccircle cx='32' cy='32' r='9' fill='none' stroke='%23F3EEE4' stroke-width='4'/%3E%3C/svg%3E">
 <meta name="theme-color" content="#ffffff">
-<meta property="og:title" content="ملف موثّق على مشروعنا الثاني">
-<meta property="og:description" content="درجة ثقة وتقييمات حقيقية وترتيب بين أفضل المؤثرين على منصة مشروعنا الثاني.">
+<meta property="og:title" content="ملف موثّق على ريتش">
+<meta property="og:description" content="درجة ثقة وتقييمات حقيقية وترتيب بين أفضل المؤثرين على منصة ريتش.">
 <meta property="og:type" content="profile">
 <link rel="apple-touch-icon" href="/icon-192.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -15,7 +16,7 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>document.write('<script src="/supabase-config.js?v=' + Date.now() + '"><\/script>');</script>
 <style>
-:root{--cream:#ffffff;--cream-darker:#f5f5f4;--ink:#0a0a0a;--ink-soft:#3a3a3a;--ink-muted:#6b6b6b;--ink-faint:#a0a0a0;--accent:#13B9B2;--accent-ink:#0c4f4b;--gold:#E8B84B;--line:rgba(10,10,10,0.08);--font-display:'IBM Plex Sans Arabic','Segoe UI',Tahoma,sans-serif;--font-body:'IBM Plex Sans Arabic','Segoe UI',Tahoma,sans-serif;}
+:root{--cream:#ffffff;--cream-darker:#F3EEE4;--ink:#0F1420;--ink-soft:#2C3548;--ink-muted:#8A93A6;--ink-faint:#AAB2C0;--accent:#17C3B2;--accent-ink:#0c4f4b;--gold:#E8B84B;--line:rgba(15,20,32,0.08);--font-display:'IBM Plex Sans Arabic','Segoe UI',Tahoma,sans-serif;--font-body:'IBM Plex Sans Arabic','Segoe UI',Tahoma,sans-serif;}
 *{margin:0;padding:0;box-sizing:border-box;}
 body{background:linear-gradient(180deg,#f7fbfb,#eef6f5);color:var(--ink);font-family:var(--font-body);font-size:16px;line-height:1.7;min-height:100vh;}
 .topbar{display:flex;justify-content:center;padding:18px;}
@@ -25,12 +26,12 @@ body{background:linear-gradient(180deg,#f7fbfb,#eef6f5);color:var(--ink);font-fa
 .logo-mark::after{content:'';position:absolute;bottom:0;left:0;width:4px;height:4px;background:var(--accent);border-radius:50%;}
 .wrap{max-width:440px;margin:0 auto;padding:6px 16px 50px;}
 .mk-card{background:#fff;border:1px solid var(--line);border-radius:24px;padding:0 22px 24px;text-align:center;box-shadow:0 20px 50px -28px rgba(12,79,75,0.45);position:relative;overflow:hidden;}
-.mk-band{height:74px;margin:0 -22px 0;background:linear-gradient(120deg,#13B9B2,#0c4f4b);}
+.mk-band{height:74px;margin:0 -22px 0;background:linear-gradient(120deg,#17C3B2,#0c4f4b);}
 .mk-ring{width:104px;height:104px;border-radius:50%;background:#fff;display:flex;align-items:center;justify-content:center;margin:-52px auto 10px;box-shadow:0 6px 18px -8px rgba(0,0,0,0.3);}
 .mk-ring img,.mk-ring>div{width:96px!important;height:96px!important;font-size:36px!important;}
 .mk-name{font-family:var(--font-display);font-size:21px;font-weight:700;display:flex;align-items:center;justify-content:center;gap:8px;flex-wrap:wrap;}
 .mk-handle{color:var(--ink-muted);font-size:14px;margin-top:2px;}
-.cflag{width:20px;height:14px;border-radius:2px;overflow:hidden;object-fit:cover;display:inline-block;vertical-align:middle;box-shadow:0 0 0 1px rgba(10,10,10,0.10);}
+.cflag{width:20px;height:14px;border-radius:2px;overflow:hidden;object-fit:cover;display:inline-block;vertical-align:middle;box-shadow:0 0 0 1px rgba(15,20,32,0.10);}
 .vbadge{font-size:11px;font-weight:600;padding:2px 9px;border-radius:100px;}
 .vbadge.verified{background:rgba(19,185,178,0.14);color:var(--accent-ink);}
 .vbadge.promising{background:rgba(232,184,75,0.16);color:#8a6500;}
@@ -74,7 +75,7 @@ body{background:linear-gradient(180deg,#f7fbfb,#eef6f5);color:var(--ink);font-fa
 </style>
 </head>
 <body>
-<div class="topbar"><a href="/" class="logo"><svg class="logo-eye" viewBox="0 0 200 200" aria-hidden="true"><g fill="none" stroke-linejoin="miter" stroke-miterlimit="6" stroke-linecap="round"><path d="M30 100 C61.5 78 138.5 78 170 100 C138.5 122 61.5 122 30 100 Z" stroke="#0a0a0a" stroke-width="10" transform="rotate(25 100 100)"/><path d="M30 100 C61.5 78 138.5 78 170 100 C138.5 122 61.5 122 30 100 Z" stroke="#0a0a0a" stroke-width="10" transform="rotate(-25 100 100)"/><path d="M76 100 Q100 88 124 100 Q100 112 76 100 Z" fill="#ffffff" stroke="#13B9B2" stroke-width="7"/><circle cx="100" cy="100" r="8" fill="#0a0a0a"/></g></svg><span class="logo-mark">مشروعنا الثاني</span></a></div>
+<div class="topbar"><a href="/" class="logo"><svg class="logo-eye" viewBox="0 0 200 200" aria-hidden="true"><circle cx="100" cy="100" r="70" fill="none" stroke="#17C3B2" stroke-width="12"/><circle cx="100" cy="100" r="38" fill="none" stroke="#0F1420" stroke-width="9"/></svg><span class="logo-mark">ريتش</span></a></div>
 <div class="wrap"><div id="mk"><div class="mkload">جاري تحميل الملف…</div></div></div>
 <script>
 const arabicDigits=['٠','١','٢','٣','٤','٥','٦','٧','٨','٩'];
@@ -212,7 +213,7 @@ function medallion(r){
     +     '<path d="'+LENS_SEC+'" transform="rotate(-70)" fill="url(#mB'+r+')" stroke="'+c.sB+'" stroke-width="1.6" stroke-linejoin="round"/>'
     +     '<path d="'+LENS_MAIN+'" transform="rotate(25)" fill="url(#mA'+r+')" stroke="'+c.sA+'" stroke-width="2.2" stroke-linejoin="round"/>'
     +     '<path d="'+LENS_MAIN+'" transform="rotate(-25)" fill="url(#mA'+r+')" stroke="'+c.sA+'" stroke-width="2.2" stroke-linejoin="round"/>'
-    +     '<circle r="18" fill="#fffaf0" stroke="#13B9B2" stroke-width="3"/>'
+    +     '<circle r="18" fill="#fffaf0" stroke="#17C3B2" stroke-width="3"/>'
     +     '<ellipse cx="0" cy="-6" rx="10" ry="4" fill="#ffffff" opacity="0.45"/>'
     +     '<text x="0" y="1" text-anchor="middle" dominant-baseline="central" font-family="var(--font-display),sans-serif" font-size="26" font-weight="800" fill="#0c4f4b">'+toArabic(r)+'</text>'
     +   '</g>'
@@ -233,7 +234,7 @@ function render(c){
   let rankBlock='';
   if(rank>=1 && rank<=3){
     rankBlock = '<div class="mk-medal">'+medallion(rank)+'</div>'
-      + '<div class="mk-rank-t">'+['المركز الأول','المركز الثاني','المركز الثالث'][rank-1]+' على مشروعنا الثاني هذا الأسبوع</div>';
+      + '<div class="mk-rank-t">'+['المركز الأول','المركز الثاني','المركز الثالث'][rank-1]+' على ريتش هذا الأسبوع</div>';
   } else if(rank>=1 && rank<=100){
     rankBlock = '<div class="mk-rankpill">ضمن أفضل 100 مؤثر · المركز '+toArabic(rank)+'</div>';
   }
@@ -253,11 +254,11 @@ function render(c){
     + '</div>'
     + '<div class="mk-crit">'+critBars(c)+'</div>'
     + (c.bio?'<div class="mk-bio">'+escHtml(c.bio)+'</div>':'')
-    + '<a class="mk-cta" href="/creators.html?id='+encodeURIComponent(c.id)+'">تواصل عبر مشروعنا الثاني</a>'
-    + '<a class="mk-cta2" href="/signup.html">سجّل كمؤثر مثلهم على مشروعنا الثاني</a>'
-    + '<div class="mk-foot"><a href="/">مدعوم بمنصة مشروعنا الثاني</a></div>'
+    + '<a class="mk-cta" href="/creators.html?id='+encodeURIComponent(c.id)+'">تواصل عبر ريتش</a>'
+    + '<a class="mk-cta2" href="/signup.html">سجّل كمؤثر مثلهم على ريتش</a>'
+    + '<div class="mk-foot"><a href="/">مدعوم بمنصة ريتش</a></div>'
     + '</div>';
-  document.title = (c.name||'مؤثر')+' · مشروعنا الثاني';
+  document.title = (c.name||'مؤثر')+' · ريتش';
 }
 
 async function init(){

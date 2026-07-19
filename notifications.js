@@ -1,4 +1,4 @@
-// نظام إشعارات مشروعنا الثاني - ملف موحد
+// نظام إشعارات ريتش - ملف موحد
 // يستخدم في كل الصفحات لعرض الجرس والإشعارات
 
 // تسجيل Service Worker
@@ -562,7 +562,7 @@ function showInstallBanner() {
     banner.className = 'install-banner';
     banner.innerHTML = `
       <div class="text">
-        <h4>📱 ثبّت مشروعنا الثاني على شاشتك</h4>
+        <h4>📱 ثبّت ريتش على شاشتك</h4>
         <p>وصول أسرع وإشعارات فورية</p>
       </div>
       <button onclick="installApp()">تثبيت</button>
@@ -604,7 +604,7 @@ if (isIOS() && !isStandalone() && !localStorage.getItem('simbl_ios_dismissed')) 
     banner.className = 'install-banner show';
     banner.innerHTML = `
       <div class="text">
-        <h4>📱 أضيفي مشروعنا الثاني لشاشتك</h4>
+        <h4>📱 أضيفي ريتش لشاشتك</h4>
         <p>اضغطي زر المشاركة ⬆ ثم "Add to Home Screen"</p>
       </div>
       <button class="close-btn" onclick="this.parentElement.remove(); localStorage.setItem('simbl_ios_dismissed', 'true')" aria-label="إغلاق">×</button>

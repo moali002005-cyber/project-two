@@ -3,12 +3,13 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>مشروعنا الثاني — وكيل التفاوض الأذكى في العالم</title>
+<title>ريتش — وكيل التفاوض الأذكى في العالم</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%230F1420'/%3E%3Ccircle cx='32' cy='32' r='20' fill='none' stroke='%2317C3B2' stroke-width='6'/%3E%3Ccircle cx='32' cy='32' r='9' fill='none' stroke='%23F3EEE4' stroke-width='4'/%3E%3C/svg%3E">
 <link rel="manifest" href="/manifest.json">
 <meta name="theme-color" content="#ffffff">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
-<meta name="apple-mobile-web-app-title" content="مشروعنا الثاني">
+<meta name="apple-mobile-web-app-title" content="ريتش">
 <link rel="apple-touch-icon" href="/icon-192.png">
 
 <script src="/splash.js?v=2"></script>
@@ -23,18 +24,18 @@
 <style>
 :root {
   --cream: #ffffff;
-  --cream-darker: #f5f5f4;
-  --ink: #0a0a0a;
-  --ink-soft: #3a3a3a;
-  --ink-muted: #6b6b6b;
-  --ink-faint: #a0a0a0;
-  --accent: #13B9B2;
+  --cream-darker: #F3EEE4;
+  --ink: #0F1420;
+  --ink-soft: #2C3548;
+  --ink-muted: #8A93A6;
+  --ink-faint: #AAB2C0;
+  --accent: #17C3B2;
   --accent-soft: #7fd6d2;
   --accent-ink: #0c4f4b;
   --olive: #5b5b5b;
-  --gold: #6b6b6b;
-  --line: rgba(10, 10, 10, 0.08);
-  --line-strong: rgba(10, 10, 10, 0.16);
+  --gold: #8A93A6;
+  --line: rgba(15, 20, 32, 0.08);
+  --line-strong: rgba(15, 20, 32, 0.16);
   --font-display: 'IBM Plex Sans Arabic', 'Segoe UI', Tahoma, sans-serif;
   --font-serif: 'IBM Plex Sans Arabic', 'Segoe UI', Tahoma, sans-serif;
   --font-body: 'IBM Plex Sans Arabic', 'Segoe UI', Tahoma, sans-serif;
@@ -131,7 +132,7 @@ body {
 }
 .btn-primary { background: var(--ink); color: #fff; }
 .btn-primary:hover { background: #262626; transform: translateY(-1px); }
-.btn-ghost { background: #fff; color: var(--ink); border: 1.5px solid rgba(10, 10, 10, 0.28); }
+.btn-ghost { background: #fff; color: var(--ink); border: 1.5px solid rgba(15, 20, 32, 0.28); }
 .btn-ghost:hover { border-color: var(--ink); }
 .lang-toggle { padding: 10px 16px; font-weight: 600; min-width: 54px; justify-content: center; }
 .hero {
@@ -260,15 +261,8 @@ body {
 <nav class="nav" id="nav">
   <div class="container nav-inner">
     <a href="#" class="logo">
-      <svg class="logo-eye" viewBox="0 0 200 200" aria-hidden="true">
-        <g fill="none" stroke-linejoin="miter" stroke-miterlimit="6" stroke-linecap="round">
-          <path d="M30 100 C61.5 78 138.5 78 170 100 C138.5 122 61.5 122 30 100 Z" stroke="#0a0a0a" stroke-width="8" transform="rotate(25 100 100)"/>
-          <path d="M30 100 C61.5 78 138.5 78 170 100 C138.5 122 61.5 122 30 100 Z" stroke="#0a0a0a" stroke-width="8" transform="rotate(-25 100 100)"/>
-          <path d="M76 100 Q100 88 124 100 Q100 112 76 100 Z" fill="#ffffff" stroke="#13B9B2" stroke-width="6"/>
-          <circle class="logo-pupil" cx="100" cy="100" r="7" fill="#0a0a0a"/>
-        </g>
-      </svg>
-      <span class="logo-mark">مشروعنا الثاني</span>
+      <svg class="logo-eye" viewBox="0 0 200 200" aria-hidden="true"><circle cx="100" cy="100" r="70" fill="none" stroke="#17C3B2" stroke-width="12"/><circle cx="100" cy="100" r="38" fill="none" stroke="#0F1420" stroke-width="9"/></svg>
+      <span class="logo-mark">ريتش</span>
     </a>
     <div class="nav-links">
       <button type="button" class="btn btn-ghost lang-toggle" data-i18n-toggle onclick="simblI18n.toggle()">EN</button>
@@ -284,7 +278,7 @@ body {
   <div class="container">
     <div class="hero-grid">
       <div>
-        <div class="hero-eyebrow"><span class="hero-eq"><i></i><i></i><i></i><i></i></span><span data-i18n="hero_eyebrow">وكيل تفاوض مدعوم بالذكاء الاصطناعي</span></div>
+        <div class="hero-eyebrow"><span class="hero-eq"><i></i><i></i><i></i><i></i></span><span data-i18n="hero_eyebrow">وصول تقيسه، لا تخمّنه.</span></div>
         <p class="hero-desc" data-i18n="hero_desc">
           الشركات تطلق حملاتها الإعلانية، والمعلنون يختارون ما يناسبهم،
           ووكيل ذكاء اصطناعي يتفاوض ويقفل الصفقة لصالح الطرفين.
@@ -295,7 +289,7 @@ body {
         </div>
 
         <div style="margin-top:26px;">
-          <a href="/top.html" style="display:inline-flex;align-items:center;gap:9px;background:#13B9B2;color:#fff;text-decoration:none;font-weight:600;font-size:15.5px;padding:16px 30px;border-radius:100px;box-shadow:0 14px 30px -12px rgba(19,185,178,0.75);font-family:'IBM Plex Sans Arabic',sans-serif;">
+          <a href="/top.html" style="display:inline-flex;align-items:center;gap:9px;background:#17C3B2;color:#fff;text-decoration:none;font-weight:600;font-size:15.5px;padding:16px 30px;border-radius:100px;box-shadow:0 14px 30px -12px rgba(19,185,178,0.75);font-family:'IBM Plex Sans Arabic',sans-serif;">
             <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor" aria-hidden="true"><path d="M12 2l2.9 6.2 6.8.9-5 4.7 1.3 6.8L12 17.8 5.7 21.3 7 14.5l-5-4.7 6.8-.9z"/></svg>
             أفضل المؤثرين وترتيبهم ←
           </a>
@@ -365,17 +359,17 @@ body {
 
     var banner = document.createElement('div');
     banner.id = 'simbl-install-banner';
-    banner.style.cssText = 'position:fixed;bottom:18px;left:16px;right:16px;max-width:480px;margin:0 auto;background:#0a0a0a;color:#fff;border-radius:20px;padding:16px 18px;z-index:9998;display:flex;gap:14px;align-items:center;box-shadow:0 16px 48px rgba(0,0,0,0.28);font-family:"IBM Plex Sans Arabic",sans-serif;opacity:0;transform:translateY(20px);transition:opacity .35s cubic-bezier(0.22,1,0.36,1),transform .35s cubic-bezier(0.22,1,0.36,1);';
+    banner.style.cssText = 'position:fixed;bottom:18px;left:16px;right:16px;max-width:480px;margin:0 auto;background:#0F1420;color:#fff;border-radius:20px;padding:16px 18px;z-index:9998;display:flex;gap:14px;align-items:center;box-shadow:0 16px 48px rgba(0,0,0,0.28);font-family:"IBM Plex Sans Arabic",sans-serif;opacity:0;transform:translateY(20px);transition:opacity .35s cubic-bezier(0.22,1,0.36,1),transform .35s cubic-bezier(0.22,1,0.36,1);';
 
-    var eye = '<svg viewBox="0 0 200 200" style="width:38px;height:38px;flex-shrink:0;" aria-hidden="true"><g fill="none" stroke-linejoin="miter" stroke-miterlimit="6" stroke-linecap="round"><path d="M30 100 C61.5 78 138.5 78 170 100 C138.5 122 61.5 122 30 100 Z" stroke="#fff" stroke-width="9" transform="rotate(25 100 100)"/><path d="M30 100 C61.5 78 138.5 78 170 100 C138.5 122 61.5 122 30 100 Z" stroke="#fff" stroke-width="9" transform="rotate(-25 100 100)"/><path d="M76 100 Q100 88 124 100 Q100 112 76 100 Z" fill="#0a0a0a" stroke="#13B9B2" stroke-width="7"/><circle cx="100" cy="100" r="8" fill="#fff"/></g></svg>';
+    var eye = '<svg viewBox="0 0 200 200" style="width:38px;height:38px;flex-shrink:0;" aria-hidden="true"><g fill="none" stroke-linejoin="miter" stroke-miterlimit="6" stroke-linecap="round"><path d="M30 100 C61.5 78 138.5 78 170 100 C138.5 122 61.5 122 30 100 Z" stroke="#fff" stroke-width="9" transform="rotate(25 100 100)"/><path d="M30 100 C61.5 78 138.5 78 170 100 C138.5 122 61.5 122 30 100 Z" stroke="#fff" stroke-width="9" transform="rotate(-25 100 100)"/><path d="M76 100 Q100 88 124 100 Q100 112 76 100 Z" fill="#0F1420" stroke="#17C3B2" stroke-width="7"/><circle cx="100" cy="100" r="8" fill="#fff"/></g></svg>';
 
     if (type === 'android') {
       banner.innerHTML = eye +
         '<div style="flex:1;min-width:0;">' +
-          '<div style="font-weight:600;font-size:15px;margin-bottom:2px;">ثبّت مشروعنا الثاني على جوالك</div>' +
+          '<div style="font-weight:600;font-size:15px;margin-bottom:2px;">ثبّت ريتش على جوالك</div>' +
           '<div style="font-size:12px;opacity:0.8;line-height:1.5;">وصول أسرع وإشعارات فورية</div>' +
         '</div>' +
-        '<button id="simbl-install-go" style="background:#13B9B2;color:#fff;border:none;padding:10px 20px;border-radius:100px;font-family:inherit;font-size:13px;font-weight:600;cursor:pointer;white-space:nowrap;flex-shrink:0;">تثبيت</button>' +
+        '<button id="simbl-install-go" style="background:#17C3B2;color:#fff;border:none;padding:10px 20px;border-radius:100px;font-family:inherit;font-size:13px;font-weight:600;cursor:pointer;white-space:nowrap;flex-shrink:0;">تثبيت</button>' +
         '<button id="simbl-install-x" style="background:transparent;color:#fff;border:none;padding:4px 6px;font-size:22px;cursor:pointer;opacity:0.6;line-height:1;flex-shrink:0;" aria-label="إغلاق">&times;</button>';
       document.body.appendChild(banner);
       requestAnimationFrame(function(){ banner.style.opacity = '1'; banner.style.transform = 'translateY(0)'; });
@@ -392,7 +386,7 @@ body {
       // آيفون: تعليمات يدوية
       banner.innerHTML = eye +
         '<div style="flex:1;min-width:0;">' +
-          '<div style="font-weight:600;font-size:15px;margin-bottom:2px;">أضِف مشروعنا الثاني لشاشتك</div>' +
+          '<div style="font-weight:600;font-size:15px;margin-bottom:2px;">أضِف ريتش لشاشتك</div>' +
           '<div style="font-size:12px;opacity:0.85;line-height:1.6;">اضغط زر المشاركة <span style="display:inline-block;border:1px solid rgba(255,255,255,0.5);border-radius:5px;padding:0 5px;">&#8593;</span> بالأسفل، ثم اختر <strong>«إضافة إلى الشاشة الرئيسية»</strong></div>' +
         '</div>' +
         '<button id="simbl-install-x" style="background:transparent;color:#fff;border:none;padding:4px 6px;font-size:22px;cursor:pointer;opacity:0.6;line-height:1;flex-shrink:0;" aria-label="إغلاق">&times;</button>';

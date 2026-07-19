@@ -1,4 +1,4 @@
-// إعدادات Supabase لمشروعنا الثاني
+// إعدادات Supabase لريتش
 const SUPABASE_URL = 'https://chpzecgpylxqsutjydkb.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNocHplY2dweWx4cXN1dGp5ZGtiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQyODgxNzQsImV4cCI6MjA5OTg2NDE3NH0.q4wmWKtJ5IPx8AgzMkp3SuFLZL9F10qKc3qiX5LB7kI';
 
@@ -334,10 +334,10 @@ function simblShowSessionExpired() {
     o.setAttribute('style', 'position:fixed;inset:0;z-index:99999;background:#ffffff;display:flex;align-items:center;justify-content:center;padding:24px;font-family:inherit;');
     o.innerHTML = '<div style="max-width:420px;text-align:center;">'
       + '<div style="width:76px;height:76px;border-radius:50%;background:rgba(19,185,178,0.12);display:flex;align-items:center;justify-content:center;margin:0 auto 22px;font-size:34px;">\uD83D\uDD12</div>'
-      + '<h2 style="font-size:24px;margin:0 0 10px;color:#0a0a0a;font-weight:700;">انتهت جلستك</h2>'
-      + '<p style="font-size:15px;color:#6b6b6b;line-height:1.8;margin:0 0 22px;">حسابك سليم، بس الجلسة انتهت. سجّل دخول من جديد وترجع بياناتك مباشرة.</p>'
-      + '<button id="simbl-relogin-btn" style="padding:13px 34px;border-radius:100px;border:0;background:#13B9B2;color:#fff;font-family:inherit;font-size:15px;font-weight:700;cursor:pointer;">سجّل دخول</button>'
-      + '<div style="margin-top:14px;"><span id="simbl-retry-link" style="font-size:13px;color:#6b6b6b;cursor:pointer;text-decoration:underline;">إعادة المحاولة</span></div>'
+      + '<h2 style="font-size:24px;margin:0 0 10px;color:#0F1420;font-weight:700;">انتهت جلستك</h2>'
+      + '<p style="font-size:15px;color:#8A93A6;line-height:1.8;margin:0 0 22px;">حسابك سليم، بس الجلسة انتهت. سجّل دخول من جديد وترجع بياناتك مباشرة.</p>'
+      + '<button id="simbl-relogin-btn" style="padding:13px 34px;border-radius:100px;border:0;background:#17C3B2;color:#fff;font-family:inherit;font-size:15px;font-weight:700;cursor:pointer;">سجّل دخول</button>'
+      + '<div style="margin-top:14px;"><span id="simbl-retry-link" style="font-size:13px;color:#8A93A6;cursor:pointer;text-decoration:underline;">إعادة المحاولة</span></div>'
       + '</div>';
     document.body.appendChild(o);
     const btn = document.getElementById('simbl-relogin-btn');

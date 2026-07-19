@@ -3,12 +3,13 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>الملف الشخصي - مشروعنا الثاني</title>
+<title>الملف الشخصي - ريتش</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%230F1420'/%3E%3Ccircle cx='32' cy='32' r='20' fill='none' stroke='%2317C3B2' stroke-width='6'/%3E%3Ccircle cx='32' cy='32' r='9' fill='none' stroke='%23F3EEE4' stroke-width='4'/%3E%3C/svg%3E">
 <link rel="manifest" href="/manifest.json">
 <meta name="theme-color" content="#ffffff">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
-<meta name="apple-mobile-web-app-title" content="مشروعنا الثاني">
+<meta name="apple-mobile-web-app-title" content="ريتش">
 <link rel="apple-touch-icon" href="/icon-192.png">
 <script src="/splash.js?v=2"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -20,17 +21,17 @@
 <style>
 :root {
   --cream: #ffffff;
-  --cream-darker: #f5f5f4;
-  --ink: #0a0a0a;
-  --ink-soft: #3a3a3a;
-  --ink-muted: #6b6b6b;
-  --ink-faint: #a0a0a0;
-  --accent: #13B9B2;
+  --cream-darker: #F3EEE4;
+  --ink: #0F1420;
+  --ink-soft: #2C3548;
+  --ink-muted: #8A93A6;
+  --ink-faint: #AAB2C0;
+  --accent: #17C3B2;
   --accent-soft: #7fd6d2;
   --accent-ink: #0c4f4b;
-  --line: rgba(10, 10, 10, 0.08);
-  --line-strong: rgba(10, 10, 10, 0.16);
-  --success: #13B9B2;
+  --line: rgba(15, 20, 32, 0.08);
+  --line-strong: rgba(15, 20, 32, 0.16);
+  --success: #17C3B2;
   --font-display: 'IBM Plex Sans Arabic', 'Segoe UI', Tahoma, sans-serif;
   --font-body: 'IBM Plex Sans Arabic', 'Segoe UI', Tahoma, sans-serif;
 }
@@ -189,7 +190,7 @@ body {
   font-family: var(--font-body); font-size: 14px; font-weight: 500;
   cursor: pointer; transition: all .2s;
   background: #fff; color: var(--ink);
-  border: 1.5px solid rgba(10, 10, 10, 0.18);
+  border: 1.5px solid rgba(15, 20, 32, 0.18);
   margin-right: 12px;
 }
 .hero-link:hover {
@@ -310,7 +311,7 @@ body {
   50%      { box-shadow: 0 0 32px 8px rgba(19, 185, 178, 0.22); }
 }
 .tab .count {
-  background: rgba(10, 10, 10, 0.05);
+  background: rgba(15, 20, 32, 0.05);
   color: var(--ink-soft);
   padding: 1px 8px;
   border-radius: 100px;
@@ -451,14 +452,14 @@ body {
 .app-info h4 { font-family: var(--font-display); font-size: 16px; font-weight: 600; margin-bottom: 6px; }
 .app-info .meta { font-size: 13px; color: var(--ink-muted); }
 .app-status { padding: 6px 14px; border-radius: 100px; font-size: 12px; font-weight: 500; }
-.status-pending { background: rgba(10, 10, 10, 0.06); color: var(--ink-muted); }
+.status-pending { background: rgba(15, 20, 32, 0.06); color: var(--ink-muted); }
 .status-pending_approval { background: rgba(19, 185, 178, 0.10); color: #0c4f4b; }
 .status-active { background: rgba(19, 185, 178, 0.14); color: var(--accent-ink); }
 .status-closed { background: var(--ink); color: #fff; }
 .status-rejected { background: var(--cream-darker); color: var(--ink-muted); }
 .stage-badge { white-space: nowrap; }
 .stage-badge.mine { background: var(--accent); color: #fff; }
-.stage-badge.waiting { background: rgba(10,10,10,0.05); color: var(--ink-muted); }
+.stage-badge.waiting { background: rgba(15,20,32,0.05); color: var(--ink-muted); }
 
 /* ============ Accordion offer cards (مختصرة + توسّع) ============ */
 .applications-list { gap: 12px; }
@@ -680,7 +681,7 @@ body {
   background: var(--ink);
   color: #fff;
   border-color: var(--ink);
-  box-shadow: 0 0 0 4px rgba(10, 10, 10, 0.08);
+  box-shadow: 0 0 0 4px rgba(15, 20, 32, 0.08);
 }
 .ws-label {
   font-size: 12px;
@@ -946,7 +947,7 @@ body {
 
 .modal-backdrop {
   position: fixed; inset: 0;
-  background: rgba(10, 10, 10, 0.5);
+  background: rgba(15, 20, 32, 0.5);
   backdrop-filter: blur(4px);
   display: none; align-items: center; justify-content: center;
   z-index: 100; padding: 20px;
@@ -965,7 +966,7 @@ body {
   border: 1px solid var(--line); border-right: 4px solid var(--accent);
   border-radius: 14px; padding: 13px 18px;
   font-family: var(--font-body); font-size: 14px; font-weight: 500; line-height: 1.5;
-  box-shadow: 0 14px 36px -12px rgba(10,10,10,0.28);
+  box-shadow: 0 14px 36px -12px rgba(15,20,32,0.28);
   pointer-events: auto; opacity: 0; transform: translateY(-12px);
   transition: opacity .28s cubic-bezier(0.22,1,0.36,1), transform .28s cubic-bezier(0.22,1,0.36,1);
 }
@@ -1017,15 +1018,8 @@ input:focus, textarea:focus { outline: none; border-color: var(--accent); box-sh
 <nav class="nav">
   <div class="container nav-inner">
     <a href="/" class="logo">
-      <svg class="logo-eye" viewBox="0 0 200 200" aria-hidden="true">
-        <g fill="none" stroke-linejoin="miter" stroke-miterlimit="6" stroke-linecap="round">
-          <path d="M30 100 C61.5 78 138.5 78 170 100 C138.5 122 61.5 122 30 100 Z" stroke="#0a0a0a" stroke-width="10" transform="rotate(25 100 100)"/>
-          <path d="M30 100 C61.5 78 138.5 78 170 100 C138.5 122 61.5 122 30 100 Z" stroke="#0a0a0a" stroke-width="10" transform="rotate(-25 100 100)"/>
-          <path d="M76 100 Q100 88 124 100 Q100 112 76 100 Z" fill="#ffffff" stroke="#13B9B2" stroke-width="7"/>
-          <circle cx="100" cy="100" r="8" fill="#0a0a0a"/>
-        </g>
-      </svg>
-      <span class="logo-mark">مشروعنا الثاني</span>
+      <svg class="logo-eye" viewBox="0 0 200 200" aria-hidden="true"><circle cx="100" cy="100" r="70" fill="none" stroke="#17C3B2" stroke-width="12"/><circle cx="100" cy="100" r="38" fill="none" stroke="#0F1420" stroke-width="9"/></svg>
+      <span class="logo-mark">ريتش</span>
     </a>
     <div class="user-menu" id="user-menu">
       <button class="btn-push" id="btn-push" onclick="manualEnablePush()" title="تفعيل الإشعارات">
@@ -1036,7 +1030,7 @@ input:focus, textarea:focus { outline: none; border-color: var(--accent); box-sh
         <div class="user-avatar" id="user-initial">م</div>
         <span class="user-name" id="user-name">معلن</span>
       </div>
-      <span style="display:inline-flex;align-items:center;gap:12px;"><button type="button" data-i18n-toggle onclick="simblI18n.toggle()" style="background:#fff;border:1.5px solid rgba(10,10,10,0.28);color:var(--ink);padding:8px 16px;border-radius:100px;font-family:inherit;font-size:13px;font-weight:600;cursor:pointer;">EN</button><button class="btn-logout" onclick="logout()">خروج</button></span>
+      <span style="display:inline-flex;align-items:center;gap:12px;"><button type="button" data-i18n-toggle onclick="simblI18n.toggle()" style="background:#fff;border:1.5px solid rgba(15,20,32,0.28);color:var(--ink);padding:8px 16px;border-radius:100px;font-family:inherit;font-size:13px;font-weight:600;cursor:pointer;">EN</button><button class="btn-logout" onclick="logout()">خروج</button></span>
     </div>
   </div>
 </nav>
@@ -1280,7 +1274,7 @@ function showPendingScreen(status) {
       <div style="max-width:520px;margin:0 auto;text-align:center">
         <div style="width:84px;height:84px;border-radius:50%;background:rgba(210,59,59,0.1);display:flex;align-items:center;justify-content:center;margin:0 auto 24px;font-size:38px">⏸️</div>
         <h1 class="hero-title" style="font-size:30px">حسابك موقوف مؤقتًا</h1>
-        <p class="hero-sub">تم إيقاف حسابك مؤقتًا. لمعرفة السبب وتسوية الوضع، تواصل مع فريق مشروعنا الثاني عبر hello@agentsimpleai.com</p>
+        <p class="hero-sub">تم إيقاف حسابك مؤقتًا. لمعرفة السبب وتسوية الوضع، تواصل مع فريق ريتش عبر hello@agentsimpleai.com</p>
       </div>
     </section>`;
     return;
@@ -1291,8 +1285,8 @@ function showPendingScreen(status) {
         <div style="width:84px;height:84px;border-radius:50%;background:${rejected ? 'var(--cream-darker)' : 'rgba(19,185,178,0.12)'};display:flex;align-items:center;justify-content:center;margin:0 auto 24px;font-size:38px">${rejected ? '✕' : '🔎'}</div>
         <h1 class="hero-title" style="font-size:30px">${rejected ? 'لم يتم تفعيل حسابك' : 'حسابك قيد المراجعة'}</h1>
         <p class="hero-sub">${rejected
-          ? 'نعتذر، ما تم تفعيل حسابك حاليًا. لأي استفسار تواصل مع فريق مشروعنا الثاني عبر hello@agentsimpleai.com'
-          : 'فريق مشروعنا الثاني يراجع حسابك الآن للتأكد منه. بمجرد التفعيل بتقدر تتصفّح الإعلانات وتتفاوض مع الوكيل. شكرًا لصبرك 🌿'}</p>
+          ? 'نعتذر، ما تم تفعيل حسابك حاليًا. لأي استفسار تواصل مع فريق ريتش عبر hello@agentsimpleai.com'
+          : 'فريق ريتش يراجع حسابك الآن للتأكد منه. بمجرد التفعيل بتقدر تتصفّح الإعلانات وتتفاوض مع الوكيل. شكرًا لصبرك 🌿'}</p>
         ${rejected ? '' : '<p style="font-size:13px;color:var(--ink-muted);margin-top:6px">تقدر ترجع لاحقًا — حسابك بيشتغل تلقائيًا فور التفعيل.</p>'}
       </div>
     </section>`;
@@ -1376,7 +1370,7 @@ function updateHeroStats() {
       var w = Math.max(4, Math.round(v / maxV * 100));
       return '<div style="display:flex;align-items:center;gap:10px;margin-bottom:9px;">'
         + '<span style="font-size:11px;color:var(--ink-muted);width:74px;flex-shrink:0;">'+label+'</span>'
-        + '<div style="flex:1;background:var(--cream-darker);border-radius:6px;height:16px;overflow:hidden;"><div style="height:100%;width:'+w+'%;background:linear-gradient(90deg,#7fd6d2,#13B9B2);border-radius:6px;"></div></div>'
+        + '<div style="flex:1;background:var(--cream-darker);border-radius:6px;height:16px;overflow:hidden;"><div style="height:100%;width:'+w+'%;background:linear-gradient(90deg,#7fd6d2,#17C3B2);border-radius:6px;"></div></div>'
         + '<span style="font-size:11px;font-weight:700;color:var(--accent-ink);width:66px;text-align:left;flex-shrink:0;">'+v.toLocaleString('en-US')+'</span></div>';
     }).join('');
     if (mwrap) mwrap.style.display = '';
@@ -1907,7 +1901,7 @@ function renderPaymentCard(app) {
   if (status === 'disputed') {
     return `<div class="stage-action" onclick="event.stopPropagation()" style="background:rgba(201,48,48,0.05);border-color:rgba(201,48,48,0.3)">
       <div class="sa-title">⚠️ أبلغت بعدم الاستلام</div>
-      <div class="sa-desc">فريق مشروعنا الثاني يراجع الحالة مع الشركة. لو وصلك المبلغ بعد كذا، اضغط «استلمت المبلغ».</div>
+      <div class="sa-desc">فريق ريتش يراجع الحالة مع الشركة. لو وصلك المبلغ بعد كذا، اضغط «استلمت المبلغ».</div>
       <div class="pay-actions"><button class="sa-btn" onclick="event.stopPropagation(); setCreatorPayment('${app.id}','confirmed')">استلمت المبلغ ✓</button></div>
     </div>`;
   }
@@ -1939,7 +1933,7 @@ async function setCreatorPayment(applicationId, newStatus) {
     if (error) throw error;
     if (!data || data.length === 0) throw new Error('لم يتم التحديث. تحقق من سياسات الحماية.');
     await loadData();
-    showToast(newStatus === 'confirmed' ? 'تم تأكيد استلام المبلغ ✓' : 'تم إبلاغ مشروعنا الثاني بعدم الاستلام.');
+    showToast(newStatus === 'confirmed' ? 'تم تأكيد استلام المبلغ ✓' : 'تم إبلاغ ريتش بعدم الاستلام.');
   } catch (err) {
     console.error('Payment update error:', err);
     showToast('حصل خطأ: ' + (err.message || 'حاول مرة أخرى'), 'error');
@@ -2198,7 +2192,7 @@ function handleAvatarUpload(e) {
 function buildCropper(){
   if (CR.built) return;
   var html = ''
-    + '<div id="cropper" style="display:none;position:fixed;inset:0;z-index:9999;background:rgba(10,10,10,0.80);align-items:center;justify-content:center;padding:20px;">'
+    + '<div id="cropper" style="display:none;position:fixed;inset:0;z-index:9999;background:rgba(15,20,32,0.80);align-items:center;justify-content:center;padding:20px;">'
     +   '<div style="background:#fff;border-radius:20px;padding:18px;max-width:340px;width:100%;text-align:center;font-family:inherit;">'
     +     '<div style="font-weight:600;font-size:15px;margin-bottom:14px;color:var(--ink);">عدّل صورتك</div>'
     +     '<div id="cr-view" style="position:relative;width:280px;height:280px;max-width:74vw;max-height:74vw;margin:0 auto;overflow:hidden;border-radius:14px;background:#f0f0ef;touch-action:none;cursor:grab;">'
@@ -2207,12 +2201,12 @@ function buildCropper(){
     +     '</div>'
     +     '<div style="display:flex;align-items:center;gap:10px;margin:16px 4px 2px;">'
     +       '<span style="font-size:18px;color:#999;line-height:1;">－</span>'
-    +       '<input id="cr-zoom" type="range" min="1" max="3" step="0.01" value="1" style="flex:1;accent-color:#13B9B2;">'
+    +       '<input id="cr-zoom" type="range" min="1" max="3" step="0.01" value="1" style="flex:1;accent-color:#17C3B2;">'
     +       '<span style="font-size:18px;color:#999;line-height:1;">＋</span>'
     +     '</div>'
     +     '<div style="font-size:11.5px;color:#9aa3a0;margin-top:4px;">حرّك الصورة بإصبعك، وكبّر/صغّر بالشريط</div>'
     +     '<div style="display:flex;gap:10px;margin-top:16px;">'
-    +       '<button type="button" id="cr-cancel" style="flex:1;background:#fff;border:1px solid rgba(10,10,10,0.16);color:var(--ink);padding:12px;border-radius:100px;font-family:inherit;font-size:14px;font-weight:600;cursor:pointer;">إلغاء</button>'
+    +       '<button type="button" id="cr-cancel" style="flex:1;background:#fff;border:1px solid rgba(15,20,32,0.16);color:var(--ink);padding:12px;border-radius:100px;font-family:inherit;font-size:14px;font-weight:600;cursor:pointer;">إلغاء</button>'
     +       '<button type="button" id="cr-apply" style="flex:1;background:var(--accent);border:0;color:#fff;padding:12px;border-radius:100px;font-family:inherit;font-size:14px;font-weight:600;cursor:pointer;">تطبيق ورفع</button>'
     +     '</div>'
     +   '</div>'

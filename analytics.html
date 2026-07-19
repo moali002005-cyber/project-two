@@ -3,7 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>تحليلات الشركة — مشروعنا الثاني</title>
+<title>تحليلات الشركة — ريتش</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%230F1420'/%3E%3Ccircle cx='32' cy='32' r='20' fill='none' stroke='%2317C3B2' stroke-width='6'/%3E%3Ccircle cx='32' cy='32' r='9' fill='none' stroke='%23F3EEE4' stroke-width='4'/%3E%3C/svg%3E">
 <script>/* دُمجت التحليلات داخل لوحة القيادة — نحوّل أي رابط قديم للمكان الموحّد */location.replace('/company.html');</script>
 <link rel="manifest" href="/manifest.json">
 <meta name="theme-color" content="#ffffff">
@@ -14,8 +15,8 @@
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <style>
 :root{
-  --cream:#ffffff; --bg:#f6faf9; --ink:#0a0a0a; --ink-soft:#3a3a3a; --ink-muted:#6b6b6b;
-  --accent:#13B9B2; --accent-ink:#0c4f4b; --line:rgba(10,10,10,0.08); --gold:#E8B84B;
+  --cream:#ffffff; --bg:#f6faf9; --ink:#0F1420; --ink-soft:#2C3548; --ink-muted:#8A93A6;
+  --accent:#17C3B2; --accent-ink:#0c4f4b; --line:rgba(15,20,32,0.08); --gold:#E8B84B;
   --font:'IBM Plex Sans Arabic','Segoe UI',Tahoma,sans-serif;
 }
 *{margin:0;padding:0;box-sizing:border-box;}
@@ -39,7 +40,7 @@ body{background:var(--bg);color:var(--ink);font-family:var(--font);line-height:1
 .kpi .val{font-size:26px;font-weight:800;color:var(--accent-ink);line-height:1.1;font-variant-numeric:tabular-nums;}
 .kpi .val small{font-size:13px;font-weight:600;color:var(--ink-muted);}
 .kpi .sub{font-size:12px;color:var(--ink-muted);margin-top:4px;}
-.kpi.hl{background:linear-gradient(135deg,#0c4f4b,#13B9B2);border:none;}
+.kpi.hl{background:linear-gradient(135deg,#0c4f4b,#17C3B2);border:none;}
 .kpi.hl .lbl,.kpi.hl .val,.kpi.hl .sub{color:#fff;}
 .kpi.hl .lbl svg{color:#fff;}
 .kpi.hl .val small{color:rgba(255,255,255,0.85);}
@@ -52,7 +53,7 @@ body{background:var(--bg);color:var(--ink);font-family:var(--font);line-height:1
 .bar-top .ct{color:var(--ink-muted);font-variant-numeric:tabular-nums;}
 .bar-track{height:13px;background:#eef1f1;border-radius:8px;overflow:hidden;position:relative;}
 .bar-fill{height:100%;background:#cfeae8;border-radius:8px;position:absolute;inset-inline-start:0;top:0;}
-.bar-done{height:100%;background:linear-gradient(90deg,#13B9B2,#0c4f4b);border-radius:8px;position:absolute;inset-inline-start:0;top:0;}
+.bar-done{height:100%;background:linear-gradient(90deg,#17C3B2,#0c4f4b);border-radius:8px;position:absolute;inset-inline-start:0;top:0;}
 .legend{display:flex;gap:18px;margin-top:16px;font-size:12.5px;color:var(--ink-muted);flex-wrap:wrap;}
 .legend span{display:inline-flex;align-items:center;gap:6px;}
 .legend i{width:12px;height:12px;border-radius:3px;display:inline-block;}
@@ -63,7 +64,7 @@ body{background:var(--bg);color:var(--ink);font-family:var(--font);line-height:1
 .ccard-h .meta{font-size:12px;color:var(--ink-muted);margin-top:2px;}
 .cbadge{font-size:11.5px;font-weight:600;padding:4px 11px;border-radius:100px;white-space:nowrap;}
 .cbadge.on{background:rgba(19,185,178,0.14);color:var(--accent-ink);}
-.cbadge.off{background:rgba(10,10,10,0.06);color:var(--ink-muted);}
+.cbadge.off{background:rgba(15,20,32,0.06);color:var(--ink-muted);}
 .cstats{display:grid;grid-template-columns:repeat(2,1fr);gap:10px 14px;}
 .cstat{}
 .cstat .n{font-size:19px;font-weight:800;color:var(--accent-ink);line-height:1;font-variant-numeric:tabular-nums;}
@@ -86,8 +87,8 @@ body{background:var(--bg);color:var(--ink);font-family:var(--font);line-height:1
 <nav class="nav">
   <div class="nav-inner">
     <a href="/brand.html" class="logo">
-      <svg viewBox="0 0 200 200" aria-hidden="true"><g fill="none" stroke-linejoin="miter" stroke-miterlimit="6" stroke-linecap="round"><path d="M30 100 C61.5 78 138.5 78 170 100 C138.5 122 61.5 122 30 100 Z" stroke="#0a0a0a" stroke-width="9" transform="rotate(25 100 100)"/><path d="M30 100 C61.5 78 138.5 78 170 100 C138.5 122 61.5 122 30 100 Z" stroke="#0a0a0a" stroke-width="9" transform="rotate(-25 100 100)"/><path d="M76 100 Q100 88 124 100 Q100 112 76 100 Z" fill="#fff" stroke="#13B9B2" stroke-width="7"/><circle cx="100" cy="100" r="8" fill="#0a0a0a"/></g></svg>
-      <span>مشروعنا الثاني</span>
+      <svg viewBox="0 0 200 200" aria-hidden="true"><g fill="none" stroke-linejoin="miter" stroke-miterlimit="6" stroke-linecap="round"><path d="M30 100 C61.5 78 138.5 78 170 100 C138.5 122 61.5 122 30 100 Z" stroke="#0F1420" stroke-width="9" transform="rotate(25 100 100)"/><path d="M30 100 C61.5 78 138.5 78 170 100 C138.5 122 61.5 122 30 100 Z" stroke="#0F1420" stroke-width="9" transform="rotate(-25 100 100)"/><path d="M76 100 Q100 88 124 100 Q100 112 76 100 Z" fill="#fff" stroke="#17C3B2" stroke-width="7"/><circle cx="100" cy="100" r="8" fill="#0F1420"/></g></svg>
+      <span>ريتش</span>
     </a>
     <a href="/brand.html" class="btn-back">→ لوحتي</a>
   </div>
@@ -260,7 +261,7 @@ function render(camps, apps, ratings){
       + '<div class="bar-done" style="width:'+wd+'%"></div></div></div>';
   });
   chart += '<div class="legend"><span><i style="background:#cfeae8"></i> العروض المستلمة</span>'
-    + '<span><i style="background:linear-gradient(90deg,#13B9B2,#0c4f4b)"></i> الصفقات المكتملة</span></div></div>';
+    + '<span><i style="background:linear-gradient(90deg,#17C3B2,#0c4f4b)"></i> الصفقات المكتملة</span></div></div>';
 
   // per-campaign cards
   var cards='<div class="section-t">تفصيل كل حملة</div><div class="cgrid">';

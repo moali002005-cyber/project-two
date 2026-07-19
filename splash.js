@@ -1,4 +1,4 @@
-// Splash Screen المشترك لكل صفحات مشروعنا الثاني
+// Splash Screen المشترك لكل صفحات ريتش
 // يطلع شعار العين أول ما المستخدم يفتح أي صفحة لمدة ~3 ثواني ثم يختفي بـ زووم
 // ملاحظة: هذا الملف يُستدعى داخل <head> قبل تحميل <body>، فنركّب السبلاش فورًا
 // على <html> (documentElement) عشان يغطّي الشاشة من أول لحظة قبل ظهور أي محتوى.
@@ -75,10 +75,10 @@
   splash.innerHTML = `
     <svg class="splash-eye" viewBox="0 0 200 200">
       <g fill="none" stroke-linejoin="miter" stroke-miterlimit="6" stroke-linecap="round">
-        <path class="ln" d="M30 100 C61.5 78 138.5 78 170 100 C138.5 122 61.5 122 30 100 Z" stroke="#0a0a0a" stroke-width="8" transform="rotate(25 100 100)"/>
-        <path class="ln ln2" d="M30 100 C61.5 78 138.5 78 170 100 C138.5 122 61.5 122 30 100 Z" stroke="#0a0a0a" stroke-width="8" transform="rotate(-25 100 100)"/>
-        <path class="eyeShape" d="M76 100 Q100 88 124 100 Q100 112 76 100 Z" fill="#ffffff" stroke="#13B9B2" stroke-width="6"/>
-        <circle class="pupil" cx="100" cy="100" r="7" fill="#0a0a0a"/>
+        <path class="ln" d="M30 100 C61.5 78 138.5 78 170 100 C138.5 122 61.5 122 30 100 Z" stroke="#0F1420" stroke-width="8" transform="rotate(25 100 100)"/>
+        <path class="ln ln2" d="M30 100 C61.5 78 138.5 78 170 100 C138.5 122 61.5 122 30 100 Z" stroke="#0F1420" stroke-width="8" transform="rotate(-25 100 100)"/>
+        <path class="eyeShape" d="M76 100 Q100 88 124 100 Q100 112 76 100 Z" fill="#ffffff" stroke="#17C3B2" stroke-width="6"/>
+        <circle class="pupil" cx="100" cy="100" r="7" fill="#0F1420"/>
       </g>
     </svg>
   `;

@@ -139,7 +139,7 @@ async function manualEnablePush() {
   refreshPushButton();
   if (success) {
     try {
-      new Notification('مشروعنا الثاني', {
+      new Notification('ريتش', {
         body: 'تم تفعيل الإشعارات ✨ راح يوصلك تنبيه لكل حدث جديد',
         icon: '/icon-192.png',
         dir: 'rtl'
@@ -178,7 +178,7 @@ function showReminderBanner(userId) {
 
   const banner = document.createElement('div');
   banner.id = 'simbl-push-banner';
-  banner.style.cssText = 'position:fixed;bottom:20px;left:16px;right:16px;background:#0a0a0a;color:#fff;padding:16px 18px;border-radius:18px;z-index:9999;max-width:500px;margin:0 auto;display:flex;gap:12px;align-items:center;box-shadow:0 12px 40px rgba(0,0,0,0.20);font-family:"IBM Plex Sans Arabic",sans-serif;animation:simblBannerIn 0.35s cubic-bezier(0.22, 1, 0.36, 1);';
+  banner.style.cssText = 'position:fixed;bottom:20px;left:16px;right:16px;background:#0F1420;color:#fff;padding:16px 18px;border-radius:18px;z-index:9999;max-width:500px;margin:0 auto;display:flex;gap:12px;align-items:center;box-shadow:0 12px 40px rgba(0,0,0,0.20);font-family:"IBM Plex Sans Arabic",sans-serif;animation:simblBannerIn 0.35s cubic-bezier(0.22, 1, 0.36, 1);';
 
   if (!document.getElementById('simbl-push-banner-keyframes')) {
     const style = document.createElement('style');
@@ -203,7 +203,7 @@ function showReminderBanner(userId) {
         <div style="font-weight:600;margin-bottom:4px;font-size:15px;">🔔 فعّل الإشعارات</div>
         <div style="font-size:13px;opacity:0.85;line-height:1.6;">ليصلك تنبيه فوري لكل جديد، حتى لو الموقع مقفول.</div>
       </div>
-      <button id="push-enable-btn" style="background:#13B9B2;color:#fff;border:none;padding:10px 20px;border-radius:100px;font-family:inherit;font-size:13px;font-weight:500;cursor:pointer;white-space:nowrap;transition:background .2s;flex-shrink:0;">تفعيل</button>
+      <button id="push-enable-btn" style="background:#17C3B2;color:#fff;border:none;padding:10px 20px;border-radius:100px;font-family:inherit;font-size:13px;font-weight:500;cursor:pointer;white-space:nowrap;transition:background .2s;flex-shrink:0;">تفعيل</button>
       <button id="push-dismiss-btn" style="background:transparent;color:#fff;border:none;padding:4px 8px;font-size:22px;cursor:pointer;opacity:0.7;line-height:1;flex-shrink:0;" aria-label="إغلاق">×</button>
     `;
     document.body.appendChild(banner);
@@ -214,7 +214,7 @@ function showReminderBanner(userId) {
       refreshPushButton();
       if (success) {
         try {
-          new Notification('مشروعنا الثاني', {
+          new Notification('ريتش', {
             body: 'أهلاً ✨ راح يوصلك تنبيه فوري لكل حدث جديد',
             icon: '/icon-192.png',
             dir: 'rtl'
