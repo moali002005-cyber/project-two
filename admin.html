@@ -189,7 +189,7 @@ pre.json{background:var(--bg);border:1px solid var(--line);border-radius:9px;pad
 .dsh-up{color:#0e9a94;font-weight:700}
 .dsh-grid{display:grid;gap:16px;margin-bottom:16px}.dsh-g2{grid-template-columns:1fr 1fr}
 @media(max-width:820px){.dsh-g2{grid-template-columns:1fr}}
-.dsh-card{background:#fff;border:1px solid var(--line);border-radius:16px;padding:17px 19px}
+.dsh-card{background:#171D2C;border:1px solid var(--line);border-radius:16px;padding:17px 19px}
 .dsh-card h4{font-size:13.5px;font-weight:700;color:#0c4f4b;margin-bottom:2px;display:flex;align-items:center;gap:7px}
 .dsh-card .hint{font-size:11px;color:var(--faint);margin-bottom:13px}
 .dsh-flow{display:flex;height:36px;border-radius:10px;overflow:hidden;gap:2px;margin:4px 0 12px}
@@ -215,7 +215,7 @@ pre.json{background:var(--bg);border:1px solid var(--line);border-radius:9px;pad
 .dsh-hv{font-size:11.5px;font-weight:700;color:#0c4f4b;white-space:nowrap}.dsh-ho{font-size:10.5px;color:#17C3B2;font-weight:700}
 .dsh-dwrap{display:flex;align-items:center;gap:18px;flex-wrap:wrap}
 .dsh-donut{width:120px;height:120px;border-radius:50%;flex-shrink:0;position:relative}
-.dsh-donut::after{content:'';position:absolute;inset:19px;background:#fff;border-radius:50%}
+.dsh-donut::after{content:'';position:absolute;inset:19px;background:#171D2C;border-radius:50%}
 .dsh-dc{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:1}
 .dsh-dc b{font-size:20px;font-weight:700;color:#0c4f4b}.dsh-dc s{font-size:10px;color:var(--muted);text-decoration:none}
 .dsh-alert{display:flex;align-items:center;gap:11px;background:linear-gradient(90deg,rgba(19,185,178,.12),rgba(19,185,178,.02));border:1px solid rgba(19,185,178,.3);border-radius:13px;padding:12px 15px;margin-bottom:4px}
@@ -1335,7 +1335,7 @@ function renderUsers(){
     const sizeF=isB?(SIZE[u.size]||u.size||'—'):(u.followers?num(u.followers):'—');
     const contact=esc(u.email||u.whatsapp||u.phone||'—');
     const badge=isB?'<span class="badge b-brand">شركة</span>':'<span class="badge b-creator">معلن</span>';
-    return '<tr class="u-imp-row" onclick="startImpersonation(\''+u.id+'\')" title="اضغط للدخول كهذا المستخدم ومعاينة شاشته"><td><span class="imp-eye">👁</span> '+esc(name)+(u.handle?' <span class="dim">@'+esc(u.handle)+'</span>':'')+'</td><td>'+badge+'</td><td class="dim">'+esc(seg)+'</td><td class="mono">'+sizeF+'</td><td class="dim">'+contact+'</td><td class="dim">'+fmtDate(u.created_at)+'</td><td><button onclick="event.stopPropagation(); adminDeleteUser(\''+u.id+'\')" style="padding:5px 10px;border:1px solid #e6bcbc;background:#fff;color:#c93030;border-radius:7px;font-size:12px;cursor:pointer">حذف</button></td></tr>';
+    return '<tr class="u-imp-row" onclick="startImpersonation(\''+u.id+'\')" title="اضغط للدخول كهذا المستخدم ومعاينة شاشته"><td><span class="imp-eye">👁</span> '+esc(name)+(u.handle?' <span class="dim">@'+esc(u.handle)+'</span>':'')+'</td><td>'+badge+'</td><td class="dim">'+esc(seg)+'</td><td class="mono">'+sizeF+'</td><td class="dim">'+contact+'</td><td class="dim">'+fmtDate(u.created_at)+'</td><td><button onclick="event.stopPropagation(); adminDeleteUser(\''+u.id+'\')" style="padding:5px 10px;border:1px solid #e6bcbc;background:#171D2C;color:#c93030;border-radius:7px;font-size:12px;cursor:pointer">حذف</button></td></tr>';
   }).join('') : '<tr><td colspan="7" class="empty">لا نتائج</td></tr>';
 }
 
@@ -1354,8 +1354,8 @@ function renderCampaigns(){
     const n=appsOfCampaign(c.id).length, cl=APPS.filter(a=>a.campaign_id===c.id && isApprovedDeal(a)).length;
     const stBadge=c.status==='active'?'<span class="badge b-active">نشطة</span>':(c.status==='hidden'?'<span class="badge b-stage">مخفية</span>':'<span class="badge b-stage">'+esc(c.status||'—')+'</span>');
     const hideLabel=c.status==='hidden'?'إظهار':'إخفاء';
-    const act='<button onclick="adminToggleHide(\''+c.id+'\')" style="padding:5px 10px;border:1px solid #d9d9d9;background:#fff;border-radius:7px;font-size:12px;cursor:pointer;margin-inline-start:4px;">'+hideLabel+'</button>'
-            +'<button onclick="adminDeleteCampaign(\''+c.id+'\')" style="padding:5px 10px;border:1px solid #e6bcbc;background:#fff;color:#c93030;border-radius:7px;font-size:12px;cursor:pointer;">حذف</button>';
+    const act='<button onclick="adminToggleHide(\''+c.id+'\')" style="padding:5px 10px;border:1px solid #d9d9d9;background:#171D2C;border-radius:7px;font-size:12px;cursor:pointer;margin-inline-start:4px;">'+hideLabel+'</button>'
+            +'<button onclick="adminDeleteCampaign(\''+c.id+'\')" style="padding:5px 10px;border:1px solid #e6bcbc;background:#171D2C;color:#c93030;border-radius:7px;font-size:12px;cursor:pointer;">حذف</button>';
     return '<tr><td>'+esc(c.title||'—')+'</td><td class="dim">'+esc(brandOfCampaign(c))+'</td><td>'+stBadge+'</td><td class="mono">'+num(n)+'</td><td class="mono">'+num(cl)+'</td><td class="dim">'+esc(c.budget||'—')+'</td><td class="dim">'+esc(CITY[c.city]||c.city||'—')+'</td><td class="dim">'+fmtDate(c.created_at)+'</td><td>'+act+'</td></tr>';
   }).join('') : '<tr><td colspan="9" class="empty">لا نتائج</td></tr>';
 }
@@ -1495,7 +1495,7 @@ function renderPhotos(){
       +   '<label style="background:var(--accent);color:#fff;font-size:12px;font-weight:500;padding:7px 12px;border-radius:100px;cursor:pointer;white-space:nowrap;text-align:center">'
       +     (c.avatar_url?'تغيير الصورة':'رفع صورة')
       +     '<input type="file" accept="image/*" style="display:none" onchange="uploadCreatorPhoto(\''+c.id+'\',this)"></label>'
-      +   '<button onclick="adminDeleteUser(\''+c.id+'\')" style="background:#fff;color:#c93030;border:1px solid #e6bcbc;font-size:12px;font-weight:500;padding:7px 12px;border-radius:100px;cursor:pointer;white-space:nowrap">حذف الحساب</button>'
+      +   '<button onclick="adminDeleteUser(\''+c.id+'\')" style="background:#171D2C;color:#c93030;border:1px solid #e6bcbc;font-size:12px;font-weight:500;padding:7px 12px;border-radius:100px;cursor:pointer;white-space:nowrap">حذف الحساب</button>'
       + '</div>'
       + '</div>';
   }).join('') : '<p style="color:var(--muted)">لا نتائج</p>';

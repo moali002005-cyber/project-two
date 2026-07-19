@@ -13,19 +13,19 @@
 <script src="/i18n.js?v=3"></script>
 <style>
 :root {
-  --cream: #ffffff;
-  --cream-darker: #F3EEE4;
-  --ink: #0F1420;
-  --ink-soft: #2C3548;
+  --cream: #0F1420;
+  --cream-darker: #171D2C;
+  --ink: #F3EEE4;
+  --ink-soft: #CBD2DE;
   --ink-muted: #8A93A6;
-  --ink-faint: #AAB2C0;
+  --ink-faint: #5E6980;
   --accent: #17C3B2;
-  --accent-soft: #7fd6d2;
-  --accent-ink: #0c4f4b;
+  --accent-soft: rgba(23,195,178,0.16);
+  --accent-ink: #8FE8DD;
   --olive: #17C3B2;
-  --gold: #8A93A6;
-  --line: rgba(15, 20, 32, 0.08);
-  --line-strong: rgba(15, 20, 32, 0.16);
+  --gold: #D4A24C;
+  --line: rgba(243, 238, 228, 0.09);
+  --line-strong: rgba(243, 238, 228, 0.18);
   --success: #17C3B2;
   --font-display: 'IBM Plex Sans Arabic', 'Segoe UI', Tahoma, sans-serif;
   --font-serif: 'IBM Plex Sans Arabic', 'Segoe UI', Tahoma, sans-serif;
@@ -175,7 +175,7 @@ body {
   resize: none;
   min-height: 50px;
   max-height: 140px;
-  background: #fff;
+  background: #171D2C;
   color: var(--ink);
   box-shadow: 0 2px 12px -6px rgba(15,20,32,0.12);
 }
@@ -276,7 +276,7 @@ body {
 .deal-awaiting-banner .approve-cta {
   display: inline-block;
   margin-top: 16px;
-  background: var(--ink);
+  background: var(--accent);
   color: #fff;
   padding: 12px 28px;
   border-radius: 100px;
@@ -292,7 +292,7 @@ body {
 
 /* Swipe to approve */
 .swipe-track {
-  background: #fff;
+  background: #171D2C;
   border: 1.5px solid rgba(19, 185, 178, 0.35);
   border-radius: 100px;
   position: relative;
@@ -335,7 +335,7 @@ body {
   top: 8px;
   right: 8px;
   width: 48px; height: 48px;
-  background: var(--ink);
+  background: var(--accent);
   border-radius: 50%;
   display: flex; align-items: center; justify-content: center;
   color: #fff;
@@ -378,10 +378,10 @@ body {
 <nav class="nav">
   <div class="container nav-inner">
     <a href="/" class="logo">
-      <svg class="logo-eye" viewBox="0 0 200 200" aria-hidden="true"><circle cx="100" cy="100" r="70" fill="none" stroke="#17C3B2" stroke-width="12"/><circle cx="100" cy="100" r="38" fill="none" stroke="#0F1420" stroke-width="9"/></svg>
+      <svg class="logo-eye" viewBox="0 0 200 200" aria-hidden="true"><circle cx="100" cy="100" r="70" fill="none" stroke="#17C3B2" stroke-width="12"/><circle cx="100" cy="100" r="38" fill="none" stroke="#F3EEE4" stroke-width="9"/></svg>
       <span class="logo-mark">ريتش</span>
     </a>
-    <span style="display:inline-flex;align-items:center;gap:12px;"><button type="button" data-i18n-toggle onclick="simblI18n.toggle()" style="background:#fff;border:1.5px solid rgba(15,20,32,0.28);color:var(--ink);padding:8px 16px;border-radius:100px;font-family:inherit;font-size:13px;font-weight:600;cursor:pointer;">EN</button><a href="javascript:history.back()" class="back-link">← العودة</a></span>
+    <span style="display:inline-flex;align-items:center;gap:12px;"><button type="button" data-i18n-toggle onclick="simblI18n.toggle()" style="background:#171D2C;border:1.5px solid rgba(243,238,228,0.25);color:var(--ink);padding:8px 16px;border-radius:100px;font-family:inherit;font-size:13px;font-weight:600;cursor:pointer;">EN</button><a href="javascript:history.back()" class="back-link">← العودة</a></span>
   </div>
 </nav>
 
