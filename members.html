@@ -36,7 +36,7 @@ input,select{font-family:inherit}
 
 .head{padding:28px 0 4px}
 .eyebrow{display:inline-flex;align-items:center;gap:8px;font-size:12.5px;font-weight:600;color:var(--accent-ink);
-  background:#171D2C;border:1px solid rgba(19,185,178,.3);padding:6px 14px;border-radius:100px;margin-bottom:14px}
+  background:#fff;border:1px solid rgba(19,185,178,.3);padding:6px 14px;border-radius:100px;margin-bottom:14px}
 .eyebrow .d{width:7px;height:7px;border-radius:50%;background:var(--accent)}
 .head h1{font-size:26px;font-weight:600;letter-spacing:-.5px;margin-bottom:5px}
 .head p{color:var(--ink-soft);font-size:14px}
@@ -44,12 +44,12 @@ input,select{font-family:inherit}
 .head-row .btn{flex-shrink:0}
 
 .btn{border:0;border-radius:100px;padding:10px 16px;font-size:13.5px;font-weight:600;display:inline-flex;align-items:center;gap:6px;transition:.18s;white-space:nowrap}
-.btn.primary{background: var(--accent);color:#fff}
+.btn.primary{background:var(--ink);color:#fff}
 .btn.primary:hover{background:var(--accent);transform:translateY(-1px)}
-.btn.ghost{background:#171D2C;border:1px solid var(--line-strong);color:var(--ink)}
+.btn.ghost{background:#fff;border:1px solid var(--line-strong);color:var(--ink)}
 .btn.ghost:hover{border-color:var(--accent);color:var(--accent-ink)}
 .btn.sm{padding:7px 12px;font-size:12px}
-.btn.danger{background:#171D2C;border:1px solid rgba(201,48,48,.3);color:var(--danger)}
+.btn.danger{background:#fff;border:1px solid rgba(201,48,48,.3);color:var(--danger)}
 .btn.danger:hover{background:var(--danger);color:#fff}
 
 .toolbar{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin:18px 0 10px}
@@ -61,7 +61,7 @@ input,select{font-family:inherit}
 /* ===== شجرة عمودية (تشتغل على الجوال) ===== */
 .tree{padding:6px 0 50px}
 .tw{position:relative}
-.row,.prow{display:flex;align-items:center;gap:10px;background:#171D2C;border:1px solid var(--line);border-radius:13px;
+.row,.prow{display:flex;align-items:center;gap:10px;background:#fff;border:1px solid var(--line);border-radius:13px;
   padding:9px 12px;cursor:pointer;transition:border-color .15s,transform .15s,box-shadow .2s;position:relative}
 .row:active,.prow:active{transform:scale(.99)}
 .row:hover{border-color:var(--accent-soft);box-shadow:0 5px 16px -10px rgba(15,20,32,.25)}
@@ -76,12 +76,12 @@ input,select{font-family:inherit}
 .nm{font-weight:600;font-size:14px;display:flex;align-items:center;gap:6px;flex-wrap:wrap}
 .rl{font-size:11.5px;color:var(--ink-muted)}
 .you{font-size:9.5px;font-weight:700;color:var(--gold);background:rgba(201,154,46,.12);padding:1px 7px;border-radius:100px}
-.chev{margin-inline-start:auto;width:26px;height:26px;border-radius:50%;border:1px solid var(--line-strong);background:#171D2C;
+.chev{margin-inline-start:auto;width:26px;height:26px;border-radius:50%;border:1px solid var(--line-strong);background:#fff;
   color:var(--ink-muted);display:flex;align-items:center;justify-content:center;font-size:11px;flex-shrink:0;transition:.18s}
 .chev:hover{border-color:var(--accent);color:var(--accent)}
 .prow{background:var(--cream-darker);border-style:dashed;padding:8px 12px}
 .prow .plabel{font-size:12.5px;font-weight:700;color:var(--ink-soft);flex:1;display:flex;align-items:center;gap:7px}
-.prow .pc{font-size:11px;width:20px;height:20px;border-radius:6px;background:#171D2C;border:1px solid var(--line);display:flex;align-items:center;justify-content:center}
+.prow .pc{font-size:11px;width:20px;height:20px;border-radius:6px;background:#fff;border:1px solid var(--line);display:flex;align-items:center;justify-content:center}
 .prow .pc.sn{color:#8a6500}
 .prow .cnt{font-size:11px;color:var(--ink-faint)}
 
@@ -94,11 +94,11 @@ input,select{font-family:inherit}
 /* ===== لوحة التفاصيل ===== */
 .scrim{position:fixed;inset:0;background:rgba(15,20,32,.4);backdrop-filter:blur(3px);opacity:0;visibility:hidden;transition:.25s;z-index:80}
 .scrim.show{opacity:1;visibility:visible}
-.panel{position:fixed;top:0;bottom:0;left:0;width:380px;max-width:92vw;background:#171D2C;z-index:90;
+.panel{position:fixed;top:0;bottom:0;left:0;width:380px;max-width:92vw;background:#fff;z-index:90;
   transform:translateX(-100%);transition:transform .28s cubic-bezier(.4,0,.2,1);display:flex;flex-direction:column;box-shadow:0 0 50px -10px rgba(15,20,32,.3)}
 .panel.show{transform:none}
 .panel-head{padding:24px 24px 18px;border-bottom:1px solid var(--line);position:relative}
-.panel-close{position:absolute;top:18px;left:20px;width:34px;height:34px;border-radius:50%;border:1px solid var(--line);background:#171D2C;font-size:18px;color:var(--ink-muted)}
+.panel-close{position:absolute;top:18px;left:20px;width:34px;height:34px;border-radius:50%;border:1px solid var(--line);background:#fff;font-size:18px;color:var(--ink-muted)}
 .panel-close:hover{border-color:var(--ink);color:var(--ink)}
 .panel-av{width:70px;height:70px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:600;font-size:27px;background:var(--accent);color:#fff;margin-bottom:12px}
 .panel-name{font-size:20px;font-weight:600;display:flex;align-items:center;gap:9px}
@@ -120,7 +120,7 @@ input,select{font-family:inherit}
 
 .backdrop{position:fixed;inset:0;background:rgba(15,20,32,.5);backdrop-filter:blur(4px);display:none;align-items:center;justify-content:center;z-index:100;padding:18px}
 .backdrop.show{display:flex}
-.modal{background:#171D2C;border-radius:20px;padding:26px;max-width:520px;width:100%;max-height:92vh;overflow-y:auto;animation:rise .2s ease}
+.modal{background:#fff;border-radius:20px;padding:26px;max-width:520px;width:100%;max-height:92vh;overflow-y:auto;animation:rise .2s ease}
 @keyframes rise{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
 .modal h3{font-size:19px;font-weight:600;margin-bottom:5px}
 .modal .sub{color:var(--ink-muted);font-size:13px;margin-bottom:20px}
@@ -136,12 +136,12 @@ input,select{font-family:inherit}
 .matrix th:first-child,.matrix td:first-child{text-align:right;font-weight:600}
 .matrix input{width:18px;height:18px;accent-color:var(--accent)}
 .brand-pick{display:flex;gap:8px;flex-wrap:wrap}
-.bp{padding:8px 14px;border:1.5px solid var(--line-strong);border-radius:100px;font-size:13px;font-weight:600;background:#171D2C;color:var(--ink)}
+.bp{padding:8px 14px;border:1.5px solid var(--line-strong);border-radius:100px;font-size:13px;font-weight:600;background:#fff;color:var(--ink)}
 .bp.on{border-color:var(--accent);background:rgba(19,185,178,.07);color:var(--accent-ink)}
 .modal-actions{display:flex;gap:11px;margin-top:20px}
 .modal-actions .btn{flex:1;justify-content:center}
 
-.toast{position:fixed;top:18px;left:50%;transform:translateX(-50%) translateY(-14px);background:#171D2C;border:1px solid var(--line);
+.toast{position:fixed;top:18px;left:50%;transform:translateX(-50%) translateY(-14px);background:#fff;border:1px solid var(--line);
   border-right:4px solid var(--accent);border-radius:14px;padding:12px 18px;font-size:13.5px;font-weight:500;z-index:2000;
   box-shadow:0 14px 36px -12px rgba(15,20,32,.28);opacity:0;transition:.25s;max-width:88vw}
 .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
@@ -163,7 +163,7 @@ input,select{font-family:inherit}
 <nav class="nav">
   <div class="container nav-inner">
     <a href="/brand.html" class="logo">
-      <svg class="logo-eye" viewBox="0 0 200 200" aria-hidden="true"><circle cx="100" cy="100" r="70" fill="none" stroke="#17C3B2" stroke-width="12"/><circle cx="100" cy="100" r="38" fill="none" stroke="#F3EEE4" stroke-width="9"/></svg>
+      <svg class="logo-eye" viewBox="0 0 200 200" aria-hidden="true"><circle cx="100" cy="100" r="70" fill="none" stroke="#17C3B2" stroke-width="12"/><circle cx="100" cy="100" r="38" fill="none" stroke="#0F1420" stroke-width="9"/></svg>
       <span class="logo-mark">ريتش</span>
     </a>
     <div class="nav-links">

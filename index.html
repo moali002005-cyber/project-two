@@ -23,19 +23,19 @@
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <style>
 :root {
-  --cream: #0F1420;
-  --cream-darker: #171D2C;
-  --ink: #F3EEE4;
-  --ink-soft: #CBD2DE;
+  --cream: #ffffff;
+  --cream-darker: #F3EEE4;
+  --ink: #0F1420;
+  --ink-soft: #2C3548;
   --ink-muted: #8A93A6;
-  --ink-faint: #5E6980;
+  --ink-faint: #AAB2C0;
   --accent: #17C3B2;
-  --accent-soft: rgba(23,195,178,0.16);
-  --accent-ink: #8FE8DD;
+  --accent-soft: #7fd6d2;
+  --accent-ink: #0c4f4b;
   --olive: #5b5b5b;
-  --gold: #D4A24C;
-  --line: rgba(243, 238, 228, 0.09);
-  --line-strong: rgba(243, 238, 228, 0.18);
+  --gold: #8A93A6;
+  --line: rgba(15, 20, 32, 0.08);
+  --line-strong: rgba(15, 20, 32, 0.16);
   --font-display: 'IBM Plex Sans Arabic', 'Segoe UI', Tahoma, sans-serif;
   --font-serif: 'IBM Plex Sans Arabic', 'Segoe UI', Tahoma, sans-serif;
   --font-body: 'IBM Plex Sans Arabic', 'Segoe UI', Tahoma, sans-serif;
@@ -57,7 +57,7 @@ body {
   padding: 32px 0;
   position: sticky;
   top: 0;
-  background: rgba(15, 20, 32, 0.85);
+  background: rgba(255, 255, 255, 0.85);
   backdrop-filter: blur(12px);
   z-index: 50;
   border-bottom: 1px solid transparent;
@@ -130,9 +130,9 @@ body {
   border: none;
   transition: all 0.2s;
 }
-.btn-primary { background: var(--accent); color: #0F1420; }
-.btn-primary:hover { background: #12A093; transform: translateY(-1px); }
-.btn-ghost { background: #171D2C; color: var(--ink); border: 1.5px solid rgba(243, 238, 228, 0.25); }
+.btn-primary { background: var(--ink); color: #fff; }
+.btn-primary:hover { background: #262626; transform: translateY(-1px); }
+.btn-ghost { background: #fff; color: var(--ink); border: 1.5px solid rgba(15, 20, 32, 0.28); }
 .btn-ghost:hover { border-color: var(--ink); }
 .lang-toggle { padding: 10px 16px; font-weight: 600; min-width: 54px; justify-content: center; }
 .hero {
@@ -154,7 +154,7 @@ body {
   font-weight: 500;
   letter-spacing: 0;
   color: var(--accent-ink);
-  background: #171D2C;
+  background: #fff;
   border: 1.5px solid rgba(19, 185, 178, 0.45);
   padding: 12px 26px;
   border-radius: 999px;
@@ -209,7 +209,7 @@ body {
   align-items: center;
   gap: 10px;
   padding: 9px 18px;
-  background: #171D2C;
+  background: #fff;
   border: 1.5px solid var(--line);
   border-radius: 999px;
   animation: stepFlow 3s ease-in-out infinite;
@@ -261,7 +261,7 @@ body {
 <nav class="nav" id="nav">
   <div class="container nav-inner">
     <a href="#" class="logo">
-      <svg class="logo-eye" viewBox="0 0 200 200" aria-hidden="true"><circle cx="100" cy="100" r="70" fill="none" stroke="#17C3B2" stroke-width="12"/><circle cx="100" cy="100" r="38" fill="none" stroke="#F3EEE4" stroke-width="9"/></svg>
+      <svg class="logo-eye" viewBox="0 0 200 200" aria-hidden="true"><circle cx="100" cy="100" r="70" fill="none" stroke="#17C3B2" stroke-width="12"/><circle cx="100" cy="100" r="38" fill="none" stroke="#0F1420" stroke-width="9"/></svg>
       <span class="logo-mark">ريتش</span>
     </a>
     <div class="nav-links">

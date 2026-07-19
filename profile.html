@@ -20,17 +20,17 @@
 <script src="/i18n.js?v=3"></script>
 <style>
 :root {
-  --cream: #0F1420;
-  --cream-darker: #171D2C;
-  --ink: #F3EEE4;
-  --ink-soft: #CBD2DE;
+  --cream: #ffffff;
+  --cream-darker: #F3EEE4;
+  --ink: #0F1420;
+  --ink-soft: #2C3548;
   --ink-muted: #8A93A6;
-  --ink-faint: #5E6980;
+  --ink-faint: #AAB2C0;
   --accent: #17C3B2;
-  --accent-soft: rgba(23,195,178,0.16);
-  --accent-ink: #8FE8DD;
-  --line: rgba(243, 238, 228, 0.09);
-  --line-strong: rgba(243, 238, 228, 0.18);
+  --accent-soft: #7fd6d2;
+  --accent-ink: #0c4f4b;
+  --line: rgba(15, 20, 32, 0.08);
+  --line-strong: rgba(15, 20, 32, 0.16);
   --success: #17C3B2;
   --font-display: 'IBM Plex Sans Arabic', 'Segoe UI', Tahoma, sans-serif;
   --font-body: 'IBM Plex Sans Arabic', 'Segoe UI', Tahoma, sans-serif;
@@ -87,7 +87,7 @@ body {
   display: flex;
   align-items: center;
   gap: 8px;
-  background: #171D2C;
+  background: #fff;
   padding: 4px 12px 4px 4px;
   border-radius: 100px;
   border: 1px solid var(--line);
@@ -156,7 +156,7 @@ body {
   font-size: 14px; font-weight: 500;
   margin-bottom: 24px;
   border: 1px solid rgba(19,185,178,0.30);
-  color: var(--accent-ink); background: #171D2C;
+  color: var(--accent-ink); background: #fff;
   animation: sb-glow 2.6s ease-in-out infinite;
 }
 .hero-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--accent); animation: sb-pulse 1.6s ease-in-out infinite; flex-shrink: 0; }
@@ -180,7 +180,7 @@ body {
   padding: 14px 32px; border-radius: 100px; border: 0;
   font-family: var(--font-body); font-size: 15px; font-weight: 500;
   cursor: pointer; transition: background .25s, transform .15s;
-  background: var(--accent); color: #0F1420;
+  background: var(--ink); color: #fff;
 }
 .hero-cta:hover { background: var(--accent); transform: translateY(-2px); }
 .hero-cta:active { transform: translateY(0); }
@@ -189,7 +189,7 @@ body {
   padding: 14px 26px; border-radius: 100px;
   font-family: var(--font-body); font-size: 14px; font-weight: 500;
   cursor: pointer; transition: all .2s;
-  background: #171D2C; color: var(--ink);
+  background: #fff; color: var(--ink);
   border: 1.5px solid rgba(15, 20, 32, 0.18);
   margin-right: 12px;
 }
@@ -245,7 +245,7 @@ body {
   display: inline-flex;
   align-items: center;
   gap: 10px;
-  background: #171D2C;
+  background: #fff;
   border: 1px solid rgba(19, 185, 178, 0.2);
   border-radius: 100px;
   padding: 10px 22px;
@@ -281,7 +281,7 @@ body {
   align-items: center;
 }
 .tab {
-  background: #171D2C;
+  background: #fff;
   color: var(--ink-muted);
   padding: 10px 18px;
   border-radius: 100px;
@@ -344,7 +344,7 @@ body {
   flex: 1;
 }
 .section-browse, .section-back {
-  background: var(--accent);
+  background: var(--ink);
   color: #fff;
   border: 0;
   padding: 10px 20px;
@@ -358,7 +358,7 @@ body {
 }
 .section-browse:hover, .section-back:hover { background: var(--accent); transform: translateY(-1px); }
 .section-back {
-  background: #171D2C;
+  background: #fff;
   color: var(--ink);
   border: 1px solid var(--line-strong);
 }
@@ -372,7 +372,7 @@ body {
 .filter-bar .label { font-size: 13px; color: var(--ink-muted); font-weight: 500; }
 .filter-pill {
   padding: 8px 16px;
-  background: #171D2C;
+  background: #fff;
   border: 1px solid var(--line);
   border-radius: 100px;
   font-size: 13px;
@@ -382,12 +382,12 @@ body {
   font-family: var(--font-body);
 }
 .filter-pill:hover { border-color: var(--ink-soft); }
-.filter-pill.active { background: var(--accent); color: #0F1420; border-color: var(--ink); }
+.filter-pill.active { background: var(--ink); color: #fff; border-color: var(--ink); }
 
 .campaigns-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 20px; }
 
 .campaign-card {
-  background: #171D2C;
+  background: #fff;
   border: 1px solid var(--line);
   border-radius: 20px;
   padding: 24px;
@@ -424,7 +424,7 @@ body {
 .tag { font-size: 11px; padding: 4px 10px; background: var(--cream-darker); border-radius: 100px; color: var(--accent-ink); font-weight: 500; }
 
 .btn-apply {
-  background: var(--accent); color: #0F1420;
+  background: var(--ink); color: #fff;
   padding: 10px 20px; border: none; border-radius: 100px;
   font-family: var(--font-body); font-size: 13px; font-weight: 500;
   cursor: pointer; transition: all 0.2s;
@@ -440,7 +440,7 @@ body {
 
 .applications-list { display: flex; flex-direction: column; gap: 16px; }
 .application-card {
-  background: #171D2C;
+  background: #fff;
   border: 1px solid var(--line);
   border-radius: 16px;
   padding: 20px 24px;
@@ -455,7 +455,7 @@ body {
 .status-pending { background: rgba(15, 20, 32, 0.06); color: var(--ink-muted); }
 .status-pending_approval { background: rgba(19, 185, 178, 0.10); color: #0c4f4b; }
 .status-active { background: rgba(19, 185, 178, 0.14); color: var(--accent-ink); }
-.status-closed { background: var(--accent); color: #0F1420; }
+.status-closed { background: var(--ink); color: #fff; }
 .status-rejected { background: var(--cream-darker); color: var(--ink-muted); }
 .stage-badge { white-space: nowrap; }
 .stage-badge.mine { background: var(--accent); color: #fff; }
@@ -465,7 +465,7 @@ body {
 .applications-list { gap: 12px; }
 .unified-list { display: flex; flex-direction: column; gap: 12px; }
 .ac-applybtn {
-  background: var(--accent); color: #0F1420; border: 0;
+  background: var(--ink); color: #fff; border: 0;
   padding: 9px 18px; border-radius: 100px;
   font-family: var(--font-body); font-size: 12px; font-weight: 500;
   cursor: pointer; white-space: nowrap;
@@ -479,7 +479,7 @@ body {
 }
 .ac-metarow .meta-item { font-size: 12px; color: var(--ink-muted); }
 .ac-card {
-  background: #171D2C;
+  background: #fff;
   border: 1px solid var(--line);
   border-radius: 16px;
   overflow: hidden;
@@ -610,7 +610,7 @@ body {
   margin-top: 14px;
 }
 .pay-btn-ghost {
-  background: #171D2C;
+  background: #fff;
   color: var(--ink-soft);
   border: 1px solid var(--line-strong);
   padding: 11px 20px;
@@ -629,7 +629,7 @@ body {
   align-items: flex-start;
   justify-content: space-between;
   padding: 22px 18px 18px;
-  background: #171D2C;
+  background: #fff;
   border: 1px solid var(--line);
   border-radius: 14px;
   margin-top: 8px;
@@ -678,7 +678,7 @@ body {
   border-color: var(--accent);
 }
 .ws-step.current .ws-circle {
-  background: var(--accent);
+  background: var(--ink);
   color: #fff;
   border-color: var(--ink);
   box-shadow: 0 0 0 4px rgba(15, 20, 32, 0.08);
@@ -699,7 +699,7 @@ body {
 
 /* ============ Workflow progress (الخيار 1: حلقة + شريط رفيع) ============ */
 .wf-card {
-  background: #171D2C;
+  background: #fff;
   border: 1px solid var(--line);
   border-radius: 16px;
   padding: 18px 20px;
@@ -725,7 +725,7 @@ body {
 .wf-ring span {
   width: 40px; height: 40px;
   border-radius: 50%;
-  background: #171D2C;
+  background: #fff;
   display: flex; align-items: center; justify-content: center;
   font-family: var(--font-display);
   font-size: 13px; font-weight: 600;
@@ -756,7 +756,7 @@ body {
   margin-top: 10px;
   padding: 18px 20px;
   border-radius: 14px;
-  background: #171D2C;
+  background: #fff;
   border: 1px solid var(--line);
 }
 .stage-action.mine {
@@ -783,7 +783,7 @@ body {
 }
 .stage-action.mine .sa-desc { margin-bottom: 14px; }
 .sa-btn {
-  background: var(--accent);
+  background: var(--ink);
   color: #fff;
   border: 0;
   padding: 11px 22px;
@@ -806,7 +806,7 @@ body {
   border-radius: 10px;
   font-family: var(--font-body);
   font-size: 14px;
-  background: #171D2C;
+  background: #fff;
   color: var(--ink);
   width: 100%;
 }
@@ -823,7 +823,7 @@ body {
   margin-top: 10px;
   padding: 6px 18px 14px;
   border-radius: 14px;
-  background: #171D2C;
+  background: #fff;
   border: 1px solid var(--line);
 }
 .hist-toggle {
@@ -962,11 +962,11 @@ body {
 }
 .toast {
   display: flex; align-items: center; gap: 10px;
-  background: #171D2C; color: var(--ink);
+  background: #fff; color: var(--ink);
   border: 1px solid var(--line); border-right: 4px solid var(--accent);
   border-radius: 14px; padding: 13px 18px;
   font-family: var(--font-body); font-size: 14px; font-weight: 500; line-height: 1.5;
-  box-shadow: 0 14px 36px -12px rgba(243,238,228,0.25);
+  box-shadow: 0 14px 36px -12px rgba(15,20,32,0.28);
   pointer-events: auto; opacity: 0; transform: translateY(-12px);
   transition: opacity .28s cubic-bezier(0.22,1,0.36,1), transform .28s cubic-bezier(0.22,1,0.36,1);
 }
@@ -979,7 +979,7 @@ body {
 }
 .toast.error .toast-ic { background: rgba(201,48,48,0.12); color: #c93030; }
 
-.modal { background: #171D2C; border-radius: 24px; padding: 36px; max-width: 520px; width: 100%; max-height: 90vh; overflow-y: auto; }
+.modal { background: #fff; border-radius: 24px; padding: 36px; max-width: 520px; width: 100%; max-height: 90vh; overflow-y: auto; }
 .modal h3 { font-family: var(--font-display); font-size: 22px; font-weight: 600; margin-bottom: 8px; }
 .modal .sub { color: var(--ink-muted); font-size: 14px; margin-bottom: 24px; }
 .field { margin-bottom: 20px; }
@@ -988,12 +988,12 @@ input, textarea {
   width: 100%; padding: 12px 14px;
   border: 1px solid var(--line-strong); border-radius: 10px;
   font-family: var(--font-body); font-size: 14px;
-  background: #171D2C; color: var(--ink);
+  background: #fff; color: var(--ink);
 }
 input:focus, textarea:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px rgba(19,185,178,0.14); }
 .modal-actions { display: flex; gap: 12px; margin-top: 24px; }
-.btn-secondary { flex: 1; padding: 12px; background: #171D2C; border: 1px solid var(--line-strong); color: var(--ink); border-radius: 100px; font-family: var(--font-body); font-size: 14px; font-weight: 500; cursor: pointer; }
-.btn-primary { flex: 1; padding: 12px; background: var(--accent); color: #0F1420; border: none; border-radius: 100px; font-family: var(--font-body); font-size: 14px; font-weight: 500; cursor: pointer; }
+.btn-secondary { flex: 1; padding: 12px; background: #fff; border: 1px solid var(--line-strong); color: var(--ink); border-radius: 100px; font-family: var(--font-body); font-size: 14px; font-weight: 500; cursor: pointer; }
+.btn-primary { flex: 1; padding: 12px; background: var(--ink); color: #fff; border: none; border-radius: 100px; font-family: var(--font-body); font-size: 14px; font-weight: 500; cursor: pointer; }
 .btn-primary:hover { background: var(--accent); }
 .btn-primary:disabled { background: var(--ink-faint); cursor: not-allowed; }
 
@@ -1018,7 +1018,7 @@ input:focus, textarea:focus { outline: none; border-color: var(--accent); box-sh
 <nav class="nav">
   <div class="container nav-inner">
     <a href="/" class="logo">
-      <svg class="logo-eye" viewBox="0 0 200 200" aria-hidden="true"><circle cx="100" cy="100" r="70" fill="none" stroke="#17C3B2" stroke-width="12"/><circle cx="100" cy="100" r="38" fill="none" stroke="#F3EEE4" stroke-width="9"/></svg>
+      <svg class="logo-eye" viewBox="0 0 200 200" aria-hidden="true"><circle cx="100" cy="100" r="70" fill="none" stroke="#17C3B2" stroke-width="12"/><circle cx="100" cy="100" r="38" fill="none" stroke="#0F1420" stroke-width="9"/></svg>
       <span class="logo-mark">ريتش</span>
     </a>
     <div class="user-menu" id="user-menu">
@@ -1030,7 +1030,7 @@ input:focus, textarea:focus { outline: none; border-color: var(--accent); box-sh
         <div class="user-avatar" id="user-initial">م</div>
         <span class="user-name" id="user-name">معلن</span>
       </div>
-      <span style="display:inline-flex;align-items:center;gap:12px;"><button type="button" data-i18n-toggle onclick="simblI18n.toggle()" style="background:#171D2C;border:1.5px solid rgba(243,238,228,0.25);color:var(--ink);padding:8px 16px;border-radius:100px;font-family:inherit;font-size:13px;font-weight:600;cursor:pointer;">EN</button><button class="btn-logout" onclick="logout()">خروج</button></span>
+      <span style="display:inline-flex;align-items:center;gap:12px;"><button type="button" data-i18n-toggle onclick="simblI18n.toggle()" style="background:#fff;border:1.5px solid rgba(15,20,32,0.28);color:var(--ink);padding:8px 16px;border-radius:100px;font-family:inherit;font-size:13px;font-weight:600;cursor:pointer;">EN</button><button class="btn-logout" onclick="logout()">خروج</button></span>
     </div>
   </div>
 </nav>
@@ -1094,7 +1094,7 @@ input:focus, textarea:focus { outline: none; border-color: var(--accent); box-sh
     <div id="earn-list"></div>
   </div>
   <style>
-    .fin-tile{background:#171D2C;border:1px solid var(--line);border-radius:14px;padding:13px 13px 12px;}
+    .fin-tile{background:#fff;border:1px solid var(--line);border-radius:14px;padding:13px 13px 12px;}
     .fin-tile .ft-l{font-size:11px;color:var(--ink-muted);line-height:1.4;min-height:30px;}
     .fin-tile .ft-v{font-size:19px;font-weight:700;color:var(--ink);margin-top:4px;line-height:1.1;}
     .fin-tile .ft-s{font-size:10.5px;color:var(--accent-ink);font-weight:600;margin-top:3px;}
@@ -2193,7 +2193,7 @@ function buildCropper(){
   if (CR.built) return;
   var html = ''
     + '<div id="cropper" style="display:none;position:fixed;inset:0;z-index:9999;background:rgba(15,20,32,0.80);align-items:center;justify-content:center;padding:20px;">'
-    +   '<div style="background:#171D2C;border-radius:20px;padding:18px;max-width:340px;width:100%;text-align:center;font-family:inherit;">'
+    +   '<div style="background:#fff;border-radius:20px;padding:18px;max-width:340px;width:100%;text-align:center;font-family:inherit;">'
     +     '<div style="font-weight:600;font-size:15px;margin-bottom:14px;color:var(--ink);">عدّل صورتك</div>'
     +     '<div id="cr-view" style="position:relative;width:280px;height:280px;max-width:74vw;max-height:74vw;margin:0 auto;overflow:hidden;border-radius:14px;background:#f0f0ef;touch-action:none;cursor:grab;">'
     +       '<img id="cr-img" alt="" draggable="false" style="position:absolute;left:0;top:0;-webkit-user-drag:none;user-select:none;pointer-events:none;max-width:none;">'
@@ -2206,7 +2206,7 @@ function buildCropper(){
     +     '</div>'
     +     '<div style="font-size:11.5px;color:#9aa3a0;margin-top:4px;">حرّك الصورة بإصبعك، وكبّر/صغّر بالشريط</div>'
     +     '<div style="display:flex;gap:10px;margin-top:16px;">'
-    +       '<button type="button" id="cr-cancel" style="flex:1;background:#171D2C;border:1px solid rgba(15,20,32,0.16);color:var(--ink);padding:12px;border-radius:100px;font-family:inherit;font-size:14px;font-weight:600;cursor:pointer;">إلغاء</button>'
+    +       '<button type="button" id="cr-cancel" style="flex:1;background:#fff;border:1px solid rgba(15,20,32,0.16);color:var(--ink);padding:12px;border-radius:100px;font-family:inherit;font-size:14px;font-weight:600;cursor:pointer;">إلغاء</button>'
     +       '<button type="button" id="cr-apply" style="flex:1;background:var(--accent);border:0;color:#fff;padding:12px;border-radius:100px;font-family:inherit;font-size:14px;font-weight:600;cursor:pointer;">تطبيق ورفع</button>'
     +     '</div>'
     +   '</div>'
@@ -2319,10 +2319,10 @@ function buildEditProfile(){
   var CITIES = [['riyadh','الرياض'],['jeddah','جدة'],['makkah','مكة المكرمة'],['madinah','المدينة المنورة'],['dammam','الدمام'],['khobar','الخبر'],['dhahran','الظهران'],['hofuf','الأحساء'],['qatif','القطيف'],['jubail','الجبيل'],['taif','الطائف'],['tabuk','تبوك'],['buraidah','بريدة'],['unaizah','عنيزة'],['hail','حائل'],['abha','أبها'],['khamis','خميس مشيط'],['najran','نجران'],['jazan','جازان'],['yanbu','ينبع'],['sakaka','سكاكا'],['arar','عرعر'],['albaha','الباحة'],['other','مدينة أخرى']];
   var cityOpts = function(){ var s=''; for(var i=0;i<CITIES.length;i++){ s+='<option value="'+CITIES[i][0]+'">'+CITIES[i][1]+'</option>'; } return s; };
   var opts = function(map){ var s=''; for(var k in map){ if(map[k]) s+='<option value="'+k+'">'+map[k]+'</option>'; } return s; };
-  var fld = 'width:100%;box-sizing:border-box;background:#171D2C;border:1px solid var(--line-strong);border-radius:10px;padding:11px 13px;font-family:inherit;font-size:14px;color:var(--ink);';
+  var fld = 'width:100%;box-sizing:border-box;background:#fff;border:1px solid var(--line-strong);border-radius:10px;padding:11px 13px;font-family:inherit;font-size:14px;color:var(--ink);';
   var lbl = 'font-size:12px;color:var(--ink-muted);margin:0 2px 6px;display:block;';
   var html = ''
-    + '<div id="edit-profile" style="display:none;position:fixed;inset:0;z-index:9998;background:#171D2C;overflow-y:auto;">'
+    + '<div id="edit-profile" style="display:none;position:fixed;inset:0;z-index:9998;background:#fff;overflow-y:auto;">'
     +   '<div style="max-width:480px;margin:0 auto;padding:16px;direction:rtl;font-family:inherit;">'
     +     '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;">'
     +       '<button type="button" id="ep-cancel" aria-label="رجوع" style="background:none;border:0;font-size:24px;color:var(--ink);cursor:pointer;line-height:1;padding:4px 8px;">&#8594;</button>'
@@ -2463,7 +2463,7 @@ async function renderBankBox(){
   catch(e){ console.warn('get_my_bank', e); }
   window.__bank = bank || { account_holder:'', iban:'', bank_name:'' };
   var has = bank && bank.iban;
-  var card = '<div style="background:#171D2C;border:1px solid var(--line);border-radius:16px;padding:18px 20px;margin-top:14px;">'
+  var card = '<div style="background:#fff;border:1px solid var(--line);border-radius:16px;padding:18px 20px;margin-top:14px;">'
     + '<div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;">'
     +   '<span style="width:34px;height:34px;border-radius:10px;background:rgba(19,185,178,.12);color:var(--accent-ink);display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0;">🏦</span>'
     +   '<div style="font-weight:600;font-size:15px;color:var(--ink);">بياناتي البنكية</div>'
@@ -2486,9 +2486,9 @@ async function renderBankBox(){
 function editBank(){
   var box = document.getElementById('bank-box'); if(!box) return;
   var b = window.__bank || {};
-  var fld = 'width:100%;box-sizing:border-box;background:#171D2C;border:1px solid var(--line-strong);border-radius:10px;padding:11px 13px;font-family:inherit;font-size:14px;color:var(--ink);margin-bottom:12px;';
+  var fld = 'width:100%;box-sizing:border-box;background:#fff;border:1px solid var(--line-strong);border-radius:10px;padding:11px 13px;font-family:inherit;font-size:14px;color:var(--ink);margin-bottom:12px;';
   var lbl = 'font-size:12px;color:var(--ink-muted);margin:0 2px 6px;display:block;';
-  box.innerHTML = '<div style="background:#171D2C;border:1px solid var(--line);border-radius:16px;padding:18px 20px;margin-top:14px;">'
+  box.innerHTML = '<div style="background:#fff;border:1px solid var(--line);border-radius:16px;padding:18px 20px;margin-top:14px;">'
     + '<div style="font-weight:600;font-size:15px;color:var(--ink);margin-bottom:14px;">🏦 بياناتي البنكية</div>'
     + '<label style="'+lbl+'">اسم صاحب الحساب</label><input id="bk-holder" type="text" style="'+fld+'" value="'+bkEsc(b.account_holder)+'">'
     + '<label style="'+lbl+'">رقم الآيبان</label><input id="bk-iban" type="text" dir="ltr" style="'+fld+'text-align:right;" placeholder="SA00 0000 0000 0000 0000 0000" value="'+bkEsc(b.iban)+'">'
@@ -2524,7 +2524,7 @@ function renderTiktokConnect(){
   var box = document.getElementById('tiktok-connect');
   if (!box) return;
   var connected = !!(currentUser && currentUser.tiktok_connected);
-  var card = '<div style="background:#171D2C;border:1px solid var(--line);border-radius:16px;padding:18px 20px;margin-top:14px;">'
+  var card = '<div style="background:#fff;border:1px solid var(--line);border-radius:16px;padding:18px 20px;margin-top:14px;">'
     + '<div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;">'
     +   '<span style="width:34px;height:34px;border-radius:10px;background:#000;color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:16px;flex-shrink:0;">♪</span>'
     +   '<div style="font-family:var(--font-display);font-weight:600;font-size:15px;color:var(--ink);">تيك توك</div>'
@@ -2534,7 +2534,7 @@ function renderTiktokConnect(){
       + '<div style="display:inline-flex;align-items:center;gap:6px;margin-top:12px;font-size:12px;font-weight:600;color:var(--accent-ink);background:rgba(19,185,178,0.10);border:1px solid rgba(19,185,178,0.28);border-radius:100px;padding:6px 14px;"><span style="width:7px;height:7px;border-radius:50%;background:var(--accent);"></span>مربوط ✓</div>';
   } else {
     card += '<div style="font-size:13px;color:var(--ink-soft);line-height:1.7;">اربط حسابك مرة وحدة، ونسحب أرقام منشوراتك تلقائيًا (مشاهدات/إعجابات/تعليقات) ونعرضها للشركات. ما نشوف رسائلك الخاصة ولا نقدر ننشر باسمك.</div>'
-      + '<button type="button" onclick="connectTiktok()" style="margin-top:14px;background: var(--accent);color:#fff;border:0;padding:11px 22px;border-radius:100px;font-family:var(--font-body);font-size:13px;font-weight:600;cursor:pointer;">اربط تيك توك</button>';
+      + '<button type="button" onclick="connectTiktok()" style="margin-top:14px;background:var(--ink);color:#fff;border:0;padding:11px 22px;border-radius:100px;font-family:var(--font-body);font-size:13px;font-weight:600;cursor:pointer;">اربط تيك توك</button>';
   }
   card += '</div>';
   box.innerHTML = card;

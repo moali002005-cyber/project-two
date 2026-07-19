@@ -26,13 +26,13 @@ body{background:var(--cream-darker);color:var(--ink);font-family:var(--font-body
 .logo-mark{font-family:var(--font-display);font-size:16px;font-weight:500;position:relative;padding-left:10px;line-height:1;}
 .logo-mark::after{content:'';position:absolute;bottom:0;left:0;width:4px;height:4px;background:var(--accent);border-radius:50%;}
 .nav-right{display:flex;align-items:center;gap:10px;}
-.btn-back{background:#171D2C;color:var(--ink);border:1px solid var(--line-strong);padding:8px 16px;border-radius:100px;font-family:inherit;font-size:13px;font-weight:500;cursor:pointer;text-decoration:none;}
+.btn-back{background:#fff;color:var(--ink);border:1px solid var(--line-strong);padding:8px 16px;border-radius:100px;font-family:inherit;font-size:13px;font-weight:500;cursor:pointer;text-decoration:none;}
 .btn-back:hover{border-color:var(--ink-soft);}
 .head{padding:30px 0 10px;text-align:center;}
 .head h1{font-family:var(--font-display);font-size:26px;font-weight:600;margin:0 0 4px;}
 .head p{font-size:14px;color:var(--ink-muted);margin:0;}
 .wrap{padding:14px 0 40px;}
-.cart-card{background:#171D2C;border:1px solid var(--line);border-radius:18px;padding:16px;margin-bottom:14px;}
+.cart-card{background:#fff;border:1px solid var(--line);border-radius:18px;padding:16px;margin-bottom:14px;}
 .cc-head{display:flex;align-items:center;gap:12px;margin-bottom:12px;}
 .cc-av{width:48px;height:48px;border-radius:50%;flex-shrink:0;overflow:hidden;}
 .cc-av img{width:100%;height:100%;object-fit:cover;}
@@ -40,20 +40,20 @@ body{background:var(--cream-darker);color:var(--ink);font-family:var(--font-body
 .cc-id{flex:1;min-width:0;}
 .cc-name{font-weight:600;font-size:14.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
 .cc-meta{font-size:12px;color:var(--ink-muted);direction:ltr;text-align:right;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-.cc-remove{flex-shrink:0;width:30px;height:30px;border-radius:50%;border:1px solid var(--line-strong);background:#171D2C;color:var(--ink-muted);font-size:14px;cursor:pointer;line-height:1;}
+.cc-remove{flex-shrink:0;width:30px;height:30px;border-radius:50%;border:1px solid var(--line-strong);background:#fff;color:var(--ink-muted);font-size:14px;cursor:pointer;line-height:1;}
 .cc-remove:hover{color:#c93030;border-color:#e6bcbc;}
 .cc-field{margin-top:11px;}
 .cc-field label{display:block;font-size:12px;font-weight:600;color:var(--ink-soft);margin-bottom:5px;}
-.cc-field input,.cc-field select,.cc-field textarea{width:100%;border:1px solid var(--line-strong);border-radius:11px;padding:10px 13px;font-family:inherit;font-size:13.5px;color:var(--ink);background:#171D2C;outline:none;}
+.cc-field input,.cc-field select,.cc-field textarea{width:100%;border:1px solid var(--line-strong);border-radius:11px;padding:10px 13px;font-family:inherit;font-size:13.5px;color:var(--ink);background:#fff;outline:none;}
 .cc-field input:focus,.cc-field select:focus,.cc-field textarea:focus{border-color:var(--accent);}
 .cc-field textarea{resize:vertical;min-height:48px;line-height:1.6;}
 .foot{position:sticky;bottom:0;background:var(--cream-darker);padding:14px 0 18px;border-top:1px solid var(--line);}
-.confirm-btn{width:100%;background: var(--accent);color:#fff;border:0;border-radius:100px;padding:15px;font-family:inherit;font-size:15px;font-weight:600;cursor:pointer;}
+.confirm-btn{width:100%;background:var(--ink);color:#fff;border:0;border-radius:100px;padding:15px;font-family:inherit;font-size:15px;font-weight:600;cursor:pointer;}
 .confirm-btn:hover{background:#000;}
 .confirm-btn:disabled{opacity:.5;cursor:default;}
 .foot-note{text-align:center;font-size:11.5px;color:var(--ink-faint);margin-top:9px;}
 .empty{text-align:center;padding:70px 20px;color:var(--ink-muted);}
-.empty .ic{width:64px;height:64px;border-radius:50%;background:#171D2C;border:1px solid var(--line);display:flex;align-items:center;justify-content:center;margin:0 auto 16px;color:var(--accent);}
+.empty .ic{width:64px;height:64px;border-radius:50%;background:#fff;border:1px solid var(--line);display:flex;align-items:center;justify-content:center;margin:0 auto 16px;color:var(--accent);}
 .empty h3{font-size:17px;font-weight:600;color:var(--ink);margin:0 0 6px;}
 .empty p{font-size:13.5px;margin:0 0 18px;}
 .empty a{display:inline-block;background:var(--accent);color:#fff;text-decoration:none;padding:11px 22px;border-radius:100px;font-size:13.5px;font-weight:600;}
@@ -63,7 +63,7 @@ body{background:var(--cream-darker);color:var(--ink);font-family:var(--font-body
 .done p{font-size:14px;color:var(--ink-muted);max-width:420px;margin:0 auto 22px;}
 .done a{display:inline-block;background:var(--accent);color:#fff;text-decoration:none;padding:12px 26px;border-radius:100px;font-size:14px;font-weight:600;}
 .toast-wrap{position:fixed;top:20px;left:50%;transform:translateX(-50%);z-index:2000;display:flex;flex-direction:column;gap:10px;pointer-events:none;}
-.toast{background:#171D2C;color:var(--ink);border:1px solid var(--line);border-right:4px solid var(--accent);border-radius:14px;padding:12px 18px;font-size:14px;font-weight:500;box-shadow:0 14px 36px -12px rgba(243,238,228,0.25);opacity:0;transform:translateY(-12px);transition:all .28s cubic-bezier(0.22,1,0.36,1);}
+.toast{background:#fff;color:var(--ink);border:1px solid var(--line);border-right:4px solid var(--accent);border-radius:14px;padding:12px 18px;font-size:14px;font-weight:500;box-shadow:0 14px 36px -12px rgba(15,20,32,0.28);opacity:0;transform:translateY(-12px);transition:all .28s cubic-bezier(0.22,1,0.36,1);}
 .toast.show{opacity:1;transform:translateY(0);}
 </style>
 </head>
@@ -72,11 +72,11 @@ body{background:var(--cream-darker);color:var(--ink);font-family:var(--font-body
 <nav class="nav">
   <div class="nav-inner">
     <a href="/brand.html" class="logo" aria-label="ريتش">
-      <svg class="logo-eye" viewBox="0 0 200 200" aria-hidden="true"><circle cx="100" cy="100" r="70" fill="none" stroke="#17C3B2" stroke-width="12"/><circle cx="100" cy="100" r="38" fill="none" stroke="#F3EEE4" stroke-width="9"/></svg>
+      <svg class="logo-eye" viewBox="0 0 200 200" aria-hidden="true"><circle cx="100" cy="100" r="70" fill="none" stroke="#17C3B2" stroke-width="12"/><circle cx="100" cy="100" r="38" fill="none" stroke="#0F1420" stroke-width="9"/></svg>
       <span class="logo-mark">ريتش</span>
     </a>
     <div class="nav-right">
-      <button type="button" data-i18n-toggle onclick="simblI18n.toggle()" style="background:#171D2C;border:1.5px solid rgba(243,238,228,0.25);color:var(--ink);padding:8px 16px;border-radius:100px;font-family:inherit;font-size:13px;font-weight:600;cursor:pointer;">EN</button>
+      <button type="button" data-i18n-toggle onclick="simblI18n.toggle()" style="background:#fff;border:1.5px solid rgba(15,20,32,0.28);color:var(--ink);padding:8px 16px;border-radius:100px;font-family:inherit;font-size:13px;font-weight:600;cursor:pointer;">EN</button>
       <a href="/creators.html" class="btn-back"><span>تصفّح المعلنين</span></a>
     </div>
   </div>

@@ -12,18 +12,18 @@
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <style>
 :root {
-  --cream: #0F1420;
-  --cream-darker: #171D2C;
-  --ink: #F3EEE4;
-  --ink-soft: #CBD2DE;
+  --cream: #ffffff;
+  --cream-darker: #F3EEE4;
+  --ink: #0F1420;
+  --ink-soft: #2C3548;
   --ink-muted: #8A93A6;
-  --ink-faint: #5E6980;
+  --ink-faint: #AAB2C0;
   --accent: #17C3B2;
-  --accent-soft: rgba(23,195,178,0.16);
-  --accent-ink: #8FE8DD;
+  --accent-soft: #7fd6d2;
+  --accent-ink: #0c4f4b;
   --accent-wash: #f1fbfa;
-  --line: rgba(243, 238, 228, 0.09);
-  --line-strong: rgba(243, 238, 228, 0.18);
+  --line: rgba(15, 20, 32, 0.08);
+  --line-strong: rgba(15, 20, 32, 0.16);
   --font-display: 'IBM Plex Sans Arabic', 'Segoe UI', Tahoma, sans-serif;
   --font-body: 'IBM Plex Sans Arabic', 'Segoe UI', Tahoma, sans-serif;
 }
@@ -47,7 +47,7 @@ body { background: var(--cream); color: var(--ink); font-family: var(--font-body
 .doc-meta { margin-top: 12px; font-size: 14px; color: var(--ink-muted); }
 
 .doc-wrap { display: grid; grid-template-columns: 240px 1fr; gap: 48px; padding: 40px 0 24px; align-items: start; }
-.toc { position: sticky; top: 88px; border: 1px solid var(--line); border-radius: 16px; padding: 18px 20px; background: #171D2C; }
+.toc { position: sticky; top: 88px; border: 1px solid var(--line); border-radius: 16px; padding: 18px 20px; background: #fff; }
 .toc h4 { font-family: var(--font-display); font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; color: var(--ink-faint); margin-bottom: 12px; }
 .toc a { display: block; font-size: 13.5px; color: var(--ink-soft); text-decoration: none; padding: 6px 0; border-right: 2px solid transparent; padding-right: 10px; margin-right: -10px; transition: color .15s, border-color .15s; }
 .toc a:hover { color: var(--accent-ink); border-color: var(--accent); }
@@ -95,10 +95,10 @@ body { background: var(--cream); color: var(--ink); font-family: var(--font-body
 <nav class="nav">
   <div class="container nav-inner">
     <a href="/" class="logo" aria-label="ريتش">
-      <svg class="logo-eye" viewBox="0 0 200 200" aria-hidden="true"><circle cx="100" cy="100" r="70" fill="none" stroke="#17C3B2" stroke-width="12"/><circle cx="100" cy="100" r="38" fill="none" stroke="#F3EEE4" stroke-width="9"/></svg>
+      <svg class="logo-eye" viewBox="0 0 200 200" aria-hidden="true"><circle cx="100" cy="100" r="70" fill="none" stroke="#17C3B2" stroke-width="12"/><circle cx="100" cy="100" r="38" fill="none" stroke="#0F1420" stroke-width="9"/></svg>
       <span class="logo-mark">ريتش</span>
     </a>
-    <span style="display:inline-flex;align-items:center;gap:12px;"><button type="button" data-i18n-toggle onclick="simblI18n.toggle()" style="background:#171D2C;border:1.5px solid rgba(243,238,228,0.25);color:var(--ink);padding:8px 16px;border-radius:100px;font-family:inherit;font-size:13px;font-weight:600;cursor:pointer;">EN</button><a href="/" class="nav-back">العودة للرئيسية</a></span>
+    <span style="display:inline-flex;align-items:center;gap:12px;"><button type="button" data-i18n-toggle onclick="simblI18n.toggle()" style="background:#fff;border:1.5px solid rgba(15,20,32,0.28);color:var(--ink);padding:8px 16px;border-radius:100px;font-family:inherit;font-size:13px;font-weight:600;cursor:pointer;">EN</button><a href="/" class="nav-back">العودة للرئيسية</a></span>
   </div>
 </nav>
 
@@ -216,7 +216,7 @@ body { background: var(--cream); color: var(--ink); font-family: var(--font-body
     <div class="footer-inner">
       <div class="footer-brand">
         <a href="/" class="logo" aria-label="ريتش">
-          <svg class="logo-eye" viewBox="0 0 200 200" aria-hidden="true"><circle cx="100" cy="100" r="70" fill="none" stroke="#17C3B2" stroke-width="12"/><circle cx="100" cy="100" r="38" fill="none" stroke="#F3EEE4" stroke-width="9"/></svg>
+          <svg class="logo-eye" viewBox="0 0 200 200" aria-hidden="true"><circle cx="100" cy="100" r="70" fill="none" stroke="#17C3B2" stroke-width="12"/><circle cx="100" cy="100" r="38" fill="none" stroke="#0F1420" stroke-width="9"/></svg>
           <span class="logo-mark">ريتش</span>
         </a>
         <p>منصة سعودية تربط الشركات بالمؤثرين عبر وكيل تفاوض ذكي.</p>
