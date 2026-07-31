@@ -3,11 +3,11 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ملف المؤثر · ريتش</title>
+<title>ملف المؤثر · Flfluencer</title>
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%230F1420'/%3E%3Ccircle cx='32' cy='32' r='20' fill='none' stroke='%2317C3B2' stroke-width='6'/%3E%3Ccircle cx='32' cy='32' r='9' fill='none' stroke='%23F3EEE4' stroke-width='4'/%3E%3C/svg%3E">
 <meta name="theme-color" content="#ffffff">
-<meta property="og:title" content="ملف موثّق على ريتش">
-<meta property="og:description" content="درجة ثقة وتقييمات حقيقية وترتيب بين أفضل المؤثرين على منصة ريتش.">
+<meta property="og:title" content="ملف موثّق على Flfluencer">
+<meta property="og:description" content="درجة ثقة وتقييمات حقيقية وترتيب بين أفضل المؤثرين على منصة Flfluencer.">
 <meta property="og:type" content="profile">
 <link rel="apple-touch-icon" href="/icon-192.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -75,7 +75,7 @@ body{background:linear-gradient(180deg,#f7fbfb,#eef6f5);color:var(--ink);font-fa
 </style>
 </head>
 <body>
-<div class="topbar"><a href="/" class="logo"><svg class="logo-eye" viewBox="0 0 200 200" aria-hidden="true"><circle cx="100" cy="100" r="70" fill="none" stroke="#17C3B2" stroke-width="12"/><circle cx="100" cy="100" r="38" fill="none" stroke="#0F1420" stroke-width="9"/></svg><span class="logo-mark">ريتش</span></a></div>
+<div class="topbar"><a href="/" class="logo"><svg class="logo-eye" viewBox="0 0 200 200" aria-hidden="true"><circle cx="100" cy="100" r="70" fill="none" stroke="#17C3B2" stroke-width="12"/><circle cx="100" cy="100" r="38" fill="none" stroke="#0F1420" stroke-width="9"/></svg><span class="logo-mark">Flfluencer</span></a></div>
 <div class="wrap"><div id="mk"><div class="mkload">جاري تحميل الملف…</div></div></div>
 <script>
 const arabicDigits=['٠','١','٢','٣','٤','٥','٦','٧','٨','٩'];
@@ -234,7 +234,7 @@ function render(c){
   let rankBlock='';
   if(rank>=1 && rank<=3){
     rankBlock = '<div class="mk-medal">'+medallion(rank)+'</div>'
-      + '<div class="mk-rank-t">'+['المركز الأول','المركز الثاني','المركز الثالث'][rank-1]+' على ريتش هذا الأسبوع</div>';
+      + '<div class="mk-rank-t">'+['المركز الأول','المركز الثاني','المركز الثالث'][rank-1]+' على Flfluencer هذا الأسبوع</div>';
   } else if(rank>=1 && rank<=100){
     rankBlock = '<div class="mk-rankpill">ضمن أفضل 100 مؤثر · المركز '+toArabic(rank)+'</div>';
   }
@@ -254,11 +254,11 @@ function render(c){
     + '</div>'
     + '<div class="mk-crit">'+critBars(c)+'</div>'
     + (c.bio?'<div class="mk-bio">'+escHtml(c.bio)+'</div>':'')
-    + '<a class="mk-cta" href="/creators.html?id='+encodeURIComponent(c.id)+'">تواصل عبر ريتش</a>'
-    + '<a class="mk-cta2" href="/signup.html">سجّل كمؤثر مثلهم على ريتش</a>'
-    + '<div class="mk-foot"><a href="/">مدعوم بمنصة ريتش</a></div>'
+    + '<a class="mk-cta" href="/creators.html?id='+encodeURIComponent(c.id)+'">تواصل عبر Flfluencer</a>'
+    + '<a class="mk-cta2" href="/signup.html">سجّل كمؤثر مثلهم على Flfluencer</a>'
+    + '<div class="mk-foot"><a href="/">مدعوم بمنصة Flfluencer</a></div>'
     + '</div>';
-  document.title = (c.name||'مؤثر')+' · ريتش';
+  document.title = (c.name||'مؤثر')+' · Flfluencer';
 }
 
 async function init(){

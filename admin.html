@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="robots" content="noindex, nofollow">
-<title>لوحة تحكّم ريتش — الأدمن</title>
+<title>لوحة تحكّم Flfluencer — الأدمن</title>
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%230F1420'/%3E%3Ccircle cx='32' cy='32' r='20' fill='none' stroke='%2317C3B2' stroke-width='6'/%3E%3Ccircle cx='32' cy='32' r='9' fill='none' stroke='%23F3EEE4' stroke-width='4'/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -185,7 +185,7 @@ pre.json{background:var(--bg);border:1px solid var(--line);border-radius:9px;pad
 .msg.creator{background:var(--accent-bg);border:1px solid rgba(19,185,178,.3);align-self:flex-end;border-bottom-inline-end-radius:3px}
 .msg .who{font-size:11px;color:var(--faint);margin-bottom:3px}
 .err-box{background:rgba(248,81,73,.1);border:1px solid rgba(248,81,73,.3);color:#ff9d97;border-radius:11px;padding:14px 16px;font-size:13.5px;margin-bottom:18px;display:none}
-/* ===== لوحة القيادة (نظرة عامة) — ألوان ريتش الرسمية ===== */
+/* ===== لوحة القيادة (نظرة عامة) — ألوان Flfluencer الرسمية ===== */
 .dsh-up{color:#0e9a94;font-weight:700}
 .dsh-grid{display:grid;gap:16px;margin-bottom:16px}.dsh-g2{grid-template-columns:1fr 1fr}
 @media(max-width:820px){.dsh-g2{grid-template-columns:1fr}}
@@ -277,7 +277,7 @@ pre.json{background:var(--bg);border:1px solid var(--line);border-radius:9px;pad
     <div class="brand">
       <svg class="brand-eye" style="color:var(--text)"><use href="#eye"/></svg>
       <div>
-        <div class="brand-name">لوحة تحكّم ريتش</div>
+        <div class="brand-name">لوحة تحكّم Flfluencer</div>
         <div class="brand-sub">كل اللي يصير في منصتك</div>
       </div>
     </div>
@@ -341,7 +341,7 @@ pre.json{background:var(--bg);border:1px solid var(--line);border-radius:9px;pad
     </div>
 
     <div class="section">
-      <h2><i class="ti ti-robot"></i> قيمة وكيل ريتش</h2>
+      <h2><i class="ti ti-robot"></i> قيمة وكيل Flfluencer</h2>
       <div class="mini-grid" id="agent-value"></div>
       <p class="dim" style="font-size:12px;margin-top:10px"><i class="ti ti-info-circle"></i> «الفرق» = السعر المبدئي للمعلن مقابل السعر النهائي بعد تفاوض الوكيل (للصفقات المقفلة).</p>
     </div>
@@ -1150,7 +1150,7 @@ function renderLeaderBar(){
   const fig = (ic,l,v,s,cls)=> '<div class="lead-fig '+(cls||'')+'"><div class="l">'+ic+' '+l+'</div><div class="v">'+v+'</div><div class="sub">'+s+'</div></div>';
   const r = x => money(x).replace(' ر.س','')+'<small> ر.س</small>';
   box.innerHTML =
-    '<div class="lead-top"><div><div class="t">لوحة قيادة ريتش ✦</div><div class="s">كل اللي يصير في منصتك — بمكان واحد</div></div>'
+    '<div class="lead-top"><div><div class="t">لوحة قيادة Flfluencer ✦</div><div class="s">كل اللي يصير في منصتك — بمكان واحد</div></div>'
     + '<span class="lead-live"><span class="d"></span> مباشر · محدّث الآن</span></div>'
     + '<div class="lead-figs">'
     +   fig('💰','قيمة الصفقات (GMV)', r(gmv), num(approved.length)+' صفقة معتمدة')

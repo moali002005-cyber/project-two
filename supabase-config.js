@@ -1,4 +1,4 @@
-// إعدادات Supabase لريتش
+// إعدادات Supabase لـ Flfluencer
 const SUPABASE_URL = 'https://chpzecgpylxqsutjydkb.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNocHplY2dweWx4cXN1dGp5ZGtiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQyODgxNzQsImV4cCI6MjA5OTg2NDE3NH0.q4wmWKtJ5IPx8AgzMkp3SuFLZL9F10qKc3qiX5LB7kI';
 

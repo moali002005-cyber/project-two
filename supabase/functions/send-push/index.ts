@@ -55,7 +55,7 @@ serve(async (req) => {
 
     // أرسل لكل مشترك
     const payload = JSON.stringify({
-      title: title || "مشروعنا الثاني",
+      title: title || "Flfluencer",
       body: body || "",
       url: url || "/",
     });

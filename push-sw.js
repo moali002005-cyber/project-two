@@ -7,10 +7,10 @@ self.addEventListener('push', function(event) {
   try {
     data = event.data.json();
   } catch (e) {
-    data = { title: 'ريتش', body: event.data.text() };
+    data = { title: 'Flfluencer', body: event.data.text() };
   }
 
-  const title = data.title || 'ريتش';
+  const title = data.title || 'Flfluencer';
   const options = {
     body: data.body || '',
     icon: '/icon-192.png',

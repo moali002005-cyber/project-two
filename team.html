@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"/>
-<title>ريتش · أعضاء الفريق</title>
+<title>Flfluencer · أعضاء الفريق</title>
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%230F1420'/%3E%3Ccircle cx='32' cy='32' r='20' fill='none' stroke='%2317C3B2' stroke-width='6'/%3E%3Ccircle cx='32' cy='32' r='9' fill='none' stroke='%23F3EEE4' stroke-width='4'/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -102,10 +102,10 @@
 <div class="app">
   <header>
     <div class="logo">
-      <span class="badge"><svg viewBox="0 0 100 60" width="26" height="26" aria-label="ريتش">
+      <span class="badge"><svg viewBox="0 0 100 60" width="26" height="26" aria-label="Flfluencer">
         <g fill="none" stroke="#0c0f0e" stroke-width="7" stroke-linecap="round"><path d="M7,30 Q35,11 63,30 Q35,49 7,30 Z"/><path d="M37,30 Q65,11 93,30 Q65,49 37,30 Z"/></g>
         <path d="M34,30 Q50,22 66,30 Q50,38 34,30 Z" fill="#17b0a5"/><circle cx="50" cy="30" r="4.3" fill="#0c0f0e"/></svg></span>
-      ريتش <small>· خريطة الفريق</small>
+      Flfluencer <small>· خريطة الفريق</small>
     </div>
     <div style="display:flex;align-items:center;gap:10px">
       <button id="openBoardBtn" onclick="openPerfBoard()" style="cursor:pointer;border:none;background:var(--black);color:#fff;padding:9px 16px;border-radius:999px;font-family:'Tajawal';font-weight:700;font-size:13px;display:flex;align-items:center;gap:7px">📊 لوحة الأداء</button>
@@ -242,7 +242,7 @@ const scrim=document.getElementById('scrim'),persp=document.getElementById('pers
 function openPersp(id){ const p=P[id];
   document.getElementById('pAv').textContent=initials(p.name);
   document.getElementById('pName').textContent=p.name; document.getElementById('pRole').textContent=p.role;
-  document.getElementById('pNote').textContent=`هذا بالضبط اللي يشوفه ${p.name} لو دخل ريتش الآن.`;
+  document.getElementById('pNote').textContent=`هذا بالضبط اللي يشوفه ${p.name} لو دخل Flfluencer الآن.`;
   const body=document.getElementById('pBody'); body.innerHTML='';
   if(id==='owner'||id==='gm') body.innerHTML=`<div><h5>كل العلامات — نظرة شاملة</h5>${blocks(['reef','osma','buyar'])}</div>`;
   else if(p.mgmt){ body.innerHTML = p.brand

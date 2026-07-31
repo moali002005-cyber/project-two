@@ -586,7 +586,7 @@ export default async function handler(req, res) {
 - كن ودود وطبيعي، استخدم لهجة خليجية بسيطة.
 ` : '';
 
-  const systemPrompt = `أنت "وكيل ريتش" — وكيل تفاوض محترف يمثّل شركة "${campaign.brand_name || 'الشركة'}" لإقفال صفقة إعلانية مع المؤثرة بأفضل سعر للشركة.
+  const systemPrompt = `أنت "وكيل Flfluencer" — وكيل تفاوض محترف يمثّل شركة "${campaign.brand_name || 'الشركة'}" لإقفال صفقة إعلانية مع المؤثرة بأفضل سعر للشركة.
 ${voiceInstructions}
 ## تفاصيل الإعلان:
 - العنوان: ${campaign.title}

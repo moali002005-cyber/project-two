@@ -1,4 +1,4 @@
-// Service Worker لريتش
+// Service Worker لـ Flfluencer
 // (1) يستقبل إشعارات Push ويعرضها حتى لو المتصفح مقفول
 // (2) يجلب الصفحات من الشبكة مباشرة (no-store) — فأي تحديث يوصل كل الأجهزة فورًا بلا كاش قديم
 
@@ -6,13 +6,13 @@ const CACHE_VERSION = 'simbl-v3';
 
 // التثبيت — نفعّل النسخة الجديدة فورًا
 self.addEventListener('install', (event) => {
-  console.log('REACH SW installed', CACHE_VERSION);
+  console.log('Flfluencer SW installed', CACHE_VERSION);
   self.skipWaiting();
 });
 
 // التفعيل — نحذف أي كاش قديم ونسيطر على كل التبويبات مباشرة
 self.addEventListener('activate', (event) => {
-  console.log('REACH SW activated', CACHE_VERSION);
+  console.log('Flfluencer SW activated', CACHE_VERSION);
   event.waitUntil(
     caches.keys()
       .then((keys) => Promise.all(keys.map((key) => caches.delete(key))))
@@ -23,7 +23,7 @@ self.addEventListener('activate', (event) => {
 // استقبال Push notification
 self.addEventListener('push', (event) => {
   let data = {
-    title: 'ريتش',
+    title: 'Flfluencer',
     body: 'لديك إشعار جديد',
     icon: '/icon-192.png',
     badge: '/icon-192.png',

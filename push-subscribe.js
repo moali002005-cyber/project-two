@@ -139,7 +139,7 @@ async function manualEnablePush() {
   refreshPushButton();
   if (success) {
     try {
-      new Notification('ريتش', {
+      new Notification('Flfluencer', {
         body: 'تم تفعيل الإشعارات ✨ راح يوصلك تنبيه لكل حدث جديد',
         icon: '/icon-192.png',
         dir: 'rtl'
@@ -214,7 +214,7 @@ function showReminderBanner(userId) {
       refreshPushButton();
       if (success) {
         try {
-          new Notification('ريتش', {
+          new Notification('Flfluencer', {
             body: 'أهلاً ✨ راح يوصلك تنبيه فوري لكل حدث جديد',
             icon: '/icon-192.png',
             dir: 'rtl'
