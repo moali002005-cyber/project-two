@@ -333,10 +333,10 @@ function simblShowSessionExpired() {
     o.id = 'simbl-session-expired';
     o.setAttribute('style', 'position:fixed;inset:0;z-index:99999;background:#ffffff;display:flex;align-items:center;justify-content:center;padding:24px;font-family:inherit;');
     o.innerHTML = '<div style="max-width:420px;text-align:center;">'
-      + '<div style="width:76px;height:76px;border-radius:50%;background:rgba(19,185,178,0.12);display:flex;align-items:center;justify-content:center;margin:0 auto 22px;font-size:34px;">\uD83D\uDD12</div>'
+      + '<div style="width:76px;height:76px;border-radius:50%;background:rgba(226,59,46,0.12);display:flex;align-items:center;justify-content:center;margin:0 auto 22px;font-size:34px;">\uD83D\uDD12</div>'
       + '<h2 style="font-size:24px;margin:0 0 10px;color:#0F1420;font-weight:700;">انتهت جلستك</h2>'
       + '<p style="font-size:15px;color:#8A93A6;line-height:1.8;margin:0 0 22px;">حسابك سليم، بس الجلسة انتهت. سجّل دخول من جديد وترجع بياناتك مباشرة.</p>'
-      + '<button id="simbl-relogin-btn" style="padding:13px 34px;border-radius:100px;border:0;background:#17C3B2;color:#fff;font-family:inherit;font-size:15px;font-weight:700;cursor:pointer;">سجّل دخول</button>'
+      + '<button id="simbl-relogin-btn" style="padding:13px 34px;border-radius:100px;border:0;background:#E23B2E;color:#fff;font-family:inherit;font-size:15px;font-weight:700;cursor:pointer;">سجّل دخول</button>'
       + '<div style="margin-top:14px;"><span id="simbl-retry-link" style="font-size:13px;color:#8A93A6;cursor:pointer;text-decoration:underline;">إعادة المحاولة</span></div>'
       + '</div>';
     document.body.appendChild(o);

@@ -34,7 +34,7 @@
       '#simbl-install-modal h3{margin:0 0 8px;font-size:20px;color:#141414;font-weight:700}' +
       '#simbl-install-modal p{margin:0 0 14px;font-size:14px;color:#5b5b5b;line-height:1.7}' +
       '#simbl-install-modal .ig-img{width:100%;border-radius:14px;border:1px solid #eef2f2;display:block;margin:0 auto 16px}' +
-      '#simbl-install-modal .ig-cta{width:100%;padding:14px;border:0;border-radius:100px;background:#17C3B2;color:#fff;font-family:inherit;font-size:15px;font-weight:700;cursor:pointer}' +
+      '#simbl-install-modal .ig-cta{width:100%;padding:14px;border:0;border-radius:100px;background:#E23B2E;color:#fff;font-family:inherit;font-size:15px;font-weight:700;cursor:pointer}' +
       '#simbl-install-modal .ig-cta:hover{filter:brightness(.97)}' +
       '#simbl-install-modal .ig-skip{display:inline-block;margin-top:12px;font-size:13px;color:#8a8a8a;cursor:pointer;text-decoration:underline}';
     document.head.appendChild(st);

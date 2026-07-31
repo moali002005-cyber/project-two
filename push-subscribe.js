@@ -203,7 +203,7 @@ function showReminderBanner(userId) {
         <div style="font-weight:600;margin-bottom:4px;font-size:15px;">🔔 فعّل الإشعارات</div>
         <div style="font-size:13px;opacity:0.85;line-height:1.6;">ليصلك تنبيه فوري لكل جديد، حتى لو الموقع مقفول.</div>
       </div>
-      <button id="push-enable-btn" style="background:#17C3B2;color:#fff;border:none;padding:10px 20px;border-radius:100px;font-family:inherit;font-size:13px;font-weight:500;cursor:pointer;white-space:nowrap;transition:background .2s;flex-shrink:0;">تفعيل</button>
+      <button id="push-enable-btn" style="background:#E23B2E;color:#fff;border:none;padding:10px 20px;border-radius:100px;font-family:inherit;font-size:13px;font-weight:500;cursor:pointer;white-space:nowrap;transition:background .2s;flex-shrink:0;">تفعيل</button>
       <button id="push-dismiss-btn" style="background:transparent;color:#fff;border:none;padding:4px 8px;font-size:22px;cursor:pointer;opacity:0.7;line-height:1;flex-shrink:0;" aria-label="إغلاق">×</button>
     `;
     document.body.appendChild(banner);
