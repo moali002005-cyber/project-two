@@ -803,7 +803,7 @@ function showPending(status){
   const icon=suspended?'⏸️':(rejected?'✕':'🔎');
   const title=suspended?'حسابكم موقوف مؤقتًا':(rejected?'لم يتم تفعيل حسابكم':'حسابكم قيد المراجعة');
   const msg=suspended?'تم إيقاف الحساب لوجود مستحقات دفع غير مُسوّاة. بعد التسوية وتأكيد المؤثر الاستلام، يعيد فريق Flfluencer التفعيل.'
-    :(rejected?'نعتذر، ما تم تفعيل حسابكم حاليًا. للاستفسار: hello@agentsimpleai.com'
+    :(rejected?'نعتذر، ما تم تفعيل حسابكم حاليًا. للاستفسار: hello@flfluencer.com'
     :'فريق Flfluencer يراجع حسابكم الآن. بمجرد التفعيل بتقدرون تطلقون حملاتكم وتشوفون لوحتكم. شكرًا لصبركم 🌿');
   host.innerHTML='<div class="gate"><div class="gate-card"><div style="font-size:40px;margin-bottom:10px">'+icon+'</div><h1>'+title+'</h1><p>'+msg+'</p><a class="btn btn-primary" href="/brand.html">رجوع</a></div></div>';
 }
