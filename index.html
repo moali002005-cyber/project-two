@@ -286,18 +286,18 @@ body {
               <polyline points="380,8 380,60"/>
               <polyline points="380,60 470,88 555,124"/>
               <polyline points="380,60 290,88 205,124"/>
-              <polyline points="380,60 380,226"/>
+              <polyline points="380,60 380,218" stroke-width="2.2" stroke-dasharray="1 8"/>
             </g>
             <g stroke="var(--accent)" stroke-width="3.5" fill="none" stroke-linecap="round" stroke-linejoin="round">
               <polyline id="fpE" points="380,8 380,8"/>
               <polyline id="fpR" points="380,60 380,60"/>
               <polyline id="fpL" points="380,60 380,60"/>
-              <polyline id="fpM" points="380,60 380,60"/>
+              <polyline id="fpM" points="380,60 380,60" stroke-width="2.2" stroke-dasharray="1 8" opacity="0.75"/>
             </g>
             <circle id="fjn" cx="380" cy="60" r="0" fill="var(--accent)"/>
             <circle id="fnR" cx="555" cy="124" r="0" fill="var(--accent)"/>
             <circle id="fnL" cx="205" cy="124" r="0" fill="var(--accent)"/>
-            <circle id="fnM" cx="380" cy="226" r="0" fill="var(--accent)"/>
+            <path id="fnM" d="M373 218 L387 218 L380 228 Z" fill="var(--accent)" opacity="0"/>
             <circle id="fdE" r="5.5" fill="var(--accent)" stroke="#fff" stroke-width="2" opacity="0"/>
             <circle id="fdR" r="5.5" fill="var(--accent)" stroke="#fff" stroke-width="2" opacity="0"/>
             <circle id="fdL" r="5.5" fill="var(--accent)" stroke="#fff" stroke-width="2" opacity="0"/>
@@ -494,10 +494,10 @@ document.addEventListener('DOMContentLoaded', async function () {
     $('fnR').setAttribute('r',kB>=1?4.5*fade:0);
     $('fnL').setAttribute('r',kB>=1?4.5*fade:0);
     var kM=t<T_M[0]?0:Math.min(1,easeOut((t-T_M[0])/(T_M[1]-T_M[0])));
-    $('fpM').setAttribute('points','380,60 380,'+(60+166*kM));
-    $('fdM').setAttribute('cx',380);$('fdM').setAttribute('cy',60+166*kM);
+    $('fpM').setAttribute('points','380,60 380,'+(60+158*kM));
+    $('fdM').setAttribute('cx',380);$('fdM').setAttribute('cy',60+158*kM);
     $('fdM').setAttribute('opacity',kM>0&&kM<1?1:0);
-    $('fnM').setAttribute('r',kM>=1?4*fade:0);
+    $('fnM').setAttribute('opacity',kM>=1?fade:0);
     ['fpE','fpR','fpL','fpM'].forEach(function(id){$(id).setAttribute('opacity',fade);});
     pop($('fbR'),POP_B,t); pop($('fbL'),POP_B,t);
     pop($('fbChip'),POP_M,t,'translateX(-50%)');
