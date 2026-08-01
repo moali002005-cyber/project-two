@@ -149,19 +149,28 @@ body {
 .hero-lines{max-width:520px;margin:0 auto 30px}
 .hero-lines .hl{display:block;font-size:clamp(16px,2.2vw,19px);color:var(--ink-soft);font-weight:500;line-height:2.05}
 .hero-lines .hl.strong{color:var(--ink);font-weight:700}
-.cta-flow{position:relative;width:min(760px,100%);margin:0 auto;height:220px}
-.cta-flow svg.flow{position:absolute;inset:0;width:100%;height:100%}
-.cta-flow .fbtn{position:absolute;top:108px;width:210px;height:54px;display:flex;align-items:center;justify-content:center;gap:8px;border-radius:100px;font-weight:800;font-size:15.5px;text-decoration:none;transition:transform .25s ease}
+.cta-flow{display:flex;justify-content:center;align-items:center;gap:34px;width:min(760px,100%);margin:14px auto 0;padding:14px 0 10px}
+.cta-flow .fbtn{position:relative;width:210px;height:54px;display:flex;align-items:center;justify-content:center;gap:8px;border-radius:100px;font-weight:800;font-size:15.5px;text-decoration:none;transition:transform .25s ease}
 .cta-flow .fbtn .leaf{position:absolute;top:-15px;width:28px;pointer-events:none}
-.cta-flow .fbtn.primary{left:calc(50% + 22px);background:linear-gradient(135deg,#EE5A44,#B4271C);color:#fff;box-shadow:0 16px 32px -16px rgba(226,59,46,.65);transform:rotate(-4deg)}
+.cta-flow .fbtn.primary{background:linear-gradient(135deg,#EE5A44,#B4271C);color:#fff;transform:rotate(-4deg);animation:flameGlow 2.2s ease-in-out infinite alternate}
 .cta-flow .fbtn.primary .leaf{right:-4px;transform:rotate(-30deg)}
-.cta-flow .fbtn.ghost{right:calc(50% + 22px);background:#fff;border:1.6px solid rgba(226,59,46,.34);color:var(--ink);transform:rotate(4deg)}
+.cta-flow .fbtn.ghost{background:#fff;border:1.6px solid rgba(226,59,46,.4);color:var(--ink);transform:rotate(4deg);animation:flameGlowSoft 2.2s ease-in-out infinite alternate;animation-delay:.55s}
 .cta-flow .fbtn.ghost .leaf{left:-4px;transform:rotate(30deg) scaleX(-1)}
 .cta-flow .fbtn:hover{transform:rotate(0deg) translateY(-3px)}
+@keyframes flameGlow{
+  0%{box-shadow:0 6px 18px -6px rgba(226,59,46,.55),0 0 26px rgba(226,59,46,.35),0 0 52px rgba(240,122,47,.18)}
+  100%{box-shadow:0 8px 22px -6px rgba(226,59,46,.75),0 0 40px rgba(226,59,46,.55),0 0 84px rgba(240,122,47,.35)}
+}
+@keyframes flameGlowSoft{
+  0%{box-shadow:0 4px 14px -6px rgba(226,59,46,.3),0 0 18px rgba(226,59,46,.18),0 0 40px rgba(240,122,47,.10)}
+  100%{box-shadow:0 6px 18px -6px rgba(226,59,46,.45),0 0 30px rgba(226,59,46,.32),0 0 62px rgba(240,122,47,.20)}
+}
+@media (prefers-reduced-motion: reduce){
+  .cta-flow .fbtn.primary,.cta-flow .fbtn.ghost{animation:none;box-shadow:0 6px 20px -6px rgba(226,59,46,.5),0 0 30px rgba(226,59,46,.35)}
+}
 @media(max-width:840px){
-  .cta-flow{height:auto;display:flex;flex-direction:column;align-items:center;gap:12px;padding-top:4px}
-  .cta-flow svg.flow{display:none}
-  .cta-flow .fbtn{position:static;transform:none;width:min(320px,86vw)}
+  .cta-flow{flex-direction:column;gap:14px}
+  .cta-flow .fbtn{transform:none;width:min(320px,86vw)}
   .cta-flow .fbtn .leaf{display:none}
 }
 
@@ -284,24 +293,6 @@ body {
           <span class="hl strong" data-i18n="hero_line3">مستقبل التسويق يبدأ من هنا.</span>
         </div>
         <div class="cta-flow" id="ctaFlow">
-          <svg class="flow" viewBox="0 0 760 220" preserveAspectRatio="xMidYMin meet" aria-hidden="true">
-            <g stroke="#EDE4D3" stroke-width="3.5" fill="none" stroke-linecap="round">
-              <line x1="380" y1="8" x2="380" y2="46"/>
-              <path d="M380 54 C380 86 420 94 468 98"/>
-              <path d="M380 54 C380 86 340 94 292 98"/>
-            </g>
-            <g stroke="var(--accent)" stroke-width="3.5" fill="none" stroke-linecap="round">
-              <line id="fpE" x1="380" y1="8" x2="380" y2="8"/>
-              <path id="fcR" d="M380 54 C380 86 420 94 468 98"/>
-              <path id="fcL" d="M380 54 C380 86 340 94 292 98"/>
-            </g>
-            <circle id="fjn" cx="380" cy="50" r="0" fill="var(--accent)"/>
-            <circle id="fnR" cx="468" cy="98" r="0" fill="var(--accent)"/>
-            <circle id="fnL" cx="292" cy="98" r="0" fill="var(--accent)"/>
-            <circle id="fdE" r="5.5" fill="var(--accent)" stroke="#fff" stroke-width="2" opacity="0"/>
-            <circle id="fdR" r="5.5" fill="var(--accent)" stroke="#fff" stroke-width="2" opacity="0"/>
-            <circle id="fdL" r="5.5" fill="var(--accent)" stroke="#fff" stroke-width="2" opacity="0"/>
-          </svg>
           <a href="/signup.html?role=creator" class="fbtn primary" id="fbR"><svg class="leaf" viewBox="0 0 40 40" aria-hidden="true"><path d="M8 34 C10 20 20 12 34 10 C30 24 22 32 8 34Z" fill="#2AA36B"/></svg><span data-i18n="hero_cta_creator">التسجيل كمعلن ←</span></a>
           <a href="/signup.html?role=brand" class="fbtn ghost" id="fbL"><svg class="leaf" viewBox="0 0 40 40" aria-hidden="true"><path d="M8 34 C10 20 20 12 34 10 C30 24 22 32 8 34Z" fill="#2AA36B"/></svg><span data-i18n="hero_cta_brand">التسجيل كشركة</span></a>
         </div>
@@ -444,57 +435,6 @@ document.addEventListener('DOMContentLoaded', async function () {
 </script>
 
 
-<script>
-(function(){
-  var flow=document.getElementById('ctaFlow'); if(!flow) return;
-  function $(id){return document.getElementById(id);}
-  var cR=$('fcR'), cL=$('fcL'), LR=cR.getTotalLength(), LL=cL.getTotalLength();
-  [ [cR,LR],[cL,LL] ].forEach(function(a){
-    a[0].style.strokeDasharray=a[1]; a[0].style.strokeDashoffset=a[1];
-  });
-  var easeOut=function(t){return 1-Math.pow(1-t,3);};
-  var T_E=[60,240], T_B=[300,620], STOP=1500;
-  function pop(el,t0,t,rot){
-    var dt=t-t0,sc=1;
-    if(dt>=0&&dt<260) sc=1+0.05*Math.sin(Math.PI*dt/260);
-    el.style.transform='rotate('+rot+'deg) scale('+sc.toFixed(3)+')';
-  }
-  function render(t){
-    var kE=t<T_E[0]?0:Math.min(1,easeOut((t-T_E[0])/(T_E[1]-T_E[0])));
-    $('fpE').setAttribute('y2',8+38*kE);
-    $('fdE').setAttribute('cx',380);$('fdE').setAttribute('cy',8+38*kE);
-    $('fdE').setAttribute('opacity',t>T_E[0]&&t<T_E[1]?1:0);
-    $('fjn').setAttribute('r',t>T_E[1]-40?4.5:0);
-    var kB=t<T_B[0]?0:Math.min(1,easeOut((t-T_B[0])/(T_B[1]-T_B[0])));
-    cR.style.strokeDashoffset=LR*(1-kB);
-    cL.style.strokeDashoffset=LL*(1-kB);
-    var pr=cR.getPointAtLength(LR*kB), pl=cL.getPointAtLength(LL*kB);
-    $('fdR').setAttribute('cx',pr.x);$('fdR').setAttribute('cy',pr.y);
-    $('fdL').setAttribute('cx',pl.x);$('fdL').setAttribute('cy',pl.y);
-    $('fdR').setAttribute('opacity',kB>0&&kB<1?1:0);
-    $('fdL').setAttribute('opacity',kB>0&&kB<1?1:0);
-    $('fnR').setAttribute('r',kB>=1?4.5:0);
-    $('fnL').setAttribute('r',kB>=1?4.5:0);
-    pop($('fbR'),T_B[1],t,-4); pop($('fbL'),T_B[1],t,4);
-  }
-  function finish(){
-    render(STOP);
-    $('fbR').style.transform=''; $('fbL').style.transform='';
-  }
-  var small=window.matchMedia&&window.matchMedia('(max-width: 840px)').matches;
-  var reduced=window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  if(small) return;
-  if(reduced){ finish(); return; }
-  var S=null;
-  function loop(now){
-    if(S===null)S=now;
-    var t=now-S;
-    if(t>=STOP){ finish(); return; }
-    render(t); requestAnimationFrame(loop);
-  }
-  requestAnimationFrame(loop);
-})();
-</script>
 <script>
 (function(){
   var story=document.getElementById('heroStory'); if(!story) return;
