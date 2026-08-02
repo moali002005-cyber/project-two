@@ -24,33 +24,18 @@
       justify-content: center;
       animation: simblSplashOut 0.4s ease 2.65s forwards;
     }
-    #simbl-splash .splash-eye {
-      width: clamp(120px, 26vw, 190px);
-      height: clamp(120px, 26vw, 190px);
-      animation: simblSplashZoom 1.3s cubic-bezier(0.7, 0, 0.3, 1) 1.35s forwards;
+    #simbl-splash .splash-lock {
+      font-family: 'Outfit', system-ui, sans-serif;
+      font-weight: 700;
+      font-size: clamp(40px, 8vw, 60px);
+      color: #16181F;
+      letter-spacing: -0.01em;
+      direction: ltr;
+      animation: simblLockIn 0.55s cubic-bezier(0.22, 1, 0.36, 1) 0.15s both,
+                 simblSplashZoom 1.1s cubic-bezier(0.7, 0, 0.3, 1) 1.5s forwards;
     }
-    #simbl-splash .splash-eye .ln {
-      stroke-dasharray: 300;
-      stroke-dashoffset: 300;
-      animation: simblSplashDraw 0.7s ease forwards;
-    }
-    #simbl-splash .splash-eye .ln2 { animation-delay: 0.28s; }
-    #simbl-splash .splash-eye .eyeShape {
-      stroke-dasharray: 120;
-      stroke-dashoffset: 120;
-      fill: transparent;
-      animation: simblSplashDraw 0.45s ease 0.62s forwards, simblEyeFill 0.3s ease 1s forwards;
-    }
-    #simbl-splash .splash-eye .pupil {
-      opacity: 0;
-      transform-box: fill-box;
-      transform-origin: center;
-      animation: simblPupilIn 0.4s cubic-bezier(0.22, 1, 0.36, 1) 0.98s forwards;
-    }
-    @keyframes simblSplashDraw { to { stroke-dashoffset: 0; } }
-    @keyframes simblEyeFill { to { fill: #ffffff; } }
-    @keyframes simblPupilIn {
-      0% { opacity: 0; transform: scale(0); }
+    @keyframes simblLockIn {
+      0% { opacity: 0; transform: scale(0.86); }
       100% { opacity: 1; transform: scale(1); }
     }
     @keyframes simblSplashZoom {
@@ -62,7 +47,7 @@
       to { opacity: 0; visibility: hidden; }
     }
     @media (prefers-reduced-motion: reduce) {
-      #simbl-splash .splash-eye { animation-duration: 0.5s; }
+      #simbl-splash .splash-lock { animation: none; }
       #simbl-splash { animation-delay: 0.5s; }
     }
   `;
@@ -73,9 +58,7 @@
   splash.id = 'simbl-splash';
   splash.setAttribute('aria-hidden', 'true');
   splash.innerHTML = `
-    <svg class="splash-eye" viewBox="0 0 200 200">
-      <g><path d="M112 62 C106 40 90 36 80 22" fill="none" stroke="#2AA36B" stroke-width="12" stroke-linecap="round"/><path d="M96 40 C86 28 88 14 102 12 C104 27 103 37 96 40Z" fill="#2AA36B"/><path d="M89.6 61.2L90.9 63.8L92.0 66.4L92.9 69.0L93.8 71.6L94.5 74.3L95.1 77.0L95.6 79.7L96.0 82.4L96.3 85.1L96.6 87.9L96.7 90.7L96.7 93.6L96.6 96.5L96.5 99.4L96.2 102.4L95.9 105.4L95.5 108.4L95.0 111.5L94.4 114.6L93.8 117.7L93.0 120.8L92.2 124.0L91.4 127.2L90.5 130.4L89.5 133.6L88.5 136.9L87.4 140.2L86.3 143.5L85.2 146.8L84.0 150.1L82.8 153.4L81.7 156.8L80.5 160.2L79.3 163.7L78.2 167.2L77.2 170.8L76.3 174.6L75.6 178.5L75.3 182.9L78.0 190.0L78.0 190.0L85.4 191.6L89.9 190.4L93.9 188.6L97.6 186.4L101.0 184.0L104.4 181.4L107.5 178.6L110.6 175.6L113.5 172.5L116.4 169.3L119.1 165.9L121.7 162.5L124.2 158.9L126.5 155.2L128.8 151.4L130.9 147.6L133.0 143.6L134.8 139.6L136.6 135.5L138.2 131.3L139.7 127.1L141.1 122.7L142.3 118.4L143.3 113.9L144.2 109.4L145.0 104.9L145.5 100.2L145.9 95.6L146.1 90.9L146.1 86.2L145.9 81.5L145.5 76.7L144.9 71.9L144.0 67.1L143.0 62.4L141.7 57.6L140.2 52.8L138.5 48.1L136.5 43.5A25.0 25.0 0 0 0 89.6 61.2Z" fill="#E23B2E"/></g>
-    </svg>
+    <span class="splash-lock">F<svg class="chili-l" viewBox="74 0 52 210" style="height:1.16em;vertical-align:-0.19em;margin:0 -0.02em;display:inline-block"><path d="M100 56 C96 34 86 30 78 18" fill="none" stroke="#2AA36B" stroke-width="11" stroke-linecap="round"/><path d="M88 34 C78 22 80 8 94 8 C96 22 95 31 88 34Z" fill="#2AA36B"/><path d="M88.1 45.5L88.5 48.9L88.9 52.4L89.2 55.9L89.5 59.3L89.8 62.8L90.0 66.3L90.2 69.7L90.3 73.2L90.4 76.7L90.5 80.2L90.6 83.6L90.7 87.1L90.7 90.6L90.7 94.1L90.7 97.6L90.6 101.1L90.6 104.6L90.5 108.1L90.4 111.5L90.4 115.0L90.3 118.5L90.1 122.0L90.0 125.6L89.9 129.1L89.8 132.6L89.7 136.1L89.6 139.6L89.5 143.1L89.4 146.6L89.3 150.2L89.3 153.7L89.3 157.2L89.3 160.7L89.4 164.3L89.5 167.8L89.7 171.4L90.0 174.9L90.5 178.5L91.3 182.1L94.0 186.0L94.0 186.0L97.6 183.0L99.3 179.7L100.7 176.3L101.9 172.9L103.0 169.5L104.0 166.1L104.9 162.6L105.7 159.1L106.5 155.7L107.3 152.2L108.0 148.6L108.7 145.1L109.3 141.6L109.9 138.0L110.4 134.5L110.9 130.9L111.4 127.3L111.9 123.7L112.3 120.1L112.6 116.5L113.0 112.8L113.3 109.2L113.5 105.5L113.8 101.9L114.0 98.2L114.1 94.5L114.2 90.9L114.3 87.2L114.3 83.5L114.3 79.8L114.3 76.1L114.2 72.4L114.1 68.6L113.9 64.9L113.7 61.2L113.4 57.5L113.1 53.7L112.8 50.0L112.4 46.3A12.0 12.0 0 0 0 88.1 45.5Z" fill="#E23B2E"/></svg>fluencer</span>
   `;
 
   // نركّب السبلاش فورًا على <html> (موجود دائمًا)، بدون انتظار <body>
