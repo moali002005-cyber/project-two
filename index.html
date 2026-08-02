@@ -249,8 +249,14 @@ body {
 .reveal.visible { opacity: 1; transform: translateY(0); }
 </style>
 <style>/* unified brand wordmark size */
-.logo-mark{font-size:26px !important}
+.logo-mark{font-size:26px !important;white-space:nowrap}
 @media(max-width:640px){.logo-mark{font-size:21px !important}}
+@media(max-width:640px){
+  .nav-links{gap:8px !important}
+  #nav-actions{gap:8px !important}
+  .nav .btn{padding:9px 14px;font-size:13px;white-space:nowrap}
+  .lang-toggle{min-width:36px;padding:8px 6px}
+}
 </style>
 </head>
 <body>
