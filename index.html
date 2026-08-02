@@ -142,9 +142,9 @@ body {
 .hs-w.future{color:var(--accent)}
 .hs-line{position:absolute;top:74px;left:50%;transform:translateX(-50%);width:min(440px,86vw)}
 .hs-line svg{display:block;width:100%;height:auto}
-.hs-brand{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;opacity:0;will-change:transform,opacity}
-.hs-brand .bm{font-family:var(--font-display);font-weight:700;font-size:clamp(34px,5.5vw,48px);color:var(--ink);letter-spacing:-.01em;direction:ltr}
-.hs-glow{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:min(520px,88vw);height:210px;border-radius:50%;background:radial-gradient(closest-side,rgba(226,59,46,.22),rgba(226,59,46,.05) 62%,transparent 100%);opacity:0;pointer-events:none}
+.hs-brand{position:absolute;top:-8px;left:0;right:0;height:68px;display:flex;align-items:center;justify-content:center;opacity:0;will-change:transform,opacity}
+.hs-brand .bm{font-family:var(--font-display);font-weight:700;font-size:clamp(32px,5vw,44px);color:var(--ink);letter-spacing:-.01em;direction:ltr}
+.hs-glow{position:absolute;left:50%;top:26px;transform:translate(-50%,-50%);width:min(480px,86vw);height:170px;border-radius:50%;background:radial-gradient(closest-side,rgba(226,59,46,.22),rgba(226,59,46,.05) 62%,transparent 100%);opacity:0;pointer-events:none}
 
 .hero-lines{max-width:520px;margin:0 auto 30px}
 .hero-lines .hl{display:block;font-size:clamp(16px,2.2vw,19px);color:var(--ink-soft);font-weight:500;line-height:2.05}
@@ -273,12 +273,11 @@ body {
   <div class="container">
     <div class="hero-grid">
       <div>
-        <div class="hero-story" id="heroStory" aria-label="السرعة، الذكاء، الدقة — هنا المستقبل.">
+        <div class="hero-story" id="heroStory" aria-label="السرعة، الذكاء، الدقة — Flfluencer">
           <div class="hs-words">
             <span class="hs-w" data-i18n="story_speed">السرعة</span>
             <span class="hs-w" data-i18n="story_smart">الذكاء</span>
             <span class="hs-w" data-i18n="story_precision">الدقة</span>
-            <span class="hs-w future" data-i18n="story_future">هنا المستقبل.</span>
           </div>
           <div class="hs-line">
             <svg viewBox="0 0 440 56" fill="none">
@@ -449,11 +448,10 @@ document.addEventListener('DOMContentLoaded', async function () {
     cps.appendChild(g); return g;});
   var prog=document.getElementById('hsProg'),dot=document.getElementById('hsDot'),
       ring=document.getElementById('hsRing'),brand=document.getElementById('hsBrand'),
-      glow=document.getElementById('hsGlow'),words=story.querySelectorAll('.hs-w'),
-      wordbox=story.querySelector('.hs-words'),linewrap=story.querySelector('.hs-line');
+      glow=document.getElementById('hsGlow'),words=story.querySelectorAll('.hs-w');
   var HOP=240,PAUSE=430,SHOW0=520,T=[],t0=SHOW0,i;
   for(i=0;i<3;i++){T.push([t0,t0+HOP,i,i+1]);t0+=HOP+PAUSE;}
-  var LAST=T[2][1],HOLD=760,FADE=340,BRAND=1250,CYCLE=LAST+HOLD+FADE+BRAND+150;
+  var LAST=T[2][1], STOP=LAST+1400;
   function easeOut(t){return 1-Math.pow(1-t,3);}
   function back(t){var s=2.04;return 1+(s+1)*Math.pow(t-1,3)+s*Math.pow(t-1,2);}
   function lerp(a,b,k){return a+(b-a)*k;}
@@ -467,11 +465,7 @@ document.addEventListener('DOMContentLoaded', async function () {
     return [P[seg][0],P[seg][1],seg];
   }
   function render(t){
-    t%=CYCLE;
-    var fadeStart=LAST+HOLD;
-    var lineOp=t<fadeStart?1:Math.max(0,1-(t-fadeStart)/FADE);
-    linewrap.style.opacity=lineOp; wordbox.style.opacity=lineOp;
-    var p=pos(Math.min(t,fadeStart)),x=p[0],y=p[1],fi=p[2];
+    var p=pos(t),x=p[0],y=p[1],fi=p[2];
     dot.setAttribute('cx',x);dot.setAttribute('cy',y);
     var pts='410,40',j;
     for(j=1;j<4;j++){ if(fi>=j) pts+=' '+P[j][0]+','+P[j][1]; }
@@ -479,13 +473,13 @@ document.addEventListener('DOMContentLoaded', async function () {
     prog.setAttribute('points',pts);
     items.forEach(function(g,j2){
       var arrive=j2===0?0:T[j2-1][1];
-      var on=t>=arrive&&t<fadeStart+FADE;
+      var on=t>=arrive;
       var dt=t-arrive,r=on?5:0;
       if(on&&dt<170) r=5+2.4*Math.sin(Math.PI*dt/170);
       g.querySelector('.on').setAttribute('r',Math.max(0,r));});
     words.forEach(function(w,j3){
       var arrive=j3===0?60:T[j3-1][1];
-      var leave=j3<3?T[j3][1]:fadeStart;
+      var leave=T[j3][1];
       var op=0,sc=1;
       if(t>=arrive&&t<leave){
         var dt2=t-arrive;
@@ -497,23 +491,25 @@ document.addEventListener('DOMContentLoaded', async function () {
       w.style.transform='scale('+(0.86+0.14*sc)+')';
     });
     var dt3=t-LAST;
-    if(dt3>0&&dt3<560&&t<fadeStart+FADE){ring.setAttribute('opacity',0.5*(1-dt3/560)*lineOp);ring.setAttribute('r',8+14*(dt3/560));}
+    if(dt3>0&&dt3<560){ring.setAttribute('opacity',0.5*(1-dt3/560));ring.setAttribute('r',8+14*(dt3/560));}
     else ring.setAttribute('opacity',0);
-    var bs=fadeStart+FADE*0.55;
+    var bs=LAST+60;
     if(t>=bs){
       var bt=t-bs,op2=Math.min(1,bt/200),sc2=bt<420?back(Math.min(1,bt/420)):1;
       brand.style.opacity=op2;
       brand.style.transform='scale('+(0.8+0.2*sc2)+')';
-      var g2=Math.min(1,bt/300);
-      glow.style.opacity=(bt<900?g2*0.9:Math.max(0,0.9-(bt-900)/500));
+      glow.style.opacity=Math.min(1,bt/300)*0.85;
     } else { brand.style.opacity=0; glow.style.opacity=0; }
   }
-  if(window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches){
-    render(LAST+HOLD-1);
-    return;
-  }
+  var reduced=window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if(reduced){ render(STOP); return; }
   var S=null;
-  function loop(now){ if(S===null)S=now; render(now-S); requestAnimationFrame(loop); }
+  function loop(now){
+    if(S===null)S=now;
+    var t=now-S;
+    if(t>=STOP){ render(STOP); return; }
+    render(t); requestAnimationFrame(loop);
+  }
   requestAnimationFrame(loop);
 })();
 </script>
