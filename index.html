@@ -121,11 +121,13 @@ body {
   border: none;
   transition: all 0.2s;
 }
-.btn-primary { background: var(--ink); color: #fff; }
-.btn-primary:hover { background: #262626; transform: translateY(-1px); }
-.btn-ghost { background: #fff; color: var(--ink); border: 1.5px solid rgba(15, 20, 32, 0.28); }
-.btn-ghost:hover { border-color: var(--ink); }
-.lang-toggle { padding: 10px 16px; font-weight: 600; min-width: 54px; justify-content: center; }
+.btn-primary { background: linear-gradient(160deg,#EE5A44,#E23B2E 55%,#B4271C); color: #fff; font-weight: 700;
+  box-shadow: 0 10px 22px -10px rgba(226,59,46,.55); }
+.btn-primary:hover { transform: translateY(-2px); box-shadow: 0 14px 28px -10px rgba(226,59,46,.7); }
+.btn-ghost { background: transparent; color: var(--ink); border: none; font-weight: 600; padding-inline: 14px; }
+.btn-ghost:hover { color: var(--accent); }
+.lang-toggle { padding: 10px 10px; font-weight: 600; min-width: 44px; justify-content: center; color: #8B8578; }
+.lang-toggle:hover { color: var(--accent); }
 .hero {
   min-height: calc(100vh - 140px);
   display: flex;
