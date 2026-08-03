@@ -1,0 +1,10 @@
+# ملفات داخلية — لا تُنشر على الموقع
+*.sql
+*.md
+*.ts
+db/
+supabase/
+guide/
+partnership/
+patent/
+.gitignore
