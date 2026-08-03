@@ -147,9 +147,6 @@ body {
 .hs-stage{width:min(520px,88vw)}
 .hs-stage svg{display:block;width:100%;height:auto;overflow:visible}
 
-.hero-lines{max-width:520px;margin:0 auto 30px}
-.hero-lines .hl{display:block;font-size:clamp(16px,2.2vw,19px);color:var(--ink-soft);font-weight:500;line-height:2.05}
-.hero-lines .hl.strong{color:var(--ink);font-weight:700}
 .cta-flow{display:flex;justify-content:center;align-items:center;gap:34px;width:min(760px,100%);margin:14px auto 0;padding:14px 0 10px}
 .cta-flow .fbtn{position:relative;width:224px;height:58px;display:flex;align-items:center;justify-content:center;gap:8px;border-radius:18px;font-weight:800;font-size:16.5px;text-decoration:none;transition:transform .25s ease,border-radius .25s ease}
 .cta-flow .fbtn .leaf{position:absolute;top:-14px;width:26px;pointer-events:none}
@@ -299,9 +296,6 @@ body {
           </svg>
           </div>
         </div>
-        <div class="hero-lines">
-          <span class="hl" data-i18n="hero_line2">حملتك تدير نفسها: تُطلَق، تتفاوض مع المؤثرين، وتُقفَل في دقائق.</span>
-          </div>
         <div class="cta-flow" id="ctaFlow">
           <a href="/signup.html?role=creator" class="fbtn primary" id="fbR"><svg class="leaf" viewBox="0 0 40 40" aria-hidden="true"><path d="M8 34 C10 20 20 12 34 10 C30 24 22 32 8 34Z" fill="#2AA36B"/></svg><span data-i18n="hero_cta_creator">التسجيل كمعلن ←</span></a>
           <a href="/signup.html?role=brand" class="fbtn ghost" id="fbL"><svg class="leaf" viewBox="0 0 40 40" aria-hidden="true"><path d="M8 34 C10 20 20 12 34 10 C30 24 22 32 8 34Z" fill="#2AA36B"/></svg><span data-i18n="hero_cta_brand">التسجيل كشركة</span></a>
@@ -464,15 +458,14 @@ document.addEventListener('DOMContentLoaded', async function () {
   var hop=$('hsHop'),sq=$('hsSq'),glow=$('hsGlow'),prog=$('hsProg'),sh=$('hsShadow');
   var sents=story.querySelectorAll('.hs-s');
   var DROP=380,REST=880,CROUCH=130,FLIGHT=340,HOPW=CROUCH+FLIGHT,
-      BACKC=150,BACKF=640,TAIL=280;
+      BACKC=150,BACKF=640;
   var land=[DROP],i;
   for(i=1;i<4;i++) land.push(land[i-1]+REST+HOPW);
-  var LAP=land[3]+REST, CYCLE=LAP+BACKC+BACKF+TAIL;
+  var LAP=land[3]+REST, CYCLE=LAP+BACKC+BACKF;
   function io(t){return t<.5?4*t*t*t:1-Math.pow(-2*t+2,3)/2;}
   function outC(t){return 1-Math.pow(1-t,3);}
   function inC(t){return t*t*t;}
   function render(t){
-    t%=CYCLE;
     var x=P[0][0],y=P[0][1],rot=0,air=0,landAge=-1,crouchK=0,gy=P[0][1];
     if(t<DROP){
       var kd=inC(t/DROP);
@@ -561,7 +554,13 @@ document.addEventListener('DOMContentLoaded', async function () {
   var reduced=window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   if(reduced){ render(LAP-100); return; }
   var S=null;
-  function loop(now){ if(S===null)S=now; render(now-S); requestAnimationFrame(loop); }
+  function loop(now){
+    if(S===null)S=now;
+    var raw=now-S, t;
+    if(raw<CYCLE) t=raw;
+    else t=DROP+((raw-DROP)%(CYCLE-DROP));
+    render(t); requestAnimationFrame(loop);
+  }
   requestAnimationFrame(loop);
 })();
 </script>
