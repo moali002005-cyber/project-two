@@ -1522,3 +1522,59 @@ Object.assign(window.I18N_TEXT, {
   "الحملة - Flfluencer": "Campaign · Flfluencer",
   "سلة الحملة - Flfluencer": "Campaign Cart · Flfluencer"
 });
+
+// === تغطية اختبار EN الشامل (top/share/c/terms/signup) 2026-08-03 ===
+Object.assign(window.I18N_TEXT, {
+ "التسجيل كمعلن": "Sign up as a Creator",
+ "التسجيل كشركة": "Sign up as a Brand",
+ "م": "C",
+ "ش": "B",
+ "و": "and",
+ "أفضل 500 مؤثر هذا الأسبوع": "Top 500 creators this week",
+ "مرتّبون بأداء الصفقات الحقيقي: سرعة الإنجاز، عدد الحملات المكتملة، والاستمرارية.": "Ranked by real deal performance: completion speed, campaigns delivered, and consistency.",
+ "الترتيب المحلي": "Local ranking",
+ "الشرق الأوسط": "Middle East",
+ "فلتر": "Filter",
+ "الفلاتر": "Filters",
+ "المنصة": "Platform",
+ "التصنيف": "Category",
+ "كل المنصات": "All platforms",
+ "مسح الكل": "Clear all",
+ "عرض النتائج": "Show results",
+ "جاري بناء القائمة...": "Building the list...",
+ "تعذّر تحميل القائمة": "Couldn't load the list",
+ "حدّث الصفحة وحاول مرة أخرى.": "Refresh the page and try again.",
+ "الترتيب يتحدّث تلقائيًا مع كل صفقة — الأسرع إنجازًا والأكثر إكمالًا يتصدّر.": "The ranking updates automatically with every deal — the fastest and most consistent rise to the top.",
+ "أفضل 500 مؤثر محليًا": "Top 500 local creators",
+ "أفضل 500 مؤثر في الشرق الأوسط": "Top 500 creators in the Middle East",
+ "ابحث باسم المؤثر أو معرّفه...": "Search by creator name or handle...",
+ "تيك توك": "TikTok",
+ "سناب شات": "Snapchat",
+ "انستقرام": "Instagram",
+ "إكس": "X",
+ "يوتيوب": "YouTube",
+ "عام": "General",
+ "لايف ستايل": "Lifestyle",
+ "جمال وعناية": "Beauty",
+ "موضة": "Fashion",
+ "طعام": "Food",
+ "سفر": "Travel",
+ "رياضة": "Fitness",
+ "تقنية": "Tech",
+ "أمومة وأطفال": "Parenting",
+ "👁️ عرض للقراءة فقط": "👁️ Read-only view",
+ "رابط غير صالح": "Invalid link",
+ "لا يوجد رمز في الرابط. للمعاينة افتح": "No token in the link. For a preview, open",
+ "رابط غير مكتمل.": "Incomplete link.",
+ "تصفّح كل المؤثرين ←": "Browse all creators →",
+ "ما لقينا هذا المؤثر.": "We couldn't find this creator.",
+ "مرحبًا بك في": "Welcome to",
+ "— منصة سعودية تربط الشركات بالمؤثرين عبر وكيل تفاوض ذكي.\n        باستخدامك للمنصة عبر الموقع": "— a Saudi platform connecting brands with creators through a smart negotiation agent.\nBy using the platform via",
+ "أو أي من خدماتها، فإنك توافق على هذه الشروط والأحكام.\n        إذا كنت لا توافق عليها، يُرجى عدم استخدام المنصة. تُشير كلمات «نحن» و«المنصة» و«Flfluencer» إلى الخدمة ومشغّليها،\n        وتُشير «أنت» إلى المستخدم سواء كان شركة (معلِن تجاري) أو مؤثرًا.": "or any of its services, you agree to these Terms and Conditions.\nIf you do not agree, please do not use the platform. The words \"we\", \"the platform\" and \"Flfluencer\" refer to the service and its operators,\nand \"you\" refers to the user, whether a commercial advertiser (brand) or a creator."
+});
+window.I18N.ar.top_title = "أفضل المعلنين - Flfluencer";
+window.I18N.en.top_title = "Top Creators · Flfluencer";
+window.I18N.ar.share_title = "Flfluencer · عرض الحملة";
+window.I18N.en.share_title = "Flfluencer · Campaign View";
+window.I18N.ar.c_title = "ملف المؤثر · Flfluencer";
+window.I18N.en.c_title = "Creator Profile · Flfluencer";
