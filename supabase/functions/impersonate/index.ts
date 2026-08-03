@@ -9,7 +9,7 @@
 // ====================================================================
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 
-const ADMIN_EMAILS = ['hello@agentsimpleai.com'];
+const ADMIN_EMAILS = ['flfluencerai@gmail.com'];
 
 const USER_COLS =
   'id, role, name, platform, handle, followers, category, price, bio, company_name, industry, size, position, website, created_at, auth_id, approval_status, cr_number, is_test, avatar_url, country, city, email';
