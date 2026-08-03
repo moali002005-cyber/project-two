@@ -69,14 +69,6 @@
   }
   function esc(s){ return (s==null?'':String(s)).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
 
-  async function load(){
-    if(!token){ stateMsg('رابط غير صالح', 'لا يوجد رمز في الرابط.'); return; }
-    let res;
-    try{ res = await client.rpc('get_snapshot', { p_token: token }); }
-    catch(e){ stateMsg('تعذّر التحميل', 'حصل خطأ أثناء جلب العرض. حاول لاحقًا.'); return; }
-    const row = res && res.data && res.data[0];
-    if(res.error || !row){ stateMsg('انتهت صلاحية الرابط أو أُلغي', 'اطلب رابطًا جديدًا من صاحب الحملة.'); return; }
-
   function renderSnapshot(title, d, createdAt){
     d = d || {};
     const stages = Array.isArray(d.stages) ? d.stages : [];
