@@ -14,7 +14,7 @@
 
 <script src="/splash.js?v=3"></script>
 
-<script defer src="/translations.js?v=4"></script>
+<script defer src="/translations.js?v=5"></script>
 <script defer src="/i18n.js?v=4"></script>
 
 <script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -138,15 +138,14 @@ body {
 }
 .hero .container { width: 100%; }
 .hero-grid { width: min(760px, 100%); margin: 0 auto; text-align: center; }
-.hero-story{position:relative;height:172px;margin-bottom:40px}
-.hs-words{position:absolute;top:66px;left:0;right:0;height:42px;display:flex;align-items:center;justify-content:center}
-.hs-w{position:absolute;font-family:var(--font-body);font-size:clamp(20px,3.4vw,28px);font-weight:800;color:var(--ink);opacity:0;white-space:nowrap;will-change:transform,opacity}
-.hs-w.future{color:var(--accent)}
-.hs-line{position:absolute;top:118px;left:50%;transform:translateX(-50%);width:min(440px,86vw)}
-.hs-line svg{display:block;width:100%;height:auto}
-.hs-brand{position:absolute;top:0;left:0;right:0;height:60px;display:flex;align-items:center;justify-content:center;will-change:transform}
-.hs-brand .bm{font-family:var(--font-display);font-weight:700;font-size:clamp(32px,5vw,44px);color:var(--ink);letter-spacing:-.01em;direction:ltr}
-.hs-glow{position:absolute;left:50%;top:30px;transform:translate(-50%,-50%);width:min(460px,84vw);height:150px;border-radius:50%;background:radial-gradient(closest-side,rgba(226,59,46,.22),rgba(226,59,46,.05) 62%,transparent 100%);opacity:0;pointer-events:none}
+.hero-story{display:flex;flex-direction:column;align-items:center;gap:24px;margin-bottom:38px}
+.hs-brand{position:relative;display:flex;align-items:center;justify-content:center;will-change:transform}
+.hs-brand .bm{position:relative;font-family:var(--font-display);font-weight:700;font-size:clamp(32px,5vw,44px);color:var(--ink);letter-spacing:-.01em;direction:ltr}
+.hs-glow{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:min(430px,80vw);height:150px;border-radius:50%;background:radial-gradient(closest-side,rgba(226,59,46,.20),transparent);pointer-events:none}
+.hs-sents{position:relative;height:46px;width:100%}
+.hs-s{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-family:var(--font-body);font-size:clamp(18px,3.4vw,27px);font-weight:800;color:var(--ink);opacity:0;white-space:nowrap;will-change:transform,opacity}
+.hs-stage{width:min(520px,88vw)}
+.hs-stage svg{display:block;width:100%;height:auto;overflow:visible}
 
 .hero-lines{max-width:520px;margin:0 auto 30px}
 .hero-lines .hl{display:block;font-size:clamp(16px,2.2vw,19px);color:var(--ink-soft);font-weight:500;line-height:2.05}
@@ -281,23 +280,24 @@ body {
   <div class="container">
     <div class="hero-grid">
       <div>
-        <div class="hero-story" id="heroStory" aria-label="السرعة، الذكاء، الدقة — Flfluencer">
-          <div class="hs-words">
-            <span class="hs-w" data-i18n="story_speed">السرعة</span>
-            <span class="hs-w" data-i18n="story_smart">الذكاء</span>
-            <span class="hs-w" data-i18n="story_precision">الدقة</span>
+        <div class="hero-story" id="heroStory">
+          <div class="hs-brand" id="hsBrand"><div class="hs-glow" id="hsGlow"></div><span class="bm">F<svg class="chili-l" viewBox="74 0 52 210" style="height:1.16em;vertical-align:-0.19em;margin:0 -0.02em;display:inline-block"><path d="M100 56 C96 34 86 30 78 18" fill="none" stroke="#2AA36B" stroke-width="11" stroke-linecap="round"/><path d="M88 34 C78 22 80 8 94 8 C96 22 95 31 88 34Z" fill="#2AA36B"/><path d="M88.1 45.5L88.5 48.9L88.9 52.4L89.2 55.9L89.5 59.3L89.8 62.8L90.0 66.3L90.2 69.7L90.3 73.2L90.4 76.7L90.5 80.2L90.6 83.6L90.7 87.1L90.7 90.6L90.7 94.1L90.7 97.6L90.6 101.1L90.6 104.6L90.5 108.1L90.4 111.5L90.4 115.0L90.3 118.5L90.1 122.0L90.0 125.6L89.9 129.1L89.8 132.6L89.7 136.1L89.6 139.6L89.5 143.1L89.4 146.6L89.3 150.2L89.3 153.7L89.3 157.2L89.3 160.7L89.4 164.3L89.5 167.8L89.7 171.4L90.0 174.9L90.5 178.5L91.3 182.1L94.0 186.0L94.0 186.0L97.6 183.0L99.3 179.7L100.7 176.3L101.9 172.9L103.0 169.5L104.0 166.1L104.9 162.6L105.7 159.1L106.5 155.7L107.3 152.2L108.0 148.6L108.7 145.1L109.3 141.6L109.9 138.0L110.4 134.5L110.9 130.9L111.4 127.3L111.9 123.7L112.3 120.1L112.6 116.5L113.0 112.8L113.3 109.2L113.5 105.5L113.8 101.9L114.0 98.2L114.1 94.5L114.2 90.9L114.3 87.2L114.3 83.5L114.3 79.8L114.3 76.1L114.2 72.4L114.1 68.6L113.9 64.9L113.7 61.2L113.4 57.5L113.1 53.7L112.8 50.0L112.4 46.3A12.0 12.0 0 0 0 88.1 45.5Z" fill="#E23B2E"/></svg>fluencer</span></div>
+          <div class="hs-sents">
+            <span class="hs-s" data-i18n="story_step1">أطلق حملتك الإعلانية.</span>
+            <span class="hs-s" data-i18n="story_step2">وكيل تفاوض AI يرشّح لك الأنسب.</span>
+            <span class="hs-s" data-i18n="story_step3">يفاوض ويقفل أفضل صفقة.</span>
+            <span class="hs-s" data-i18n="story_step4">تابع تقدم حملتك بشكل مباشر.</span>
           </div>
-          <div class="hs-line">
-            <svg viewBox="0 0 440 56" fill="none">
-              <polyline id="hsTrack" points="410,40 300,16 190,34 80,10" stroke="#EDE4D3" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
-              <polyline id="hsProg" points="410,40 410,40" stroke="var(--accent)" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
-              <g id="hsCps"></g>
-              <circle id="hsRing" cx="80" cy="10" r="8" stroke="var(--accent)" stroke-width="1.6" opacity="0"/>
-              <circle id="hsDot" r="6" fill="var(--accent)" stroke="#fff" stroke-width="2.2"/>
-            </svg>
+          <div class="hs-stage">
+          <svg viewBox="0 0 520 150" aria-hidden="true">
+            <polyline points="450,96 330,66 210,88 90,58" fill="none" stroke="#EDE4D3" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>
+            <polyline id="hsProg" points="450,96 450,96" fill="none" stroke="var(--accent)" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>
+            <g id="hsCps"></g>
+            <g id="hsPuffs"></g>
+            <ellipse id="hsShadow" cx="0" cy="0" rx="14" ry="3.6" fill="#16181F" opacity="0.12"/>
+            <g id="hsHop"><g id="hsSq"><g transform="scale(0.235) translate(-100,-184)"><g transform="rotate(-3 100 110)"><path d="M92 52 C90 36 93 20 101 12 C107 7 113 10 112 16 C109 25 109 38 109 50 Z" fill="#2FA46F"/><path d="M97 15 C101 10 107 9 110 11 C109 15 104 17 99 17 Z" fill="#23855A"/><path d="M100 48 C94 34 80 28 68 33 C50 40 38 60 37 84 C36 100 43 112 48 122 C51 138 54 150 59 162 C63 180 76 184 82 163 C88 186 112 186 118 163 C124 184 137 180 141 162 C146 150 149 138 152 122 C157 112 164 100 163 84 C162 60 150 40 132 33 C120 28 106 34 100 48 Z" fill="#E23B2E"/><path d="M68 36 C52 44 40 62 39 84 C38 100 45 112 50 122 C53 140 57 156 63 164 C69 173 79 174 83 165 C72 130 72 86 80 40 C76 36 72 35 68 36 Z" fill="#F0604C"/><path d="M132 36 C148 44 160 62 161 84 C162 100 155 112 150 122 C147 140 143 156 137 164 C131 173 121 174 117 165 C128 130 128 86 120 40 C124 36 128 35 132 36 Z" fill="#C22619"/><path d="M82 42 C74 84 74 130 82 163" fill="none" stroke="#B01F14" stroke-width="2.5" opacity="0.35"/><path d="M120 42 C128 84 128 130 118 163" fill="none" stroke="#B01F14" stroke-width="2.5" opacity="0.35"/><path d="M64 92 L138 92 L136 104 C135 112 128 116 120 115 L112 114 C106 113 103 108 103 102 L99 102 C99 108 96 113 90 114 L82 115 C74 116 67 112 66 104 Z" fill="#16181F"/><path d="M70 96 L86 96" stroke="#5A5A66" stroke-width="3.5" stroke-linecap="round"/><path d="M108 96 L124 96" stroke="#5A5A66" stroke-width="3.5" stroke-linecap="round"/><path d="M88 128 Q104 137 116 125" fill="none" stroke="#16181F" stroke-width="5" stroke-linecap="round"/></g></g></g></g>
+          </svg>
           </div>
-          <div class="hs-glow" id="hsGlow"></div>
-          <div class="hs-brand" id="hsBrand"><span class="bm">F<svg class="chili-l" viewBox="74 0 52 210" style="height:1.16em;vertical-align:-0.19em;margin:0 -0.02em;display:inline-block"><path d="M100 56 C96 34 86 30 78 18" fill="none" stroke="#2AA36B" stroke-width="11" stroke-linecap="round"/><path d="M88 34 C78 22 80 8 94 8 C96 22 95 31 88 34Z" fill="#2AA36B"/><path d="M88.1 45.5L88.5 48.9L88.9 52.4L89.2 55.9L89.5 59.3L89.8 62.8L90.0 66.3L90.2 69.7L90.3 73.2L90.4 76.7L90.5 80.2L90.6 83.6L90.7 87.1L90.7 90.6L90.7 94.1L90.7 97.6L90.6 101.1L90.6 104.6L90.5 108.1L90.4 111.5L90.4 115.0L90.3 118.5L90.1 122.0L90.0 125.6L89.9 129.1L89.8 132.6L89.7 136.1L89.6 139.6L89.5 143.1L89.4 146.6L89.3 150.2L89.3 153.7L89.3 157.2L89.3 160.7L89.4 164.3L89.5 167.8L89.7 171.4L90.0 174.9L90.5 178.5L91.3 182.1L94.0 186.0L94.0 186.0L97.6 183.0L99.3 179.7L100.7 176.3L101.9 172.9L103.0 169.5L104.0 166.1L104.9 162.6L105.7 159.1L106.5 155.7L107.3 152.2L108.0 148.6L108.7 145.1L109.3 141.6L109.9 138.0L110.4 134.5L110.9 130.9L111.4 127.3L111.9 123.7L112.3 120.1L112.6 116.5L113.0 112.8L113.3 109.2L113.5 105.5L113.8 101.9L114.0 98.2L114.1 94.5L114.2 90.9L114.3 87.2L114.3 83.5L114.3 79.8L114.3 76.1L114.2 72.4L114.1 68.6L113.9 64.9L113.7 61.2L113.4 57.5L113.1 53.7L112.8 50.0L112.4 46.3A12.0 12.0 0 0 0 88.1 45.5Z" fill="#E23B2E"/></svg>fluencer</span></div>
         </div>
         <div class="hero-lines">
           <span class="hl" data-i18n="hero_line2">حملتك تدير نفسها: تُطلَق، تتفاوض مع المؤثرين، وتُقفَل في دقائق.</span>
@@ -448,76 +448,120 @@ document.addEventListener('DOMContentLoaded', async function () {
 <script>
 (function(){
   var story=document.getElementById('heroStory'); if(!story) return;
-  var P=[[410,40],[300,16],[190,34],[80,10]];
-  var cps=document.getElementById('hsCps');
-  var items=P.map(function(p){
-    var g=document.createElementNS('http://www.w3.org/2000/svg','g');
-    g.innerHTML='<circle cx="'+p[0]+'" cy="'+p[1]+'" r="5" fill="#E5DCC9"/><circle class="on" cx="'+p[0]+'" cy="'+p[1]+'" r="0" fill="#E23B2E"/>';
-    cps.appendChild(g); return g;});
-  var prog=document.getElementById('hsProg'),dot=document.getElementById('hsDot'),
-      ring=document.getElementById('hsRing'),brand=document.getElementById('hsBrand'),
-      glow=document.getElementById('hsGlow'),words=story.querySelectorAll('.hs-w');
-  var HOP=240,PAUSE=430,SHOW0=520,T=[],t0=SHOW0,i;
-  for(i=0;i<3;i++){T.push([t0,t0+HOP,i,i+1]);t0+=HOP+PAUSE;}
-  var LAST=T[2][1], STOP=LAST+900;
-  function easeOut(t){return 1-Math.pow(1-t,3);}
-  function back(t){var s=2.04;return 1+(s+1)*Math.pow(t-1,3)+s*Math.pow(t-1,2);}
-  function lerp(a,b,k){return a+(b-a)*k;}
-  function pos(t){
-    var seg=0,j;
-    for(j=0;j<T.length;j++){var h=T[j];
-      if(t>=h[1]){seg=h[3];}
-      else if(t>=h[0]){var kk=easeOut((t-h[0])/(h[1]-h[0]));
-        return [lerp(P[h[2]][0],P[h[3]][0],kk),lerp(P[h[2]][1],P[h[3]][1],kk),h[2]+kk];}
-      else break;}
-    return [P[seg][0],P[seg][1],seg];
-  }
+  function $(id){return document.getElementById(id);}
+  var P=[[450,96],[330,66],[210,88],[90,58]];
+  var ng=$('hsCps'),puffG=$('hsPuffs');
+  var nodes=P.map(function(p){
+    var c1=document.createElementNS('http://www.w3.org/2000/svg','circle');
+    c1.setAttribute('cx',p[0]);c1.setAttribute('cy',p[1]);c1.setAttribute('r',4.5);c1.setAttribute('fill','#E8DFCE');
+    ng.appendChild(c1);
+    var c2=document.createElementNS('http://www.w3.org/2000/svg','circle');
+    c2.setAttribute('cx',p[0]);c2.setAttribute('cy',p[1]);c2.setAttribute('r',0);c2.setAttribute('fill','#E23B2E');
+    ng.appendChild(c2);return c2;});
+  var puffs=[0,1].map(function(){
+    var c=document.createElementNS('http://www.w3.org/2000/svg','circle');
+    c.setAttribute('fill','#D8CDB8');c.setAttribute('opacity',0);puffG.appendChild(c);return c;});
+  var hop=$('hsHop'),sq=$('hsSq'),glow=$('hsGlow'),prog=$('hsProg'),sh=$('hsShadow');
+  var sents=story.querySelectorAll('.hs-s');
+  var DROP=380,REST=880,CROUCH=130,FLIGHT=340,HOPW=CROUCH+FLIGHT,
+      BACKC=150,BACKF=640,TAIL=280;
+  var land=[DROP],i;
+  for(i=1;i<4;i++) land.push(land[i-1]+REST+HOPW);
+  var LAP=land[3]+REST, CYCLE=LAP+BACKC+BACKF+TAIL;
+  function io(t){return t<.5?4*t*t*t:1-Math.pow(-2*t+2,3)/2;}
+  function outC(t){return 1-Math.pow(1-t,3);}
+  function inC(t){return t*t*t;}
   function render(t){
-    var p=pos(t),x=p[0],y=p[1],fi=p[2];
-    dot.setAttribute('cx',x);dot.setAttribute('cy',y);
-    var pts='410,40',j;
-    for(j=1;j<4;j++){ if(fi>=j) pts+=' '+P[j][0]+','+P[j][1]; }
-    if(fi%1>0) pts+=' '+x+','+y;
-    prog.setAttribute('points',pts);
-    items.forEach(function(g,j2){
-      var arrive=j2===0?0:T[j2-1][1];
-      var on=t>=arrive;
-      var dt=t-arrive,r=on?5:0;
-      if(on&&dt<170) r=5+2.4*Math.sin(Math.PI*dt/170);
-      g.querySelector('.on').setAttribute('r',Math.max(0,r));});
-    words.forEach(function(w,j3){
-      var arrive=j3===0?60:T[j3-1][1];
-      var leave=T[j3][1];
-      var op=0,sc=1;
-      if(t>=arrive&&t<leave){
-        var dt2=t-arrive;
-        op=Math.min(1,dt2/140);
-        sc=dt2<260?back(Math.min(1,dt2/260)):1;
-        var out=leave-t; if(out<120) op=Math.min(op,out/120);
+    t%=CYCLE;
+    var x=P[0][0],y=P[0][1],rot=0,air=0,landAge=-1,crouchK=0,gy=P[0][1];
+    if(t<DROP){
+      var kd=inC(t/DROP);
+      x=P[0][0]; y=P[0][1]-130*(1-kd); air=1-kd; gy=P[0][1];
+    } else if(t<LAP){
+      var st=0,j;
+      for(j=0;j<4;j++){ if(t>=land[j]) st=j; }
+      var restEnd=land[st]+REST;
+      if(t<restEnd||st===3){ x=P[st][0]; y=P[st][1]; landAge=t-land[st]; gy=P[st][1]; }
+      if(st<3&&t>=restEnd){
+        var ht=t-restEnd;
+        if(ht<CROUCH){ x=P[st][0]; y=P[st][1]; crouchK=io(ht/CROUCH); rot=8*crouchK; gy=P[st][1]; landAge=-1; }
+        else{
+          var k=(ht-CROUCH)/FLIGHT, kx=io(k);
+          x=P[st][0]+(P[st+1][0]-P[st][0])*kx;
+          var yl=P[st][1]+(P[st+1][1]-P[st][1])*kx;
+          var arc=4*k*(1-k);
+          y=yl-50*arc; air=arc; rot=-360*outC(k); gy=yl; landAge=-1;
+        }
       }
-      w.style.opacity=op;
-      w.style.transform='scale('+(0.86+0.14*sc)+')';
+    } else {
+      var bt=t-LAP;
+      if(bt<BACKC){ x=P[3][0];y=P[3][1];crouchK=io(bt/BACKC);rot=-8*crouchK;gy=P[3][1]; }
+      else if(bt<BACKC+BACKF){
+        var k2=(bt-BACKC)/BACKF, kx2=io(k2);
+        x=P[3][0]+(P[0][0]-P[3][0])*kx2;
+        var yl2=P[3][1]+(P[0][1]-P[3][1])*kx2;
+        var arc2=4*k2*(1-k2);
+        y=yl2-100*arc2; air=arc2; rot=360*outC(k2); gy=yl2;
+      } else { x=P[0][0];y=P[0][1];landAge=t-LAP-BACKC-BACKF;gy=P[0][1]; }
+    }
+    var sx=1,sy=1;
+    if(crouchK>0){ sx=1+0.20*crouchK; sy=1-0.18*crouchK; }
+    else if(air>0){ sx=1-0.12*air; sy=1+0.16*air; }
+    if(landAge>=0&&landAge<420){
+      var e=Math.exp(-landAge/110), c=Math.cos(landAge/52);
+      sy=1-0.26*e*c; sx=1+0.28*e*c;
+    } else if(landAge>=420){
+      var b=Math.sin((landAge-420)/280);
+      sy=1+0.018*b; sx=1-0.012*b;
+    }
+    hop.setAttribute('transform','translate('+x+','+y+') rotate('+rot+')');
+    sq.setAttribute('transform','scale('+sx.toFixed(3)+','+sy.toFixed(3)+')');
+    sh.setAttribute('cx',x); sh.setAttribute('cy',gy+5);
+    sh.setAttribute('rx',14*(1-0.5*air)); sh.setAttribute('opacity',0.13*(1-0.6*air));
+    var pts='450,96';
+    if(t<LAP){
+      var seg=0;
+      for(j=1;j<4;j++){ if(x<=P[j-1][0]&&x>=P[j][0]) seg=j; }
+      for(j=1;j<seg;j++) pts+=' '+P[j][0]+','+P[j][1];
+      if(seg>0){ var kk=(P[seg-1][0]-x)/(P[seg-1][0]-P[seg][0]);
+        pts+=' '+x+','+(P[seg-1][1]+(P[seg][1]-P[seg-1][1])*kk); }
+      prog.setAttribute('opacity',1);
+    } else {
+      pts='450,96 330,66 210,88 90,58';
+      prog.setAttribute('opacity',Math.max(0,1-(t-LAP)/(BACKC+BACKF)));
+    }
+    prog.setAttribute('points',pts);
+    nodes.forEach(function(n,j3){
+      var on=t>=land[j3]&&t<LAP+(BACKC+BACKF)*0.5;
+      var r=on?4:0, dt=t-land[j3];
+      if(on&&dt<200) r=4+2.2*Math.sin(Math.PI*dt/200);
+      n.setAttribute('r',Math.max(0,r));});
+    puffs.forEach(function(c2,pi){
+      var best=-1;
+      for(j=0;j<4;j++){ var a=t-land[j]; if(a>=0&&a<340) best=j; }
+      if(best>=0){ var a2=(t-land[best])/340;
+        c2.setAttribute('cx',P[best][0]+(pi?15:-15)*(0.4+a2));
+        c2.setAttribute('cy',P[best][1]+2-6*a2);
+        c2.setAttribute('r',3+7*a2);
+        c2.setAttribute('opacity',0.4*(1-a2));
+      } else c2.setAttribute('opacity',0);
     });
-    var dt3=t-LAST;
-    if(dt3>0&&dt3<560){ring.setAttribute('opacity',0.5*(1-dt3/560));ring.setAttribute('r',8+14*(dt3/560));}
-    else ring.setAttribute('opacity',0);
-    // brand fixed; glow soft from start, surges at the finale; brand pops gently
-    var g0=0.35;
-    if(t<LAST) glow.style.opacity=g0;
-    else glow.style.opacity=Math.min(0.9, g0+0.55*Math.min(1,dt3/380));
-    var sc2=1;
-    if(dt3>0&&dt3<340) sc2=1+0.035*Math.sin(Math.PI*dt3/340);
-    brand.style.transform='scale('+sc2.toFixed(3)+')';
+    sents.forEach(function(el,j4){
+      var s0=land[j4]+110, s1=(j4<3?land[j4]+REST+60:LAP+60);
+      var op=0,ty=10;
+      if(t>=s0&&t<s1){
+        var dt2=t-s0; op=Math.min(1,dt2/220); ty=10*(1-Math.min(1,dt2/220));
+        var out=s1-t; if(out<200) op=Math.min(op,out/200);
+      }
+      el.style.opacity=op;
+      el.style.transform='translateY('+ty+'px)';
+    });
+    glow.style.opacity=0.75+0.25*Math.sin(t/650);
   }
   var reduced=window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  if(reduced){ render(STOP); return; }
+  if(reduced){ render(LAP-100); return; }
   var S=null;
-  function loop(now){
-    if(S===null)S=now;
-    var t=now-S;
-    if(t>=STOP){ render(STOP); return; }
-    render(t); requestAnimationFrame(loop);
-  }
+  function loop(now){ if(S===null)S=now; render(now-S); requestAnimationFrame(loop); }
   requestAnimationFrame(loop);
 })();
 </script>
