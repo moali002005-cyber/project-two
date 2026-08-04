@@ -56,7 +56,7 @@ body {
 .page { padding: 40px 0 80px; }
 
 .deal-summary {
-  background: linear-gradient(135deg, var(--olive), #0e9a94);
+  background: linear-gradient(135deg, var(--olive), #C0231A);
   color: #fff;
   padding: 24px 28px;
   border-radius: 20px;
@@ -161,7 +161,7 @@ input:focus, textarea:focus { outline: none; border-color: var(--accent); box-sh
 .btn-primary:hover { background: var(--accent); }
 .btn-primary:disabled { background: var(--ink-faint); cursor: not-allowed; }
 .btn-success { background: var(--olive); color: #fff; flex: 1; }
-.btn-success:hover { background: #0e9a94; }
+.btn-success:hover { background: #C0231A; }
 .btn-secondary { background: #fff; border: 1px solid var(--line-strong); color: var(--ink-soft); }
 .btn-secondary:hover { border-color: var(--accent); color: var(--accent); }
 
@@ -191,7 +191,7 @@ input:focus, textarea:focus { outline: none; border-color: var(--accent); box-sh
 .history-time { font-size: 11px; color: var(--ink-faint); white-space: nowrap; }
 
 .completed-banner {
-  background: linear-gradient(135deg, var(--olive), #0e9a94);
+  background: linear-gradient(135deg, var(--olive), #C0231A);
   color: #fff;
   padding: 40px;
   border-radius: 24px;
@@ -848,7 +848,7 @@ function renderBrandPaidView(payment) {
 
 function renderPaymentCompleted(payment) {
   return `
-    <div class="completed-banner" style="background:linear-gradient(135deg, var(--olive), #0e9a94)">
+    <div class="completed-banner" style="background:linear-gradient(135deg, var(--olive), #C0231A)">
       <h2>💰 تم الدفع بنجاح!</h2>
       <p>المبلغ ${payment.amount.toLocaleString('en-US')} ر.س تم تحويله واستلامه. الصفقة مكتملة 100%.</p>
     </div>

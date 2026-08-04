@@ -60,14 +60,14 @@ a{color:var(--accent);text-decoration:none}
 .macts{display:flex;gap:7px;margin-top:1px}
 .btn{display:inline-flex;align-items:center;justify-content:center;gap:7px;padding:11px 20px;border-radius:100px;border:1px solid var(--line2);background:#fff;color:var(--ink);font-family:var(--font);font-size:13.5px;font-weight:600;cursor:pointer;transition:.15s}
 .btn:hover{border-color:var(--accent);color:var(--accent-dim)}
-.btn.primary{background:linear-gradient(135deg,#16c2ba,#0e9a94);border-color:transparent;color:#fff}
+.btn.primary{background:linear-gradient(135deg,#EE5A44,#C0231A);border-color:transparent;color:#fff}
 .btn.primary:hover{filter:brightness(1.05);color:#fff}
 .btn.primary:disabled{opacity:.6;cursor:default}
 .btn.sm{padding:7px 13px;font-size:12px}
 .btn.danger{color:#c23b3b;border-color:rgba(201,48,48,.4)}.btn.danger:hover{background:rgba(201,48,48,.06)}
 .ed{margin-top:2px;padding:12px;background:#fbfdfc;border:1px solid var(--line);border-radius:12px}
 /* member banner */
-.wsbanner{background:linear-gradient(135deg,#16c2ba,#0e9a94);color:#fff;border-radius:14px;padding:14px 18px;margin-top:16px;font-size:13.5px;font-weight:600}
+.wsbanner{background:linear-gradient(135deg,#EE5A44,#C0231A);color:#fff;border-radius:14px;padding:14px 18px;margin-top:16px;font-size:13.5px;font-weight:600}
 /* timeline */
 .card{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:18px 20px;margin-top:12px}
 .feed{display:flex;flex-direction:column}
@@ -150,9 +150,9 @@ const PERMS=[
 ];
 const PLABEL=Object.fromEntries(PERMS.map(p=>[p.k,p.l]));
 const ACTS={
-  camp_create:{i:'🆕',c:'#0e9a94',v:'ينشئ حملة'}, camp_edit:{i:'✏️',c:'#5f6b66',v:'يعدّل حملة'}, camp_delete:{i:'🗑️',c:'#c23b3b',v:'حذف حملة'},
-  approve:{i:'✅',c:'#0e9a94',v:'يعتمد صفقة'}, reject:{i:'⛔',c:'#c23b3b',v:'رفض معلن'}, stage:{i:'🎬',c:'#5f6b66',v:'ينفّذ حملة'},
-  pay:{i:'💰',c:'#0e9a94',v:'يؤكد دفعة'}, member_add:{i:'👤',c:'#0e9a94',v:'أضاف عضو'}
+  camp_create:{i:'🆕',c:'#C0231A',v:'ينشئ حملة'}, camp_edit:{i:'✏️',c:'#5f6b66',v:'يعدّل حملة'}, camp_delete:{i:'🗑️',c:'#c23b3b',v:'حذف حملة'},
+  approve:{i:'✅',c:'#C0231A',v:'يعتمد صفقة'}, reject:{i:'⛔',c:'#c23b3b',v:'رفض معلن'}, stage:{i:'🎬',c:'#5f6b66',v:'ينفّذ حملة'},
+  pay:{i:'💰',c:'#C0231A',v:'يؤكد دفعة'}, member_add:{i:'👤',c:'#C0231A',v:'أضاف عضو'}
 };
 let currentUser=null, workspace=null, MEMBERS=[], ACTIVITY=[], showAll=false, showLog=false;
 function toast(m){const t=$('#toast');t.textContent=m;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2600);}
