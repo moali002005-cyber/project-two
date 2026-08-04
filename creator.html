@@ -2739,7 +2739,7 @@ async function confirmCodeReceived(applicationId) {
     const campaignTitle = updated[0]?.campaigns?.title || 'صفقة';
     if (brandId) {
       createNotification(brandId, 'workflow_update', '📦 المعلن استلم المنتج', `${campaignTitle}: طلب المنتج بكوده واستلمه — بدأ تجهيز المحتوى 🎬`, '/brand.html').catch(console.error);
-      fetch('https://rdzzzasbyzugxogbgwwn.supabase.co/functions/v1/send-push', {
+      fetch('https://chpzecgpylxqsutjydkb.supabase.co/functions/v1/send-push', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + supabaseClient.supabaseKey },
         body: JSON.stringify({ title: '📦 المعلن استلم المنتج', body: `${campaignTitle}: بدأ تجهيز المحتوى`, url: '/brand.html', target_users: [brandId] })
