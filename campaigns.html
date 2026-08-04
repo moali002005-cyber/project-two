@@ -473,6 +473,14 @@ body {
 }
 .applications-summary .text { font-size: 14px; color: var(--ink-soft); }
 .applications-summary strong { color: var(--accent); font-weight: 600; }
+.pay-now-btn {
+  border: 0; cursor: pointer; font-family: inherit; font-size: 13.5px; font-weight: 700;
+  color: #fff; background: linear-gradient(135deg, #EE5A44, #C0231A);
+  padding: 11px 20px; border-radius: 100px; white-space: nowrap;
+  box-shadow: 0 8px 20px -10px rgba(226,59,46,.55); transition: transform .15s;
+}
+.pay-now-btn:hover { transform: translateY(-1px); }
+.pay-now-btn:disabled { opacity: .6; cursor: default; transform: none; }
 
 .btn-view {
   background: var(--ink); color: #fff;
@@ -2454,6 +2462,42 @@ function showPendingScreen(status) {
     </section>`;
 }
 
+// ============ الدفع عبر ميسر: مستحقات الصفقات المعتمدة ============
+function payUnpaidApps(apps) {
+  return (apps || []).filter(a => a.status === 'closed' && a.brand_approved === true && !a.platform_paid);
+}
+function payPaidCount(apps) {
+  return (apps || []).filter(a => a.status === 'closed' && a.brand_approved === true && a.platform_paid === true).length;
+}
+function payButtonHtml(campaignId, apps) {
+  const unpaid = payUnpaidApps(apps);
+  if (!unpaid.length) return '';
+  const total = unpaid.reduce((s2, a) => s2 + Number(a.final_price || a.price || 0), 0);
+  return `<button class="pay-now-btn" id="pay-btn-${campaignId}" onclick="event.stopPropagation(); startCampaignPayment('${campaignId}')">💳 ادفع مستحقات الحملة — ${total.toLocaleString('en-US')} ر.س (${unpaid.length} ${unpaid.length === 1 ? 'صفقة' : 'صفقات'})</button>`;
+}
+async function startCampaignPayment(campaignId) {
+  const btn = document.getElementById('pay-btn-' + campaignId);
+  const orig2 = btn ? btn.textContent : '';
+  if (btn) { btn.disabled = true; btn.textContent = 'جاري تجهيز صفحة الدفع...'; }
+  try {
+    const { data: sess } = await supabaseClient.auth.getSession();
+    const token = sess && sess.session ? sess.session.access_token : '';
+    if (!token) throw new Error('سجّل دخولك من جديد');
+    const res = await fetch('/api/pay-create', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
+      body: JSON.stringify({ campaign_id: campaignId })
+    });
+    const out = await res.json();
+    if (!res.ok || !out.url) throw new Error(out.error || 'تعذّر تجهيز الدفع');
+    window.location.href = out.url; // صفحة دفع ميسر (مدى / بطاقات / Apple Pay)
+  } catch (err) {
+    console.error('payment start failed:', err);
+    showToast('الدفع: ' + (err.message || 'حاول مرة أخرى'), 'error');
+    if (btn) { btn.disabled = false; btn.textContent = orig2; }
+  }
+}
+
 async function loadData() {
   try {
     document.getElementById('campaigns-list').innerHTML = '<div class="loading-wrap"><div class="loading-pill"><span class="loading-pill-dot"></span>جاري التحميل...</div></div>';
@@ -3630,7 +3674,9 @@ function renderSingleCampaign(c) {
               ${apps.filter(a => a.status === 'closed').length > 0 ? `· <strong>${apps.filter(a => a.status === 'closed').length}</strong> صفقة مقفلة` : ''}
               ${pendingApps.length > 0 ? `· <strong style="color:var(--ink-muted)">${pendingApps.length}</strong> قيد المراجعة` : ''}
               ${waitlistApps.length > 0 ? `· <strong style="color:#5B6B7A">${waitlistApps.length}</strong> في قائمة الانتظار` : ''}
+              ${payPaidCount(apps) > 0 ? `· <strong style="color:#0F6E56">💳 ${payPaidCount(apps)} مدفوعة للمنصة</strong>` : ''}
             </div>
+            ${payButtonHtml(c.id, apps)}
           </div>
           <div class="mx-wrap"><table class="mx-table" id="apps-${c.id}">
             <thead><tr>
