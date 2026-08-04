@@ -1578,3 +1578,38 @@ window.I18N.ar.share_title = "Flfluencer · عرض الحملة";
 window.I18N.en.share_title = "Flfluencer · Campaign View";
 window.I18N.ar.c_title = "ملف المؤثر · Flfluencer";
 window.I18N.en.c_title = "Creator Profile · Flfluencer";
+
+// === ترجمة ميزات الكود والفيديو والمرفقات (تكافؤ سيمبل) 2026-08-04 ===
+Object.assign(window.I18N_TEXT, {
+ "🎬 فيديو جاهز": "🎬 Ready video",
+ "طريقة تسليم المنتج": "Product delivery method",
+ "📦 شحن للمعلن": "📦 Ship to creator",
+ "🎟️ كود خصم": "🎟️ Discount code",
+ "كود الخصم: كل معلن معتمد يستلم كوداً خاصاً يطلب فيه المنتج من متجرك بـ0 ريال — بدون شحن يدوي منك.": "Discount code: every approved creator gets a unique code to order the product from your store at 0 SAR — no manual shipping.",
+ "رابط المنتج": "Product link",
+ "الرابط اللي يفتح صفحة المنتج ليضيفه المعلن للسلة ويطبّق كوده.": "The link that opens the product page so the creator can add it to cart and apply their code.",
+ "أكواد الخصم": "Discount codes",
+ "كل كود يُصرف تلقائياً لمعلن واحد فقط عند اعتماده. تقدر تضيف أكواداً جديدة من «تعديل الحملة» بأي وقت.": "Each code is automatically assigned to one approved creator. You can add more codes anytime from \"Edit campaign\".",
+ "فيديوهات الحملة": "Campaign videos",
+ "🎬 اختر الفيديوهات من جهازك": "🎬 Choose videos from your device",
+ "MP4 / MOV / WebM حتى ٥٠ ميجا للملف (وتقدر تضيف صوراً حتى ١٠ ميجا) — تُرفع تلقائياً مع نشر الحملة وتظهر للمعلن المعتمد فقط.": "MP4 / MOV / WebM up to 50MB per file (plus images up to 10MB) — uploaded automatically when you publish, visible to approved creators only.",
+ "الكود والطلب": "Code & order",
+ "تجهيز الفيديو": "Video prep",
+ "🎟️ كودك وطلب المنتج": "🎟️ Your code & product order",
+ "كودك الخاص:": "Your code:",
+ "📋 نسخ الكود": "📋 Copy code",
+ "🛒 افتح صفحة المنتج": "🛒 Open product page",
+ "✓ طلبت المنتج ووصلني": "✓ I ordered and received it",
+ "⏳ جاري إصدار كودك الخاص — حدّث الصفحة بعد لحظات.": "⏳ Generating your code — refresh in a moment.",
+ "📎 مرفقات الحملة": "📎 Campaign attachments",
+ "＋ أضف ملف": "＋ Add file",
+ "— ما فيه مرفقات": "— no attachments",
+ "تنزيل": "Download",
+ "ما فيه مرفقات لهذه الحملة.": "No attachments for this campaign.",
+ "صور من الشركة — نزّلها واستخدمها في الفيديو حسب البريف.": "Images from the brand — download and use them in your video per the brief.",
+ "🎬 ملفات من الشركة — نزّل الفيديوهات، عدّلها ورتّبها حسب البريف، ثم ارفع النسخة النهائية للتعميد.": "🎬 Files from the brand — download the videos, edit them per the brief, then upload the final cut for approval.",
+ "✓ إرسال الفيديو للتعميد": "✓ Send video for approval",
+ "🕓 قائمة الانتظار": "🕓 Waitlist",
+ "🎬 فيديو جاهز من الشركة": "🎬 Ready-made video from the brand",
+ "📍 زيارة": "📍 Visit"
+});

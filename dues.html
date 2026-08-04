@@ -16,7 +16,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="/translations.js?v=7"></script>
+<script src="/translations.js?v=8"></script>
 <script src="/i18n.js?v=4"></script>
 <style>
 :root {
@@ -844,13 +844,8 @@ async function loadData() {
     const campIds = myCampaigns.map(c => c.id);
     let allApps = [];
     if (campIds.length) {
-      const { data, error } = await supabaseClient
-        .from('applications')
-        .select('*, users!applications_creator_id_fkey(name, platform, handle, followers, category, website)')
-        .in('campaign_id', campIds)
-        .order('created_at', { ascending: false });
-      if (error) throw error;
-      allApps = data || [];
+      // ⚠️ يمرّ عبر dbGetAppsForCampaigns لتفادي قصّ PostgREST عند 1000 صف (كان يُفرغ أقدم الحملات)
+      allApps = await dbGetAppsForCampaigns(campIds);
       // بيانات التواصل (واتساب/جوال) تُجلب عبر دالة آمنة deal-scoped بدل قراءة الأعمدة الحسّاسة مباشرة
       try {
         const { data: contacts } = await supabaseClient.rpc('simbl_deal_contacts');

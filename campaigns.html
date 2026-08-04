@@ -16,7 +16,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="/translations.js?v=7"></script>
+<script src="/translations.js?v=8"></script>
 <script src="/i18n.js?v=4"></script>
 <style>
 :root {
@@ -1719,15 +1719,57 @@ async function simblExitImpersonation(){
         .ctype-seg label{cursor:pointer;margin:0;}
         .ctype-seg input{display:none;}
         .ctype-seg span{display:inline-block;padding:8px 20px;border-radius:9px;font-size:13.5px;font-weight:600;color:#5a6f68;transition:.15s;}
-        .ctype-seg input:checked + span{background:#12b5a3;color:#fff;}
+        .ctype-seg input:checked + span{background:#E23B2E;color:#fff;}
       </style>
       <div class="field">
         <label>نوع الحملة</label>
         <div class="ctype-seg">
           <label><input type="radio" name="campaign_type" value="home" checked onchange="toggleCampaignType()"><span>🏠 منزلي</span></label>
           <label><input type="radio" name="campaign_type" value="visit" onchange="toggleCampaignType()"><span>📍 زيارة</span></label>
+          <label><input type="radio" name="campaign_type" value="video" onchange="toggleCampaignType()"><span>🎬 فيديو جاهز</span></label>
         </div>
       </div>
+
+      <div class="field" id="fulfillment-field">
+        <label>طريقة تسليم المنتج</label>
+        <div class="ctype-seg">
+          <label><input type="radio" name="fulfillment_mode" value="shipping" checked onchange="toggleFulfillment()"><span>📦 شحن للمعلن</span></label>
+          <label><input type="radio" name="fulfillment_mode" value="code" onchange="toggleFulfillment()"><span>🎟️ كود خصم</span></label>
+        </div>
+        <div class="hint">كود الخصم: كل معلن معتمد يستلم كوداً خاصاً يطلب فيه المنتج من متجرك بـ0 ريال — بدون شحن يدوي منك.</div>
+      </div>
+
+      <div class="field" id="product-url-field" style="display:none;">
+        <label>رابط المنتج</label>
+        <input type="url" name="product_url" placeholder="https://yourstore.com/product" dir="ltr">
+        <div class="hint">الرابط اللي يفتح صفحة المنتج ليضيفه المعلن للسلة ويطبّق كوده.</div>
+      </div>
+
+      <div class="field" id="codes-field" style="display:none;">
+        <label>أكواد الخصم <span id="codes-pool-status" style="font-weight:600;color:#7E2119;font-size:12px;"></span></label>
+        <textarea name="codes_list" rows="4" dir="ltr" placeholder="كل كود بسطر مستقل — مثال:
+SIMBL-01
+SIMBL-02" style="width:100%;box-sizing:border-box;font-family:inherit;"></textarea>
+        <div class="hint">كل كود يُصرف تلقائياً لمعلن واحد فقط لحظة اعتماده. تقدر تضيف أكواداً جديدة من «تعديل الحملة» بأي وقت.</div>
+      </div>
+
+      <div class="field" id="video-note-field" style="display:none;">
+        <div style="background:#FDF0EE;border:1px solid #F0C4BD;border-radius:12px;padding:12px 14px;font-size:12.5px;color:#7E2119;line-height:1.9;">
+          🎬 <b>فيديو جاهز للنشر:</b> أنت ترفق الفيديوهات الجاهزة وتكتب في البريف طلبك بالضبط. المعلن المعتمد يحمّلها، يعدّلها ويرتّبها حسب البريف، يرسل لك النسخة النهائية للتعميد، وبعد موافقتك ينشرها بنفسه.<br>
+          أرفق الفيديوهات في الخانة تحت — تُرفع تلقائياً مع نشر الحملة.
+        </div>
+      </div>
+
+      <div class="field" id="video-files-field" style="display:none;">
+        <label>فيديوهات الحملة</label>
+        <label style="display:inline-flex;align-items:center;gap:8px;border:1.5px dashed #E23B2E;background:#FDF4F2;color:#7E2119;font-size:13px;font-weight:700;padding:10px 18px;border-radius:12px;cursor:pointer;">
+          🎬 اختر الفيديوهات من جهازك
+          <input type="file" id="video-files-input" accept="image/jpeg,image/png,image/webp,video/mp4,video/quicktime,video/webm" multiple style="display:none;" onchange="pickVideoFiles(this)">
+        </label>
+        <div id="video-files-list" style="margin-top:9px;display:flex;flex-direction:column;gap:6px;"></div>
+        <div class="hint">MP4 / MOV / WebM حتى ٥٠ ميجا للملف (وتقدر تضيف صوراً حتى ١٠ ميجا) — تُرفع تلقائياً مع نشر الحملة وتظهر للمعلن المعتمد فقط.</div>
+      </div>
+
 
       <div class="field">
         <label>عنوان الحملة</label>
@@ -1743,11 +1785,11 @@ async function simblExitImpersonation(){
       <div class="field">
         <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:6px;">
           <label style="margin:0;">البريف الإعلاني</label>
-          <button type="button" id="brief-ai-btn" onclick="toggleBriefAI(this)" style="display:inline-flex;align-items:center;gap:6px;border:1px solid #12b5a3;background:#e9f8f5;color:#0b7d73;font-family:inherit;font-size:12px;font-weight:700;padding:6px 12px;border-radius:100px;cursor:pointer;transition:.15s;">✨ اكتب لي البريف</button>
+          <button type="button" id="brief-ai-btn" onclick="toggleBriefAI(this)" style="display:inline-flex;align-items:center;gap:6px;border:1px solid #E23B2E;background:#FDF0EE;color:#7E2119;font-family:inherit;font-size:12px;font-weight:700;padding:6px 12px;border-radius:100px;cursor:pointer;transition:.15s;">✨ اكتب لي البريف</button>
         </div>
-        <div id="brief-ai-panel" style="display:none;background:#f4faf9;border:1px solid #cdeae5;border-radius:12px;padding:13px;margin-bottom:11px;">
-          <label style="font-size:12.5px;color:#0b7d73;margin-bottom:6px;">اكتب باختصار وش تبي من الإعلان + المعلومات الأساسية، والنظام يوسّعها لبريف احترافي:</label>
-          <textarea id="brief-ai-note" rows="3" placeholder="مثال: عطر رجالي فخم جديد — أبي المؤثر يركّز على ثبات الرائحة والفخامة، يصوّره بإضاءة راقية، يذكر إنه مناسب للمناسبات والهدايا، ويحط رابط المتجر" style="width:100%;box-sizing:border-box;border:1px solid #cdeae5;border-radius:9px;padding:10px;font-family:inherit;font-size:13.5px;resize:vertical;"></textarea>
+        <div id="brief-ai-panel" style="display:none;background:#FDF6F4;border:1px solid #F0C4BD;border-radius:12px;padding:13px;margin-bottom:11px;">
+          <label style="font-size:12.5px;color:#7E2119;margin-bottom:6px;">اكتب باختصار وش تبي من الإعلان + المعلومات الأساسية، والنظام يوسّعها لبريف احترافي:</label>
+          <textarea id="brief-ai-note" rows="3" placeholder="مثال: عطر رجالي فخم جديد — أبي المؤثر يركّز على ثبات الرائحة والفخامة، يصوّره بإضاءة راقية، يذكر إنه مناسب للمناسبات والهدايا، ويحط رابط المتجر" style="width:100%;box-sizing:border-box;border:1px solid #F0C4BD;border-radius:9px;padding:10px;font-family:inherit;font-size:13.5px;resize:vertical;"></textarea>
           <div style="display:flex;gap:8px;margin-top:9px;">
             <button type="button" id="brief-ai-go" onclick="suggestBrief(this)" style="border:0;background:linear-gradient(135deg,#16c2ba,#0e9a94);color:#fff;font-family:inherit;font-size:13px;font-weight:700;padding:9px 16px;border-radius:100px;cursor:pointer;">✨ جهّز البريف</button>
             <button type="button" onclick="toggleBriefAI(document.getElementById('brief-ai-btn'))" style="border:1px solid #d7e0dd;background:#fff;color:#5f6b66;font-family:inherit;font-size:13px;font-weight:600;padding:9px 16px;border-radius:100px;cursor:pointer;">إلغاء</button>
@@ -1934,8 +1976,8 @@ async function simblExitImpersonation(){
 <style>
 .reason-chips{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:14px}
 .rchip{border:1px solid #e0e6e4;background:#fff;color:#33413c;font-family:inherit;font-size:12.5px;font-weight:600;padding:7px 13px;border-radius:100px;cursor:pointer;transition:.15s;text-align:right}
-.rchip:hover{border-color:#12b5a3}
-.rchip.active{border-color:#12b5a3;background:#e3f6f1;color:#0b7d73}
+.rchip:hover{border-color:#E23B2E}
+.rchip.active{border-color:#E23B2E;background:#e3f6f1;color:#7E2119}
 </style>
 <div class="modal-backdrop" id="reject-modal">
   <div class="modal" style="max-width: 480px">
@@ -1995,6 +2037,17 @@ async function simblExitImpersonation(){
     <p class="sub">نص البريف الكامل للحملة — تقدر تنسخه أو تعدّله (يُحفظ ويظهر للجميع).</p>
     <div class="brief-content expanded" id="brief-modal-content" style="max-height:55vh;overflow-y:auto;"></div>
     <textarea id="brief-modal-edit-text" rows="10" style="display:none;width:100%;box-sizing:border-box;max-height:55vh;"></textarea>
+    <div id="brief-attach-wrap" style="margin-top:14px;border-top:1px solid #EFE7E0;padding-top:12px;">
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap;">
+        <strong style="font-size:13px;">📎 مرفقات الحملة <span id="brief-attach-count" style="color:#6B7B74;font-weight:400;font-size:12px;"></span></strong>
+        <label id="brief-attach-add" style="display:none;align-items:center;gap:6px;border:1px solid #E23B2E;background:#FDF0EE;color:#7E2119;font-size:12px;font-weight:700;padding:6px 12px;border-radius:100px;cursor:pointer;">
+          <span id="brief-attach-add-txt">＋ أضف ملف</span>
+          <input type="file" id="brief-attach-input" accept="image/jpeg,image/png,image/webp" multiple style="display:none;" onchange="uploadBriefAttachments(this)">
+        </label>
+      </div>
+      <p id="brief-attach-hint" style="font-size:11px;color:#6B7B74;margin:6px 0 0;line-height:1.6;">صور فقط (JPG / PNG / WebP) — ١٠ ميجا للصورة كحد أقصى، و١٠ مرفقات للحملة. تظهر للمعلن بعد اعتماد صفقته فقط.</p>
+      <div id="brief-attach-grid" style="display:flex;flex-wrap:wrap;gap:10px;margin-top:10px;"></div>
+    </div>
     <div class="modal-actions">
       <button type="button" class="btn-secondary" onclick="closeBriefModal()">إغلاق</button>
       <button type="button" class="btn-secondary" id="brief-modal-copy" onclick="copyBriefModal()">📋 نسخ</button>
@@ -2248,7 +2301,8 @@ function togglePublishDate() {
 }
 function toggleCampaignType() {
   const sel = document.querySelector('[name="campaign_type"]:checked');
-  const isVisit = sel && sel.value === 'visit';
+  const typ = sel ? sel.value : 'home';
+  const isVisit = typ === 'visit', isVideo = typ === 'video';
   const show = (id, on) => { const el = document.getElementById(id); if (el) el.style.display = on ? '' : 'none'; };
   show('visit-location-field', isVisit);
   show('home-timing-field', !isVisit);
@@ -2258,7 +2312,87 @@ function toggleCampaignType() {
   const vd = document.querySelector('[name="visit_date"]');
   if (pt) pt.required = !isVisit;
   if (vd) vd.required = isVisit;
+  // خيار الكود/الشحن للحملة المنزلية فقط — الزيارة والفيديو الجاهز ما فيهما منتج يُسلَّم
+  show('fulfillment-field', typ === 'home');
+  if (typ !== 'home') { const fs = document.querySelector('[name="fulfillment_mode"][value="shipping"]'); if (fs) fs.checked = true; }
+  show('video-note-field', isVideo);
+  show('video-files-field', isVideo);
+  // حملة الفيديو: السعر حرّ — نلمّح بنطاق منخفض
+  const _bud = document.querySelector('[name="budget"]');
+  if (_bud) _bud.placeholder = isVideo ? 'مثل: 100 - 300' : 'مثل: 800 - 1500';
+  toggleFulfillment();
 }
+
+function toggleFulfillment() {
+  const sel = document.querySelector('[name="fulfillment_mode"]:checked');
+  const isCode = sel && sel.value === 'code';
+  const show = (id, on) => { const el = document.getElementById(id); if (el) el.style.display = on ? '' : 'none'; };
+  show('product-url-field', isCode);
+  show('codes-field', isCode);
+  const pu = document.querySelector('[name="product_url"]');
+  if (pu) pu.required = isCode;
+}
+
+// إدخال دفعة أكواد لمخزون الحملة (تُستخدم عند الإنشاء وعند الإضافة لاحقاً من التعديل)
+async function saveCampaignCodes(campaignId, rawText) {
+  const codes = [...new Set((rawText || '').split(/[\n,;]+/).map(x => x.trim()).filter(Boolean))];
+  if (!codes.length) return 0;
+  const { error } = await supabaseClient.from('campaign_codes')
+    .insert(codes.map(code => ({ campaign_id: campaignId, code })));
+  if (error) {
+    if ((error.code || '') === '23505' || /duplicate/i.test(error.message || '')) {
+      throw new Error('فيه أكواد مكررة موجودة مسبقاً بنفس الحملة — احذف المكرر من القائمة وحاول.');
+    }
+    throw error;
+  }
+  return codes.length;
+}
+// ===== إرفاق فيديوهات حملة «الفيديو الجاهز» من نافذة الإنشاء مباشرة =====
+window._vidFiles = [];
+function pickVideoFiles(input) {
+  const files = Array.prototype.slice.call(input.files || []);
+  input.value = '';
+  for (const f of files) {
+    if (window._vidFiles.length >= 10) { showToast('الحد الأقصى ١٠ ملفات للحملة', 'error'); break; }
+    const isV = ['video/mp4', 'video/quicktime', 'video/webm'].indexOf(f.type) >= 0;
+    const isI = ['image/jpeg', 'image/png', 'image/webp'].indexOf(f.type) >= 0;
+    if (!isV && !isI) { showToast('«' + f.name + '» صيغة غير مدعومة (MP4/MOV/WebM أو صورة)', 'error'); continue; }
+    if (f.size > (isV ? 50 : 10) * 1024 * 1024) { showToast('«' + f.name + '» أكبر من الحد (' + (isV ? '٥٠' : '١٠') + ' ميجا)', 'error'); continue; }
+    window._vidFiles.push(f);
+  }
+  renderPickedVideos();
+}
+function removePickedVideo(i) { window._vidFiles.splice(i, 1); renderPickedVideos(); }
+function renderPickedVideos() {
+  const box = document.getElementById('video-files-list');
+  if (!box) return;
+  const esc = (t) => String(t || '').replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+  if (!(window._vidFiles || []).length) { box.innerHTML = ''; return; }
+  box.innerHTML = window._vidFiles.map(function (f, i) {
+    const isV = (f.type || '').indexOf('video/') === 0;
+    const mb = (f.size / 1048576).toFixed(1);
+    return '<div style="display:flex;align-items:center;gap:8px;background:#fff;border:1px solid #EFE7E0;border-radius:10px;padding:7px 10px;font-size:12px;color:#374751;">'
+      + '<span>' + (isV ? '🎬' : '🖼') + '</span>'
+      + '<span style="flex:1;word-break:break-all;">' + esc(f.name) + ' <span style="color:#8A99A6;">(' + mb + ' م.ب)</span></span>'
+      + '<button type="button" onclick="removePickedVideo(' + i + ')" style="border:1px solid #E3B3B3;background:#FDECEC;color:#B04141;border-radius:7px;font-family:inherit;font-size:11px;padding:3px 8px;cursor:pointer;">✕</button>'
+      + '</div>';
+  }).join('');
+}
+// رفع الملفات المختارة لحملة موجودة وتحديث قائمة مرفقاتها
+async function uploadPickedVideos(campaignId, existingList, submitBtn) {
+  const files = window._vidFiles || [];
+  if (!files.length) return 0;
+  const list = (existingList || []).slice();
+  for (let i = 0; i < files.length; i++) {
+    if (submitBtn) submitBtn.textContent = 'جاري رفع الملف ' + (i + 1) + '/' + files.length + '...';
+    list.push(await simblBriefUpload(campaignId, files[i], true));
+  }
+  await simblBriefSaveList(campaignId, list);
+  window._vidFiles = [];
+  renderPickedVideos();
+  return files.length;
+}
+
 function populateVisitDates() {
   const sel = document.querySelector('[name="visit_date"]');
   if (!sel || sel.dataset.filled) return;
@@ -2507,13 +2641,8 @@ async function loadData() {
     const campIds = myCampaigns.map(c => c.id);
     let allApps = [];
     if (campIds.length) {
-      const { data, error } = await supabaseClient
-        .from('applications')
-        .select('*, users!applications_creator_id_fkey(name, platform, handle, followers, category, website)')
-        .in('campaign_id', campIds)
-        .order('created_at', { ascending: false });
-      if (error) throw error;
-      allApps = data || [];
+      // ⚠️ يمرّ عبر dbGetAppsForCampaigns لتفادي قصّ PostgREST عند 1000 صف (كان يُفرغ أقدم الحملات)
+      allApps = await dbGetAppsForCampaigns(campIds);
     }
     campaignApps = {};
     myCampaigns.forEach(c => { campaignApps[c.id] = []; });
@@ -2522,6 +2651,36 @@ async function loadData() {
       if (a.is_reserve === true) return; // احتياط مخفي — جاهز في الخلفية، لا يظهر للشركة
       (campaignApps[a.campaign_id] = campaignApps[a.campaign_id] || []).push(a);
     });
+
+    // قادم من لوحة الشركة بحملة فيديو جديدة؟ افتح صندوق المرفقات مباشرة
+    try {
+      const _oa = new URLSearchParams(location.search).get('open_attach');
+      if (_oa && !window._openAttachDone && (myCampaigns || []).some(x => x.id === _oa)) {
+        window._openAttachDone = true;
+        history.replaceState(null, '', location.pathname);
+        setTimeout(() => {
+          openBriefModal(_oa);
+          toggleBriefEdit();
+          showToast('أضف فيديوهات الحملة الآن من زر «＋ أضف ملف» 🎬');
+        }, 600);
+      }
+    } catch (e) { console.warn(e); }
+
+    // مخزون أكواد حملات «كود الخصم» (عدّاد + كود كل معلن)
+    window.CAMP_CODES = {};
+    try {
+      const codeCampIds = myCampaigns.filter(c => c.fulfillment_mode === 'code').map(c => c.id);
+      if (codeCampIds.length) {
+        const { data: codeRows } = await supabaseClient
+          .from('campaign_codes').select('campaign_id, code, application_id')
+          .in('campaign_id', codeCampIds);
+        (codeRows || []).forEach(r => {
+          const b = window.CAMP_CODES[r.campaign_id] = window.CAMP_CODES[r.campaign_id] || { total: 0, used: 0, byApp: {} };
+          b.total++;
+          if (r.application_id) { b.used++; b.byApp[r.application_id] = r.code; }
+        });
+      }
+    } catch (e) { console.warn('codes load failed:', e); }
 
     // إقفال أي حملة اكتمل عددها المطلوب تلقائيًا قبل العرض
     await autoCompleteCampaigns();
@@ -2994,6 +3153,17 @@ function openBriefModal(campaignId) {
   document.getElementById('brief-modal-edit').style.display = '';
   document.getElementById('brief-modal-copy').style.display = '';
   document.getElementById('brief-modal-save').style.display = 'none';
+  // حملات «الفيديو الجاهز» تقبل فيديوهات في المرفقات
+  const _vidCamp = camp.campaign_type === 'video';
+  const _inp = document.getElementById('brief-attach-input');
+  if (_inp) _inp.setAttribute('accept', _vidCamp
+    ? 'image/jpeg,image/png,image/webp,video/mp4,video/quicktime,video/webm'
+    : 'image/jpeg,image/png,image/webp');
+  const _hint = document.getElementById('brief-attach-hint');
+  if (_hint) _hint.textContent = _vidCamp
+    ? 'فيديو (MP4 / MOV / WebM حتى ٥٠ ميجا) أو صورة (حتى ١٠ ميجا) — ١٠ مرفقات للحملة. تظهر للمعلن بعد اعتماد صفقته فقط.'
+    : 'صور فقط (JPG / PNG / WebP) — ١٠ ميجا للصورة كحد أقصى، و١٠ مرفقات للحملة. تظهر للمعلن بعد اعتماد صفقته فقط.';
+  renderBriefAttachments(false);
   document.getElementById('brief-modal').classList.add('show');
 }
 function toggleBriefEdit() {
@@ -3006,6 +3176,7 @@ function toggleBriefEdit() {
   document.getElementById('brief-modal-edit').style.display = 'none';
   document.getElementById('brief-modal-copy').style.display = 'none';
   document.getElementById('brief-modal-save').style.display = '';
+  renderBriefAttachments(true);
   setTimeout(function () { ta.focus(); }, 50);
 }
 async function saveBriefEdit() {
@@ -3026,12 +3197,100 @@ async function saveBriefEdit() {
     document.getElementById('brief-modal-edit').style.display = '';
     document.getElementById('brief-modal-copy').style.display = '';
     saveBtn.style.display = 'none';
+    renderBriefAttachments(false);
     showToast('تم حفظ البريف — ظهر للجميع ✓', 'success');
   } catch (err) {
     console.error('brief save failed:', err);
     showToast('حصل خطأ: ' + (err.message || 'حاول مرة أخرى'), 'error');
   } finally { saveBtn.disabled = false; saveBtn.textContent = orig; }
 }
+// ============ مرفقات البريف (صور تُسلَّم للمعلن المعتمد) ============
+function _briefCamp() { return (myCampaigns || []).find(c => c.id === _briefCampaignId); }
+function escHtmlBrief(s) {
+  return String(s == null ? '' : s).replace(/[&<>"']/g, function (m) {
+    return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[m];
+  });
+}
+function renderBriefAttachments(editable) {
+  const grid = document.getElementById('brief-attach-grid');
+  const cntEl = document.getElementById('brief-attach-count');
+  const addBtn = document.getElementById('brief-attach-add');
+  if (!grid) return;
+  const canEdit = !!editable && hasPerm('campaigns');
+  const list = simblBriefList(_briefCamp());
+  if (addBtn) addBtn.style.display = canEdit ? 'inline-flex' : 'none';
+  if (cntEl) cntEl.textContent = list.length ? '(' + list.length + ')' : '— ما فيه مرفقات';
+  if (!list.length) { grid.innerHTML = ''; return; }
+  grid.innerHTML = list.map(function (f, i) {
+    return '<div style="width:104px;border:1px solid #EFE7E0;border-radius:10px;overflow:hidden;background:#fff;">'
+      + '<div id="brief-thumb-' + i + '" style="height:80px;background:#F7F1EC;display:flex;align-items:center;justify-content:center;font-size:20px;">🖼</div>'
+      + '<div style="padding:6px;font-size:10px;color:#4A5A53;word-break:break-all;line-height:1.35;">' + escHtmlBrief(f.name || 'صورة') + '</div>'
+      + '<div style="display:flex;gap:4px;padding:0 6px 6px;">'
+      + '<button type="button" style="flex:1;font-family:inherit;font-size:10px;border:1px solid #E23B2E;background:#FDF0EE;color:#7E2119;border-radius:6px;padding:4px 0;cursor:pointer;" onclick="downloadBriefAttachment(' + i + ')">تنزيل</button>'
+      + (canEdit ? '<button type="button" style="font-family:inherit;font-size:10px;border:1px solid #E3B3B3;background:#FDECEC;color:#B04141;border-radius:6px;padding:4px 6px;cursor:pointer;" onclick="deleteBriefAttachment(' + i + ')">✕</button>' : '')
+      + '</div></div>';
+  }).join('');
+  // المعاينات بروابط موقّتة (السلة خاصة)
+  list.forEach(function (f, i) {
+    if (((f.type || '').indexOf('video/') === 0)) return; // الفيديو يبقى برمز 🎬
+    simblBriefSignedUrl(f.path, 3600).then(function (url) {
+      const box = document.getElementById('brief-thumb-' + i);
+      if (url && box) box.innerHTML = '<img src="' + url + '" alt="" style="width:100%;height:100%;object-fit:cover;">';
+    });
+  });
+}
+async function uploadBriefAttachments(input) {
+  const files = Array.prototype.slice.call(input.files || []);
+  input.value = '';
+  if (!files.length) return;
+  const camp = _briefCamp();
+  if (!camp) return;
+  if (!hasPerm('campaigns')) { showToast('ما عندك صلاحية تعديل الحملات', 'error'); return; }
+  const list = simblBriefList(camp).slice();
+  if (list.length + files.length > 10) { showToast('الحد الأقصى ١٠ مرفقات للحملة', 'error'); return; }
+  showToast('جاري رفع ' + files.length + ' ملف...');
+  try {
+    const _allowVid = camp.campaign_type === 'video';
+    for (let i = 0; i < files.length; i++) list.push(await simblBriefUpload(camp.id, files[i], _allowVid));
+    await simblBriefSaveList(camp.id, list);
+    camp.attachments = list;                 // حدّث النسخة المحلية
+    renderBriefAttachments(true);
+    renderCampaigns();
+    showToast('تم رفع المرفقات ✓', 'success');
+  } catch (err) {
+    console.error('brief attach upload failed:', err);
+    showToast('تعذّر الرفع: ' + (err.message || 'حاول مرة أخرى'), 'error');
+  }
+}
+async function deleteBriefAttachment(idx) {
+  const camp = _briefCamp();
+  if (!camp) return;
+  const list = simblBriefList(camp).slice();
+  const item = list[idx];
+  if (!item) return;
+  if (!confirm('حذف «' + (item.name || 'الصورة') + '» من مرفقات الحملة؟')) return;
+  try {
+    list.splice(idx, 1);
+    await simblBriefSaveList(camp.id, list);
+    camp.attachments = list;
+    simblBriefRemove(item.path).catch(console.error);  // تنظيف التخزين — فشله ما يوقف الحذف
+    renderBriefAttachments(true);
+    renderCampaigns();
+    showToast('تم حذف المرفق');
+  } catch (err) {
+    console.error('brief attach delete failed:', err);
+    showToast('تعذّر الحذف: ' + (err.message || 'حاول مرة أخرى'), 'error');
+  }
+}
+async function downloadBriefAttachment(idx) {
+  const item = simblBriefList(_briefCamp())[idx];
+  if (!item) return;
+  const url = await simblBriefSignedUrl(item.path, 300, item.name || true);
+  if (!url) { showToast('تعذّر تجهيز رابط التنزيل', 'error'); return; }
+  window.location.href = url;
+  showToast('بدأ تنزيل «' + (item.name || 'الملف') + '» ⬇');
+}
+
 function closeBriefModal() {
   document.getElementById('brief-modal').classList.remove('show');
 }
@@ -3063,8 +3322,9 @@ async function approveDeal(applicationId) {
 
   try {
     // حملة الزيارة تبدأ من مرحلة 5 (بانتظار تصوير المعلن)؛ المنزلية تبدأ من 1 (الافتراضي)
-    const isVisit = campaign && campaign.campaign_type === 'visit';
-    const patch = isVisit ? { brand_approved: true, stage: 5 } : { brand_approved: true };
+    // الزيارة والفيديو الجاهز يبدآن من مرحلة 5 مباشرة (ما فيه عنوان/شحن)
+    const _skipShip = campaign && (campaign.campaign_type === 'visit' || campaign.campaign_type === 'video');
+    const patch = _skipShip ? { brand_approved: true, stage: 5 } : { brand_approved: true };
     const { data, error } = await supabaseClient
       .from('applications')
       .update(patch)
@@ -3090,7 +3350,11 @@ async function approveDeal(applicationId) {
     await loadData();
   } catch (err) {
     console.error('Approve error:', err);
-    showToast('حصل خطأ في الاعتماد: ' + (err.message || 'حاول مرة أخرى'), 'error');
+    if (String(err.message || '').includes('NO_CODES_LEFT')) {
+      showToast('نفدت أكواد الخصم لهذه الحملة — أضف أكواداً جديدة من «تعديل الحملة» ثم أعد الاعتماد. ما ينعتمد معلن بدون كود.', 'error');
+    } else {
+      showToast('حصل خطأ في الاعتماد: ' + (err.message || 'حاول مرة أخرى'), 'error');
+    }
   }
 }
 
@@ -3409,7 +3673,16 @@ const MX_LABELS = ['العنوان','الشحن','الاستلام','البري�
 // مراحل مرئية (نتخطّى البريف=4). الزيارة تعرض 5 فقط. الأرقام الداخلية للمراحل ما تتغيّر.
 const HOME_FLOW = [{s:1,n:'العنوان'},{s:2,n:'الشحن'},{s:3,n:'الاستلام'},{s:5,n:'المحتوى'},{s:6,n:'الموافقة'},{s:7,n:'النشر'},{s:8,n:'البنكية'},{s:9,n:'مكتمل'}];
 const VISIT_FLOW = [{s:5,n:'بانتظار التصوير'},{s:6,n:'الموافقة'},{s:7,n:'النشر'},{s:8,n:'البنكية'},{s:9,n:'مكتمل'}];
-function flowFor(type){ return type === 'visit' ? VISIT_FLOW : HOME_FLOW; }
+const VIDEO_FLOW = [{s:5,n:'تجهيز الفيديو'},{s:6,n:'الموافقة'},{s:7,n:'النشر'},{s:8,n:'البنكية'},{s:9,n:'مكتمل'}];
+function codesChipHtml(cid) {
+  const b = (window.CAMP_CODES || {})[cid] || { total: 0, used: 0 };
+  const free = b.total - b.used;
+  const danger = free <= 0;
+  return `· <strong style="color:${danger ? '#b32d2d' : '#7E2119'};">🎟️ الأكواد: ${free} متاح من ${b.total}</strong>` +
+         (danger ? ` <span style="color:#b32d2d;font-weight:700;">— أضف أكواداً من «تعديل الحملة» قبل أي اعتماد جديد</span>` : '');
+}
+const CODE_FLOW = [{s:1,n:'الكود والطلب'},{s:5,n:'المحتوى'},{s:6,n:'الموافقة'},{s:7,n:'النشر'},{s:8,n:'البنكية'},{s:9,n:'مكتمل'}];
+function flowFor(type, mode){ if (type === 'video') return VIDEO_FLOW; if (type !== 'visit' && mode === 'code') return CODE_FLOW; return type === 'visit' ? VISIT_FLOW : HOME_FLOW; }
 let expandedCellStage = null;
 
 function openCell(appId, stage) {
@@ -3431,7 +3704,9 @@ function renderStageDataView(a, s) {
   const sd = (typeof a.stage_data === 'object' && a.stage_data) ? a.stage_data : {};
   const data = sd[s] || {};
   const fields = STAGE_FIELDS[s] || [];
-  const stageName = WORKFLOW_STAGES.find(x => x.id === s)?.name || '';
+  const _sdCamp = (findAppById(a.id) || {}).campaign || {};
+  const _sdHit = flowFor(_sdCamp.campaign_type, _sdCamp.fulfillment_mode).find(st => st.s === s);
+  const stageName = (_sdHit && _sdHit.n) || WORKFLOW_STAGES.find(x => x.id === s)?.name || '';
   const rows = fields.filter(f => data[f.name] !== undefined && data[f.name] !== '').map(f => {
     const val = data[f.name];
     let body;
@@ -3489,11 +3764,15 @@ function renderCellDetail(a) {
       + renderStageAction(a.id, stageNow, 'brand');
   }
   if (stageNow >= 9) return `<div style="font-size:13px;color:#B02A20;padding:6px 2px;font-weight:600;">الصفقة مكتملة 🎉</div>`;
-  return `<div style="font-size:13px;color:var(--ink-muted);padding:6px 2px;">بانتظار المعلن في مرحلة «${MX_LABELS[stageNow-1] || ''}».</div>`;
+  const _cc = (findAppById(a.id) || {}).campaign;
+  const _lbl = (flowFor(_cc?.campaign_type, _cc?.fulfillment_mode).find(st => st.s === stageNow) || {}).n || MX_LABELS[stageNow-1] || '';
+  const _myCode = (_cc?.fulfillment_mode === 'code') ? (((window.CAMP_CODES || {})[_cc.id] || {}).byApp || {})[a.id] : null;
+  const _codeLine = _myCode ? `<div style="font-size:12.5px;color:#7E2119;padding:2px 2px 6px;font-weight:700;">🎟️ كود هذا المعلن: <span dir="ltr">${escHtml(_myCode)}</span></div>` : '';
+  return _codeLine + `<div style="font-size:13px;color:var(--ink-muted);padding:6px 2px;">بانتظار المعلن في مرحلة «${_lbl}».</div>`;
 }
 
-function renderDealRow(a, idx, campaignType) {
-  const flow = flowFor(campaignType);
+function renderDealRow(a, idx, campaignType, fulfillmentMode) {
+  const flow = flowFor(campaignType, fulfillmentMode);
   const NCOL = flow.length;
   const creator = a.users || {};
   const initial = (creator.name || 'م')[0];
@@ -3634,7 +3913,7 @@ function renderSingleCampaign(c) {
         <div class="top">
           <div>
             <h3>${c.title}</h3>
-            <button class="brief-trigger" onclick="openBriefModal('${c.id}')">📋 عرض البريف الإعلاني</button>
+            <button class="brief-trigger" onclick="openBriefModal('${c.id}')">📋 عرض البريف الإعلاني${simblBriefList(c).length ? ' <span style="opacity:.85">· 📎 ' + simblBriefList(c).length + '</span>' : ''}</button>
             <div class="campaign-meta">
               <span><strong>الميزانية للمعلن الواحد:</strong> ${c.budget} ر.س</span>
               ${c.publish_timing ? `<span><strong>موعد النشر:</strong> ${publishTimingText(c)}</span>` : ''}
@@ -3675,15 +3954,16 @@ function renderSingleCampaign(c) {
               ${pendingApps.length > 0 ? `· <strong style="color:var(--ink-muted)">${pendingApps.length}</strong> قيد المراجعة` : ''}
               ${waitlistApps.length > 0 ? `· <strong style="color:#5B6B7A">${waitlistApps.length}</strong> في قائمة الانتظار` : ''}
               ${payPaidCount(apps) > 0 ? `· <strong style="color:#0F6E56">💳 ${payPaidCount(apps)} مدفوعة للمنصة</strong>` : ''}
+              ${c.fulfillment_mode === 'code' ? codesChipHtml(c.id) : ''}
             </div>
             ${payButtonHtml(c.id, apps)}
           </div>
           <div class="mx-wrap"><table class="mx-table" id="apps-${c.id}">
             <thead><tr>
               <th class="mx-idx">#</th><th class="mx-name" style="text-align:right;">المعلن</th>
-              ${flowFor(c.campaign_type).map((st, i) => `<th>${toArabic(i + 1)}·${st.n}</th>`).join('')}
+              ${flowFor(c.campaign_type, c.fulfillment_mode).map((st, i) => `<th>${toArabic(i + 1)}·${st.n}</th>`).join('')}
             </tr></thead>
-            <tbody>${sheetApps.map((a, idx) => renderDealRow(a, idx, c.campaign_type)).join('')}</tbody>
+            <tbody>${sheetApps.map((a, idx) => renderDealRow(a, idx, c.campaign_type, c.fulfillment_mode)).join('')}</tbody>
           </table></div>
         ` : `
           <div class="applications-summary">
@@ -4347,12 +4627,26 @@ function setModalMode(mode, campaign) {
       c.classList.toggle('active', c.dataset.value === campaign.platform);
     });
     form.querySelector('#platform-input').value = campaign.platform || '';
+    // طريقة التسليم + رابط المنتج + حالة مخزون الأكواد
+    const _fm = campaign.fulfillment_mode || 'shipping';
+    const _fmR = form.querySelector('[name="fulfillment_mode"][value="' + _fm + '"]');
+    if (_fmR) _fmR.checked = true;
+    _setv('product_url', campaign.product_url || '');
+    const _cl = form.querySelector('[name="codes_list"]'); if (_cl) _cl.value = '';
+    window._vidFiles = []; renderPickedVideos();
+    toggleFulfillment();
+    const _st = document.getElementById('codes-pool-status');
+    if (_st) {
+      const _b = (window.CAMP_CODES || {})[campaign.id];
+      _st.textContent = _b ? '· المخزون الحالي: ' + (_b.total - _b.used) + ' متاح من ' + _b.total + ' — اللي تلصقه هنا ينضاف فوقها' : '';
+    }
   } else {
     h3.textContent = 'إنشاء حملة جديدة';
     sub.textContent = 'عبّئ تفاصيل الحملة وراح تظهر للمؤثرين المسجّلين في Flfluencer.';
     submitBtn.textContent = 'نشر الحملة';
 
     form.reset();
+    window._vidFiles = []; renderPickedVideos();
     form.querySelector('[name="payment_min_days"]').value = 7;
     form.querySelector('[name="payment_max_days"]').value = 30;
     const pledgeEl = form.querySelector('[name="payment_pledge"]');
@@ -4364,6 +4658,7 @@ function setModalMode(mode, campaign) {
     form.querySelector('#follower-range-input').value = '';
     togglePublishDate();
     simblPopulateCities();
+    const _st = document.getElementById('codes-pool-status'); if (_st) _st.textContent = '';
     toggleCampaignType();
   }
 }
@@ -4527,8 +4822,19 @@ async function submitCampaign(event) {
     city: selCountry ? (selCity || null) : null,
     payment_min_days: parseInt(fd.get('payment_min_days')) || 7,
     payment_max_days: parseInt(fd.get('payment_max_days')) || 30,
+    fulfillment_mode: ((fd.get('campaign_type') || 'home') !== 'home') ? 'shipping' : (fd.get('fulfillment_mode') || 'shipping'),
+    product_url: (fd.get('product_url') || '').trim() || null,
     tags: [industry]
   };
+  const _codesRaw = fd.get('codes_list') || '';
+  if (campaign.campaign_type === 'video' && !editingCampaignId && !(window._vidFiles || []).length) {
+    showToast('أرفق فيديوهات الحملة أولاً — زر «🎬 اختر الفيديوهات من جهازك».', 'error');
+    submitBtn.disabled = false; submitBtn.textContent = original; return;
+  }
+  if (campaign.fulfillment_mode === 'code' && !editingCampaignId) {
+    const _n = [...new Set(_codesRaw.split(/[\n,;]+/).map(x => x.trim()).filter(Boolean))].length;
+    if (!_n) { showToast('حملة الكود تحتاج أكواد خصم — الصق الأكواد (كل كود بسطر).', 'error'); submitBtn.disabled = false; submitBtn.textContent = original; return; }
+  }
 
   try {
     if (editingCampaignId) {
@@ -4539,12 +4845,23 @@ async function submitCampaign(event) {
         .eq('id', editingCampaignId);
       if (error) throw error;
 
+      let _added = 0;
+      try { _added = await saveCampaignCodes(editingCampaignId, _codesRaw); }
+      catch (codeErr) { showToast('حُفظت الحملة لكن الأكواد ما انضافت: ' + (codeErr.message || ''), 'error'); }
+      if (campaign.campaign_type === 'video' && (window._vidFiles || []).length) {
+        try {
+          const _ecamp = (myCampaigns || []).find(x => x.id === editingCampaignId);
+          const _nv = await uploadPickedVideos(editingCampaignId, simblBriefList(_ecamp), submitBtn);
+          if (_nv) showToast('انضاف ' + _nv + ' ملف لمرفقات الحملة 🎬', 'success');
+        } catch (upErr) { showToast('بعض الملفات ما انرفعت: ' + (upErr.message || ''), 'error'); }
+      }
+
       const editedId = editingCampaignId;
       closeModal();
       submitBtn.disabled = false;
       submitBtn.textContent = original;
       await loadData();
-      setTimeout(() => showToast('تم حفظ التعديلات بنجاح.'), 100);
+      setTimeout(() => showToast('تم حفظ التعديلات بنجاح.' + (_added ? ' وأضيف ' + _added + ' كود للمخزون 🎟️' : '')), 100);
       return;
     }
 
@@ -4553,7 +4870,20 @@ async function submitCampaign(event) {
     campaign.status = 'active';
     campaign.is_test = !!currentUser.is_test;
     const createdCampaign = await dbCreateCampaign(campaign);
+    if (createdCampaign?.id && campaign.campaign_type === 'video' && (window._vidFiles || []).length) {
+      try {
+        const _nv = await uploadPickedVideos(createdCampaign.id, [], submitBtn);
+        if (_nv) showToast('انرفع ' + _nv + ' ملف مع الحملة 🎬', 'success');
+      } catch (upErr) {
+        console.error('video upload failed:', upErr);
+        showToast('الحملة انطلقت لكن بعض الملفات ما انرفعت: ' + (upErr.message || '') + ' — أضفها من «البريف → المرفقات».', 'error');
+      }
+    }
     if (createdCampaign?.id) selectedCampaignId = createdCampaign.id;
+    if (createdCampaign?.id && campaign.fulfillment_mode === 'code') {
+      try { const _nc = await saveCampaignCodes(createdCampaign.id, _codesRaw); if (_nc) showToast('انحفظ ' + _nc + ' كود في مخزون الحملة 🎟️'); }
+      catch (codeErr) { showToast('الحملة انطلقت لكن الأكواد ما انحفظت: ' + (codeErr.message || '') + ' — أضفها من «تعديل الحملة».', 'error'); }
+    }
     closeModal();
     submitBtn.disabled = false;
     submitBtn.textContent = original;

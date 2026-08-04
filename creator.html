@@ -16,7 +16,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="/translations.js?v=7"></script>
+<script src="/translations.js?v=8"></script>
 <script src="/i18n.js?v=4"></script>
 <style>
 :root {
@@ -1729,6 +1729,7 @@ async function loadData() {
         dbGetMyApplications(currentUser.id)
       ]);
       await loadCampaignApprovedCounts();
+      await loadMyCodes();
       updateHeroStats();
       renderUnified();
       _lastLoadAt = Date.now();
@@ -1813,7 +1814,9 @@ const MX_LABELS = ['العنوان','الشحن','الاستلام','البري�
 // مراحل مرئية (نتخطّى البريف=4). الزيارة تعرض 5 فقط.
 const HOME_FLOW = [{s:1,n:'العنوان'},{s:2,n:'الشحن'},{s:3,n:'الاستلام'},{s:5,n:'المحتوى'},{s:6,n:'الموافقة'},{s:7,n:'النشر'},{s:8,n:'البنكية'},{s:9,n:'مكتمل'}];
 const VISIT_FLOW = [{s:5,n:'بانتظار التصوير'},{s:6,n:'الموافقة'},{s:7,n:'النشر'},{s:8,n:'البنكية'},{s:9,n:'مكتمل'}];
-function flowFor(type){ return type === 'visit' ? VISIT_FLOW : HOME_FLOW; }
+const CODE_FLOW = [{s:1,n:'الكود والطلب'},{s:5,n:'المحتوى'},{s:6,n:'الموافقة'},{s:7,n:'النشر'},{s:8,n:'البنكية'},{s:9,n:'مكتمل'}];
+const VIDEO_FLOW = [{s:5,n:'تجهيز الفيديو'},{s:6,n:'الموافقة'},{s:7,n:'النشر'},{s:8,n:'البنكية'},{s:9,n:'مكتمل'}];
+function flowFor(type, mode){ if (type === 'video') return VIDEO_FLOW; if (type !== 'visit' && mode === 'code') return CODE_FLOW; return type === 'visit' ? VISIT_FLOW : HOME_FLOW; }
 
 // المرحلة اللي عليها طلب تصحيح معلّق (لم يُنجَز/يُراجَع) — مستقل عن رقم مرحلة الصفقة
 // (القاعدة تمنع رجوع stage للخلف، فنعتمد على العلامة نفسها لعرض خطوة التصحيح حتى لو الصفقة "مكتملة")
@@ -1843,6 +1846,9 @@ function renderCreatorDealCard(c, a) {
   const price = (a.final_price || a.price || 0);
   const briefText = getBriefText(a);
   const briefBtnHtml = briefText ? `<button class="brief-pill" onclick="event.stopPropagation(); openBriefModal('${a.id}')">📋 البريف</button>` : '';
+  // المرفقات تظهر بعد اعتماد الصفقة فقط (نفس شرط سياسة القراءة في التخزين)
+  const attachCount = isApproved ? simblBriefList(a.campaigns).length : 0;
+  const attachBtnHtml = attachCount ? `<button class="brief-pill" onclick="event.stopPropagation(); openAttachModal('${a.id}')">📎 المرفقات (${attachCount})</button>` : '';
 
   let badge;
   const isCompleted = isApproved && stageNow >= 9;
@@ -1876,7 +1882,7 @@ function renderCreatorDealCard(c, a) {
   } else if (isWaitlisted) {
     body = `<div class="dc-note" style="background:#FFF6EC;color:#9A4B06;border-right:3px solid #E8850C;">🕓 أنت في قائمة الانتظار لهذي الحملة<span data-wpos="${a.id}"></span>. العدد المطلوب اكتمل حالياً، وبمجرد ما ينفتح مكان بننبّهك فورًا ويبدأ الوكيل يفاوضك. خلّك متابع 🌿</div>`;
   } else if (isApproved) {
-    const flow = flowFor(c.campaign_type);
+    const flow = flowFor(c.campaign_type, c.fulfillment_mode);
     let strip = '';
     flow.forEach((st) => {
       const s = st.s;
@@ -1917,7 +1923,7 @@ function renderCreatorDealCard(c, a) {
     <div class="deal-card${(isCompleted || didntWin) ? ' completed' : ''}" id="ac-${a.id}">
       <div class="dc-head">
         <span class="dc-av">${escHtml(initial)}</span>
-        <div class="dc-main"><div class="dc-title">${escHtml(c.title || 'حملة')}</div><div class="dc-sub">${escHtml(brandName)}${(!isNegotiating) ? ' · ' + price.toLocaleString('en-US') + ' ر.س' : ''}</div>${briefBtnHtml}</div>
+        <div class="dc-main"><div class="dc-title">${escHtml(c.title || 'حملة')}</div><div class="dc-sub">${escHtml(brandName)}${(!isNegotiating) ? ' · ' + price.toLocaleString('en-US') + ' ر.س' : ''}</div>${briefBtnHtml}${attachBtnHtml}</div>
         ${badge}
       </div>
       ${body}
@@ -2119,6 +2125,7 @@ function renderBrowseCard(c) {
       </div>
       <div class="ac-metarow">
         ${isDone ? '<span class="meta-item">✓ اكتمل العدد المطلوب لهذي الحملة</span>' : `
+        ${c.campaign_type === 'video' ? `<span class="meta-item">🎬 فيديو جاهز من الشركة</span>` : c.campaign_type === 'visit' ? `<span class="meta-item">📍 زيارة</span>` : ''}
         ${c.publish_timing ? `<span class="meta-item">⏱ ${publishTimingText(c)}</span>` : ''}
         ${c.platform ? `<span class="meta-item">◇ ${PLATFORM_LABELS[c.platform] || c.platform}</span>` : ''}
         ${c.follower_range ? `<span class="meta-item">◯ ${followerRangeText(c)}</span>` : ''}
@@ -2170,6 +2177,9 @@ function renderOfferCard(c, a) {
   const priceLabel = (a.final_price && isClosed) ? 'السعر النهائي' : 'عرضك';
   const briefText = getBriefText(a);
   const briefBtnHtml = briefText ? `<button class="brief-pill" onclick="event.stopPropagation(); openBriefModal('${a.id}')">📋 البريف</button>` : '';
+  // المرفقات تظهر بعد اعتماد الصفقة فقط (نفس شرط سياسة القراءة في التخزين)
+  const attachCount = isApproved ? simblBriefList(a.campaigns).length : 0;
+  const attachBtnHtml = attachCount ? `<button class="brief-pill" onclick="event.stopPropagation(); openAttachModal('${a.id}')">📎 المرفقات (${attachCount})</button>` : '';
 
   // الشارة على اليمين: تفاوض=زر، بانتظار التعميد=شارة، معمّدة=المطلوب الحالي
   let headRight;
@@ -2195,7 +2205,7 @@ function renderOfferCard(c, a) {
   } else if (isApproved) {
     const _esFix = pendingFixStage(a);
     const _es = (_esFix != null) ? _esFix : (a.stage || 1);
-    expandedInner = renderStageHistory(a.stage_data, _es, _es >= 9)
+    expandedInner = renderStageHistory(a.stage_data, _es, _es >= 9, a)
       + renderStageAction(a.id, _es, 'creator');
   }
 
@@ -2207,7 +2217,7 @@ function renderOfferCard(c, a) {
         <div class="ac-main">
           <div class="ac-title">${campaignTitle}</div>
           <div class="ac-brand">${brandName}</div>
-          ${briefBtnHtml}
+          ${briefBtnHtml}${attachBtnHtml}
         </div>
         <div class="ac-side">
           ${isNegotiating ? '' : `<div class="ac-price"><span class="ac-price-lbl">${priceLabel}</span>${price.toLocaleString('en-US')} ر.س</div>`}
@@ -2378,7 +2388,12 @@ function renderWorkflowStrip(currentStage) {
     </div>`;
 }
 
-function renderStageHistory(stageData, currentStage, expanded) {
+function renderStageHistory(stageData, currentStage, expanded, app) {
+  const _histFlowName = (sid) => {
+    const c = app ? campaignForApp(app) : {};
+    const hit = flowFor(c.campaign_type, c.fulfillment_mode).find(st => st.s === sid);
+    return (hit && hit.n) || null;
+  };
   if (!stageData) return '';
   const completedStages = Object.keys(stageData)
     .map(k => parseInt(k))
@@ -2388,7 +2403,7 @@ function renderStageHistory(stageData, currentStage, expanded) {
 
   const items = completedStages.map(stageId => {
     const data = stageData[stageId] || {};
-    const stageName = WORKFLOW_STAGES.find(s => s.id === stageId)?.name || '';
+    const stageName = _histFlowName(stageId) || WORKFLOW_STAGES.find(s => s.id === stageId)?.name || '';
     const fields = STAGE_FIELDS[stageId] || [];
 
     const inlineFields = [];
@@ -2482,6 +2497,54 @@ function openBriefModal(appId) {
   document.getElementById('briefModalTitle').textContent = c.title || a.title || 'بريف الحملة';
   document.getElementById('briefModalBody').textContent = text;
   document.getElementById('briefModal').classList.add('show');
+}
+// ===== مرفقات الحملة (صور من الشركة) =====
+let _attachList = [];
+function escAtt(s) {
+  return String(s == null ? '' : s).replace(/[&<>"']/g, function (m) {
+    return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[m];
+  });
+}
+function openAttachModal(appId) {
+  const a = (Array.isArray(myApplications) ? myApplications : []).find(x => x.id === appId);
+  if (!a) return;
+  const c = a.campaigns || {};
+  _attachList = simblBriefList(c);
+  document.getElementById('attachModalTitle').textContent = 'مرفقات: ' + (c.title || a.title || 'الحملة');
+  const body = document.getElementById('attachModalBody');
+  if (!_attachList.length) {
+    body.textContent = 'ما فيه مرفقات لهذه الحملة.';
+  } else {
+    body.innerHTML = '<p style="margin:0 0 10px;font-size:12px;color:#6B7B74;line-height:1.7;">صور من الشركة — نزّلها واستخدمها في الفيديو حسب البريف.</p>'
+      + '<div style="display:flex;flex-wrap:wrap;gap:12px;">'
+      + _attachList.map(function (f, i) {
+          return '<div style="width:132px;border:1px solid #EFE7E0;border-radius:12px;overflow:hidden;background:#fff;">'
+            + '<div id="att-thumb-' + i + '" style="height:100px;background:#F7F1EC;display:flex;align-items:center;justify-content:center;font-size:22px;">🖼</div>'
+            + '<div style="padding:6px;font-size:10px;color:#4A5A53;word-break:break-all;line-height:1.35;">' + escAtt(f.name || 'صورة') + '</div>'
+            + '<div style="padding:0 6px 8px;"><button style="width:100%;font-family:inherit;font-size:11px;font-weight:700;border:0;background:#E23B2E;color:#fff;border-radius:8px;padding:6px 0;cursor:pointer;" onclick="downloadAttach(' + i + ')">⬇ تنزيل</button></div>'
+            + '</div>';
+        }).join('')
+      + '</div>';
+    _attachList.forEach(function (f, i) {
+      if (((f.type || '').indexOf('video/') === 0)) return; // الفيديو يبقى برمز 🎬 وزر التنزيل
+      simblBriefSignedUrl(f.path, 3600).then(function (url) {
+        const box = document.getElementById('att-thumb-' + i);
+        if (url && box) box.innerHTML = '<img src="' + url + '" alt="" style="width:100%;height:100%;object-fit:cover;">';
+      });
+    });
+  }
+  document.getElementById('attachModal').classList.add('show');
+}
+function closeAttachModal() { document.getElementById('attachModal').classList.remove('show'); }
+async function downloadAttach(idx) {
+  const item = _attachList[idx];
+  if (!item) return;
+  // رابط بتنزيل قسري (Content-Disposition) + تنقّل مباشر بنفس التبويب:
+  // ما فيه نافذة منبثقة تنحجب على الجوال، والصفحة تبقى مفتوحة والتنزيل يبدأ
+  const url = await simblBriefSignedUrl(item.path, 300, item.name || true);
+  if (!url) { kitToast('تعذّر تجهيز رابط التنزيل'); return; }
+  window.location.href = url;
+  kitToast('بدأ تنزيل «' + (item.name || 'الملف') + '» ⬇');
 }
 function closeBriefModal() { document.getElementById('briefModal').classList.remove('show'); }
 function copyBriefModal() {
@@ -2603,7 +2666,99 @@ async function setCreatorPayment(applicationId, newStatus) {
   }
 }
 
+// ====== حملات «كود الخصم»: كود المعلن + بطاقة الطلب ======
+async function loadMyCodes() {
+  window.MY_CODES = {};
+  try {
+    const ids = (myApplications || []).filter(a => a.brand_approved === true).map(a => a.id);
+    if (!ids.length) return;
+    const { data: rows } = await supabaseClient
+      .from('campaign_codes').select('application_id, code').in('application_id', ids);
+    (rows || []).forEach(r => { window.MY_CODES[r.application_id] = r.code; });
+  } catch (e) { console.warn('codes load failed:', e); }
+}
+
+function campaignForApp(app) {
+  if (!app) return {};
+  return allCampaigns.find(x => x.id === app.campaign_id) || app.campaigns || {};
+}
+
+function renderCodeCard(app, c) {
+  const code = (window.MY_CODES || {})[app.id];
+  const codeHtml = code
+    ? `<div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;background:#FDF4F2;border:1.5px dashed #E23B2E;border-radius:12px;padding:12px 14px;margin:10px 0 4px;">
+         <span style="font-size:12.5px;font-weight:700;color:#7E2119;">كودك الخاص:</span>
+         <span dir="ltr" style="font-family:monospace;font-size:18px;font-weight:800;letter-spacing:1px;color:#0F1420;">${escHtml(code)}</span>
+         <button class="sa-btn" style="padding:7px 14px;font-size:12.5px;" onclick="event.stopPropagation(); copyMyCode('${app.id}')">📋 نسخ الكود</button>
+       </div>`
+    : `<div style="background:#FFF6EC;color:#9A4B06;border-radius:10px;padding:10px 12px;margin:10px 0 4px;font-size:13px;">⏳ جاري إصدار كودك الخاص — حدّث الصفحة بعد لحظات.</div>`;
+  const linkBtn = c.product_url
+    ? `<a href="${escHtml(c.product_url)}" target="_blank" rel="noopener" onclick="event.stopPropagation()" class="sa-btn" style="text-decoration:none;display:inline-flex;align-items:center;gap:6px;">🛒 افتح صفحة المنتج</a>`
+    : '';
+  return `<div class="stage-action mine" onclick="event.stopPropagation()">
+    <div class="sa-title">🎟️ كودك وطلب المنتج</div>
+    <div class="sa-desc">١· افتح صفحة المنتج وأضفه للسلة.&nbsp; ٢· أدخل كودك عند إتمام الطلب ليصير الإجمالي 0 ريال.&nbsp; ٣· أكمل الطلب على عنوانك، وأول ما يوصلك المنتج أكّد هنا وننتقل للمحتوى مباشرة.</div>
+    ${codeHtml}
+    <div class="pay-actions" style="margin-top:10px;display:flex;gap:8px;flex-wrap:wrap;">
+      ${linkBtn}
+      <button class="sa-btn" ${code ? '' : 'disabled'} onclick="event.stopPropagation(); confirmCodeReceived('${app.id}')">✓ طلبت المنتج ووصلني</button>
+    </div>
+  </div>`;
+}
+
+function copyMyCode(appId) {
+  const code = (window.MY_CODES || {})[appId];
+  if (!code) return;
+  const done = () => showToast('انسخ الكود ✓ — الصقه عند إتمام الطلب');
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(code).then(done).catch(() => fallbackCopyCode(code, done));
+  } else { fallbackCopyCode(code, done); }
+}
+function fallbackCopyCode(text, done) {
+  const ta = document.createElement('textarea');
+  ta.value = text; ta.style.position = 'fixed'; ta.style.opacity = '0';
+  document.body.appendChild(ta); ta.focus(); ta.select();
+  try { document.execCommand('copy'); done(); } catch (e) {}
+  document.body.removeChild(ta);
+}
+
+async function confirmCodeReceived(applicationId) {
+  const app = myApplications.find(a => a.id === applicationId);
+  if (!app) return;
+  const existing = (typeof app.stage_data === 'object' && app.stage_data) ? { ...app.stage_data } : {};
+  existing[1] = { ...(existing[1] || {}), code_flow: true, received: 'yes', code: (window.MY_CODES || {})[applicationId] || '', _at: new Date().toISOString() };
+  try {
+    const { data: updated, error } = await supabaseClient
+      .from('applications')
+      .update({ stage: 5, stage_data: existing })
+      .eq('id', applicationId)
+      .select('*, campaigns(brand_id, title)');
+    if (error) throw error;
+    if (!updated || updated.length === 0) throw new Error('لم يتم التحديث. تحقق من سياسات الحماية.');
+    const brandId = updated[0]?.campaigns?.brand_id;
+    const campaignTitle = updated[0]?.campaigns?.title || 'صفقة';
+    if (brandId) {
+      createNotification(brandId, 'workflow_update', '📦 المعلن استلم المنتج', `${campaignTitle}: طلب المنتج بكوده واستلمه — بدأ تجهيز المحتوى 🎬`, '/brand.html').catch(console.error);
+      fetch('https://rdzzzasbyzugxogbgwwn.supabase.co/functions/v1/send-push', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + supabaseClient.supabaseKey },
+        body: JSON.stringify({ title: '📦 المعلن استلم المنتج', body: `${campaignTitle}: بدأ تجهيز المحتوى`, url: '/brand.html', target_users: [brandId] })
+      }).catch(console.error);
+    }
+    await loadData();
+    showToast('تم التأكيد ✓ — ننتقل لمرحلة المحتوى 🎬');
+  } catch (err) {
+    console.error('Code confirm error:', err);
+    showToast('حصل خطأ: ' + (err.message || 'حاول مرة أخرى'), 'error');
+  }
+}
+
 function renderStageAction(applicationId, currentStage, viewerRole) {
+  const _capp = myApplications.find(x => x.id === applicationId);
+  const _cc = campaignForApp(_capp);
+  if (_cc.fulfillment_mode === 'code' && _cc.campaign_type !== 'visit' && currentStage < 5 && viewerRole === 'creator') {
+    return renderCodeCard(_capp, _cc);
+  }
   if (currentStage >= 9) {
     const app = myApplications.find(a => a.id === applicationId);
     return renderPaymentCard(app);
@@ -2615,6 +2770,8 @@ function renderStageAction(applicationId, currentStage, viewerRole) {
   const myInfo = info[viewerRole] || {};
   const fields = STAGE_FIELDS[currentStage] || [];
 
+  // حملة «الفيديو الجاهز»: نفس آلية رفع المحتوى لكن بنصوص تشرح التعديل والتعميد
+  const _isVidCamp = (_cc.campaign_type === 'video');
   if (isMyTurn && currentStage === 5 && viewerRole === 'creator') {
     const _app5 = myApplications.find(a => a.id === applicationId);
     const _rej = (_app5 && _app5.stage_data && _app5.stage_data[5] && _app5.stage_data[5]._rejected) ? _app5.stage_data[5]._reject_reason : null;
@@ -2623,8 +2780,8 @@ function renderStageAction(applicationId, currentStage, viewerRole) {
       : (_fix5 !== null ? `<div style="background:#fdecea;border:1px solid #f5c6c0;color:#a93226;border-radius:10px;padding:11px 13px;margin-bottom:12px;font-size:13px;line-height:1.6;">⚠︎ الشركة تطلب تصحيح المحتوى.${_fix5 ? '<br><b>الملاحظة:</b> ' + escHtml(_fix5) : ''}<br>ارفع الفيديو الصحيح — والباقي يكمل تلقائيًا.</div>` : '');
     return `
       <div class="stage-action mine" onclick="event.stopPropagation()">
-        <div class="sa-title">المرحلة الحالية: ${stageName}</div>
-        <div class="sa-desc">${myInfo.desc || ''}</div>
+        <div class="sa-title">المرحلة الحالية: ${_isVidCamp ? 'تجهيز الفيديو' : stageName}</div>
+        <div class="sa-desc">${_isVidCamp ? 'حمّل فيديوهات الشركة من زر 📎 المرفقات في بطاقة الحملة، عدّلها ورتّبها حسب البريف بالضبط، ثم ارفع النسخة النهائية هنا وأرسلها لتعميد الشركة. بعد موافقتها تنشرها بنفسك في المرحلة التالية.' : (myInfo.desc || '')}</div>
         ${_rejBanner}
         <form class="sa-form" id="stage-form-${applicationId}" onclick="event.stopPropagation()" onsubmit="event.preventDefault(); event.stopPropagation(); submitStageForm('${applicationId}')">
           <input type="hidden" id="sf-${applicationId}-content_link" name="content_link">
@@ -2633,7 +2790,7 @@ function renderStageAction(applicationId, currentStage, viewerRole) {
           <button type="button" id="vid-btn-${applicationId}" class="sa-btn" style="background:#fff;color:var(--accent);border:1.5px solid var(--accent);margin-bottom:10px;" onclick="event.stopPropagation(); document.getElementById('vid-input-${applicationId}').click()">🎬 اختر الفيديو من جهازك</button>
           <div id="vid-wrap-${applicationId}" style="margin-bottom:10px;"></div>
           <div class="sa-field"><label for="sf-${applicationId}-note">ملاحظة (اختياري)</label><input type="text" id="sf-${applicationId}-note" name="note" placeholder="تفاصيل أو ملاحظات للشركة" onclick="event.stopPropagation()"></div>
-          <button type="submit" class="sa-btn" disabled onclick="event.stopPropagation()">${myInfo.label}</button>
+          <button type="submit" class="sa-btn" disabled onclick="event.stopPropagation()">${_isVidCamp ? '✓ إرسال الفيديو للتعميد' : myInfo.label}</button>
         </form>
         <div style="font-size:11px;color:var(--ink-muted);margin-top:8px;">📹 ارفع الفيديو مباشرة من جهازك. يُحذف تلقائيًا من سيرفرنا بعد موافقة الشركة.</div>
       </div>
@@ -3351,6 +3508,17 @@ init();
     <div class="brief-modal-foot">
       <button class="brief-modal-copy" onclick="copyBriefModal()">📋 نسخ البريف</button>
     </div>
+  </div>
+</div>
+
+<!-- مودال مرفقات الحملة (يفتحه زر «📎 المرفقات» — للمعلن المعتمد فقط) -->
+<div class="brief-modal" id="attachModal" onclick="if(event.target===this)closeAttachModal()">
+  <div class="brief-modal-card">
+    <div class="brief-modal-head">
+      <strong id="attachModalTitle">مرفقات الحملة</strong>
+      <button class="brief-modal-x" onclick="closeAttachModal()" aria-label="إغلاق">×</button>
+    </div>
+    <div class="brief-modal-body" id="attachModalBody"></div>
   </div>
 </div>
 
