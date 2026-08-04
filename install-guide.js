@@ -3,7 +3,6 @@
 // تظهر مرة واحدة في الجلسة، وتُكتَم لمن ثبّت التطبيق وفعّل الإشعارات أصلاً.
 (function () {
   var SKIP_KEY = 'simbl_install_skip';
-  var IMG = '/notify-guide.png';
 
   function isStandalone() {
     try { return (window.matchMedia && window.matchMedia('(display-mode: standalone)').matches) || window.navigator.standalone === true; }
@@ -33,7 +32,11 @@
       '#simbl-install-modal .ig-ic{font-size:40px;margin-bottom:6px}' +
       '#simbl-install-modal h3{margin:0 0 8px;font-size:20px;color:#141414;font-weight:700}' +
       '#simbl-install-modal p{margin:0 0 14px;font-size:14px;color:#5b5b5b;line-height:1.7}' +
-      '#simbl-install-modal .ig-img{width:100%;border-radius:14px;border:1px solid #eef2f2;display:block;margin:0 auto 16px}' +
+      '#simbl-install-modal .ig-steps{display:flex;flex-direction:column;gap:9px;margin:0 0 16px;text-align:right}' +
+      '#simbl-install-modal .ig-step{display:flex;align-items:flex-start;gap:10px;background:#FDF6F4;border:1px solid #F0C4BD;border-radius:13px;padding:11px 12px}' +
+      '#simbl-install-modal .ig-n{flex-shrink:0;width:26px;height:26px;border-radius:50%;background:linear-gradient(135deg,#EE5A44,#C0231A);color:#fff;font-size:13px;font-weight:800;display:flex;align-items:center;justify-content:center}' +
+      '#simbl-install-modal .ig-t{font-size:13.5px;color:#33261F;line-height:1.75}' +
+      '#simbl-install-modal .ig-t b{color:#C0231A}' +
       '#simbl-install-modal .ig-cta{width:100%;padding:14px;border:0;border-radius:100px;background:#E23B2E;color:#fff;font-family:inherit;font-size:15px;font-weight:700;cursor:pointer}' +
       '#simbl-install-modal .ig-cta:hover{filter:brightness(.97)}' +
       '#simbl-install-modal .ig-skip{display:inline-block;margin-top:12px;font-size:13px;color:#8a8a8a;cursor:pointer;text-decoration:underline}';
@@ -48,7 +51,12 @@
       '<div class="ig-ic">🔔</div>' +
       '<h3>ثبّت المنصة وفعّل الإشعارات</h3>' +
       '<p>ثبّت Flfluencer على جوالك عشان توصلك عروض الحملات وتحديثاتك أول بأول — حتى والتطبيق مغلق. اتبع الخطوات:</p>' +
-      '<img class="ig-img" src="' + IMG + '" alt="خطوات تثبيت المنصة وتفعيل الإشعارات" loading="lazy">' +
+      '<div class="ig-steps">' +
+      '<div class="ig-step"><span class="ig-n">١</span><span class="ig-t">افتح <b>flfluencer.com</b> عبر متصفح Safari ثم اضغط زر <b>المشاركة</b></span></div>' +
+      '<div class="ig-step"><span class="ig-n">٢</span><span class="ig-t">اختر <b>«إضافة إلى الشاشة الرئيسية»</b> ثم «إضافة»</span></div>' +
+      '<div class="ig-step"><span class="ig-n">٣</span><span class="ig-t">افتح تطبيق <b>فلفلونسر</b> من الأيقونة الجديدة وسجّل دخولك</span></div>' +
+      '<div class="ig-step"><span class="ig-n">٤</span><span class="ig-t">اضغط <b>«تفعيل الآن»</b> ثم <b>«السماح»</b> لإتمام التفعيل</span></div>' +
+      '</div>' +
       '<button class="ig-cta">' + cta + '</button>' +
       '<div class="ig-skip">لاحقًا</div>' +
       '</div>';
