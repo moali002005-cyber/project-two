@@ -597,7 +597,7 @@ textarea { resize: vertical; min-height: 80px; }
 
       <div class="field">
         <label>رابط حسابك في وسائل التواصل الاجتماعي</label>
-        <input type="url" name="tiktok_url" required placeholder="https://...  (تيك توك، سناب شات، انستقرام...)">
+        <input type="text" name="tiktok_url" required placeholder="رابط أو اسم حسابك (تيك توك، سناب شات، انستقرام...)" dir="ltr">
         <div class="hint">ألصق رابط حسابك في أي منصة تواصل. نراجع الحساب من خلال الرابط لتأكيد التفعيل.</div>
       </div>
 
@@ -717,7 +717,7 @@ textarea { resize: vertical; min-height: 80px; }
 
       <div class="field">
         <label>رابط حساب الشركة</label>
-        <input type="url" name="company_url" required placeholder="رابط تيك توك / انستقرام / الموقع">
+        <input type="text" name="company_url" required placeholder="موقعكم أو حسابكم — مثل: flfluencer.com" dir="ltr">
         <div class="hint">رابط حسابكم الرسمي (تيك توك أو انستقرام أو الموقع الإلكتروني).</div>
       </div>
 
@@ -791,6 +791,16 @@ function simblToggleTierField(platform) {
   }
 }
 
+
+// تطبيع الروابط: يقبل «flfluencer.com» أو «@user» ويكمّل https:// تلقائياً
+function normalizeUrlInput(v) {
+  v = String(v || '').trim();
+  if (!v) return v;
+  if (/^https?:\/\//i.test(v)) return v;
+  if (v.startsWith('@')) return v; // معرّف حساب — نخليه كما هو
+  return 'https://' + v;
+}
+
 function selectRole(role) {
   document.querySelectorAll('.role-card').forEach(c => c.classList.remove('selected'));
   document.getElementById('card-' + role).classList.add('selected');
@@ -830,7 +840,7 @@ async function submitForm(event, role) {
     userData.category = fd.get('category');
     userData.price = parseInt(fd.get('price')) || 0;
     userData.bio = fd.get('bio') || null;
-    userData.website = fd.get('tiktok_url') || null;
+    userData.website = normalizeUrlInput(fd.get('tiktok_url')) || null;
     userData.approval_status = 'pending';
     const avatarFileChk = fd.get('avatar_file');
     if (!avatarFileChk || avatarFileChk.size === 0) { alert('صورة الحساب مطلوبة — اختر صورة لمتابعة التسجيل.'); submitBtn.disabled = false; submitBtn.textContent = originalText; return; }
@@ -844,7 +854,7 @@ async function submitForm(event, role) {
     userData.position = fd.get('position');
     userData.phone = fd.get('phone');
     userData.email = email;
-    userData.website = fd.get('company_url') || null;
+    userData.website = normalizeUrlInput(fd.get('company_url')) || null;
     userData.approval_status = 'pending';
   }
 
