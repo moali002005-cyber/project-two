@@ -1580,25 +1580,25 @@ async function simblExitImpersonation(){
 
   <!-- ============ HERO ============ -->
   <section class="hero">
-    <div class="hero-pill"><span class="hero-dot"></span><span id="hero-status">نجمع آخر تفاصيل حملاتك الإعلانية...</span></div>
+    <div class="hero-pill"><span class="hero-dot"></span><span id="hero-status">منصتك جاهزة</span></div>
     <h1 class="hero-title">أهلًا <span class="nm" id="welcome-name">بكم</span></h1>
-    <p class="hero-sub">أطلق حملتك، ودع الوكيل الذكي يتفاوض على العروض ويقفل الصفقات لصالحك.</p>
+    <p class="hero-sub">أطلق حملتك، والوكيل يفاوض ويقفل لك.</p>
     <div style="display: flex; gap: 12px; flex-wrap: wrap; justify-content: center;">
-      <button class="hero-cta" onclick="window.location.href='/company.html'" style="background:linear-gradient(135deg,#EE5A44,#C0231A);color:#fff;">📊 أداء الحملات الإعلانية</button>
+      <button class="hero-cta" onclick="window.location.href='/company.html'" style="background:linear-gradient(135deg,#EE5A44,#C0231A);color:#fff;">📊 الأداء</button>
       <button class="hero-cta" onclick="openCampaignModal()">+ حملة جديدة</button>
-      <button class="hero-cta" onclick="goToCampaigns()">صفقات أقفلها الوكيل</button>
-      <button class="hero-cta" onclick="window.location.href='/dues.html'">📋 متابعة الحملات والمستحقات</button>
-      <button class="hero-cta" onclick="openTeamMembers()" style="background:#fff;color:var(--ink);border:1.5px solid rgba(15,20,32,0.18);">👥 أعضاء الفريق</button>
+      <button class="hero-cta" onclick="goToCampaigns()">صفقات الوكيل</button>
+      <button class="hero-cta" onclick="window.location.href='/dues.html'">📋 المستحقات</button>
+      <button class="hero-cta" onclick="openTeamMembers()" style="background:#fff;color:var(--ink);border:1.5px solid rgba(15,20,32,0.18);">👥 الفريق</button>
     </div>
     <style>@media (max-width:640px){#creators-teaser{flex-direction:column!important;align-items:center!important;text-align:center!important;gap:12px!important;}#creators-teaser #teaser-avatars{justify-content:center!important;}}</style>
     <div id="creators-teaser" onclick="window.location.href='/top.html'" style="max-width:640px;margin:22px auto 0;cursor:pointer;background:#fff;border:1px solid var(--line);border-radius:18px;padding:16px 20px;display:flex;align-items:center;gap:14px;text-align:right;transition:border-color .2s,transform .2s;" onmouseover="this.style.borderColor='rgba(226,59,46,0.45)';this.style.transform='translateY(-2px)'" onmouseout="this.style.borderColor='var(--line)';this.style.transform='none'">
       <div style="flex:1;min-width:0">
         <div style="font-family:var(--font-display);font-weight:600;font-size:16px">نخبة المؤثرين</div>
-        <div style="font-size:13px;color:var(--ink-muted)">أفضل 500 مؤثر مرتّبين بدرجة الثقة</div>
+        <div style="font-size:13px;color:var(--ink-muted)">أفضل 500 مؤثر بدرجة الثقة</div>
       </div>
       <div id="teaser-avatars" style="display:flex"></div>
       <div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end;flex-shrink:0">
-        <span onclick="event.stopPropagation(); window.location.href='/top.html'" style="background:var(--accent);color:#fff;font-size:13px;font-weight:600;padding:9px 18px;border-radius:100px;white-space:nowrap;cursor:pointer">★ النخبة والتقييمات ←</span>
+        <span onclick="event.stopPropagation(); window.location.href='/top.html'" style="background:var(--accent);color:#fff;font-size:13px;font-weight:600;padding:9px 18px;border-radius:100px;white-space:nowrap;cursor:pointer">★ النخبة ←</span>
         <span onclick="event.stopPropagation(); window.location.href='/creators.html'" style="background:#fff;color:var(--ink);border:1px solid var(--line-strong);font-size:13px;font-weight:500;padding:9px 18px;border-radius:100px;white-space:nowrap;cursor:pointer">تصفّح الكل</span>
       </div>
     </div>
@@ -2092,10 +2092,10 @@ function activeCampaignsLabel(n) {
 }
 
 function closedDealsLabel(n) {
-  if (n === 0) return 'لم تُقفل صفقة بعد';
-  if (n === 1) return 'صفقة أقفلها الوكيل';
-  if (n === 2) return 'صفقتان أقفلهما الوكيل';
-  return `${toArabic(n)} صفقات أقفلها الوكيل`;
+  if (n === 0) return 'لا صفقات بعد';
+  if (n === 1) return 'صفقة مقفلة';
+  if (n === 2) return 'صفقتان مقفلتان';
+  return `${toArabic(n)} صفقات مقفلة`;
 }
 
 function goToCampaigns() {
