@@ -139,3 +139,11 @@ CREATE POLICY brief_files_read ON storage.objects FOR SELECT TO authenticated
         AND (a.brand_approved = true)
         AND (a.creator_id IN ( SELECT u.id FROM users u WHERE (u.auth_id = auth.uid()))))))
     OR is_platform_admin()));
+
+-- 6) توسيع أنواع الإشعارات (code_assigned لحملات الكود + platform_paid لإشعار الدفع)
+ALTER TABLE public.notifications DROP CONSTRAINT IF EXISTS notifications_type_check;
+ALTER TABLE public.notifications ADD CONSTRAINT notifications_type_check
+  CHECK (type = ANY (ARRAY['new_campaign'::text, 'new_application'::text, 'new_message'::text,
+    'workflow_update'::text, 'deal_closed'::text, 'deal_approved'::text, 'deal_rejected'::text,
+    'payment_marked'::text, 'campaign_full'::text, 'waitlist_promoted'::text, 'profile_reminder'::text,
+    'code_assigned'::text, 'platform_paid'::text]));
