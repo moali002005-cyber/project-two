@@ -40,6 +40,46 @@ function followerRangeTextSrv(c) {
     .map(v => FOLLOWER_RANGE_LABELS[v] || v).join('، ');
 }
 
+// يتحقق من توكن جلسة Supabase (Authorization: Bearer …) ويُرجّع صف المستخدم — أو null.
+// الهوية تُشتقّ من التوكن الموثّق فقط، لا من جسم الطلب.
+async function getAuthedUser(req) {
+  try {
+    const authz = (req.headers && (req.headers['authorization'] || req.headers['Authorization'])) || '';
+    const token = authz.startsWith('Bearer ') ? authz.slice(7).trim() : '';
+    if (!token) return null;
+    const r = await fetch(`${SUPABASE_URL}/auth/v1/user`, {
+      headers: { 'apikey': SUPABASE_ANON_KEY, 'Authorization': `Bearer ${token}` }
+    });
+    if (!r.ok) return null;
+    const authUser = await r.json();
+    if (!authUser || !authUser.id) return null;
+    const res = await fetch(`${SUPABASE_URL}/rest/v1/users?auth_id=eq.${encodeURIComponent(authUser.id)}&select=id,role`, {
+      headers: { 'apikey': SUPABASE_SERVICE_KEY, 'Authorization': `Bearer ${SUPABASE_SERVICE_KEY}` }
+    });
+    if (!res.ok) return null;
+    const rows = await res.json();
+    return (rows && rows[0]) || null;
+  } catch (e) {
+    console.error('getAuthedUser error:', e);
+    return null;
+  }
+}
+
+// يتأكد أن المستخدم الموثّق طرفٌ فعلي في هذا التقديم (المعلن صاحبه أو الشركة صاحبة الحملة).
+// يمنع أي طرف ثالث من حقن رسائل أو إقفال صفقة ليست له.
+async function assertPartyToApplication(user, appId) {
+  const res = await fetch(
+    `${SUPABASE_URL}/rest/v1/applications?id=eq.${encodeURIComponent(appId)}&select=id,creator_id,campaigns(brand_id)`,
+    { headers: { 'apikey': SUPABASE_SERVICE_KEY, 'Authorization': `Bearer ${SUPABASE_SERVICE_KEY}` } }
+  );
+  if (!res.ok) return false;
+  const rows = await res.json();
+  const row = rows && rows[0];
+  if (!row) return false;
+  const brandId = row.campaigns && row.campaigns.brand_id;
+  return row.creator_id === user.id || brandId === user.id;
+}
+
 async function supabaseInsert(table, data) {
   const res = await fetch(`${SUPABASE_URL}/rest/v1/${table}`, {
     method: 'POST',
@@ -353,6 +393,20 @@ export default async function handler(req, res) {
 
   if (!campaign || !application) {
     return res.status(400).json({ error: 'Missing campaign or application data' });
+  }
+
+  // ===== مصادقة: لا أحد يفاوض نيابةً عن غيره =====
+  // بدون هذا الفحص يقدر أي طرف ثالث يملك معرّف تقديم أن يحقن رسائل أو يقفل الصفقة.
+  const authedUser = await getAuthedUser(req);
+  if (!authedUser) {
+    return res.status(401).json({ error: 'يلزم تسجيل الدخول من جديد' });
+  }
+  if (!application.id || !/^[0-9a-f-]{36}$/i.test(String(application.id))) {
+    return res.status(400).json({ error: 'bad application id' });
+  }
+  const isParty = await assertPartyToApplication(authedUser, application.id);
+  if (!isParty) {
+    return res.status(403).json({ error: 'غير مصرّح' });
   }
 
   const apiKey = process.env.ANTHROPIC_API_KEY;
