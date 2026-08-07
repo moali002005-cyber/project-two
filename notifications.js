@@ -374,9 +374,11 @@ function renderNotifList() {
 
   list.innerHTML = notifData.map(n => {
     const icon = iconMap[n.type] || { class: 'message', emoji: '🔔' };
-    const safe = (s) => (s || '').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    const safe = (s) => String(s == null ? '' : s).replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+    // الرابط قد يأتي من صف أنشأه مستخدم آخر — نقبل المسارات الداخلية فقط
+    const safeLink = (s) => { const v = String(s == null ? '' : s); return /^\/[^\/\\]/.test(v) ? safe(v) : '#'; };
     return `
-      <a href="${safe(n.link || '#')}" class="notif-item ${n.is_read ? '' : 'unread'}" onclick="markAsRead('${n.id}', event)">
+      <a href="${safeLink(n.link)}" class="notif-item ${n.is_read ? '' : 'unread'}" onclick="markAsRead('${n.id}', event)">
         <div class="notif-icon ${icon.class}">${icon.emoji}</div>
         <div class="notif-content">
           <div class="notif-title">${safe(n.title)}</div>

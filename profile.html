@@ -16,7 +16,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="/translations.js?v=8"></script>
+<script src="/translations.js?v=10"></script>
 <script src="/i18n.js?v=4"></script>
 <style>
 :root {
@@ -2130,7 +2130,7 @@ async function startAutoNegotiation(application, campaign) {
 
     fetch('/api/negotiate', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: await apiAuthHeaders(),
       body: JSON.stringify({
         campaign: campaignData,
         application: applicationPayload,

@@ -9,7 +9,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="/translations.js?v=8"></script>
+<script src="/translations.js?v=10"></script>
 <script src="/i18n.js?v=4"></script>
 <style>
 :root {
@@ -912,6 +912,9 @@ async function submitForm(event, role) {
     if (role === 'brand') {
       const crFile = fd.get('cr_file');
       if (crFile && crFile.size > 0) {
+        const okType = /^(image\/(png|jpe?g|webp)|application\/pdf)$/.test(crFile.type || '');
+        if (!okType) throw new Error('صيغة مستند السجل التجاري غير مدعومة — أرفق PDF أو صورة.');
+        if (crFile.size > 10 * 1024 * 1024) throw new Error('حجم مستند السجل التجاري أكبر من 10 ميجابايت.');
         try {
           const ext = (crFile.name.split('.').pop() || 'dat').toLowerCase().replace(/[^a-z0-9]/g, '');
           const path = 'cr/' + authUser.id + '-' + Date.now() + '.' + ext;

@@ -161,6 +161,21 @@ input,select{font-family:inherit}
 .logo-mark{font-size:26px !important;white-space:nowrap}
 @media(max-width:640px){.logo-mark{font-size:21px !important}}
 </style>
+<script>
+/* صفحة عرض توضيحي — بيانات ثابتة غير حقيقية، ولا تُحفظ. محجوبة عن الزوار. */
+(function(){
+  try{
+    var raw = localStorage.getItem('simbl_user');
+    if(!raw){ location.replace('/login.html'); return; }
+  }catch(e){ location.replace('/login.html'); return; }
+  document.addEventListener('DOMContentLoaded', function(){
+    var b = document.createElement('div');
+    b.textContent = 'عرض توضيحي — البيانات المعروضة هنا أمثلة ثابتة ولا تُحفظ.';
+    b.style.cssText = 'position:sticky;top:0;z-index:99999;background:#7a2016;color:#fff;padding:8px 14px;font:600 13px/1.5 system-ui;text-align:center;';
+    document.body.insertBefore(b, document.body.firstChild);
+  });
+})();
+</script>
 </head>
 <body>
 
@@ -223,9 +238,9 @@ input,select{font-family:inherit}
   <div class="modal">
     <h3 id="m-title">إضافة عضو</h3>
     <p class="sub">عبّئ بياناته وحدّد دوره ومكانه في الهيكل. الانتحال يتفعّل بعد ربط الحسابات بالقاعدة.</p>
-    <div class="field"><label>الاسم</label><input id="f-name" placeholder="عبدالعزيز الحقباني"></div>
+    <div class="field"><label>الاسم</label><input id="f-name" placeholder="مدير العلامة أ"></div>
     <div class="row2">
-      <div class="field"><label>الإيميل</label><input id="f-email" type="email" placeholder="name@reef.sa"></div>
+      <div class="field"><label>الإيميل</label><input id="f-email" type="email" placeholder="member@example.com"></div>
       <div class="field"><label>كلمة سر مؤقتة</label><input id="f-pass" type="text" placeholder="يغيّرها بعد الدخول"></div>
     </div>
     <div class="field">
@@ -270,26 +285,26 @@ input,select{font-family:inherit}
 <div class="toast" id="toast"></div>
 
 <script>
-const BRANDS = ["ريف","أوسما","بويار"];
+const BRANDS = ["العلامة أ","العلامة ب","العلامة ج"];
 const PLATFORMS = [["tiktok","تيك توك","♪",""],["snap","سناب","S","sn"]];
 const ROLE_LABEL = { group_owner:"مالك المجموعة", gm:"المدير العام", brand_manager:"مدير علامة", employee:"موظف" };
 const ROLE_CLASS = { group_owner:"r-owner", gm:"r-gm", brand_manager:"r-manager", employee:"r-employee" };
 const ME = "محمد";
 
 let PEOPLE = [
-  { id:"p1", name:"عبدالعزيز الماجد", email:"aziz@reef.sa",    role:"group_owner" },
-  { id:"p2", name:"محمد فيصل",        email:"mfaisal@reef.sa", role:"gm" },
-  { id:"p3", name:"عبدالعزيز الحقباني",email:"haqbani@reef.sa", role:"brand_manager", brand:"ريف" },
-  { id:"p4", name:"لمى غدار",         email:"lama@reef.sa",    role:"brand_manager", brand:"أوسما" },
-  { id:"p5", name:"منى حاج",          email:"mona@reef.sa",    role:"brand_manager", brand:"بويار" },
-  { id:"p6", name:"محمد",   email:"mohammed@reef.sa", role:"employee", assignments:[
-      {brand:"ريف",platform:"tiktok"},{brand:"أوسما",platform:"tiktok"},{brand:"بويار",platform:"tiktok"}] },
-  { id:"p7", name:"شهد العصيمي", email:"shahad@reef.sa", role:"employee", assignments:[
-      {brand:"ريف",platform:"snap"},{brand:"بويار",platform:"snap"}] },
-  { id:"p8", name:"ريما القحطاني", email:"rima@reef.sa", role:"employee", assignments:[{brand:"أوسما",platform:"tiktok"}] },
-  { id:"p9", name:"بشار الأسعدي", email:"bishar@reef.sa", role:"employee", assignments:[{brand:"أوسما",platform:"snap"}] },
-  { id:"p10",name:"روان", email:"rawan@reef.sa", role:"employee", assignments:[{brand:"أوسما",platform:"snap"}] },
-  { id:"p11",name:"تميم العجلان", email:"tamim@reef.sa", role:"employee", assignments:[{brand:"بويار",platform:"snap"}] },
+  { id:"p1", name:"مالك المجموعة", email:"member@example.com",    role:"group_owner" },
+  { id:"p2", name:"المدير العام",        email:"member@example.com", role:"gm" },
+  { id:"p3", name:"مدير العلامة أ",email:"member@example.com", role:"brand_manager", brand:"العلامة أ" },
+  { id:"p4", name:"مديرة العلامة ب",         email:"member@example.com",    role:"brand_manager", brand:"العلامة ب" },
+  { id:"p5", name:"مديرة العلامة ج",          email:"member@example.com",    role:"brand_manager", brand:"العلامة ج" },
+  { id:"p6", name:"محمد",   email:"member@example.com", role:"employee", assignments:[
+      {brand:"العلامة أ",platform:"tiktok"},{brand:"العلامة ب",platform:"tiktok"},{brand:"العلامة ج",platform:"tiktok"}] },
+  { id:"p7", name:"أخصائية سناب ١", email:"member@example.com", role:"employee", assignments:[
+      {brand:"العلامة أ",platform:"snap"},{brand:"العلامة ج",platform:"snap"}] },
+  { id:"p8", name:"متابعة أداء ١", email:"member@example.com", role:"employee", assignments:[{brand:"العلامة ب",platform:"tiktok"}] },
+  { id:"p9", name:"أخصائي منصات ٢", email:"member@example.com", role:"employee", assignments:[{brand:"العلامة ب",platform:"snap"}] },
+  { id:"p10",name:"أخصائية منصات ٣", email:"member@example.com", role:"employee", assignments:[{brand:"العلامة ب",platform:"snap"}] },
+  { id:"p11",name:"أخصائي منصات ١", email:"member@example.com", role:"employee", assignments:[{brand:"العلامة ج",platform:"snap"}] },
 ];
 
 const $ = s => document.querySelector(s);

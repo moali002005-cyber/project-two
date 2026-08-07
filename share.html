@@ -4,7 +4,7 @@
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
 <title>Flfluencer · عرض الحملة</title>
-<script src="/translations.js?v=8"></script>
+<script src="/translations.js?v=10"></script>
 <script src="/i18n.js?v=4"></script>
 <link rel="icon" type="image/png" href="/icon-64.png?v=5">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -58,9 +58,9 @@
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
-  // ✏️ عدّل هذين السطرين (تلقاهما في supabase-config.js عندكم):
+  // مفتاح anon العام — نفسه الموجود في supabase-config.js (عام بطبيعته وليس سرّاً).
   const SUPABASE_URL = 'https://chpzecgpylxqsutjydkb.supabase.co';
-  const SUPABASE_ANON_KEY = 'ضع_مفتاح_anon_من_supabase-config.js';
+  const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNocHplY2dweWx4cXN1dGp5ZGtiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQyODgxNzQsImV4cCI6MjA5OTg2NDE3NH0.q4wmWKtJ5IPx8AgzMkp3SuFLZL9F10qKc3qiX5LB7kI';
 
   const wrap = document.getElementById('wrap');
   const params = new URLSearchParams(location.search);

@@ -12,7 +12,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="/translations.js?v=8"></script>
+<script src="/translations.js?v=10"></script>
 <script src="/i18n.js?v=4"></script>
 <style>
 :root{--cream:#ffffff;--cream-darker:#F3EEE4;--ink:#0F1420;--ink-soft:#2C3548;--ink-muted:#8A93A6;--ink-faint:#AAB2C0;--accent:#E23B2E;--accent-ink:#7E2119;--gold:#E8B84B;--line:rgba(15,20,32,0.08);--line-strong:rgba(15,20,32,0.16);--font-display:'IBM Plex Sans Arabic','Segoe UI',Tahoma,sans-serif;--font-body:'IBM Plex Sans Arabic','Segoe UI',Tahoma,sans-serif;}
@@ -301,12 +301,12 @@ function followerBonus(f){ f=parseInt(f)||0; if(f<=0) return 0; return Math.max(
 // تقييم الشركات المعروض (يبقى كما هو: نجوم من creator_trust) — يُستخدم كلمسة جودة ثانوية
 const PRIOR_MEAN = 4.4;
 const PRIOR_STRENGTH = 4;
-function seedRating(id){ return 4.3 + (hashId(id + 'r') % 7) / 10; }
+// لا نولّد تقييمات صناعية. المعلن بلا تقييمات حقيقية يعود بـ null ويُعرض «—».
 function displayRating(c){
   const ratings = Number(c.ratings_count)||0;
   const avg = Number(c.avg_rating)||0;
-  const seed = seedRating(c.id);
-  return (PRIOR_STRENGTH*seed + avg*ratings) / (PRIOR_STRENGTH + ratings);
+  if (ratings <= 0) return null;
+  return (PRIOR_STRENGTH*PRIOR_MEAN + avg*ratings) / (PRIOR_STRENGTH + ratings);
 }
 
 // درجة الثقة النهائية (0..100) — بطبقات واضحة تعكس الأداء الحقيقي
@@ -334,11 +334,13 @@ function badgeHtml(c){
 function starsHtml(c){
   const ratings = Number(c.ratings_count)||0;
   const dr = displayRating(c);
+  // بلا تقييمات حقيقية: نعرض «لا توجد تقييمات بعد» بدل نجوم مصطنعة
+  if (dr === null) {
+    return '<div class="row-stars"><span class="row-rcount">لا توجد تقييمات بعد</span></div>';
+  }
   const full = Math.round(dr);
   let s=''; for(let i=1;i<=5;i++) s += '<span class="ts'+(i<=full?' on':'')+'">★</span>';
-  const tail = ratings > 0
-    ? '<span class="row-rcount">('+toArabic(ratings)+' تقييم)</span>'
-    : '';
+  const tail = '<span class="row-rcount">('+toArabic(ratings)+' تقييم)</span>';
   return '<div class="row-stars">'+s+'<span class="row-ravg">'+dr.toFixed(1)+'</span>'+tail+'</div>';
 }
 

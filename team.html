@@ -97,6 +97,21 @@
   .p-foot button{width:100%;background:var(--black);color:#fff;border:none;border-radius:13px;padding:13px;font-family:"Tajawal";font-weight:700;font-size:13.5px;cursor:pointer}
   @media(max-width:560px){.hint{display:none}.viewas .lab{display:none}.legend{inset-inline:16px}}
 </style>
+<script>
+/* صفحة عرض توضيحي — بيانات ثابتة غير حقيقية، ولا تُحفظ. محجوبة عن الزوار. */
+(function(){
+  try{
+    var raw = localStorage.getItem('simbl_user');
+    if(!raw){ location.replace('/login.html'); return; }
+  }catch(e){ location.replace('/login.html'); return; }
+  document.addEventListener('DOMContentLoaded', function(){
+    var b = document.createElement('div');
+    b.textContent = 'عرض توضيحي — البيانات المعروضة هنا أمثلة ثابتة ولا تُحفظ.';
+    b.style.cssText = 'position:sticky;top:0;z-index:99999;background:#7a2016;color:#fff;padding:8px 14px;font:600 13px/1.5 system-ui;text-align:center;';
+    document.body.insertBefore(b, document.body.firstChild);
+  });
+})();
+</script>
 </head>
 <body>
 <div class="app">
@@ -139,28 +154,28 @@ const PLAT={snap:'سناب شات',tiktok:'تيك توك',both:'سناب + تي�
 const ST={online:'نشِط',negotiating:'يفاوض',reviewing:'يراجع',idle:'خامل'};
 const stCol=s=>s==='idle'?'#b3c2bd':'#E23B2E';
 const BRANDS={
-  reef:{name:'ريف',campaigns:[{n:'عطر الصحراء',approved:12,neg:4,wait:8},{n:'مسك 24',approved:9,neg:3,wait:5}]},
-  osma:{name:'اوسما',campaigns:[{n:'أمبر تتش',approved:14,neg:6,wait:91},{n:'روج و نوار',approved:13,neg:5,wait:65},{n:'تندر بلوم',approved:9,neg:4,wait:57}]},
-  buyar:{name:'بويار',campaigns:[{n:'بويار سبرنغ',approved:7,neg:3,wait:22},{n:'لمسة بويار',approved:5,neg:2,wait:14}]},
+  reef:{name:'العلامة أ',campaigns:[{n:'حملة تجريبية ١',approved:12,neg:4,wait:8},{n:'حملة تجريبية ٢',approved:9,neg:3,wait:5}]},
+  osma:{name:'العلامة ب',campaigns:[{n:'حملة تجريبية ٣',approved:14,neg:6,wait:91},{n:'حملة تجريبية ٤',approved:13,neg:5,wait:65},{n:'حملة تجريبية ٥',approved:9,neg:4,wait:57}]},
+  buyar:{name:'العلامة ج',campaigns:[{n:'حملة تجريبية ٦',approved:7,neg:3,wait:22},{n:'حملة تجريبية ٧',approved:5,neg:2,wait:14}]},
 };
 const P={
-  owner:{name:'عبدالعزيز الماجد',role:'الأونر',mgr:null,brand:null,plat:'mgmt',status:'online',mgmt:true,act:'يراقب أداء العلامات الثلاث والفريق كامل'},
-  gm:{name:'محمد فيصل',role:'المدير العام',mgr:'owner',brand:null,plat:'mgmt',status:'online',mgmt:true,act:'يراجع تقارير الحملات النشطة'},
-  reef:{name:'عبدالعزيز الحقباني',role:'مدير علامة ريف',mgr:'gm',brand:'reef',plat:'mgmt',status:'online',mgmt:true,act:'يعتمد صفقات حملة عطر الصحراء'},
-  osma:{name:'لمى غدار',role:'مديرة علامة اوسما',mgr:'gm',brand:'osma',plat:'mgmt',status:'reviewing',mgmt:true,act:'تتابع قائمة انتظار روج و نوار'},
-  buyar:{name:'منى حاج',role:'مديرة علامة بويار',mgr:'gm',brand:'buyar',plat:'mgmt',status:'online',mgmt:true,act:'تجهّز إطلاق حملة لمسة بويار'},
-  shaymaa:{name:'شيماء',role:'مديرة قسم الديجتال',mgr:'gm',brand:null,plat:'mgmt',status:'online',mgmt:true,act:'تتابع أداء القسم الرقمي عبر العلامات'},
-  shahad:{name:'شهد العصيمي',role:'أخصائية سناب · ريف+بويار',mgr:'reef',brand:'reef',shared:['buyar'],plat:'snap',status:'online',act:'تدير سناب لريف وبويار (شاشة مدموجة)',
-    negs:[{c:'عطر الصحراء · ريف',w:'@rana.g',s:'negotiating'},{c:'بويار سبرنغ · بويار',w:'@sultan_k',s:'online'}]},
-  tamim:{name:'تميم العجلان',role:'سناب وتيك توك · ريف',mgr:'reef',brand:'reef',plat:'both',status:'negotiating',act:'يفاوض معلن — حملة مسك 24',
-    negs:[{c:'مسك 24 · ريف',w:'@noura_v',s:'negotiating'},{c:'عطر الصحراء · ريف',w:'@fahad',s:'reviewing'}]},
-  mohammed:{name:'محمد العلي',role:'أخصائي تيك توك · الديجتال',mgr:'shaymaa',brand:null,plat:'tiktok',status:'online',act:'يحسّن أداء تيك توك عبر العلامات',
-    negs:[{c:'مسك 24 · ريف',w:'@dana.t',s:'online'},{c:'لمسة بويار · بويار',w:'@majed',s:'negotiating'}]},
-  bashar:{name:'بشار الأسعدي',role:'سناب وتيك توك · اوسما',mgr:'osma',brand:'osma',plat:'both',status:'negotiating',act:'يفاوض مؤثري تيك توك — أمبر تتش',
-    negs:[{c:'أمبر تتش · اوسما',w:'@lulu.k',s:'negotiating'},{c:'تندر بلوم · اوسما',w:'@sara_m',s:'online'}]},
-  rawan:{name:'روان',role:'سناب وتيك توك · اوسما',mgr:'osma',brand:'osma',plat:'both',status:'reviewing',act:'تراجع فيديوهات سناب — روج و نوار',
-    negs:[{c:'روج و نوار · اوسما',w:'@reem.a',s:'reviewing'}]},
-  reema:{name:'ريما القحطاني',role:'متابعة أداء · الديجتال',mgr:'shaymaa',brand:null,plat:'gen',status:'online',act:'تتابع أداء الحملات عبر العلامات',negs:[]},
+  owner:{name:'مالك المجموعة',role:'الأونر',mgr:null,brand:null,plat:'mgmt',status:'online',mgmt:true,act:'يراقب أداء العلامات الثلاث والفريق كامل'},
+  gm:{name:'المدير العام',role:'المدير العام',mgr:'owner',brand:null,plat:'mgmt',status:'online',mgmt:true,act:'يراجع تقارير الحملات النشطة'},
+  reef:{name:'مدير العلامة أ',role:'مدير علامة العلامة أ',mgr:'gm',brand:'reef',plat:'mgmt',status:'online',mgmt:true,act:'يعتمد صفقات حملة عطر الصحراء'},
+  osma:{name:'مديرة العلامة ب',role:'مديرة علامة العلامة ب',mgr:'gm',brand:'osma',plat:'mgmt',status:'reviewing',mgmt:true,act:'تتابع قائمة انتظار روج و نوار'},
+  buyar:{name:'مديرة العلامة ج',role:'مديرة علامة العلامة ج',mgr:'gm',brand:'buyar',plat:'mgmt',status:'online',mgmt:true,act:'تجهّز إطلاق حملة لمسة العلامة ج'},
+  shaymaa:{name:'مديرة القسم الرقمي',role:'مديرة قسم الديجتال',mgr:'gm',brand:null,plat:'mgmt',status:'online',mgmt:true,act:'تتابع أداء القسم الرقمي عبر العلامات'},
+  shahad:{name:'أخصائية سناب ١',role:'أخصائية سناب · العلامة أ+العلامة ج',mgr:'reef',brand:'reef',shared:['buyar'],plat:'snap',status:'online',act:'تدير سناب لالعلامة أ والعلامة ج (شاشة مدموجة)',
+    negs:[{c:'حملة تجريبية ١ · العلامة أ',w:'@demo_1',s:'negotiating'},{c:'حملة تجريبية ٦ · العلامة ج',w:'@demo_2',s:'online'}]},
+  tamim:{name:'أخصائي منصات ١',role:'سناب وتيك توك · العلامة أ',mgr:'reef',brand:'reef',plat:'both',status:'negotiating',act:'يفاوض معلن — حملة مسك 24',
+    negs:[{c:'حملة تجريبية ٢ · العلامة أ',w:'@demo_3',s:'negotiating'},{c:'حملة تجريبية ١ · العلامة أ',w:'@demo_4',s:'reviewing'}]},
+  mohammed:{name:'أخصائي تيك توك ١',role:'أخصائي تيك توك · الديجتال',mgr:'shaymaa',brand:null,plat:'tiktok',status:'online',act:'يحسّن أداء تيك توك عبر العلامات',
+    negs:[{c:'حملة تجريبية ٢ · العلامة أ',w:'@demo_5',s:'online'},{c:'حملة تجريبية ٧ · العلامة ج',w:'@demo_6',s:'negotiating'}]},
+  bashar:{name:'أخصائي منصات ٢',role:'سناب وتيك توك · العلامة ب',mgr:'osma',brand:'osma',plat:'both',status:'negotiating',act:'يفاوض مؤثري تيك توك — أمبر تتش',
+    negs:[{c:'حملة تجريبية ٣ · العلامة ب',w:'@demo_7',s:'negotiating'},{c:'حملة تجريبية ٥ · العلامة ب',w:'@demo_8',s:'online'}]},
+  rawan:{name:'أخصائية منصات ٣',role:'سناب وتيك توك · العلامة ب',mgr:'osma',brand:'osma',plat:'both',status:'reviewing',act:'تراجع فيديوهات سناب — روج و نوار',
+    negs:[{c:'حملة تجريبية ٤ · العلامة ب',w:'@demo_9',s:'reviewing'}]},
+  reema:{name:'متابعة أداء ١',role:'متابعة أداء · الديجتال',mgr:'shaymaa',brand:null,plat:'gen',status:'online',act:'تتابع أداء الحملات عبر العلامات',negs:[]},
 };
 const IDS=Object.keys(P);
 IDS.forEach(id=>P[id].sees=new Set());
@@ -217,9 +232,9 @@ addEventListener('resize',place);
 
 /* شاهِد باسم / التظليل */
 let scope='owner';
-const VIEWERS=[{id:'owner',l:'الأونر',s:'الماجد'},{id:'gm',l:'المدير العام',s:'محمد فيصل'},
-  {id:'reef',l:'ريف',s:'الحقباني'},{id:'osma',l:'اوسما',s:'لمى'},{id:'buyar',l:'بويار',s:'منى'},
-  {id:'shaymaa',l:'الديجتال',s:'شيماء'},{id:'shahad',l:'مشترَك',s:'شهد'}];
+const VIEWERS=[{id:'owner',l:'الأونر',s:'الماجد'},{id:'gm',l:'المدير العام',s:'المدير العام'},
+  {id:'reef',l:'العلامة أ',s:'الحقباني'},{id:'osma',l:'العلامة ب',s:'لمى'},{id:'buyar',l:'العلامة ج',s:'منى'},
+  {id:'shaymaa',l:'الديجتال',s:'مديرة القسم الرقمي'},{id:'shahad',l:'مشترَك',s:'شهد'}];
 const vwBar=document.getElementById('viewas');
 VIEWERS.forEach((v,i)=>{const b=document.createElement('div');b.className='vw'+(i===0?' on':'');b.dataset.id=v.id;
   b.innerHTML=`${v.l}<span>${v.s}</span>`;b.onclick=()=>setScope(v.id);vwBar.appendChild(b);});
@@ -232,7 +247,7 @@ function setScope(id){ scope=id;
     o.l.setAttribute('opacity', on? (o.dash? ((id==='buyar'||id==='owner'||id==='gm')?.9:.25) : 1) : .06); });
   const n=P[id].sees.size;
   cap(id==='owner'?`الأونر <b>${p.name}</b> فوق، وكل الفريق تحته. اضغط أي شخص لتفتح منظوره.`
-    : sh? `مسار <b>${p.name}</b> المشترَك — يخدم علامتَي ريف وبويار.`
+    : sh? `مسار <b>${p.name}</b> المشترَك — يخدم علامتَي العلامة أ والعلامة ج.`
     : `مسار <b>${p.name}</b> — ${n? n+' تحت إشرافه':'يرى مهامه فقط'}، والباقي يخفت.`,'خريطة الفريق');
 }
 function cap(t,ttl){document.getElementById('caption').innerHTML=`<b>${ttl}</b> — ${t}`;}
@@ -382,8 +397,8 @@ place(); setScope('owner');
 </div>
 
 <script>
-const PB_MGR   = { reef:'عبدالعزيز الحقباني', osma:'لمى غدار', buyar:'منى حاج' };
-const PB_LABEL = { reef:'ريف', osma:'اوسما', buyar:'بويار' };
+const PB_MGR   = { reef:'مدير العلامة أ', osma:'مديرة العلامة ب', buyar:'مديرة العلامة ج' };
+const PB_LABEL = { reef:'العلامة أ', osma:'العلامة ب', buyar:'العلامة ج' };
 const PB_STAGES = [{s:1,n:'العنوان'},{s:2,n:'الشحن'},{s:3,n:'الاستلام'},{s:5,n:'المحتوى'},{s:6,n:'الموافقة'},{s:7,n:'النشر'},{s:8,n:'البنكية'}];
 const PB_STAGE_NAME = {1:'العنوان',2:'الشحن',3:'الاستلام',5:'المحتوى',6:'الموافقة',7:'النشر',8:'البنكية'};
 const PB_DOW = ['أحد','إثنين','ثلاثاء','أربعاء','خميس','جمعة','سبت'];
@@ -408,10 +423,11 @@ async function loadPerfBoard(){
   }catch(e){
     let human = String((e && (e.message||e.hint||e.details)) || e);
     if(human.indexOf('forbidden')>=0) human = 'غير مصرّح — لازم تكون داخل بحساب الأونر.';
-    body.innerHTML = '<div class="pb-error">تعذّر التحميل: '+human+'</div>';
+    body.innerHTML = '<div class="pb-error">تعذّر التحميل: '+pbEsc(human)+'</div>';
   }
 }
 
+function pbEsc(s){ return String(s==null?'':s).replace(/[&<>"']/g, function(m){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]; }); }
 function pbGroupStages(brands){
   const g={}; brands.forEach(b=>{const s=b.stages||{};Object.keys(s).forEach(k=>{g[k]=(g[k]||0)+(s[k]||0);});});
   return g;
@@ -528,11 +544,11 @@ async function openBrandDetail(label, kind){
     body.innerHTML=list.map(it=>{
       const when=it.closed_at?new Date(it.closed_at).toLocaleDateString('ar-SA'):'';
       if(kind==='awaiting'){ const price=it.price?(' · '+pbNum(it.price)+' ر.س'):'';
-        return `<div class="pb-item"><div class="pb-item-c">${it.creator||'—'}</div><div class="pb-item-t">${when}</div><div class="pb-item-s">${it.campaign||''}${price}</div></div>`; }
+        return `<div class="pb-item"><div class="pb-item-c">${pbEsc(it.creator||'—')}</div><div class="pb-item-t">${pbEsc(when)}</div><div class="pb-item-s">${pbEsc(it.campaign||'')}${pbEsc(price)}</div></div>`; }
       const sname=PB_STAGE_NAME[it.stage]||('مرحلة '+it.stage);
-      return `<div class="pb-item"><div class="pb-item-c">${it.creator||'—'}</div><div class="pb-item-t">منذ ${when}</div><div class="pb-item-s">${it.campaign||''} · واقفة عند: ${sname}</div></div>`;
+      return `<div class="pb-item"><div class="pb-item-c">${pbEsc(it.creator||'—')}</div><div class="pb-item-t">منذ ${pbEsc(when)}</div><div class="pb-item-s">${pbEsc(it.campaign||'')} · واقفة عند: ${pbEsc(sname)}</div></div>`;
     }).join('');
-  }catch(e){ let h=String((e&&(e.message||e.hint))||e); if(h.indexOf('forbidden')>=0)h='غير مصرّح (حساب الأونر فقط).'; body.innerHTML='<div class="pb-error">تعذّر التحميل: '+h+'</div>'; }
+  }catch(e){ let h=String((e&&(e.message||e.hint))||e); if(h.indexOf('forbidden')>=0)h='غير مصرّح (حساب الأونر فقط).'; body.innerHTML='<div class="pb-error">تعذّر التحميل: '+pbEsc(h)+'</div>'; }
 }
 function closeBrandDetail(){ document.getElementById('pbDetail').classList.remove('on'); }
 document.getElementById('pbDetail').addEventListener('click', function(e){ if(e.target===this) closeBrandDetail(); });
