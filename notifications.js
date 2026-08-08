@@ -466,9 +466,13 @@ document.addEventListener('click', (event) => {
 async function createNotification(userId, type, title, message, link) {
   if (!window.supabaseClient) return;
   try {
-    await supabaseClient
-      .from('notifications')
-      .insert([{ user_id: userId, type, title, message: message || null, link: link || null }]);
+    // نمرّ عبر دالة تتحقق من وجود علاقة فعلية بيني وبين المستقبِل،
+    // بدل الكتابة المباشرة على الجدول (كانت تسمح لأي مستخدم بمراسلة أي مستخدم).
+    const { error } = await supabaseClient.rpc('notify_user', {
+      p_user: userId, p_type: type, p_title: title,
+      p_message: message || null, p_link: link || null
+    });
+    if (error) throw error;
   } catch (err) {
     console.error('Failed to create notification:', err);
   }
@@ -527,16 +531,16 @@ async function notifyMatchedCreators(campaign, brandName) {
     }
     if (matched.length === 0) return [];
 
-    const notifications = matched.map(c => ({
-      user_id: c.id,
-      type: 'new_campaign',
-      title: `🎯 حملة جديدة تناسبك من ${brandName}`,
-      message: campaign.title,
-      link: '/creator.html'
-    }));
-
-    await supabaseClient.from('notifications').insert(notifications);
-    return matched.map(c => c.id);
+    const ids = matched.map(c => c.id);
+    // دالة تتحقق أن المستدعي هو صاحب الحملة قبل أن ترسل لأي معلن
+    const { error } = await supabaseClient.rpc('notify_campaign_matches', {
+      p_campaign: campaign.id,
+      p_creators: ids,
+      p_title: `🎯 حملة جديدة تناسبك من ${brandName}`,
+      p_message: campaign.title
+    });
+    if (error) throw error;
+    return ids;
   } catch (err) {
     console.error('Failed to notify matched creators:', err);
     return [];
