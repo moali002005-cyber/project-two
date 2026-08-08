@@ -2368,7 +2368,17 @@ function openEditProfile(){
   if (currentUser.platform) document.getElementById('ep-platform').value = currentUser.platform;
   if (currentUser.category) document.getElementById('ep-category').value = currentUser.category;
   if (currentUser.followers) document.getElementById('ep-followers').value = String(currentUser.followers);
-  document.getElementById('ep-price').value = currentUser.price ? String(currentUser.price) : '';
+  // السعر السري لا يُقرأ من عمود users (محجوب عن المتصفح) — يُجلب بدالة تُرجّع سعر المتصل فقط
+  (async function(){
+    var el = document.getElementById('ep-price');
+    if (!el) return;
+    el.value = currentUser.price ? String(currentUser.price) : '';
+    try {
+      var r = await supabaseClient.rpc('my_price');
+      var v = Array.isArray(r.data) ? r.data[0] : r.data;
+      if (v != null) { currentUser.price = v; el.value = String(v); }
+    } catch (e) { console.error('my_price:', e); }
+  })();
   document.getElementById('ep-bio').value = currentUser.bio || '';
   var _c = document.getElementById('ep-bio-count'); if (_c) _c.textContent = (currentUser.bio||'').length + ' / 300';
   renderEpAvatar();
