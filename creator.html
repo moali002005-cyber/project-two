@@ -1325,19 +1325,24 @@ async function simblExitImpersonation(){
   <!-- صفقاتي (فوق مباشرة) -->
   <div id="my-deals"></div>
 
-  <div class="section-head" id="section-head" style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;">
-    <h2 class="section-head-title">الإعلانات</h2>
-    <select id="cat-filter" onchange="filterCampaigns(this.value)" style="font-family:inherit;font-size:13px;padding:8px 12px;border:1px solid var(--line);border-radius:10px;background:#fff;color:var(--ink);cursor:pointer;">
-      <option value="all">كل التصنيفات</option>
-      <option value="perfumes">عطور</option>
-      <option value="fashion">موضة</option>
-      <option value="beauty">جمال</option>
-      <option value="food">طعام</option>
-      <option value="tech">تقنية</option>
-    </select>
-  </div>
+  <div id="ads-section" style="display:none;">
+    <div class="section-head" id="section-head" style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;">
+      <h2 class="section-head-title">الإعلانات</h2>
+      <div style="display:flex;align-items:center;gap:8px;">
+        <select id="cat-filter" onchange="filterCampaigns(this.value)" style="font-family:inherit;font-size:13px;padding:8px 12px;border:1px solid var(--line);border-radius:10px;background:#fff;color:var(--ink);cursor:pointer;">
+          <option value="all">كل التصنيفات</option>
+          <option value="perfumes">عطور</option>
+          <option value="fashion">موضة</option>
+          <option value="beauty">جمال</option>
+          <option value="food">طعام</option>
+          <option value="tech">تقنية</option>
+        </select>
+        <button class="section-back" onclick="hideList()">رجوع</button>
+      </div>
+    </div>
 
-  <div class="unified-list" id="unified-list"></div>
+    <div class="unified-list" id="unified-list"></div>
+  </div>
 </main>
 
 <script>document.write('<script src="supabase-config.js?v=' + Date.now() + '"><\/script>');</script>
@@ -1438,7 +1443,14 @@ function offersWaitingLabel(n) {
 }
 
 function goToList() {
-  document.getElementById('app-section').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  const s = document.getElementById('ads-section');
+  s.style.display = 'block';
+  s.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+function hideList() {
+  document.getElementById('ads-section').style.display = 'none';
+  window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
 function startNegotiation(applicationId) {

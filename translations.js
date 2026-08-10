@@ -1271,6 +1271,7 @@ Object.assign(window.I18N_TEXT, {
   "حفظ": "Save",
   "لاحقًا": "Later",
   "انضم لمجتمعنا على واتساب": "Join our WhatsApp community",
+  "رجوع": "Back",
   "انضم للقروب الآن": "Join the group now",
   "الملف الشخصي": "Profile",
   "كل التصنيفات": "All categories",
