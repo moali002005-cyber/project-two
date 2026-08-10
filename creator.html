@@ -1982,11 +1982,14 @@ function renderUnified() {
 
   if (appliedItems.length === 0 && openItems.length === 0) {
     if (myDeals) myDeals.innerHTML = '';
+    const emptyMsg = currentFilter === 'all'
+      ? 'لا توجد إعلانات متاحة حالياً — ستظهر هنا فور إضافتها.'
+      : 'لا توجد إعلانات في هذا التصنيف حالياً.';
     list.innerHTML = `
       <div class="empty">
         <div class="icon">○</div>
-        <h3>لا توجد إعلانات</h3>
-        <p>لا توجد إعلانات في هذا التصنيف حالياً</p>
+        <h3>لا توجد إعلانات بعد</h3>
+        <p>${emptyMsg}</p>
       </div>`;
     return;
   }
@@ -3504,7 +3507,8 @@ init();
 </script>
 
 <script src="push-subscribe.js?v=3"></script>
-<script src="install-guide.js?v=3">
+<script src="install-guide.js?v=3"></script>
+<script>
 
 // ===== عمولة المنصة — جانب المعلن فقط =====
 // النِسَب لا تُخزَّن على صف الصفقة (الشركة تقرأه بـ select('*')).

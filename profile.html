@@ -1000,6 +1000,9 @@ input:focus, textarea:focus { outline: none; border-color: var(--accent); box-sh
   .user-pill .user-name { display: none; }
   .hero-link { display: block; margin: 14px 0 0; }
 }
+.fee-breakdown{display:grid;grid-template-columns:1fr auto;gap:2px 10px;margin-top:6px;padding-top:6px;
+  border-top:1px dashed rgba(0,0,0,.15);font-size:12px;opacity:.85}
+.fee-breakdown b{font-size:13px;opacity:1}
 </style>
 <style>/* unified brand wordmark size */
 .logo-mark{font-size:26px !important;white-space:nowrap}
@@ -1301,6 +1304,9 @@ async function loadData() {
   if (campRes.status === 'rejected') console.error('load campaigns failed:', campRes.reason);
   if (appRes.status  === 'rejected') console.error('load applications failed:', appRes.reason);
 
+  // رسوم المعلن — جدول منفصل محمي بـ RLS، لا يصل الشركة إطلاقاً
+  await loadCreatorFees(myApplications.map(function (a) { return a.id; }));
+
   // dbGetCampaigns قد يكون حدّث بيانات المعلن في localStorage (مثل الفئة/المدينة) — نلتقطها
   try { var _fresh = getCurrentUser(); if (_fresh) currentUser = _fresh; } catch (e) {}
 
@@ -1318,7 +1324,12 @@ function updateHeroStats() {
   var active = nonRejected.filter(function(a){ return a.status !== 'closed'; }).length;
   var closedApproved = myApplications.filter(function(a){ return a.status === 'closed' && a.brand_approved === true; });
   var deals = closedApproved.length;
-  var earnings = 0; closedApproved.forEach(function(a){ earnings += Number(a.final_price || a.price || 0); });
+  // الأرباح المعروضة = الصافي بعد عمولة المنصة (الصفقات القديمة بلا عمولة تُحتسب كاملة)
+  var earnings = 0; closedApproved.forEach(function(a){
+    var f = window.__creatorFees[a.id];
+    earnings += f ? Number(f.net_amount) : Number(a.final_price || a.price || 0);
+  });
+  earnings = Math.round(earnings);
 
   var f = Number(currentUser.followers) || 0;
   var fStr = f >= 1000000 ? (f/1000000).toFixed(f%1000000?1:0)+'M' : (f >= 1000 ? (f/1000).toFixed(f%1000?1:0)+'K' : String(f));
@@ -1579,6 +1590,7 @@ function renderOfferCard(c, a) {
       <div class="approval-gate" onclick="event.stopPropagation()">
         <div class="ag-info">
           <div class="ag-price">السعر النهائي: <span class="num">${(a.final_price || a.price).toLocaleString('en-US')} ر.س</span></div>
+          ${feeLines(a)}
           <div class="ag-desc">تم التوصّل لاتفاق، بانتظار تعميد الشركة لبدء التنفيذ.</div>
         </div>
       </div>`;
@@ -2550,6 +2562,32 @@ init();
 
 <script src="push-subscribe.js?v=3"></script>
 <script src="install-guide.js?v=2"></script>
+<script>
+
+// ===== عمولة المنصة — جانب المعلن فقط =====
+// النِسَب لا تُخزَّن على صف الصفقة (الشركة تقرأه بـ select('*')).
+// تُقرأ من deal_creator_fees وسياسة RLS تحصرها في صاحب الصفقة.
+// المعلن لا يرى نسبة الشركة إطلاقاً، ولا يوجد أي مجموع بين النسبتين.
+window.__creatorFees = {};
+async function loadCreatorFees(appIds) {
+  if (!window.supabaseClient || !appIds || !appIds.length) return;
+  try {
+    const { data } = await supabaseClient
+      .from('deal_creator_fees')
+      .select('application_id, fee_pct, fee_amount, net_amount')
+      .in('application_id', appIds);
+    (data || []).forEach(function (r) { window.__creatorFees[r.application_id] = r; });
+  } catch (e) { console.error('loadCreatorFees:', e); }
+}
+function feeLines(a) {
+  const f = window.__creatorFees[a.id];
+  if (!f) return '';   // صفقة ما قبل السياسة → بلا خصم
+  return '<div class="fee-breakdown">'
+       + '<span>عمولة المنصة (' + Number(f.fee_pct) + '%)</span><span>\u2212' + Number(f.fee_amount).toLocaleString('en-US') + ' ر.س</span>'
+       + '<b>صافيك</b><b>' + Number(f.net_amount).toLocaleString('en-US') + ' ر.س</b>'
+       + '</div>';
+}
+</script>
 
 </body>
 </html>
