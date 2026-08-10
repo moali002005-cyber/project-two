@@ -1157,6 +1157,13 @@ input:focus, textarea:focus { outline: none; border-color: var(--accent); box-sh
 </head>
 <body>
 
+<!-- منع وميض لوحة المعلن عند فتح صفحة الإعلانات المستقلة -->
+<script>
+if (new URLSearchParams(location.search).get('view') === 'ads') {
+  document.write('<style>.hero,#my-trust,#my-deals,#app-section{display:none!important}#ads-section{display:block!important}</style>');
+}
+</script>
+
 <!-- ===== شريط المعاينة (impersonation) — يظهر فقط أثناء دخول الأدمن كمستخدم ===== -->
 <div id="simbl-imp-bar" style="display:none;position:sticky;top:0;z-index:99999;background:#0F1420;color:#fff;font-family:inherit;font-size:13.5px;font-weight:600;padding:9px 16px;align-items:center;justify-content:center;gap:14px;box-shadow:0 2px 12px rgba(0,0,0,.28)">
   <span id="simbl-imp-label" style="display:inline-flex;align-items:center;gap:7px">👁 وضع المعاينة</span>
@@ -1312,7 +1319,7 @@ async function simblExitImpersonation(){
     <div class="hero-pill"><span class="hero-dot"></span><span id="hero-status">جاري التحميل...</span></div>
     <h1 class="hero-title">أهلًا <span class="nm" id="welcome-name">بك</span></h1>
     <div style="display: flex; gap: 12px; flex-wrap: wrap; justify-content: center;">
-      <button class="hero-cta" onclick="goToList()">تصفّح الإعلانات المتاحة</button>
+      <button class="hero-cta" onclick="location.href='creator.html?view=ads'">تصفّح الإعلانات المتاحة</button>
       <a href="/profile.html" class="hero-cta" style="background:#fff;color:var(--ink);border:1.5px solid rgba(15,20,32,0.18);text-decoration:none;display:inline-flex;align-items:center;justify-content:center;">ملفي الشخصي</a>
     </div>
   </section>
@@ -1337,7 +1344,7 @@ async function simblExitImpersonation(){
           <option value="food">طعام</option>
           <option value="tech">تقنية</option>
         </select>
-        <button class="section-back" onclick="hideList()">رجوع</button>
+        <button class="section-back" onclick="location.href='creator.html'">رجوع</button>
       </div>
     </div>
 
@@ -1442,15 +1449,17 @@ function offersWaitingLabel(n) {
   return `لديك ${toArabic(n)} عروض بانتظارك`;
 }
 
-function goToList() {
-  const s = document.getElementById('ads-section');
-  s.style.display = 'block';
-  s.scrollIntoView({ behavior: 'smooth', block: 'start' });
+// وضع "صفحة الإعلانات" المستقلة: نُخفي لوحة المعلن ونعرض قائمة الإعلانات فقط
+function isAdsView() {
+  return new URLSearchParams(location.search).get('view') === 'ads';
 }
 
-function hideList() {
-  document.getElementById('ads-section').style.display = 'none';
-  window.scrollTo({ top: 0, behavior: 'smooth' });
+function applyAdsView() {
+  const hero = document.querySelector('.hero'); if (hero) hero.style.display = 'none';
+  const t = document.getElementById('my-trust'); if (t) t.style.display = 'none';
+  const d = document.getElementById('my-deals'); if (d) d.style.display = 'none';
+  const div = document.getElementById('app-section'); if (div) div.style.display = 'none';
+  const ads = document.getElementById('ads-section'); if (ads) ads.style.display = 'block';
 }
 
 function startNegotiation(applicationId) {
@@ -1658,10 +1667,17 @@ async function init() {
     return;
   }
 
+  initNotifications('user-menu');
+
+  if (isAdsView()) {
+    // صفحة الإعلانات المستقلة: قائمة الإعلانات فقط بلا لوحة/تنبيهات
+    applyAdsView();
+    await loadData();
+    return;
+  }
+
   maybePromptCity();
   maybePromptGroup();
-
-  initNotifications('user-menu');
 
   await loadData();
   loadMyTrust();
