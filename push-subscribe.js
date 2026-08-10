@@ -1,6 +1,6 @@
 // تفعيل Push Notifications - يشتغل تلقائيًا على أي صفحة لأي مستخدم مسجّل
 
-const VAPID_PUBLIC_KEY = 'BGnZ74vZSsAwrRmrw6hcSfdZPjc30hzdqbxz8pfSNC90mwgJD_GdKB8S84kpYJV8QOmK0ZrCe5M2rKOQYkz9FVA';
+const VAPID_PUBLIC_KEY = 'BMeQcqyhkguV5yom15xDSBlxcbixkqNVIpkgThMy14PXXWBgR1Lj7ySX-jTN_2d1dYOloecbhqyKfVYZ7iy_TXI';
 
 function urlBase64ToUint8Array(base64String) {
   const padding = '='.repeat((4 - base64String.length % 4) % 4);
