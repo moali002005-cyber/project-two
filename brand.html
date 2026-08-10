@@ -1588,7 +1588,6 @@ async function simblExitImpersonation(){
       <button class="hero-cta" onclick="openCampaignModal()">+ حملة جديدة</button>
       <button class="hero-cta" onclick="goToCampaigns()">صفقات الوكيل</button>
       <button class="hero-cta" onclick="window.location.href='/dues.html'">📋 المستحقات</button>
-      <button class="hero-cta" onclick="openTeamMembers()" style="background:#fff;color:var(--ink);border:1.5px solid rgba(15,20,32,0.18);">👥 الفريق</button>
     </div>
     <style>@media (max-width:640px){#creators-teaser{flex-direction:column!important;align-items:center!important;text-align:center!important;gap:12px!important;}#creators-teaser #teaser-avatars{justify-content:center!important;}}</style>
     <div id="creators-teaser" onclick="window.location.href='/top.html'" style="max-width:640px;margin:22px auto 0;cursor:pointer;background:#fff;border:1px solid var(--line);border-radius:18px;padding:16px 20px;display:flex;align-items:center;gap:14px;text-align:right;transition:border-color .2s,transform .2s;" onmouseover="this.style.borderColor='rgba(226,59,46,0.45)';this.style.transform='translateY(-2px)'" onmouseout="this.style.borderColor='var(--line)';this.style.transform='none'">
@@ -1608,6 +1607,9 @@ async function simblExitImpersonation(){
       <span class="hero-feat"><span class="hero-feat-ic">✓</span>يقفل الصفقة</span>
     </div>
   </section>
+
+  <!-- حاوية قائمة الحملات — يملؤها renderCampaigns()؛ غيابها كان يسبّب انهيار loadData -->
+  <div class="campaigns-list" id="campaigns-list"></div>
 </main>
 
 <div class="modal-backdrop" id="campaign-modal">
@@ -2399,7 +2401,8 @@ function showPendingScreen(status) {
 
 async function loadData() {
   try {
-    document.getElementById('campaigns-list').innerHTML = '<div class="loading-wrap"><div class="loading-pill"><span class="loading-pill-dot"></span>نجمع آخر تفاصيل حملاتك الإعلانية...</div></div>';
+    const _cl = document.getElementById('campaigns-list');
+    if (_cl) _cl.innerHTML = '<div class="loading-wrap"><div class="loading-pill"><span class="loading-pill-dot"></span>نجمع آخر تفاصيل حملاتك الإعلانية...</div></div>';
     myCampaigns = await dbGetMyCampaigns(WORKSPACE_ID || currentUser.id);
 
     // جلب عروض كل الحملات بطلب واحد بدل طلب لكل حملة (إصلاح N+1)
@@ -2430,7 +2433,8 @@ async function loadData() {
     renderDues();
   } catch (err) {
     console.error(err);
-    document.getElementById('campaigns-list').innerHTML = '<div style="text-align:center; padding:60px; color:var(--accent)">حصل خطأ في التحميل. حدّث الصفحة.</div>';
+    const _ce = document.getElementById('campaigns-list');
+    if (_ce) _ce.innerHTML = '<div style="text-align:center; padding:60px; color:var(--accent)">حصل خطأ في التحميل. حدّث الصفحة.</div>';
   }
 }
 
