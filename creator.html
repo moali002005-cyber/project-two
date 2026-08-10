@@ -1146,6 +1146,9 @@ input:focus, textarea:focus { outline: none; border-color: var(--accent); box-sh
 .mt-share svg{width:17px;height:17px;}
 #kit-toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(20px);background:#7E2119;color:#fff;padding:12px 18px;border-radius:12px;font-size:14px;font-weight:600;opacity:0;pointer-events:none;transition:all .25s;z-index:9999;box-shadow:0 8px 24px -8px rgba(0,0,0,0.4);max-width:90vw;text-align:center;}
 #kit-toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+.fee-breakdown{display:grid;grid-template-columns:1fr auto;gap:2px 10px;margin-top:6px;padding-top:6px;
+  border-top:1px dashed rgba(0,0,0,.15);font-size:12px;opacity:.85}
+.fee-breakdown b{font-size:13px;opacity:1}
 </style>
 <style>/* unified brand wordmark size */
 .logo-mark{font-size:26px !important;white-space:nowrap}
@@ -1258,6 +1261,13 @@ async function simblExitImpersonation(){
   #wa-fab:hover{filter:brightness(.97)}
   #wa-fab .wa-ic{font-size:18px;line-height:1}
   #wa-fab .wa-x{margin-inline-start:2px;width:18px;height:18px;border-radius:50%;background:rgba(255,255,255,.25);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700}
+
+.st-row{display:flex;gap:12px;max-width:520px;margin:20px auto 0;}
+.st{flex:1;background:var(--chip,#FBEDEC);border-radius:16px;padding:16px 12px;text-align:center;}
+.st-n{font-family:var(--font-display);font-size:24px;font-weight:800;color:var(--accent);line-height:1.1;}
+.st-n small{font-size:15px;}
+.st-n.st-new{font-size:18px;font-weight:700;}
+.st-l{font-size:12.5px;color:var(--ink-soft);margin-top:5px;}
 </style>
 <div id="group-modal">
   <div class="gm-box">
@@ -1301,19 +1311,10 @@ async function simblExitImpersonation(){
   <!-- ============ HERO ============ -->
   <section class="hero">
     <div class="hero-pill"><span class="hero-dot"></span><span id="hero-status">جاري التحميل...</span></div>
-    <div style="display:flex;flex-direction:column;align-items:center;gap:8px;margin-bottom:8px;">
-      <div id="my-avatar-wrap" style="width:84px;height:84px;border-radius:50%;overflow:hidden;background:rgba(226,59,46,0.14);display:flex;align-items:center;justify-content:center;box-shadow:0 0 0 2px var(--accent);"><span style="font-size:32px;font-weight:600;color:var(--accent-ink)">م</span></div>
-    </div>
     <h1 class="hero-title">أهلًا <span class="nm" id="welcome-name">بك</span></h1>
-    <p class="hero-sub">اطّلع على جميع الإعلانات المتاحة لك، واختر المناسب.</p>
     <div style="display: flex; gap: 12px; flex-wrap: wrap; justify-content: center;">
-      <button class="hero-cta" onclick="goToList()">تصفّح الإعلانات (<span id="hero-app-count">0</span> عروضك)</button>
-      <a href="/profile.html" class="hero-cta" style="background:#fff;color:var(--ink);border:1.5px solid rgba(15,20,32,0.18);text-decoration:none;display:inline-flex;align-items:center;justify-content:center;">الملف الشخصي</a>
-    </div>
-    <div class="hero-features">
-      <span class="hero-feat"><span class="hero-feat-ic">✓</span>تصلك الإعلانات</span>
-      <span class="hero-feat"><span class="hero-feat-ic">✓</span>تختار المناسب</span>
-      <span class="hero-feat"><span class="hero-feat-ic">✓</span>تقفل الصفقة</span>
+      <button class="hero-cta" onclick="goToList()">تصفّح الإعلانات المتاحة</button>
+      <a href="/profile.html" class="hero-cta" style="background:#fff;color:var(--ink);border:1.5px solid rgba(15,20,32,0.18);text-decoration:none;display:inline-flex;align-items:center;justify-content:center;">ملفي الشخصي</a>
     </div>
   </section>
 
@@ -1484,51 +1485,19 @@ async function loadMyTrust(){
   var box=document.getElementById('my-trust'); if(!box||!currentUser) return;
   try{
     var rr=await Promise.all([
-      supabaseClient.from('creator_directory').select('id, followers'),
-      supabaseClient.from('creator_trust').select('creator_id, deals_count, ratings_count, avg_rating, avg_content, avg_punctuality, avg_communication, avg_results'),
-      supabaseClient.from('simbl_creator_performance').select('creator_id, completed_deals, active_deals, avg_hours, speed_points, achievement')
+      supabaseClient.from('creator_trust').select('deals_count, ratings_count, avg_rating').eq('creator_id', currentUser.id).maybeSingle(),
+      supabaseClient.from('simbl_creator_performance').select('completed_deals').eq('creator_id', currentUser.id).maybeSingle()
     ]);
-    var dir=(rr[0]&&rr[0].data)||[]; var tr=(rr[1]&&rr[1].data)||[]; var pf=(rr[2]&&!rr[2].error&&rr[2].data)||[];
-    var tmap={}; tr.forEach(function(t){ tmap[t.creator_id]=t; });
-    var pmap={}; pf.forEach(function(p){ pmap[p.creator_id]=p; });
-    function mt2Hydrate(c){
-      var t=tmap[c.id]||{};
-      c.ratings_count=Number(t.ratings_count)||0; c.avg_rating=Number(t.avg_rating)||0; c.deals_count=Number(t.deals_count)||0;
-      c.avg_content=Number(t.avg_content)||0; c.avg_punctuality=Number(t.avg_punctuality)||0; c.avg_communication=Number(t.avg_communication)||0; c.avg_results=Number(t.avg_results)||0;
-      var p=pmap[c.id]||{};
-      c.completed_deals=Number(p.completed_deals)||0; c.active_deals=Number(p.active_deals)||0;
-      c.avg_hours=(p.avg_hours==null)?null:Number(p.avg_hours); c.speed_points=Number(p.speed_points)||0; c.achievement=Number(p.achievement)||0;
-    }
-    dir.forEach(mt2Hydrate);
-    var inDir=false; for(var k=0;k<dir.length;k++){ if(dir[k].id===currentUser.id){ inDir=true; break; } }
-    if(!inDir){ var meRow={id:currentUser.id, followers:currentUser.followers}; mt2Hydrate(meRow); dir.push(meRow); }
-    // أعلى إنجاز لتطبيع درجات المكمّلين — ثم الدرجة والترتيب بنفس منطق صفحة النخبة تمامًا
-    MT2_MAX_ACH=dir.reduce(function(m,c){ return Math.max(m, Number(c.achievement)||0); },0);
-    dir.forEach(function(c){ c.tier=mt2PerfTier(c); c.score=mt2TrustScore(c); });
-    dir.sort(mt2Sort);
-    var me=null, rank=0; for(var i=0;i<dir.length;i++){ if(dir[i].id===currentUser.id){ me=dir[i]; rank=i+1; break; } }
-    if(!me){ box.innerHTML=''; return; }
-    var total=dir.length;
-    var regional = rank; // الشرق الأوسط حاليًا = نفس الترتيب المحلي (كل المؤثرين من السعودية)، ويتوسّع مع انضمام دول أخرى
-    box.innerHTML='<div class="mt-card">'
-      + '<div class="mt-rankbig">'
-      +   '<div class="mt-rank-local">أنت رقم <b>'+toArabic(rank)+'</b><span>في التصنيف المحلي</span></div>'
-      +   '<div class="mt-rank-region">ورقم <b>'+toArabic(regional)+'</b> في تصنيف الشرق الأوسط</div>'
-      + '</div>'
-      + '<div class="mt-sub"><span class="mt-stars">'+mtStars(me)+'</span><span class="mt-score-inline">درجة الثقة '+toArabic(Math.round(me.score))+'/100</span></div>'
-      + '<div class="mt-motiv">الشركات تتصفّح قائمة النخبة وتختار الأعلى تقييمًا. كل ما ارتفعت درجتك، تقدّمت في التصنيف ووصلتك صفقات أكثر.</div>'
-      + '<div class="mt-crit">'+mtCritBars(me)+'</div>'
-      + '<details class="mt-tips"><summary>كيف ترفع تقييمك؟</summary>'
-      +   '<ul>'
-      +     '<li><b>جودة المحتوى:</b> قدّم محتوى احترافي ومتقن يخدم هدف الحملة.</li>'
-      +     '<li><b>الالتزام بالمواعيد:</b> سلّم في الوقت المتفق عليه أو قبله.</li>'
-      +     '<li><b>التواصل والاحترافية:</b> ردّ بسرعة وكن واضحًا ومحترمًا في التعامل.</li>'
-      +     '<li><b>النتائج والتفاعل:</b> اهتم بوصول المحتوى وتفاعل جمهورك معه.</li>'
-      +   '</ul>'
-      +   '<div class="mt-tips-foot">كل صفقة تكملها بنجاح وتقييم عالٍ ترفعك في التصنيف تلقائيًا.</div>'
-      + '</details>'
-      + '<button class="mt-share" onclick="shareMyKit()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12v7a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-7"/><path d="M12 3v13"/><path d="M8 7l4-4 4 4"/></svg> شارك ملفك العام</button>'
-      + '<a class="mt-link" href="/top.html">شوف قائمة النخبة ←</a>'
+    var t=(rr[0]&&rr[0].data)||{}; var p=(rr[1]&&!rr[1].error&&rr[1].data)||{};
+    var deals=Number(p.completed_deals); if(!deals) deals=Number(t.deals_count)||0;
+    var rc=Number(t.ratings_count)||0; var avg=Number(t.avg_rating)||0;
+    // تقييم حقيقي فقط — بلا أرقام مصطنعة. المعلن الجديد يرى "جديد".
+    var ratingCell = rc>0
+      ? '<div class="st-n">'+avg.toFixed(1)+' <small>\u2605</small></div><div class="st-l">تقييمك</div>'
+      : '<div class="st-n st-new">جديد</div><div class="st-l">لا توجد تقييمات بعد</div>';
+    box.innerHTML='<div class="st-row">'
+      + '<div class="st"><div class="st-n">'+toArabic(deals)+'</div><div class="st-l">صفقات مكتملة</div></div>'
+      + '<div class="st">'+ratingCell+'</div>'
       + '</div>';
   }catch(e){ box.innerHTML=''; }
 }
@@ -1730,6 +1699,8 @@ async function loadData() {
       ]);
       await loadCampaignApprovedCounts();
       await loadMyCodes();
+      // رسوم المعلن — جدول منفصل محمي بـ RLS، لا يصل الشركة إطلاقاً
+      await loadCreatorFees(myApplications.map(function (a) { return a.id; }));
       updateHeroStats();
       renderUnified();
       _lastLoadAt = Date.now();
@@ -2199,6 +2170,7 @@ function renderOfferCard(c, a) {
       <div class="approval-gate" onclick="event.stopPropagation()">
         <div class="ag-info">
           <div class="ag-price">السعر النهائي: <span class="num">${(a.final_price || a.price).toLocaleString('en-US')} ر.س</span></div>
+          ${feeLines(a)}
           <div class="ag-desc">${a.is_reserve ? 'أنت ضمن قائمة الاحتياط الجاهزة — اكتمل العدد حاليًا، وبمجرد ما ينفتح مكان بنرقّيك للتعميد فورًا 🌿' : 'تم التوصّل لاتفاق، بانتظار تعميد الشركة لبدء التنفيذ.'}</div>
         </div>
       </div>`;
@@ -3505,7 +3477,32 @@ init();
 </script>
 
 <script src="push-subscribe.js?v=3"></script>
-<script src="install-guide.js?v=3"></script>
+<script src="install-guide.js?v=3">
+
+// ===== عمولة المنصة — جانب المعلن فقط =====
+// النِسَب لا تُخزَّن على صف الصفقة (الشركة تقرأه بـ select('*')).
+// تُقرأ من deal_creator_fees وسياسة RLS تحصرها في صاحب الصفقة.
+// المعلن لا يرى نسبة الشركة إطلاقاً، ولا يوجد أي مجموع بين النسبتين.
+window.__creatorFees = {};
+async function loadCreatorFees(appIds) {
+  if (!window.supabaseClient || !appIds || !appIds.length) return;
+  try {
+    const { data } = await supabaseClient
+      .from('deal_creator_fees')
+      .select('application_id, fee_pct, fee_amount, net_amount')
+      .in('application_id', appIds);
+    (data || []).forEach(function (r) { window.__creatorFees[r.application_id] = r; });
+  } catch (e) { console.error('loadCreatorFees:', e); }
+}
+function feeLines(a) {
+  const f = window.__creatorFees[a.id];
+  if (!f) return '';   // صفقة ما قبل السياسة → بلا خصم
+  return '<div class="fee-breakdown">'
+       + '<span>عمولة المنصة (' + Number(f.fee_pct) + '%)</span><span>\u2212' + Number(f.fee_amount).toLocaleString('en-US') + ' ر.س</span>'
+       + '<b>صافيك</b><b>' + Number(f.net_amount).toLocaleString('en-US') + ' ر.س</b>'
+       + '</div>';
+}
+</script>
 <!-- مودال عرض البريف (يفتحه زر «عرض البريف» جنب اسم الحملة) -->
 <div class="brief-modal" id="briefModal" onclick="if(event.target===this)closeBriefModal()">
   <div class="brief-modal-card">
