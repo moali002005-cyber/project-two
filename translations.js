@@ -1270,10 +1270,8 @@ Object.assign(window.I18N_TEXT, {
   "مدينة أخرى": "Other city",
   "حفظ": "Save",
   "لاحقًا": "Later",
-  "انضم لمجتمع سِمبل على واتساب": "Join the Flfluencer community on WhatsApp",
-  "كل الحملات الجديدة والأخبار توصلك أول بأول 🌿 وتكون أول من يعرف عن الحملات قبل غيرك.": "Get all new campaigns and news first 🌿 and be the first to know about campaigns before anyone else.",
+  "انضم لمجتمعنا على واتساب": "Join our WhatsApp community",
   "انضم للقروب الآن": "Join the group now",
-  "انضم لمجتمعنا على واتساب لمعرفة تفاصيل الحملات ومواعيد انطلاقها": "Join our WhatsApp community to learn campaign details and launch dates",
   "الملف الشخصي": "Profile",
   "كل التصنيفات": "All categories",
   "بريف الحملة": "Campaign brief",
@@ -1612,4 +1610,52 @@ Object.assign(window.I18N_TEXT, {
  "🕓 قائمة الانتظار": "🕓 Waitlist",
  "🎬 فيديو جاهز من الشركة": "🎬 Ready-made video from the brand",
  "📍 زيارة": "📍 Visit"
+});
+
+// لوحة الشركة — مقياس حرارة فلفلونسر
+Object.assign(window.I18N_TEXT, {
+ "حرارة حملاتك": "Your campaign heat",
+ "مشتعلة 🌶️": "On fire 🌶️",
+ "حارّة 🔥": "Hot 🔥",
+ "دافئة": "Warm",
+ "تسخن": "Heating up",
+ "باردة": "Cold",
+ "● مشتعلة": "● On fire",
+ "قيد التفاوض": "Negotiating",
+ "تنتظر عروض": "Awaiting offers",
+ "مكتملة": "Completed",
+ "الحرارة": "Heat",
+ "🌶️ أطلق حملة جديدة": "🌶️ Launch a campaign",
+ "نشطة": "Active",
+ "مقفلة": "Closed",
+ "عرض": "Offers",
+ "متبقية": "Left",
+ "حملاتك": "Your campaigns",
+ "عرض الكل ←": "View all ←",
+ "الأداء": "Performance",
+ "أرقامك مباشرة": "Your numbers, live",
+ "صفقات الوكيل": "Agent deals",
+ "اللي أقفلها": "What it closed",
+ "المستحقات": "Payables",
+ "تابع وسدّد": "Track and pay",
+ "أفضل ٥٠٠ بدرجة الثقة": "Top 500 by trust score",
+ "ما أشعلت أي حملة بعد": "You haven't lit up a campaign yet",
+ "أطلق أول حملة، وبيبدأ المؤثرين يوصلون والوكيل يفاوض عنك.": "Launch your first campaign — creators start arriving and the agent negotiates for you.",
+ "حملة منزلية": "Home campaign",
+ "حملة زيارة": "Visit campaign",
+ "فيديو جاهز": "Ready-made video",
+ "تيك توك": "TikTok",
+ "انستقرام": "Instagram",
+ "سناب شات": "Snapchat",
+ "يوتيوب": "YouTube",
+ "إكس": "X",
+ "معلن": "creators"
+});
+
+// صفحة الحملات — هوية الحرارة
+Object.assign(window.I18N_TEXT, {
+ "🔥 حملاتك والعروض": "🔥 Your campaigns & offers",
+ "تابع حرارة كل حملة، وشوف مفاوضات الوكيل، واعتمد الصفقات.": "Track each campaign's heat, follow the agent's negotiations, and approve deals.",
+ "💳 المستحقات": "💳 Payments due",
+ "🌡️ حرارة الحملة": "🌡️ Campaign heat"
 });
