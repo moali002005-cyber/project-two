@@ -25,7 +25,7 @@
       var k = el.getAttribute('data-i18n-placeholder'); if (t[k] != null) el.setAttribute('placeholder', t[k]);
     });
     document.querySelectorAll('[data-i18n-toggle]').forEach(function (el) {
-      el.textContent = (lang === 'en') ? 'عربي' : 'EN';
+      el.textContent = (lang === 'en') ? 'AR' : 'EN';
     });
   }
 
