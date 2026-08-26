@@ -97,6 +97,7 @@ td.iban-bad{ background:#fff2f2 !important; color:#c0392b !important; box-shadow
 .camp-exp-btn { cursor:pointer; border:1px solid #e0e7e5; background:#fff; border-radius:100px; padding:6px 12px; font-family:inherit; font-size:12px; font-weight:600; color:#0f1512; }
 .camp-exp-btn.pay { background:#1D9E75; color:#fff; border-color:#1D9E75; }
 .camp-exp-btn.edit { background:#0f1512; color:#fff; border-color:#0f1512; }
+.camp-exp-btn.links { background:#0B6BB8; color:#fff; border-color:#0B6BB8; }
 .camp-exp-btn:hover { filter:brightness(0.97); }
 .dim { color:var(--ink-faint); }
 .dues-mark { background:var(--accent); color:#fff; border:0; border-radius:7px; padding:5px 12px; font-family:var(--font-body); font-size:11.5px; font-weight:600; cursor:pointer; }
@@ -495,7 +496,7 @@ function duesRowFilled(a, camp, idx, totals) {
   const holderCell = '<td class="cell dues-editable" data-appid="' + a.id + '" data-field="holder" data-copy="' + escHtml(holderRaw) + '" onclick="duesCopy(this)">' + escHtml(holderRaw || '') + '</td>';
   const amountCell = '<td class="cell xl-amount" data-copy="' + amountNum + '" onclick="duesCopy(this)">' + amountDisp + '</td>';
   const statusCell = '<td class="cell" data-copy="' + escHtml(statusPlain) + '" onclick="duesCopy(this)">' + statusHtml + '</td>';
-  const fixBtn = (stg >= 9) ? '<button class="dues-fix" onclick="requestFix(\'' + a.id + '\')">↩︎ طلب تصحيح</button>' : '';
+  const fixBtn = (stg >= 1) ? '<button class="dues-fix" onclick="requestFix(\'' + a.id + '\')">↩︎ طلب تصحيح</button>' : '';
   const actionCell = '<td><div style="display:flex;gap:4px;align-items:center;justify-content:center;flex-wrap:wrap;">' + (action || '') + fixBtn + ((action || fixBtn) ? '' : '<span class="dim">—</span>') + '</div></td>';
 
   const rowTSV = [nameRaw, phoneRaw || '—', acctLink || '—', dateCopy || '—', pub || '—', promo || '—', ibanRaw || '—', bankName || '—', holderRaw || '—', amountNum, statusPlain].join('\t');
@@ -620,7 +621,7 @@ function renderCampaignBlock(camp, deals) {
     +       '<span>✅ معتمد: <strong>' + toArabic(deals.length) + (size ? '/' + toArabic(size) : '') + '</strong></span>'
     +     '</div>'
     +   '</div>'
-    +   '<div class="dues-sum">' + sumChips + '<div class="camp-exports"><button class="camp-exp-btn edit" onclick="toggleCampEdit(\'' + camp.id + '\', this)">✏️ تعديل</button><button class="camp-exp-btn pay" onclick="exportPaySheetCSV(\'' + camp.id + '\')">💳 شيت الدفع</button><button class="camp-exp-btn xls" onclick="exportDuesCSV(\'' + camp.id + '\')">📥 Excel</button></div></div>'
+    +   '<div class="dues-sum">' + sumChips + '<div class="camp-exports"><button class="camp-exp-btn edit" onclick="toggleCampEdit(\'' + camp.id + '\', this)">✏️ تعديل</button><button class="camp-exp-btn pay" onclick="exportPaySheetCSV(\'' + camp.id + '\')">💳 شيت الدفع</button><button class="camp-exp-btn links" onclick="exportLinksPDF(\'' + camp.id + '\')">🔗 شيت الروابط PDF</button><button class="camp-exp-btn xls" onclick="exportDuesCSV(\'' + camp.id + '\')">📥 Excel</button></div></div>'
     + '</div>'
     + '<div class="dues-grid-wrap"><table class="xl">'
     + '<thead>'
@@ -751,6 +752,130 @@ function exportPaySheetCSV(onlyCampId) {
   showToast('تم تصدير شيت الدفع المختصر (' + toArabic(count) + ' صف) ✓');
 }
 
+function _lnkShort(u) {                    // نص الرابط المعروض (بدون البروتوكول)
+  var s = String(u || '').replace(/^https?:\/\//i, '').replace(/^www\./i, '').replace(/\/+$/, '');
+  return s.length > 62 ? s.slice(0, 62) + '…' : s;
+}
+
+// يجمع روابط الفيديو لحملة واحدة (نفس فلتر الشيت: معتمدة فقط)
+// شيت الروابط = روابط الفيديو بس؛ أي صف ما فيه رابط فيديو يُستبعد.
+function _linkRowsOf(camp) {
+  var deals = (campaignApps[camp.id] || []).filter(function (a) {
+    return a.status === 'closed' && a.brand_approved === true;
+  });
+  var rows = [];
+  deals.forEach(function (a) {
+    var sd = (typeof a.stage_data === 'object' && a.stage_data) ? a.stage_data : {};
+    var st7 = sd[7] || sd['7'] || {};
+    var pub = cleanUrl(st7.publish_link || '');
+    if (!pub) return;
+    rows.push({ pub: pub, at: st7._at || a.completed_at || a.created_at || '' });
+  });
+  rows.sort(function (x, y) { return new Date(y.at || 0) - new Date(x.at || 0); });   // الأحدث نشراً أولاً
+  return rows;
+}
+
+// خلية رابط واحد: الرقم + الرابط، والرابط كله <a> واحد عشان يطلع وصلة شغّالة في الـ PDF
+function _lnkPair(url, n) {
+  return '<td class="n">' + toArabic(n) + '</td>'
+    + '<td class="l"><a href="' + escHtml(url) + '" target="_blank" rel="noopener">'
+    + escHtml(_lnkShort(url)) + '</a></td>';
+}
+
+function exportLinksPDF(onlyCampId) {
+  var camps = (myCampaigns || []).slice().sort(function (a, b) {
+    return new Date(b.created_at || 0) - new Date(a.created_at || 0);
+  });
+  if (onlyCampId) camps = camps.filter(function (c) { return c.id === onlyCampId; });
+  if (!camps.length) { showToast('ما فيه حملة للتصدير', 'error'); return; }
+
+  var total = 0, sections = '';
+  camps.forEach(function (c) {
+    var rows = _linkRowsOf(c);
+    if (!rows.length) return;
+    total += rows.length;
+
+    // عمودان جنب بعض لما تكثر الروابط — ٢٠٠ رابط في عمود واحد = ست صفحات بلا داعي
+    var twoUp = rows.length > 34;
+    var body = '';
+    if (twoUp) {
+      var half = Math.ceil(rows.length / 2);          // اليمين ١..٨٠ واليسار ٨١..١٦٠ (ترتيب طبيعي بالعربي)
+      for (var i = 0; i < half; i++) {
+        var r2 = rows[i + half];
+        body += '<tr>' + _lnkPair(rows[i].pub, i + 1)
+          + (r2 ? _lnkPair(r2.pub, i + half + 1) : '<td class="n"></td><td class="l"></td>')
+          + '</tr>';
+      }
+    } else {
+      body = rows.map(function (r, i) { return '<tr>' + _lnkPair(r.pub, i + 1) + '</tr>'; }).join('');
+    }
+
+    var head = twoUp
+      ? '<th class="hn">#</th><th>رابط الفيديو</th><th class="hn">#</th><th>رابط الفيديو</th>'
+      : '<th class="hn">#</th><th>رابط الفيديو</th>';
+    sections += '<section>'
+      + (camps.length > 1 ? '<h2>' + escHtml(c.title || 'حملة') + '</h2>' : '')
+      + '<table class="' + (twoUp ? 'two' : 'one') + '"><thead><tr>' + head + '</tr></thead>'
+      + '<tbody>' + body + '</tbody></table></section>';
+  });
+
+  if (!total) { showToast('ما فيه روابط فيديو للتصدير في هالحملة', 'error'); return; }
+
+  var today = new Date().toLocaleDateString('en-GB').replace(/\//g, '-');
+  var campName = onlyCampId ? String((camps[0] && camps[0].title) || 'حملة') : 'كل الحملات';
+  var docTitle = 'شيت الروابط - ' + campName.replace(/[\\/:*?"<>|]/g, '') + ' - ' + today;
+
+  var css = ''
+    + '@page{size:A4;margin:12mm 9mm 13mm}'
+    + '*{box-sizing:border-box;margin:0;padding:0}'
+    + 'body{font-family:"IBM Plex Sans Arabic","Segoe UI",Tahoma,sans-serif;color:#0a0a0a;background:#fff;font-size:12px;line-height:1.55;-webkit-print-color-adjust:exact;print-color-adjust:exact}'
+    + '.bar{display:flex;align-items:center;justify-content:space-between;gap:12px;background:#0f1512;color:#fff;padding:12px 18px;position:sticky;top:0;z-index:9}'
+    + '.bar b{font-size:13px;font-weight:600}.bar small{opacity:.75;font-size:11px;display:block;font-weight:400}'
+    + '.bar button{cursor:pointer;border:0;border-radius:100px;padding:9px 18px;background:#13B9B2;color:#04302e;font-family:inherit;font-size:12.5px;font-weight:700}'
+    + '.doc{padding:16px 18px 22px}'
+    + 'h2{font-size:12.5px;font-weight:700;margin:14px 0 6px}'   // يظهر فقط عند تصدير كل الحملات
+    + 'section:first-child h2{margin-top:0}'
+    + 'table{width:100%;border-collapse:collapse;table-layout:fixed}'
+    + 'thead{display:table-header-group}'
+    + 'th{background:#0f1512;color:#fff;font-size:10.5px;font-weight:600;padding:6px 6px;border:1px solid #0f1512;text-align:center}'
+    + 'th.hn{width:8%}table.two th.hn{width:6%}'
+    + 'td{border:1px solid #e3e9e7;padding:5px 7px;font-size:11px;vertical-align:middle}'
+    + 'tbody tr:nth-child(even) td{background:#f8faf9}'
+    + 'tr{break-inside:avoid;page-break-inside:avoid}'
+    + 'td.n{color:#8a9793;text-align:center;unicode-bidi:isolate;font-size:10px}'
+    + 'td.l{direction:ltr;unicode-bidi:isolate;text-align:right;word-break:break-all}'   // يمين = ملاصق لرقمه
+    + 'a{color:#0B6BB8;text-decoration:underline;font-weight:500;display:block}'
+    + '@media print{.bar{display:none}.doc{padding:0}}';
+
+  var html = '<!doctype html><html lang="ar" dir="rtl"><head><meta charset="utf-8">'
+    + '<title>' + escHtml(docTitle) + '</title>'
+    + '<link rel="preconnect" href="https://fonts.googleapis.com">'
+    + '<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>'
+    + '<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;600;700&display=swap" rel="stylesheet">'
+    + '<style>' + css + '</style></head><body>'
+    + '<div class="bar"><b>شيت الروابط جاهز'
+    +   '<small>يفتح حوار الطباعة — اختر الوجهة «حفظ كـ PDF» ثم حفظ</small></b>'
+    +   '<button id="pbtn">🖨️ حفظ كـ PDF</button></div>'
+    + '<div class="doc">' + sections + '</div></body></html>';
+
+  var w = window.open('', '_blank');
+  if (!w) { showToast('المتصفح منع فتح النافذة — اسمح بالنوافذ المنبثقة وأعد المحاولة', 'error'); return; }
+  w.document.open(); w.document.write(html); w.document.close();
+
+  // كل السكربت من هنا (النافذة الجديدة بلا سكربت داخلي) — أنظف وما يتعارض مع أي CSP
+  var fire = function () { try { w.focus(); w.print(); } catch (e) {} };
+  try {
+    var btn = w.document.getElementById('pbtn');
+    if (btn) btn.onclick = function () { w.print(); };
+  } catch (e) {}
+  try {
+    // ننتظر الخط العربي ينزل، وإلا تطلع المعاينة بخط بديل ثم تتزحلق
+    w.document.fonts.ready.then(function () { setTimeout(fire, 350); });
+  } catch (e) { setTimeout(fire, 1200); }
+
+  showToast('فتحت شيت الروابط (' + toArabic(total) + ' رابط) — اختر «حفظ كـ PDF» ✓');
+}
+
 async function clearFix(appId, stage){
   try{
     const { data: row, error:e1 } = await supabaseClient.from('applications').select('stage_data').eq('id', appId).single();
@@ -795,7 +920,7 @@ async function setBrandPaid(applicationId) {
 }
 
 let _fixAppId = null, _fixStage = null;
-const FIX_STAGE_LABEL = { 3: 'الاستلام', 5: 'المحتوى / الفيديو', 7: 'رابط النشر / كود الترويج', 8: 'البيانات البنكية' };
+const FIX_STAGE_LABEL = { 1: 'معلومات الشحن (العنوان)', 3: 'الاستلام', 5: 'المحتوى / الفيديو', 7: 'رابط النشر / كود الترويج', 8: 'البيانات البنكية' };
 function requestFix(applicationId) {
   _fixAppId = applicationId; _fixStage = null;
   document.querySelectorAll('.fix-opt').forEach(b => b.classList.remove('sel'));
@@ -929,6 +1054,7 @@ init();
     <h3 style="margin:0 0 6px;">طلب تصحيح من المعلن</h3>
     <p style="color:#6f867f;font-size:13px;margin:0 0 12px;">اختر المرحلة اللي فيها الخطأ — يرجع المعلن لها فقط، يصحّح، ويكمل الباقي تلقائيًا.</p>
     <div id="fix-opts" style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px;">
+      <button type="button" class="fix-opt" onclick="chooseFixStage(1,this)">📦 معلومات الشحن</button>
       <button type="button" class="fix-opt" onclick="chooseFixStage(3,this)">📍 الاستلام</button>
       <button type="button" class="fix-opt" onclick="chooseFixStage(5,this)">🎬 المحتوى / الفيديو</button>
       <button type="button" class="fix-opt" onclick="chooseFixStage(7,this)">🔗 رابط النشر / كود الترويج</button>
@@ -945,5 +1071,20 @@ init();
     </div>
   </div>
 </div>
+<style id="copysel-css">.copysel,td.copysel,.cell.copysel,.dues-link.copysel,.xl-rowh.copysel{background-color:#fff3b0 !important;box-shadow:0 0 0 2px #f4d33a inset !important;border-radius:6px}</style>
+<script id="copysel-js">
+(function(){
+  var LSK="dues_copysel_keys2",KEYS,mo=null,applying=false;
+  try{localStorage.removeItem("dues_copysel_keys");}catch(e){}
+  try{KEYS=new Set(JSON.parse(localStorage.getItem(LSK)||"[]"));}catch(e){KEYS=new Set();}
+  function save(){try{localStorage.setItem(LSK,JSON.stringify(Array.from(KEYS)));}catch(e){}}
+  function isEmpty(c){var v=c.getAttribute("data-copy");return v==null||!(""+v).trim();}
+  function keyFor(c){var tr=c.closest?c.closest("tr"):null;if(!tr)return null;var idEl=tr.querySelector("[data-appid]");var rid=idEl?idEl.getAttribute("data-appid"):("r"+tr.rowIndex);var all=tr.querySelectorAll("[data-copy]");var idx=Array.prototype.indexOf.call(all,c);if(idx<0)return null;return rid+":"+idx;}
+  function apply(){if(applying)return;applying=true;try{if(mo)mo.disconnect();var el=document.querySelectorAll("[data-copy]");for(var i=0;i<el.length;i++){var k=keyFor(el[i]);if(k&&!isEmpty(el[i])&&KEYS.has(k))el[i].classList.add("copysel");else el[i].classList.remove("copysel");}}catch(x){}finally{try{if(mo&&document.body)mo.observe(document.body,{childList:true,subtree:true});}catch(y){}applying=false;}}
+  document.addEventListener("click",function(ev){try{var c=ev.target&&ev.target.closest?ev.target.closest("[data-copy]"):null;if(!c)return;var oc=c.getAttribute("onclick")||"";if(oc.indexOf("duesCopy")<0)return;if(isEmpty(c))return;var k=keyFor(c);if(!k)return;KEYS.add(k);save();setTimeout(apply,0);}catch(x){}},true);
+  try{mo=new MutationObserver(function(){setTimeout(apply,0);});function st(){if(document.body)mo.observe(document.body,{childList:true,subtree:true});}if(document.body)st();document.addEventListener("DOMContentLoaded",function(){st();apply();});}catch(x){}
+  setTimeout(apply,0);
+})();
+</script>
 </body>
 </html>
