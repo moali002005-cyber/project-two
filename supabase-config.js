@@ -420,7 +420,10 @@ async function tryRestoreSession() {
 const SIMBL_BRIEF_BUCKET = 'brief-files';
 const SIMBL_BRIEF_MAX_BYTES = 10 * 1024 * 1024;
 const SIMBL_BRIEF_TYPES = ['image/jpeg', 'image/png', 'image/webp'];
-const SIMBL_BRIEF_MAX_FILES = 10;
+// الحد الأقصى لعدد مرفقات الحملة الواحدة (فيديوهات + صور) — غيّر الرقم هنا فقط
+const SIMBL_BRIEF_MAX_FILES = 15;
+// 15 -> ١٥ لعرض الأرقام بالعربية داخل الرسائل
+function simblArNum(n) { return String(n).replace(/[0-9]/g, d => '٠١٢٣٤٥٦٧٨٩'[+d]); }
 
 
 
@@ -507,6 +510,8 @@ async function dbGetAppsForCampaigns(campIds, selectStr) {
 }
 window.simblBriefList = simblBriefList;
 window.simblBriefSignedUrl = simblBriefSignedUrl;
+window.SIMBL_BRIEF_MAX_FILES = SIMBL_BRIEF_MAX_FILES;
+window.simblArNum = simblArNum;
 window.simblBriefUpload = simblBriefUpload;
 window.simblBriefRemove = simblBriefRemove;
 window.simblBriefSaveList = simblBriefSaveList;
