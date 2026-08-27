@@ -212,13 +212,13 @@ async function checkReturn(){
 
 async function init(){
   try {
-    var r = await window.supabaseClient.from('plans').select('*').eq('is_active', true).order('sort_order');
+    var r = await window.supabaseClient.from('plans').select('*').eq('is_active', true).eq('audience', 'brand').order('sort_order');
     PLANS = r.data || [];
   } catch (e){ PLANS = []; }
   try {
     var sess = await window.supabaseClient.auth.getSession();
     if (sess && sess.data && sess.data.session){
-      var st = await window.supabaseClient.rpc('brand_plan_status');
+      var st = await window.supabaseClient.rpc('my_plan_status');
       if (st && st.data && !st.data.error) STATUS = st.data;
     }
   } catch (e){}
