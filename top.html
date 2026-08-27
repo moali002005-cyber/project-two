@@ -168,6 +168,10 @@ body{background:var(--cream);color:var(--ink);font-family:var(--font-body);font-
 <style>/* unified brand wordmark size */
 .logo-mark{font-size:26px !important;white-space:nowrap}
 @media(max-width:640px){.logo-mark{font-size:21px !important}}
+.plan-gate{margin-top:14px;background:#fff;border:1.5px dashed rgba(226,59,46,0.45);border-radius:18px;padding:22px 20px;text-align:center}
+.pg-title{font-size:15.5px;font-weight:700;color:var(--ink)}
+.pg-sub{font-size:13.5px;color:var(--ink-muted);margin:6px 0 14px}
+.pg-btn{display:inline-block;background:#E23B2E;color:#fff;text-decoration:none;font-size:14px;font-weight:700;padding:11px 26px;border-radius:100px}
 </style>
 </head>
 <body>
@@ -243,6 +247,7 @@ body{background:var(--cream);color:var(--ink);font-family:var(--font-body);font-
 <script>document.write('<script src="notifications.js?v=' + Date.now() + '"><\/script>');</script>
 <script>
 let RANKED = [];   // أفضل 500 بعد الترتيب (مع رقم الترتيب)
+let __PLAN = null;   // باقة المستخدم الحالي (للتحكم بعمق القائمة)
 let filters = { plat:'all', cat:'all' };
 let scope = 'sa';
 let MAX_ACHIEVEMENT = 0;   // أعلى درجة إنجاز (لتطبيع درجات المكمّلين)
@@ -422,6 +427,10 @@ async function init(){
     // أفضل 500 + ترقيم
     RANKED = creators.slice(0, 500).map((c, i) => { c.rank = i + 1; return c; });
 
+    try {
+      const _ps = await supabaseClient.rpc('my_plan_status');
+      if (_ps && _ps.data && !_ps.data.error) __PLAN = _ps.data;
+    } catch (e) { __PLAN = null; }
     applyFilters();
   }catch(err){
     console.error(err);
@@ -510,6 +519,9 @@ function render(list){
   const el = document.getElementById('list');
   const ct = document.getElementById('count-text');
   let rows = list;
+  var __lim = (__PLAN && __PLAN.top_list_limit != null) ? Number(__PLAN.top_list_limit) : 0;
+  var __cut = 0;
+  if (__lim > 0 && rows.length > __lim) { __cut = rows.length - __lim; rows = rows.slice(0, __lim); }
   if (ct) ct.textContent = (scope === 'sa') ? 'أفضل 500 مؤثر محليًا' : 'أفضل 500 مؤثر في الشرق الأوسط';
 
   if (!rows.length){
@@ -546,9 +558,19 @@ function render(list){
       + '</div>'
       + '</div>'
       + '</div>';
-  }).join('');
+  }).join('') + (__cut > 0 ? __gateCard(__lim, __cut) : '');
 
   if (window.simblI18n && document.documentElement.lang==='en') simblI18n.apply();
+}
+
+function __gateCard(lim, hidden){
+  var isCreator = __PLAN && __PLAN.role === 'creator';
+  var href = isCreator ? '/plans-creator.html' : '/plans.html';
+  return '<div class="plan-gate">'
+    + '<div class="pg-title">تشاهد أفضل ' + toArabic(lim) + ' مؤثر فقط</div>'
+    + '<div class="pg-sub">' + toArabic(hidden) + ' مؤثرًا آخرين في القائمة — افتح الترتيب كاملًا بالاشتراك.</div>'
+    + '<a class="pg-btn" href="' + href + '">شوف الباقات</a>'
+    + '</div>';
 }
 
 function goProfile(id){ window.location.href = 'creators.html?id=' + encodeURIComponent(id); }
