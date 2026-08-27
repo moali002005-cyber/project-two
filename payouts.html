@@ -55,6 +55,23 @@ h2{font-size:17px;margin:30px 0 8px}
 
   <div id="no-iban" class="warn" hidden></div>
 
+  <div id="instant-wrap" hidden>
+    <h2 style="margin-top:6px">⚡ صرف فوري — اليوم <span class="badge">Premium</span></h2>
+    <p class="muted" style="margin-bottom:10px">مشتركو Premium يستلمون نفس يوم اكتمال الصفقة، بلا انتظار دفعة الاثنين.</p>
+    <div class="panel">
+      <table>
+        <thead><tr><th>المعلن</th><th>صفقات</th><th>الإجمالي</th><th>العمولة</th><th>الصافي</th><th>الآيبان</th><th>البنك</th></tr></thead>
+        <tbody id="rows-instant"></tbody>
+      </table>
+    </div>
+    <div class="bar">
+      <button class="btn" id="btn-run-instant">نفّذ الصرف الفوري</button>
+      <button class="btn ghost" id="btn-csv-instant">CSV الفوري</button>
+    </div>
+  </div>
+
+  <h2>🗓️ دفعة الاثنين</h2>
+  <p class="muted" id="cycle" style="margin-bottom:10px"></p>
   <div class="panel">
     <table>
       <thead><tr><th>المعلن</th><th>الباقة</th><th>صفقات</th><th>الإجمالي</th><th>العمولة</th><th>الصافي</th><th>الآيبان</th><th>البنك</th></tr></thead>
@@ -80,6 +97,7 @@ h2{font-size:17px;margin:30px 0 8px}
 <script src="/supabase-config.js"></script>
 <script>
 var ROWS = [];
+var FAST = [];
 function money(v){ return Number(v||0).toLocaleString('en-US'); }
 function esc(s){ return String(s==null?'':s).replace(/[&<>"']/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]; }); }
 
@@ -92,14 +110,29 @@ async function load(){
     return;
   }
   ROWS = d.rows || [];
-  document.getElementById('sub').textContent = 'الدفعة القادمة يوم الاثنين ' + (d.next_payout_date || '') + ' · المبالغ صافية بعد خصم عمولة باقة كل معلن.';
+  FAST = d.instant || [];
+  document.getElementById('sub').textContent = 'المبالغ صافية بعد خصم عمولة باقة كل معلن.';
+  document.getElementById('cycle').textContent = 'كل صفقة تكتمل من الاثنين إلى الأحد ليلًا تُصرف يوم الاثنين ' + (d.next_payout_date || '') + '.';
+
+  var iw = document.getElementById('instant-wrap');
+  if (FAST.length){
+    iw.hidden = false;
+    document.getElementById('rows-instant').innerHTML = FAST.map(function(x){
+      return '<tr>'
+        + '<td><strong>' + esc(x.creator_name || '—') + '</strong>' + (x.handle ? '<br><span style="color:var(--ink-muted);font-size:12px">@' + esc(x.handle) + '</span>' : '') + '</td>'
+        + '<td>' + esc(x.deals) + '</td><td>' + money(x.gross) + '</td><td>' + money(x.fee) + '</td>'
+        + '<td class="net">' + money(x.net) + '</td>'
+        + '<td>' + (x.iban ? '<span class="iban">' + esc(x.iban) + '</span>' : '<span style="color:var(--accent)">ناقص</span>') + '</td>'
+        + '<td>' + esc(x.bank_name || '—') + '</td></tr>';
+    }).join('');
+  } else { iw.hidden = true; }
 
   var deals = 0, fee = 0, net = 0, gross = 0, noIban = [];
-  ROWS.forEach(function(x){
+  ROWS.concat(FAST).forEach(function(x){
     deals += Number(x.deals||0); fee += Number(x.fee||0); net += Number(x.net||0); gross += Number(x.gross||0);
     if (!x.iban) noIban.push(x.creator_name || x.handle || '—');
   });
-  document.getElementById('k-creators').textContent = ROWS.length;
+  document.getElementById('k-creators').textContent = ROWS.length + FAST.length;
   document.getElementById('k-deals').textContent = deals;
   document.getElementById('k-fee').textContent = money(fee);
   document.getElementById('k-net').textContent = money(net);
@@ -149,12 +182,12 @@ async function loadBatches(){
   }).join('');
 }
 
-async function runBatch(){
-  var btn = document.getElementById('btn-run');
+async function runBatch(speed){
+  var btn = document.getElementById(speed === 'instant' ? 'btn-run-instant' : 'btn-run');
   btn.disabled = true; btn.textContent = 'جاري التجهيز…';
-  var r = await window.supabaseClient.rpc('admin_payout_run');
+  var r = await window.supabaseClient.rpc('admin_payout_run', { p_speed: speed });
   var d = r && r.data;
-  btn.textContent = 'ابدأ دفعة هذا الأسبوع';
+  btn.textContent = (speed === 'instant') ? 'نفّذ الصرف الفوري' : 'ابدأ دفعة هذا الأسبوع';
   if (!d || d.error){ alert('تعذّر إنشاء الدفعة: ' + ((d && d.error) || 'خطأ')); btn.disabled = false; return; }
   await load();
 }
@@ -167,10 +200,10 @@ async function markPaid(batchId){
   await load();
 }
 
-function downloadCsv(){
+function downloadCsv(list, tag){
   var head = ['اسم المعلن','الحساب','الآيبان','البنك','صفقات','الإجمالي','العمولة','الصافي'];
   var lines = [head.join(',')];
-  ROWS.forEach(function(x){
+  (list || []).forEach(function(x){
     lines.push([
       '"' + String(x.creator_name || '').replace(/"/g,'""') + '"',
       '"' + String(x.account_holder || x.creator_name || '').replace(/"/g,'""') + '"',
@@ -182,12 +215,14 @@ function downloadCsv(){
   var blob = new Blob(['﻿' + lines.join('\n')], { type: 'text/csv;charset=utf-8;' });
   var a = document.createElement('a');
   a.href = URL.createObjectURL(blob);
-  a.download = 'payouts-' + new Date().toISOString().slice(0,10) + '.csv';
+  a.download = 'payouts-' + (tag || 'weekly') + '-' + new Date().toISOString().slice(0,10) + '.csv';
   a.click();
 }
 
-document.getElementById('btn-run').addEventListener('click', runBatch);
-document.getElementById('btn-csv').addEventListener('click', downloadCsv);
+document.getElementById('btn-run').addEventListener('click', function(){ runBatch('weekly'); });
+document.getElementById('btn-csv').addEventListener('click', function(){ downloadCsv(ROWS, 'weekly'); });
+document.getElementById('btn-run-instant').addEventListener('click', function(){ runBatch('instant'); });
+document.getElementById('btn-csv-instant').addEventListener('click', function(){ downloadCsv(FAST, 'instant'); });
 
 (async function(){
   try {

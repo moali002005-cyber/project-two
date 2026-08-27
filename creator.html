@@ -2651,17 +2651,22 @@ function renderPaymentCard(app) {
       ${breakdown}
     </div>`;
   }
+  const fast = (app.payout_speed === 'instant');
   if (st === 'eligible') {
     return `<div class="stage-action mine" onclick="event.stopPropagation()">
-      <div class="sa-title">✅ مستحقك جاهز للصرف</div>
-      <div class="sa-desc">يُحوَّل لك في دفعة الاثنين القادم. تأكّد أن الآيبان في ملفك صحيح.</div>
+      <div class="sa-title">${fast ? '⚡ صرف فوري — اليوم' : '✅ مستحقك جاهز للصرف'}</div>
+      <div class="sa-desc">${fast
+        ? 'باقتك Premium، فمستحقك يُحوَّل لك اليوم بلا انتظار دفعة الأسبوع. تأكّد أن الآيبان في ملفك صحيح.'
+        : 'يُحوَّل لك في دفعة الاثنين القادم. تأكّد أن الآيبان في ملفك صحيح.'}</div>
       ${breakdown}
     </div>`;
   }
   if (st === 'holding') {
     return `<div class="stage-action complete" onclick="event.stopPropagation()">
       <div class="sa-title">🔒 مبلغك محفوظ لدى المنصة</div>
-      <div class="sa-desc">الشركة سدّدت قيمة صفقتك للمنصة قبل انطلاق الحملة. بعد اكتمال العمل بثلاثة أيام يصير مستحقك جاهزًا، ويُصرف في دفعة الاثنين.</div>
+      <div class="sa-desc">${fast
+        ? 'الشركة سدّدت قيمة صفقتك للمنصة. أول ما يكتمل العمل يُصرف لك في نفس اليوم — ميزة Premium.'
+        : 'الشركة سدّدت قيمة صفقتك للمنصة قبل انطلاق الحملة. كل صفقة تكتمل من الاثنين إلى الأحد ليلًا تُصرف يوم الاثنين.'}</div>
       ${breakdown}
     </div>`;
   }
