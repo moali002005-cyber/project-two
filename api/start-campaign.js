@@ -16,6 +16,17 @@ function headers() {
   };
 }
 
+async function sbRpcAsUser(fn, args, token) {
+  const r = await fetch(`${SUPABASE_URL}/rest/v1/rpc/${fn}`, {
+    method: 'POST',
+    headers: { apikey: SUPABASE_SERVICE_KEY, Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
+    body: JSON.stringify(args || {})
+  });
+  const txt = await r.text();
+  if (!r.ok) return null;
+  try { return JSON.parse(txt); } catch (e) { return null; }
+}
+
 async function sbGet(path) {
   const res = await fetch(`${SUPABASE_URL}/rest/v1/${path}`, { headers: headers() });
   if (!res.ok) { console.error('sbGet error:', await res.text()); throw new Error('GET failed'); }
@@ -75,6 +86,26 @@ export default async function handler(req, res) {
   if (items.length > 50) {
     return res.status(400).json({ error: 'الحد الأقصى 50 مؤثر في المرة' });
   }
+
+  // ===== حدود الباقة: هذا المسار ينشئ حملة لكل مؤثر، فيستهلك خانات الحملات =====
+  try {
+    const _authz = req.headers['authorization'] || req.headers['Authorization'] || '';
+    const _tok = _authz.startsWith('Bearer ') ? _authz.slice(7).trim() : '';
+    if (_tok) {
+      const P = await sbRpcAsUser('brand_plan_status', {}, _tok);
+      if (P && !P.error) {
+        if (P.max_active_campaigns != null) {
+          const room = Number(P.max_active_campaigns) - Number(P.active_campaigns || 0);
+          if (room <= 0) {
+            return res.status(403).json({ error: `باقة «${P.name_ar}» تسمح بـ ${P.max_active_campaigns} حملة نشطة فقط. أنهِ حملة قائمة أو ارتقِ لباقة أعلى.` });
+          }
+          if (items.length > room) {
+            return res.status(403).json({ error: `باقتك تسمح بـ ${room} حملة إضافية فقط الآن. قلّل عدد المؤثرين في السلة أو ارتقِ لباقة أعلى.` });
+          }
+        }
+      }
+    }
+  } catch (e) { console.error('plan check (start-campaign) failed:', e); }
 
   let created = 0;
   const results = [];

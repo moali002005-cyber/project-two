@@ -142,15 +142,22 @@ module.exports = async (req, res) => {
     if (totalSar <= 0) return res.status(400).json({ error: 'المبلغ غير صالح' });
 
   // عمولة المنصة حسب باقة الشركة
-  let commissionPct = 0;
+  // تفشل مغلقة: لا تُنشأ فاتورة بعمولة صفر بصمت
+  let commissionPct = null;
   try {
     const planRows = await sbGet(`users?id=eq.${caller.id}&select=plan_code,plan_expires_at`);
     let pcode = (planRows && planRows[0] && planRows[0].plan_code) || 'trial';
     const pexp = planRows && planRows[0] && planRows[0].plan_expires_at;
-    if (pcode !== 'trial' && (!pexp || new Date(pexp) < new Date())) pcode = 'trial';
+    const FREE_CODES = ['trial', 'trial_legacy'];
+    if (!FREE_CODES.includes(pcode) && (!pexp || new Date(pexp) < new Date())) pcode = 'trial';
     const pl = await sbGet(`plans?code=eq.${pcode}&select=commission_pct`);
-    commissionPct = Number((pl && pl[0] && pl[0].commission_pct) || 0);
-  } catch (e) { commissionPct = 0; }
+    const raw = pl && pl[0] ? pl[0].commission_pct : null;
+    if (raw !== null && raw !== undefined && isFinite(Number(raw))) commissionPct = Number(raw);
+  } catch (e) { commissionPct = null; }
+  if (commissionPct === null || commissionPct < 0 || commissionPct > 50) {
+    console.error('commission lookup failed or out of range:', commissionPct);
+    return res.status(503).json({ error: 'تعذّر تحديد عمولة باقتك الآن. حاول بعد قليل أو تواصل معنا.' });
+  }
   const commissionSar = Math.round(totalSar * commissionPct) / 100;
   const grossSar = Math.round((totalSar + commissionSar) * 100) / 100;
 
