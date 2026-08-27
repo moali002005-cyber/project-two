@@ -2607,7 +2607,15 @@ function payButtonHtml(campaignId, apps) {
   const unpaid = payUnpaidApps(apps);
   if (!unpaid.length) return '';
   const total = unpaid.reduce((s2, a) => s2 + Number(a.final_price || a.price || 0), 0);
-  return `<button class="pay-now-btn" id="pay-btn-${campaignId}" onclick="event.stopPropagation(); startCampaignPayment('${campaignId}')">💳 ادفع مستحقات الحملة — ${total.toLocaleString('en-US')} ر.س (${unpaid.length} ${unpaid.length === 1 ? 'صفقة' : 'صفقات'})</button>`;
+  const pct = (window.__PLAN && window.__PLAN.commission_pct != null) ? Number(window.__PLAN.commission_pct) : null;
+  let line = '';
+  let gross = total;
+  if (pct != null) {
+    const comm = Math.round(total * pct) / 100;
+    gross = Math.round((total + comm) * 100) / 100;
+    line = `<div class="pay-breakdown">قيمة التعاونات ${total.toLocaleString('en-US')} ر.س + عمولة المنصة ${pct}٪ (${comm.toLocaleString('en-US')} ر.س) = <strong>${gross.toLocaleString('en-US')} ر.س</strong></div>`;
+  }
+  return `${line}<button class="pay-now-btn" id="pay-btn-${campaignId}" onclick="event.stopPropagation(); startCampaignPayment('${campaignId}')">💳 ادفع مستحقات الحملة — ${gross.toLocaleString('en-US')} ر.س (${unpaid.length} ${unpaid.length === 1 ? 'صفقة' : 'صفقات'})</button>`;
 }
 async function startCampaignPayment(campaignId) {
   const btn = document.getElementById('pay-btn-' + campaignId);
@@ -2624,6 +2632,11 @@ async function startCampaignPayment(campaignId) {
     });
     const out = await res.json();
     if (!res.ok || !out.url) throw new Error(out.error || 'تعذّر تجهيز الدفع');
+    const _n = Number(out.net || 0).toLocaleString('en-US');
+    const _c = Number(out.commission || 0).toLocaleString('en-US');
+    const _g = Number(out.amount || 0).toLocaleString('en-US');
+    const _ok = confirm('تأكيد الدفع\n\nقيمة التعاونات: ' + _n + ' ر.س\nعمولة المنصة (' + (out.commission_pct != null ? out.commission_pct : '-') + '٪): ' + _c + ' ر.س\n---------------\nالإجمالي المستحق: ' + _g + ' ر.س\n\nنكمل إلى صفحة الدفع؟');
+    if (!_ok) { if (btn) { btn.disabled = false; btn.textContent = orig2; } return; }
     window.location.href = out.url; // صفحة دفع ميسر (مدى / بطاقات / Apple Pay)
   } catch (err) {
     console.error('payment start failed:', err);
@@ -2635,6 +2648,10 @@ async function startCampaignPayment(campaignId) {
 async function loadData() {
   try {
     document.getElementById('campaigns-list').innerHTML = '<div class="loading-wrap"><div class="loading-pill"><span class="loading-pill-dot"></span>جاري التحميل...</div></div>';
+    try {
+      const _pr = await supabaseClient.rpc('brand_plan_status');
+      if (_pr && _pr.data && !_pr.data.error) window.__PLAN = _pr.data;
+    } catch (_e) { /* يعرض الصافي فقط لو تعذّر جلب الباقة */ }
     myCampaigns = await dbGetMyCampaigns(WORKSPACE_ID || currentUser.id);
 
     // جلب عروض كل الحملات بطلب واحد بدل طلب لكل حملة (إصلاح N+1)
@@ -4828,14 +4845,14 @@ async function submitCampaign(event) {
 
 
   // ===== حدود الباقة (الشركات) =====
-  if (!editingCampaignId) {
+  {
     try {
       const _psRes = await supabaseClient.rpc('brand_plan_status');
       const _P = _psRes && _psRes.data;
       if (_P && !_P.error) {
         const _size = Number(campaign.campaign_size || 0);
         let _block = '';
-        if (_P.max_active_campaigns != null && Number(_P.active_campaigns) >= Number(_P.max_active_campaigns)) {
+        if (!editingCampaignId && _P.max_active_campaigns != null && Number(_P.active_campaigns) >= Number(_P.max_active_campaigns)) {
           _block = 'باقة «' + _P.name_ar + '» تسمح بـ ' + _P.max_active_campaigns + ' حملة نشطة فقط. أنهِ حملة قائمة أو ارتقِ لباقة أعلى من صفحة الباقات.';
         } else if (_P.max_creators_per_campaign != null && _size > Number(_P.max_creators_per_campaign)) {
           _block = 'باقة «' + _P.name_ar + '» تسمح بحد أقصى ' + _P.max_creators_per_campaign + ' معلن في الحملة الواحدة. قلّل العدد أو ارتقِ لباقة أعلى.';
