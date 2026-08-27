@@ -2613,7 +2613,7 @@ function payButtonHtml(campaignId, apps) {
   if (pct != null) {
     const comm = Math.round(total * pct) / 100;
     gross = Math.round((total + comm) * 100) / 100;
-    line = `<div class="pay-breakdown">قيمة التعاونات ${total.toLocaleString('en-US')} ر.س + عمولة المنصة ${pct}٪ (${comm.toLocaleString('en-US')} ر.س) = <strong>${gross.toLocaleString('en-US')} ر.س</strong></div>`;
+    line = `<div class="pay-breakdown">قيمة التعاونات ${total.toLocaleString('en-US')} ر.س + عمولة المنصة ${pct}٪ (${comm.toLocaleString('en-US')} ر.س) = <strong>${gross.toLocaleString('en-US')} ر.س</strong><br><span class="pay-note">الخدمة الإعلانية مقدَّمة من المعلنين المشاركين، وفلفلونسر تحصّل قيمتها نيابةً عنهم وتصرفها لهم بعد خصم عمولتها.</span></div>`;
   }
   return `${line}<button class="pay-now-btn" id="pay-btn-${campaignId}" onclick="event.stopPropagation(); startCampaignPayment('${campaignId}')">💳 ادفع مستحقات الحملة — ${gross.toLocaleString('en-US')} ر.س (${unpaid.length} ${unpaid.length === 1 ? 'صفقة' : 'صفقات'})</button>`;
 }
@@ -2635,7 +2635,7 @@ async function startCampaignPayment(campaignId) {
     const _n = Number(out.net || 0).toLocaleString('en-US');
     const _c = Number(out.commission || 0).toLocaleString('en-US');
     const _g = Number(out.amount || 0).toLocaleString('en-US');
-    const _ok = confirm('تأكيد الدفع\n\nقيمة التعاونات: ' + _n + ' ر.س\nعمولة المنصة (' + (out.commission_pct != null ? out.commission_pct : '-') + '٪): ' + _c + ' ر.س\n---------------\nالإجمالي المستحق: ' + _g + ' ر.س\n\nنكمل إلى صفحة الدفع؟');
+    const _ok = confirm('تأكيد الدفع\n\nقيمة التعاونات (مستحقة للمعلنين): ' + _n + ' ر.س\nعمولة المنصة (' + (out.commission_pct != null ? out.commission_pct : '-') + '٪): ' + _c + ' ر.س\n---------------\nالإجمالي المستحق: ' + _g + ' ر.س\n\nالخدمة الإعلانية مقدَّمة من المعلنين، وفلفلونسر تحصّل قيمتها نيابةً عنهم.\n\nنكمل إلى صفحة الدفع؟');
     if (!_ok) { if (btn) { btn.disabled = false; btn.textContent = orig2; } return; }
     window.location.href = out.url; // صفحة دفع ميسر (مدى / بطاقات / Apple Pay)
   } catch (err) {
