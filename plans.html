@@ -122,17 +122,7 @@ function ar(n){ return Number(n||0).toLocaleString('en-US'); }
 function esc(s){ return String(s==null?'':s).replace(/[&<>"']/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]; }); }
 
 function featureList(p){
-  var f = [];
-  f.push('عمولة <b>' + ar(p.commission_pct) + '٪</b> على قيمة الحملة');
-  f.push(p.max_active_campaigns == null ? 'حملات نشطة <b>غير محدودة</b>' : '<b>' + ar(p.max_active_campaigns) + '</b> حملة نشطة');
-  f.push(p.max_creators_per_campaign == null ? 'معلنون <b>بلا حد</b> في الحملة' : 'حتى <b>' + ar(p.max_creators_per_campaign) + '</b> معلن في الحملة');
-  f.push('<b>' + ar(p.max_seats) + '</b> ' + (p.max_seats > 2 ? 'مقاعد للفريق' : (p.max_seats == 2 ? 'مقعدان للفريق' : 'مستخدم واحد')));
-  f.push((p.can_links_pdf ? 'ok' : 'no') + '|شيت الروابط PDF');
-  f.push((p.can_rebook ? 'ok' : 'no') + '|إعادة الحملة (فيديو ثانٍ)');
-  f.push((p.can_reports ? 'ok' : 'no') + '|تقارير الحملة الكاملة');
-  var sup = { community: 'دعم عبر المجتمع', email: 'دعم بالبريد', priority: 'دعم بأولوية', dedicated: 'مدير حساب مخصص' };
-  f.push(sup[p.support_level] || 'دعم بالبريد');
-  return f;
+  return Array.isArray(p.features_ar) ? p.features_ar : [];
 }
 
 function renderPlans(){
