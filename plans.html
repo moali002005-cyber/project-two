@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<title>باقات الشركات - Flfluencer</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" type="image/svg+xml" href="/brand/chili.svg?v=6">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--cream:#ffffff;--cream-darker:#F3EEE4;--ink:#0F1420;--ink-soft:#2C3548;--ink-muted:#8A93A6;--accent:#E23B2E;--accent-ink:#7E2119;--line:rgba(15,20,32,0.08);--font:'IBM Plex Sans Arabic','Segoe UI',Tahoma,sans-serif}
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:var(--cream);color:var(--ink);font-family:var(--font);font-size:16px;line-height:1.9}
+.container{max-width:880px;margin:0 auto;padding:0 20px}
+.nav{background:rgba(255,255,255,0.92);backdrop-filter:blur(10px);border-bottom:1px solid var(--line);position:sticky;top:0;z-index:50;padding:12px 0}
+.nav-inner{display:flex;align-items:center;justify-content:space-between}
+.nav-back{color:var(--ink);text-decoration:none;font-size:13.5px;font-weight:600}
+.hero{padding:52px 0 8px;text-align:center}
+.hero h1{font-size:clamp(26px,5vw,36px);font-weight:700}
+.hero p{color:var(--ink-muted);max-width:56ch;margin:10px auto 0;font-size:15.5px}
+.cards{display:flex;flex-direction:column;gap:16px;padding:36px 0 20px}
+.card{background:#fff;border:1.5px solid var(--line);border-radius:18px;padding:24px 26px;box-shadow:0 10px 30px rgba(15,20,32,.05)}
+.card h2{font-size:18px;font-weight:700;margin-bottom:8px;display:flex;align-items:center;gap:10px}
+.card h2 .n{width:30px;height:30px;border-radius:9px;background:#FBE9E6;color:var(--accent);display:inline-flex;align-items:center;justify-content:center;font-size:15px;font-weight:700;flex:none}
+.card p{font-size:14.5px;color:var(--ink-soft)}
+.card p + p{margin-top:10px}
+.card .big{font-size:20px;font-weight:700;color:var(--accent)}
+.example{background:#FDF7F0;border:1px dashed #E8CBB5;border-radius:12px;padding:12px 16px;margin-top:12px;font-size:13.5px;color:var(--ink-soft)}
+.pay-row{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px}
+.pay-chip{border:1.5px solid var(--line);border-radius:100px;padding:6px 16px;font-size:13px;font-weight:600}
+.tbl-wrap{overflow-x:auto;margin-top:14px}
+table{width:100%;border-collapse:collapse;font-size:14px;min-width:420px}
+th,td{padding:11px 14px;text-align:right;border-bottom:1px solid var(--line)}
+th{background:#FBE9E6;color:var(--accent-ink);font-weight:700;font-size:13.5px}
+td:first-child{font-weight:600}
+tbody tr:last-child td{border-bottom:none}
+.price-cell{font-weight:700;color:var(--ink);white-space:nowrap}
+.note{background:var(--cream-darker);border-radius:14px;padding:16px 20px;font-size:13.5px;color:var(--ink-soft);margin:8px 0 30px}
+.note a,.card a{color:var(--accent)}
+footer{border-top:1px solid var(--line);padding:26px 0 40px;text-align:center;color:var(--ink-muted);font-size:13px}
+footer a{color:var(--ink-soft);text-decoration:none;margin:0 10px;font-weight:600}
+h3{font-size:15.5px;font-weight:700;margin:16px 0 6px}
+.toggle{display:inline-flex;background:var(--cream-darker);border-radius:100px;padding:5px;gap:4px;margin-top:22px}
+.toggle button{border:none;background:transparent;font-family:var(--font);font-size:14px;font-weight:600;color:var(--ink-soft);padding:8px 22px;border-radius:100px;cursor:pointer}
+.toggle button.on{background:#fff;color:var(--accent);box-shadow:0 2px 8px rgba(15,20,32,.08)}
+.toggle .save{font-size:11px;background:#0DB04B;color:#fff;border-radius:100px;padding:2px 8px;margin-right:6px}
+.myplan{margin:18px auto 0;max-width:560px;background:#FBE9E6;color:var(--accent-ink);border-radius:12px;padding:10px 16px;font-size:13.5px;font-weight:600}
+.myplan.good{background:#E7F7EE;color:#0B7A42}
+.myplan.bad{background:#FDF2E7;color:#8A5A12}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:16px;padding:34px 0 20px;align-items:start}
+.loading{grid-column:1/-1;text-align:center;color:var(--ink-muted);padding:40px 0}
+.plan{position:relative;background:#fff;border:1.5px solid var(--line);border-radius:18px;padding:24px 22px;box-shadow:0 10px 30px rgba(15,20,32,.05);display:flex;flex-direction:column}
+.plan.feat{border-color:var(--accent);box-shadow:0 14px 40px rgba(226,59,46,.14)}
+.plan.mine{background:#FFFCFB}
+.ribbon{position:absolute;top:-13px;right:22px;background:var(--accent);color:#fff;font-size:11.5px;font-weight:700;padding:4px 14px;border-radius:100px}
+.picon{font-size:26px;line-height:1}
+.plan h3{font-size:20px;font-weight:700;margin-top:6px}
+.plan .tag{font-size:12.5px;color:var(--ink-muted);min-height:36px;margin-top:2px}
+.price{margin:8px 0 14px;padding-bottom:14px;border-bottom:1px dashed var(--line)}
+.price .num{font-size:30px;font-weight:700;color:var(--ink)}
+.price .cur2{font-size:12.5px;color:var(--ink-muted)}
+.feats{list-style:none;display:flex;flex-direction:column;gap:9px;font-size:13.5px;color:var(--ink-soft);margin-bottom:18px;flex:1}
+.feats li{display:flex;gap:8px;align-items:flex-start;line-height:1.6}
+.tick{color:#0DB04B;font-weight:700;flex:none}
+.tick.off{color:#C9CFDA}
+.cta{display:block;width:100%;text-align:center;background:var(--accent);color:#fff;border:none;border-radius:12px;padding:12px;font-family:var(--font);font-size:14.5px;font-weight:700;cursor:pointer;text-decoration:none}
+.cta.ghost{background:#fff;color:var(--accent);border:1.5px solid var(--accent)}
+.cta.cur{background:var(--cream-darker);color:var(--ink-muted);cursor:default}
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <div class="container nav-inner">
+    <a href="/" class="logo" aria-label="Flfluencer">
+      <img src="/brand/logo-nav.svg?v=2" alt="Flfluencer" style="height:54px;display:block">
+    </a>
+    <a href="/" class="nav-back">← العودة للرئيسية</a>
+  </div>
+</nav>
+
+<header class="hero">
+  <div class="container">
+    <h1>باقات الشركات</h1>
+    <p>ابدأ مجانًا بحملة تجريبية، وارتقِ للباقة اللي تناسب حجم نشاطك. كل باقة أعلى = عمولة أقل على قيمة الحملة وحدود أوسع.</p>
+    <div class="toggle" id="period-toggle">
+      <button class="on" data-p="monthly">شهري</button>
+      <button data-p="yearly">سنوي <span class="save">شهرين مجانًا</span></button>
+    </div>
+    <div id="my-plan" class="myplan" hidden></div>
+  </div>
+</header>
+
+<main class="container">
+  <div class="grid" id="plans-grid">
+    <div class="loading">جاري تحميل الباقات…</div>
+  </div>
+
+  <div class="note">
+    <b>كيف تُحتسب التكلفة؟</b> اشتراك الباقة مقابل استخدام المنصة، ويُدفع شهريًا أو سنويًا. أما قيمة الحملة نفسها فهي مجموع أسعار التعاونات المتفق عليها مع المعلنين، تُضاف إليها عمولة المنصة حسب باقتك، وتُعرض كاملة بالريال السعودي قبل الدفع.
+    <div class="example"><b>مثال:</b> حملة بـ ٢٬٠٠٠ ر.س على باقة <b>حار</b> (عمولة ٧٪) ← الإجمالي المستحق ٢٬١٤٠ ر.س، يُعرض لك بالتفصيل قبل الدفع.</div>
+  </div>
+
+  <div class="note" style="text-align:center">
+    الدفع عبر <b>ميسر</b> (مدى / Visa / Mastercard) — وتسري <a href="/refund.html">سياسة الاسترجاع والإلغاء</a> على الاشتراكات وعلى الحملات.
+  </div>
+</main>
+
+<footer>
+  <div class="container">
+    <div><a href="/pricing.html">الأسعار</a><a href="/refund.html">الاسترجاع والإلغاء</a><a href="/terms.html">الشروط والأحكام</a><a href="/privacy.html">سياسة الخصوصية</a></div>
+    <div style="margin-top:8px">© Flfluencer — جميع الحقوق محفوظة</div>
+  </div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="/supabase-config.js"></script>
+<script>
+var PERIOD = 'monthly';
+var PLANS = [];
+var STATUS = null;
+
+function ar(n){ return Number(n||0).toLocaleString('en-US'); }
+function esc(s){ return String(s==null?'':s).replace(/[&<>"']/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]; }); }
+
+function featureList(p){
+  var f = [];
+  f.push('عمولة <b>' + ar(p.commission_pct) + '٪</b> على قيمة الحملة');
+  f.push(p.max_active_campaigns == null ? 'حملات نشطة <b>غير محدودة</b>' : '<b>' + ar(p.max_active_campaigns) + '</b> حملة نشطة');
+  f.push(p.max_creators_per_campaign == null ? 'معلنون <b>بلا حد</b> في الحملة' : 'حتى <b>' + ar(p.max_creators_per_campaign) + '</b> معلن في الحملة');
+  f.push('<b>' + ar(p.max_seats) + '</b> ' + (p.max_seats > 2 ? 'مقاعد للفريق' : (p.max_seats == 2 ? 'مقعدان للفريق' : 'مستخدم واحد')));
+  f.push((p.can_links_pdf ? 'ok' : 'no') + '|شيت الروابط PDF');
+  f.push((p.can_rebook ? 'ok' : 'no') + '|إعادة الحملة (فيديو ثانٍ)');
+  f.push((p.can_reports ? 'ok' : 'no') + '|تقارير الحملة الكاملة');
+  var sup = { community: 'دعم عبر المجتمع', email: 'دعم بالبريد', priority: 'دعم بأولوية', dedicated: 'مدير حساب مخصص' };
+  f.push(sup[p.support_level] || 'دعم بالبريد');
+  return f;
+}
+
+function renderPlans(){
+  var g = document.getElementById('plans-grid');
+  if (!PLANS.length){ g.innerHTML = '<div class="loading">تعذّر تحميل الباقات، حدّث الصفحة.</div>'; return; }
+  var cur = STATUS && STATUS.code;
+  g.innerHTML = PLANS.map(function(p){
+    var price = PERIOD === 'yearly' ? p.price_yearly : p.price_monthly;
+    var isCur = cur === p.code;
+    var feats = featureList(p).map(function(x){
+      var mark = '<span class="tick">✓</span>';
+      if (x.indexOf('no|') === 0){ mark = '<span class="tick off">—</span>'; x = x.slice(3); }
+      else if (x.indexOf('ok|') === 0){ x = x.slice(3); }
+      return '<li>' + mark + '<span>' + x + '</span></li>';
+    }).join('');
+    var btn;
+    if (isCur) btn = '<button class="cta cur" disabled>باقتك الحالية</button>';
+    else if (p.code === 'trial') btn = '<a class="cta ghost" href="/signup.html?role=brand">ابدأ مجانًا</a>';
+    else btn = '<button class="cta" onclick="subscribe(\'' + p.code + '\')">اشترك الآن</button>';
+    return '<div class="plan' + (p.code === 'hot' ? ' feat' : '') + (isCur ? ' mine' : '') + '">'
+      + (p.code === 'hot' ? '<div class="ribbon">الأكثر شيوعًا</div>' : '')
+      + '<div class="picon">' + esc(p.icon || '') + '</div>'
+      + '<h3>' + esc(p.name_ar) + '</h3>'
+      + '<p class="tag">' + esc(p.tagline_ar || '') + '</p>'
+      + '<div class="price">' + (price > 0 ? '<span class="num">' + ar(price) + '</span> <span class="cur2">ر.س / ' + (PERIOD === 'yearly' ? 'سنة' : 'شهر') + '</span>' : '<span class="num">مجانًا</span>')
+      + '</div>'
+      + '<ul class="feats">' + feats + '</ul>'
+      + btn
+      + '</div>';
+  }).join('');
+}
+
+function renderMine(){
+  var box = document.getElementById('my-plan');
+  if (!STATUS || STATUS.error){ box.hidden = true; return; }
+  var t = 'باقتك الحالية: <b>' + esc(STATUS.icon || '') + ' ' + esc(STATUS.name_ar) + '</b>';
+  if (STATUS.expires_at) t += ' — سارية حتى ' + String(STATUS.expires_at).slice(0, 10);
+  if (STATUS.max_active_campaigns != null) t += ' · الحملات النشطة ' + ar(STATUS.active_campaigns) + '/' + ar(STATUS.max_active_campaigns);
+  box.innerHTML = t;
+  box.hidden = false;
+}
+
+async function subscribe(code){
+  try {
+    var sess = await window.supabaseClient.auth.getSession();
+    var token = sess && sess.data && sess.data.session ? sess.data.session.access_token : '';
+    if (!token){ location.href = '/login.html?next=/plans.html'; return; }
+    var res = await fetch('/api/sub-create', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
+      body: JSON.stringify({ plan: code, period: PERIOD })
+    });
+    var out = await res.json();
+    if (!res.ok || !out.url) throw new Error(out.error || 'تعذّر تجهيز الدفع');
+    location.href = out.url;
+  } catch (e){
+    alert(e.message || 'صار خطأ، جرّب مرة ثانية');
+  }
+}
+
+async function checkReturn(){
+  var ref = new URLSearchParams(location.search).get('sub_ref');
+  if (!ref) return;
+  try {
+    var r = await fetch('/api/sub-create?ref=' + encodeURIComponent(ref));
+    var o = await r.json();
+    var box = document.getElementById('my-plan');
+    box.hidden = false;
+    box.className = 'myplan ' + (o.status === 'paid' ? 'good' : 'bad');
+    box.innerHTML = o.status === 'paid' ? '✅ تم تفعيل باقتك بنجاح' : '⚠️ لم تكتمل عملية الدفع — تقدر تحاول مرة ثانية';
+    history.replaceState({}, '', '/plans.html');
+  } catch (e){}
+}
+
+async function init(){
+  try {
+    var r = await window.supabaseClient.from('plans').select('*').eq('is_active', true).order('sort_order');
+    PLANS = r.data || [];
+  } catch (e){ PLANS = []; }
+  try {
+    var sess = await window.supabaseClient.auth.getSession();
+    if (sess && sess.data && sess.data.session){
+      var st = await window.supabaseClient.rpc('brand_plan_status');
+      if (st && st.data && !st.data.error) STATUS = st.data;
+    }
+  } catch (e){}
+  renderPlans();
+  renderMine();
+  await checkReturn();
+}
+
+document.getElementById('period-toggle').addEventListener('click', function(e){
+  var b = e.target.closest('button');
+  if (!b) return;
+  PERIOD = b.getAttribute('data-p');
+  [].forEach.call(this.querySelectorAll('button'), function(x){ x.classList.toggle('on', x === b); });
+  renderPlans();
+});
+
+init();
+</script>
+
+</body>
+</html>
