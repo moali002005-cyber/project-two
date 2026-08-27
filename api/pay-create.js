@@ -141,11 +141,28 @@ module.exports = async (req, res) => {
     const totalSar = items.reduce((s, it) => s + (Number(it.amount) || 0), 0);
     if (totalSar <= 0) return res.status(400).json({ error: 'المبلغ غير صالح' });
 
+  // عمولة المنصة حسب باقة الشركة
+  let commissionPct = 0;
+  try {
+    const planRows = await sbGet(`users?id=eq.${caller.id}&select=plan_code,plan_expires_at`);
+    let pcode = (planRows && planRows[0] && planRows[0].plan_code) || 'trial';
+    const pexp = planRows && planRows[0] && planRows[0].plan_expires_at;
+    if (pcode !== 'trial' && (!pexp || new Date(pexp) < new Date())) pcode = 'trial';
+    const pl = await sbGet(`plans?code=eq.${pcode}&select=commission_pct`);
+    commissionPct = Number((pl && pl[0] && pl[0].commission_pct) || 0);
+  } catch (e) { commissionPct = 0; }
+  const commissionSar = Math.round(totalSar * commissionPct) / 100;
+  const grossSar = Math.round((totalSar + commissionSar) * 100) / 100;
+
+
     // سجل الدفع عندنا أولاً (المرجع)
     const payRows = await sbInsert('payments_gateway', {
       campaign_id, brand_id: caller.id,
       application_ids: items.map(it => it.application_id),
-      amount_halalas: totalSar * 100,
+      amount_halalas: Math.round(grossSar * 100),
+      commission_pct: commissionPct,
+      commission_sar: commissionSar,
+      net_sar: totalSar,
       description: `مستحقات حملة «${camp.title}» — ${items.length} صفقة`,
       status: 'initiated'
     });
@@ -156,7 +173,7 @@ module.exports = async (req, res) => {
       method: 'POST',
       headers: { 'Authorization': moyasarAuth(), 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        amount: totalSar * 100,
+        amount: Math.round(grossSar * 100),
         currency: 'SAR',
         description: `Flfluencer — ${camp.title} (${items.length} صفقة)`,
         success_url: `${SITE}/pay-result.html?ref=${payRow.id}`,
@@ -172,7 +189,7 @@ module.exports = async (req, res) => {
     const inv = await invRes.json();
     await sbPatch(`payments_gateway?id=eq.${payRow.id}`, { moyasar_invoice_id: inv.id });
 
-    return res.status(200).json({ url: inv.url, ref: payRow.id, amount: totalSar, deals: items.length });
+    return res.status(200).json({ url: inv.url, ref: payRow.id, amount: grossSar, net: totalSar, commission: commissionSar, commission_pct: commissionPct, deals: items.length });
   } catch (err) {
     console.error('pay-create error:', err);
     return res.status(500).json({ error: 'خطأ داخلي' });
