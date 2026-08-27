@@ -4252,51 +4252,35 @@ function paymentDeadlineTextBrand(app, campaign) {
 }
 
 // بطاقة الدفع (تظهر بعد المرحلة 9) — جهة الشركة
+// المنصة هي من تستلم وتصرف. الشركة سدّدت قبل انطلاق الحملة، فلا تحويل مباشر بعد الآن.
 function renderBrandPaymentCard(app, campaign) {
   if (!app) {
     return `<div class="stage-action complete"><div class="sa-title">🎉 صفقة مكتملة</div><div class="sa-desc">تم اكتمال جميع مراحل الصفقة بنجاح.</div></div>`;
   }
-  const status = app.payment_status || 'unpaid';
   const amount = (app.final_price || app.price || 0).toLocaleString('en-US');
-  const sd = (typeof app.stage_data === 'object' && app.stage_data) ? app.stage_data : {};
-  const bank = sd[8] || sd['8'] || {};
-  const deadline = paymentDeadlineTextBrand(app, campaign);
-  const deadlineLine = deadline ? `<div class="pay-deadline">آخر موعد للدفع المتفق عليه: ${deadline}</div>` : '';
-  const bankBox = (bank.iban || bank.account_holder) ? `<div class="pay-bank-box">
-      ${bank.account_holder ? `<div class="pbk-row"><strong>اسم صاحب الحساب:</strong> ${escHtml(bank.account_holder)}</div>` : ''}
-      ${bank.iban ? `<div class="pbk-row"><strong>الآيبان:</strong> <span class="iban-val">${escHtml(bank.iban)}</span></div>` : ''}
-      ${bank.bank_name ? `<div class="pbk-row"><strong>البنك:</strong> ${escHtml(bank.bank_name)}</div>` : ''}
-    </div>` : '';
-
-  if (status === 'confirmed') {
-    return `<div class="stage-action complete"><div class="sa-title">🎉 اكتمل الدفع</div><div class="sa-desc">المعلن أكّد استلام المبلغ. تمت الصفقة بالكامل.</div></div>`;
-  }
-  if (status === 'disputed') {
-    return `<div class="stage-action" style="background:rgba(201,48,48,0.05);border-color:rgba(201,48,48,0.3)">
-      <div class="sa-title">⚠️ المعلن أبلغ بعدم استلام المبلغ</div>
-      <div class="sa-desc">تواصل مع المعلن وتأكّد من التحويل. بعد ما تتأكّد، اضغط «تم التحويل» مرة ثانية.</div>
-      ${bankBox}
-      <div class="pay-actions"><button class="sa-btn" onclick="setBrandPaid('${app.id}')">تم التحويل ✓</button></div>
-    </div>`;
-  }
-  if (status === 'marked_paid') {
+  if (app.platform_paid === true) {
+    const st = app.payout_status || 'holding';
+    if (st === 'paid') {
+      return `<div class="stage-action complete">
+        <div class="sa-title">🎉 اكتملت الصفقة</div>
+        <div class="sa-desc">سدّدت ${amount} ر.س للمنصة، وحوّلناها للمعلن. ما عليك شيء.</div>
+      </div>`;
+    }
     return `<div class="stage-action complete">
-      <div class="sa-title">💸 تم تسجيل التحويل</div>
-      <div class="sa-desc">سجّلنا أنك حوّلت المبلغ (${amount} ر.س). بانتظار تأكيد المعلن استلامه.</div>
-      ${deadlineLine}
+      <div class="sa-title">🔒 المبلغ محفوظ لدى المنصة</div>
+      <div class="sa-desc">سدّدت ${amount} ر.س قبل انطلاق الحملة، والمنصة تتولّى صرفها للمعلن ضمن دفعة الاثنين بعد اكتمال العمل. ما تحتاج تحوّل له شيئًا.</div>
     </div>`;
   }
-  // unpaid (الافتراضي)
   return `<div class="stage-action mine">
-    <div class="sa-title">💸 حان موعد الدفع</div>
-    <div class="sa-desc">الحملة اكتملت. حوّل المبلغ المتفق عليه (<strong>${amount} ر.س</strong>) لحساب المعلن، ثم اضغط «تم التحويل».</div>
-    ${bankBox}
-    ${deadlineLine}
-    <div class="pay-actions"><button class="sa-btn" onclick="setBrandPaid('${app.id}')">تم التحويل ✓</button></div>
+    <div class="sa-title">💳 لم تُسدَّد قيمة هذه الصفقة بعد</div>
+    <div class="sa-desc">قيمة الصفقة ${amount} ر.س تُدفع للمنصة من زر «ادفع مستحقات الحملة» في بطاقة الحملة. المنصة هي من تصرف للمعلن بعد ذلك.</div>
   </div>`;
 }
 
 async function setBrandPaid(applicationId) {
+  showToast('التحويل المباشر أُلغي — المنصة تستلم وتصرف للمعلن.', 'error');
+  return;
+  /* eslint-disable no-unreachable */
   if(!hasPerm('payments')){ showToast('ما عندك صلاحية إدارة المستحقات والدفع','error'); return; }
   try {
     const { data, error } = await supabaseClient

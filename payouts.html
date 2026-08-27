@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<title>صرف مستحقات المعلنين - Flfluencer</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" type="image/svg+xml" href="/brand/chili.svg?v=6">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--cream:#ffffff;--cream-darker:#F3EEE4;--ink:#0F1420;--ink-soft:#2C3548;--ink-muted:#8A93A6;--accent:#E23B2E;--accent-ink:#7E2119;--line:rgba(15,20,32,0.08);--ok:#0C7C46;--ok-bg:#E6F4EC;--font:'IBM Plex Sans Arabic','Segoe UI',Tahoma,sans-serif}
+*{box-sizing:border-box}
+body{margin:0;background:var(--cream-darker);color:var(--ink);font-family:var(--font);font-size:15px;line-height:1.8}
+.wrap{max-width:1080px;margin:0 auto;padding:28px 20px 60px}
+.top{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:6px}
+h1{font-size:24px;margin:0;font-weight:700}
+.muted{color:var(--ink-muted);font-size:13.5px;margin:0 0 18px}
+.cards{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:18px}
+.c{background:var(--cream);border:1px solid var(--line);border-radius:14px;padding:14px 16px}
+.c .k{font-size:26px;font-weight:700;line-height:1.2}
+.c .l{font-size:12.5px;color:var(--ink-muted)}
+.c.ok .k{color:var(--ok)}
+.panel{background:var(--cream);border:1px solid var(--line);border-radius:16px;padding:8px 16px 16px;overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:13.5px;min-width:720px}
+th,td{padding:11px 12px;text-align:right;border-bottom:1px solid var(--line)}
+th{font-size:12px;color:var(--ink-muted);font-weight:600}
+.iban{font-family:ui-monospace,Menlo,monospace;font-size:12.5px;direction:ltr;display:inline-block}
+.net{font-weight:700;color:var(--ok)}
+.btn{border:none;border-radius:11px;padding:11px 20px;font-family:var(--font);font-size:14px;font-weight:700;cursor:pointer;background:var(--accent);color:#fff}
+.btn.ghost{background:transparent;color:var(--ink-soft);border:1px solid var(--line)}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+.bar{display:flex;gap:10px;flex-wrap:wrap;margin:16px 0}
+.warn{background:#FCF1E1;color:#8A5A12;border-radius:12px;padding:12px 16px;font-size:13.5px;margin-bottom:14px}
+.empty{text-align:center;color:var(--ink-muted);padding:34px 10px}
+h2{font-size:17px;margin:30px 0 8px}
+.badge{display:inline-block;background:var(--ok-bg);color:var(--ok);border-radius:100px;padding:2px 10px;font-size:11.5px;font-weight:700}
+@media(max-width:820px){.cards{grid-template-columns:repeat(2,1fr)}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="top">
+    <h1>صرف مستحقات المعلنين</h1>
+    <a class="btn ghost" href="/admin.html">← لوحة الإدارة</a>
+  </div>
+  <p class="muted" id="sub">جاري التحميل…</p>
+
+  <div class="cards">
+    <div class="c"><div class="k" id="k-creators">—</div><div class="l">معلنًا مستحقًا</div></div>
+    <div class="c"><div class="k" id="k-deals">—</div><div class="l">صفقة جاهزة</div></div>
+    <div class="c"><div class="k" id="k-fee">—</div><div class="l">عمولة المنصة (ر.س)</div></div>
+    <div class="c ok"><div class="k" id="k-net">—</div><div class="l">صافي للتحويل (ر.س)</div></div>
+  </div>
+
+  <div id="no-iban" class="warn" hidden></div>
+
+  <div class="panel">
+    <table>
+      <thead><tr><th>المعلن</th><th>الباقة</th><th>صفقات</th><th>الإجمالي</th><th>العمولة</th><th>الصافي</th><th>الآيبان</th><th>البنك</th></tr></thead>
+      <tbody id="rows"><tr><td colspan="8" class="empty">جاري التحميل…</td></tr></tbody>
+    </table>
+  </div>
+
+  <div class="bar">
+    <button class="btn" id="btn-run" disabled>ابدأ دفعة هذا الأسبوع</button>
+    <button class="btn ghost" id="btn-csv" disabled>تنزيل شيت التحويل CSV</button>
+  </div>
+
+  <h2>الدفعات السابقة</h2>
+  <div class="panel">
+    <table>
+      <thead><tr><th>التاريخ</th><th>الحالة</th><th>صفقات</th><th>الإجمالي</th><th>العمولة</th><th>الصافي</th><th></th></tr></thead>
+      <tbody id="batches"><tr><td colspan="7" class="empty">—</td></tr></tbody>
+    </table>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="/supabase-config.js"></script>
+<script>
+var ROWS = [];
+function money(v){ return Number(v||0).toLocaleString('en-US'); }
+function esc(s){ return String(s==null?'':s).replace(/[&<>"']/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]; }); }
+
+async function load(){
+  var r = await window.supabaseClient.rpc('admin_payout_list');
+  var d = r && r.data;
+  if (!d || d.error){
+    document.getElementById('sub').textContent = 'هذي الصفحة لمالك المنصة فقط.';
+    document.getElementById('rows').innerHTML = '<tr><td colspan="8" class="empty">غير مصرّح</td></tr>';
+    return;
+  }
+  ROWS = d.rows || [];
+  document.getElementById('sub').textContent = 'الدفعة القادمة يوم الاثنين ' + (d.next_payout_date || '') + ' · المبالغ صافية بعد خصم عمولة باقة كل معلن.';
+
+  var deals = 0, fee = 0, net = 0, gross = 0, noIban = [];
+  ROWS.forEach(function(x){
+    deals += Number(x.deals||0); fee += Number(x.fee||0); net += Number(x.net||0); gross += Number(x.gross||0);
+    if (!x.iban) noIban.push(x.creator_name || x.handle || '—');
+  });
+  document.getElementById('k-creators').textContent = ROWS.length;
+  document.getElementById('k-deals').textContent = deals;
+  document.getElementById('k-fee').textContent = money(fee);
+  document.getElementById('k-net').textContent = money(net);
+
+  var ni = document.getElementById('no-iban');
+  if (noIban.length){
+    ni.hidden = false;
+    ni.innerHTML = '⚠️ ' + noIban.length + ' معلن بلا آيبان في ملفه: ' + esc(noIban.join('، ')) + ' — تواصل معهم قبل التحويل.';
+  } else { ni.hidden = true; }
+
+  if (!ROWS.length){
+    document.getElementById('rows').innerHTML = '<tr><td colspan="8" class="empty">ما فيه مستحقات جاهزة للصرف الآن</td></tr>';
+  } else {
+    document.getElementById('rows').innerHTML = ROWS.map(function(x){
+      return '<tr>'
+        + '<td><strong>' + esc(x.creator_name || '—') + '</strong>' + (x.handle ? '<br><span style="color:var(--ink-muted);font-size:12px">@' + esc(x.handle) + '</span>' : '') + '</td>'
+        + '<td>' + esc(x.plan === 'c_premium' ? 'Premium' : (x.plan === 'c_pro' ? 'Pro' : 'Free')) + '</td>'
+        + '<td>' + esc(x.deals) + '</td>'
+        + '<td>' + money(x.gross) + '</td>'
+        + '<td>' + money(x.fee) + '</td>'
+        + '<td class="net">' + money(x.net) + '</td>'
+        + '<td>' + (x.iban ? '<span class="iban">' + esc(x.iban) + '</span>' : '<span style="color:var(--accent)">ناقص</span>') + '</td>'
+        + '<td>' + esc(x.bank_name || '—') + '</td>'
+        + '</tr>';
+    }).join('');
+  }
+  document.getElementById('btn-run').disabled = !ROWS.length;
+  document.getElementById('btn-csv').disabled = !ROWS.length;
+  await loadBatches();
+}
+
+async function loadBatches(){
+  var r = await window.supabaseClient.rpc('admin_payout_batches');
+  var list = (r && r.data && !r.data.error) ? r.data : [];
+  if (!list.length){ document.getElementById('batches').innerHTML = '<tr><td colspan="7" class="empty">لا توجد دفعات بعد</td></tr>'; return; }
+  document.getElementById('batches').innerHTML = list.map(function(b){
+    var paid = b.status === 'paid';
+    return '<tr>'
+      + '<td>' + esc(b.run_date) + '</td>'
+      + '<td>' + (paid ? '<span class="badge">تم التحويل</span>' : 'قيد التنفيذ') + '</td>'
+      + '<td>' + esc(b.deals_count) + '</td>'
+      + '<td>' + money(b.gross_sar) + '</td>'
+      + '<td>' + money(b.fee_sar) + '</td>'
+      + '<td class="net">' + money(b.net_sar) + '</td>'
+      + '<td>' + (paid ? '' : '<button class="btn" onclick="markPaid(\'' + esc(b.id) + '\')">تم التحويل ✓</button>') + '</td>'
+      + '</tr>';
+  }).join('');
+}
+
+async function runBatch(){
+  var btn = document.getElementById('btn-run');
+  btn.disabled = true; btn.textContent = 'جاري التجهيز…';
+  var r = await window.supabaseClient.rpc('admin_payout_run');
+  var d = r && r.data;
+  btn.textContent = 'ابدأ دفعة هذا الأسبوع';
+  if (!d || d.error){ alert('تعذّر إنشاء الدفعة: ' + ((d && d.error) || 'خطأ')); btn.disabled = false; return; }
+  await load();
+}
+
+async function markPaid(batchId){
+  var ref = prompt('رقم مرجع التحويل (اختياري):') || null;
+  var r = await window.supabaseClient.rpc('admin_payout_mark_paid', { p_batch: batchId, p_ref: ref });
+  var d = r && r.data;
+  if (!d || d.error){ alert('تعذّر التحديث'); return; }
+  await load();
+}
+
+function downloadCsv(){
+  var head = ['اسم المعلن','الحساب','الآيبان','البنك','صفقات','الإجمالي','العمولة','الصافي'];
+  var lines = [head.join(',')];
+  ROWS.forEach(function(x){
+    lines.push([
+      '"' + String(x.creator_name || '').replace(/"/g,'""') + '"',
+      '"' + String(x.account_holder || x.creator_name || '').replace(/"/g,'""') + '"',
+      '"' + String(x.iban || '') + '"',
+      '"' + String(x.bank_name || '') + '"',
+      x.deals, x.gross, x.fee, x.net
+    ].join(','));
+  });
+  var blob = new Blob(['﻿' + lines.join('\n')], { type: 'text/csv;charset=utf-8;' });
+  var a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'payouts-' + new Date().toISOString().slice(0,10) + '.csv';
+  a.click();
+}
+
+document.getElementById('btn-run').addEventListener('click', runBatch);
+document.getElementById('btn-csv').addEventListener('click', downloadCsv);
+
+(async function(){
+  try {
+    var s = await window.supabaseClient.auth.getSession();
+    if (!s || !s.data || !s.data.session){ location.href = '/login.html'; return; }
+  } catch(e){}
+  await load();
+})();
+</script>
+</body>
+</html>

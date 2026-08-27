@@ -2623,47 +2623,58 @@ function paymentDeadlineText(app) {
 }
 
 // بطاقة الدفع (تظهر بعد المرحلة 9) — جهة المعلن
+// المنصة تستلم من الشركة وتصرف للمعلن كل يوم اثنين بعد خصم عمولة باقته.
 function renderPaymentCard(app) {
   if (!app) {
     return `<div class="stage-action complete" onclick="event.stopPropagation()"><div class="sa-title">🎉 صفقة مكتملة</div><div class="sa-desc">تم اكتمال جميع مراحل الصفقة بنجاح.</div></div>`;
   }
-  const status = app.payment_status || 'unpaid';
-  const deadline = paymentDeadlineText(app);
-  const deadlineLine = deadline ? `<div class="pay-deadline">آخر موعد متوقّع للدفع: ${deadline}</div>` : '';
+  const gross = Number(app.final_price || app.price || 0);
+  const pct   = (app.creator_fee_pct != null) ? Number(app.creator_fee_pct) : null;
+  const net   = (app.creator_net_sar != null) ? Number(app.creator_net_sar) : null;
+  const st    = app.payout_status || (app.platform_paid ? 'holding' : 'none');
+  const money = (v) => Number(v || 0).toLocaleString('en-US');
+  const breakdown = (pct != null && net != null)
+    ? `<div class="pay-deadline">قيمة الصفقة ${money(gross)} ر.س · عمولة المنصة ${pct}٪ = ${money(app.creator_fee_sar)} ر.س · <strong>صافي لك ${money(net)} ر.س</strong></div>`
+    : '';
 
-  if (status === 'confirmed') {
+  if (st === 'paid') {
     return `<div class="stage-action complete" onclick="event.stopPropagation()">
-      <div class="sa-title">🎉 اكتملت الصفقة والدفع</div>
-      <div class="sa-desc">أكّدت استلام المبلغ. تمت الصفقة بالكامل — شكرًا لك.</div>
+      <div class="sa-title">🎉 وصلت مستحقاتك</div>
+      <div class="sa-desc">حوّلنا لك ${money(net)} ر.س على حسابك البنكي.</div>
+      ${breakdown}
     </div>`;
   }
-  if (status === 'disputed') {
-    return `<div class="stage-action" onclick="event.stopPropagation()" style="background:rgba(201,48,48,0.05);border-color:rgba(201,48,48,0.3)">
-      <div class="sa-title">⚠️ أبلغت بعدم الاستلام</div>
-      <div class="sa-desc">فريق Flfluencer يراجع الحالة مع الشركة. لو وصلك المبلغ بعد كذا، اضغط «استلمت المبلغ».</div>
-      <div class="pay-actions"><button class="sa-btn" onclick="event.stopPropagation(); setCreatorPayment('${app.id}','confirmed')">استلمت المبلغ ✓</button></div>
-    </div>`;
-  }
-  if (status === 'marked_paid') {
+  if (st === 'batched') {
     return `<div class="stage-action mine" onclick="event.stopPropagation()">
-      <div class="sa-title">💸 الشركة حوّلت المبلغ</div>
-      <div class="sa-desc">الشركة أبلغت أنها حوّلت المبلغ المتفق عليه. تأكّد من حسابك البنكي وأكّد الحالة:</div>
-      ${deadlineLine}
-      <div class="pay-actions">
-        <button class="sa-btn" onclick="event.stopPropagation(); setCreatorPayment('${app.id}','confirmed')">استلمت المبلغ ✓</button>
-        <button class="pay-btn-ghost" onclick="event.stopPropagation(); setCreatorPayment('${app.id}','disputed')">لم أستلم بعد</button>
-      </div>
+      <div class="sa-title">🏦 مستحقك في دفعة هذا الأسبوع</div>
+      <div class="sa-desc">مبلغك ضمن تحويلات الاثنين وجاري تنفيذه على حسابك البنكي.</div>
+      ${breakdown}
     </div>`;
   }
-  // unpaid (الافتراضي)
+  if (st === 'eligible') {
+    return `<div class="stage-action mine" onclick="event.stopPropagation()">
+      <div class="sa-title">✅ مستحقك جاهز للصرف</div>
+      <div class="sa-desc">يُحوَّل لك في دفعة الاثنين القادم. تأكّد أن الآيبان في ملفك صحيح.</div>
+      ${breakdown}
+    </div>`;
+  }
+  if (st === 'holding') {
+    return `<div class="stage-action complete" onclick="event.stopPropagation()">
+      <div class="sa-title">🔒 مبلغك محفوظ لدى المنصة</div>
+      <div class="sa-desc">الشركة سدّدت قيمة صفقتك للمنصة قبل انطلاق الحملة. بعد اكتمال العمل بثلاثة أيام يصير مستحقك جاهزًا، ويُصرف في دفعة الاثنين.</div>
+      ${breakdown}
+    </div>`;
+  }
   return `<div class="stage-action complete" onclick="event.stopPropagation()">
-    <div class="sa-title">🎉 صفقة مكتملة — بانتظار الدفع</div>
-    <div class="sa-desc">خلّصت كل المراحل. الشركة متعهّدة بتحويل المبلغ، وبتقدر تأكّد الاستلام هنا أول ما يوصلك.</div>
-    ${deadlineLine}
+    <div class="sa-title">🎉 صفقة مكتملة</div>
+    <div class="sa-desc">خلّصت كل المراحل. أول ما تسدّد الشركة للمنصة يظهر لك مستحقك هنا.</div>
   </div>`;
 }
 
 async function setCreatorPayment(applicationId, newStatus) {
+  showToast('صار الصرف عبر المنصة — ما تحتاج تأكيد استلام يدوي.');
+  return;
+  /* eslint-disable no-unreachable */
   const patch = { payment_status: newStatus };
   if (newStatus === 'confirmed') patch.received_confirmed_at = new Date().toISOString();
   try {
