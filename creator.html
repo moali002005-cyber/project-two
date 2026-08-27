@@ -1275,6 +1275,8 @@ async function simblExitImpersonation(){
 .st-n small{font-size:15px;}
 .st-n.st-new{font-size:18px;font-weight:700;}
 .st-l{font-size:12.5px;color:var(--ink-soft);margin-top:5px;}
+.kit-share{display:block;width:100%;margin-top:10px;background:#E23B2E;color:#fff;border:none;border-radius:12px;padding:11px;font-family:inherit;font-size:13.5px;font-weight:700;cursor:pointer}
+.kit-lock{display:block;margin-top:10px;text-align:center;background:#F3EEE4;color:#6b6259;border-radius:12px;padding:11px;font-size:12.5px;font-weight:600;text-decoration:none}
 </style>
 <div id="group-modal">
   <div class="gm-box">
@@ -1519,6 +1521,13 @@ async function loadMyTrust(){
       + '<div class="st"><div class="st-n">'+toArabic(deals)+'</div><div class="st-l">صفقات مكتملة</div></div>'
       + '<div class="st">'+ratingCell+'</div>'
       + '</div>';
+    var _pl = null;
+    try { var _pr = await supabaseClient.rpc('my_plan_status'); if (_pr && _pr.data && !_pr.data.error) _pl = _pr.data; } catch (e) {}
+    if (_pl && _pl.can_media_kit) {
+      box.innerHTML += '<button class="kit-share" onclick="shareMyKit()">🔗 شارك ملفي العام</button>';
+    } else {
+      box.innerHTML += '<a class="kit-lock" href="/plans-creator.html">🔒 ملفك العام القابل للمشاركة — متاح مع Pro</a>';
+    }
   }catch(e){ box.innerHTML=''; }
 }
 
