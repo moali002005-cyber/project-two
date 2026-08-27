@@ -55,6 +55,17 @@ h2{font-size:17px;margin:30px 0 8px}
 
   <div id="no-iban" class="warn" hidden></div>
 
+  <div id="inv-wrap" hidden>
+    <h2 style="margin-top:6px">🧾 بانتظار تحصيل من الشركات</h2>
+    <p class="muted" style="margin-bottom:10px">حملات اعتُمد معلنوها ولم تُسدَّد بعد. استخدم هذا القسم لتسجيل تحويل بنكي مباشر ريثما يُفعَّل الدفع الإلكتروني.</p>
+    <div class="panel">
+      <table>
+        <thead><tr><th>الحملة</th><th>الشركة</th><th>الباقة</th><th>صفقات</th><th>قيمة التعاونات</th><th>العمولة</th><th>المطلوب تحويله</th><th></th></tr></thead>
+        <tbody id="rows-inv"></tbody>
+      </table>
+    </div>
+  </div>
+
   <div id="instant-wrap" hidden>
     <h2 style="margin-top:6px">⚡ صرف فوري — اليوم <span class="badge">Premium</span></h2>
     <p class="muted" style="margin-bottom:10px">مشتركو Premium يستلمون نفس يوم اكتمال الصفقة، بلا انتظار دفعة الاثنين.</p>
@@ -100,6 +111,37 @@ var ROWS = [];
 var FAST = [];
 function money(v){ return Number(v||0).toLocaleString('en-US'); }
 function esc(s){ return String(s==null?'':s).replace(/[&<>"']/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]; }); }
+
+async function loadInvoices(){
+  var r = await window.supabaseClient.rpc('admin_pending_invoices');
+  var rows = (r && r.data && !r.data.error) ? r.data : [];
+  var w = document.getElementById('inv-wrap');
+  if (!rows.length){ w.hidden = true; return; }
+  w.hidden = false;
+  document.getElementById('rows-inv').innerHTML = rows.map(function(x){
+    return '<tr>'
+      + '<td><strong>' + esc(x.title || '—') + '</strong></td>'
+      + '<td>' + esc(x.brand_name || '—') + '</td>'
+      + '<td>' + esc(x.plan || '—') + '</td>'
+      + '<td>' + esc(x.deals) + '</td>'
+      + '<td>' + money(x.net) + '</td>'
+      + '<td>' + money(x.commission) + ' (' + esc(x.pct) + '٪)</td>'
+      + '<td class="net">' + money(x.total) + '</td>'
+      + '<td><button class="btn" onclick="markPaidManual(\'' + esc(x.campaign_id) + '\', \'' + esc(String(x.title||'').replace(/'/g,"")) + '\', ' + Number(x.total||0) + ')">سجّل التحويل</button></td>'
+      + '</tr>';
+  }).join('');
+}
+
+async function markPaidManual(campaignId, title, total){
+  var ok = confirm('تأكيد استلام تحويل بنكي\n\nالحملة: ' + title + '\nالمبلغ المستلم: ' + Number(total).toLocaleString('en-US') + ' ر.س\n\nسيُعتبر مبلغ الحملة محصّلًا لدى المنصة، ويُخطر المعلنون بأن مستحقاتهم مضمونة. نكمل؟');
+  if (!ok) return;
+  var ref = prompt('رقم مرجع التحويل البنكي (اختياري):') || null;
+  var r = await window.supabaseClient.rpc('admin_mark_campaign_paid', { p_campaign: campaignId, p_ref: ref });
+  var d = r && r.data;
+  if (!d || d.error){ alert('تعذّر التسجيل: ' + ((d && d.error) || 'خطأ')); return; }
+  alert('تم التسجيل ✓\n' + d.deals + ' صفقة · صافي للمعلنين ' + Number(d.net).toLocaleString('en-US') + ' ر.س · عمولتنا ' + Number(d.commission).toLocaleString('en-US') + ' ر.س');
+  await load();
+}
 
 async function load(){
   var r = await window.supabaseClient.rpc('admin_payout_list');
@@ -161,6 +203,7 @@ async function load(){
   }
   document.getElementById('btn-run').disabled = !ROWS.length;
   document.getElementById('btn-csv').disabled = !ROWS.length;
+  await loadInvoices();
   await loadBatches();
 }
 
