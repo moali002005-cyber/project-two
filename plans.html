@@ -154,13 +154,14 @@ function renderPlans(){
     var btn;
     if (isCur) btn = '<button class="cta cur" disabled>باقتك الحالية</button>';
     else if (p.code === 'trial') btn = '<a class="cta ghost" href="/signup.html?role=brand">ابدأ مجانًا</a>';
+    else if (p.is_custom_price) btn = '<a class="cta ghost" href="mailto:flfluencerai@gmail.com">تواصل معنا</a>';
     else btn = '<button class="cta" onclick="subscribe(\'' + p.code + '\')">اشترك الآن</button>';
     return '<div class="plan' + (p.code === 'hot' ? ' feat' : '') + (isCur ? ' mine' : '') + '">'
       + (p.code === 'hot' ? '<div class="ribbon">الأكثر شيوعًا</div>' : '')
       + '<div class="picon">' + esc(p.icon || '') + '</div>'
       + '<h3>' + esc(p.name_ar) + '</h3>'
       + '<p class="tag">' + esc(p.tagline_ar || '') + '</p>'
-      + '<div class="price">' + (price > 0 ? '<span class="num">' + ar(price) + '</span> <span class="cur2">ر.س / ' + (PERIOD === 'yearly' ? 'سنة' : 'شهر') + '</span>' : '<span class="num">مجانًا</span>')
+      + '<div class="price">' + (p.is_custom_price ? '<span class=\"num\" style=\"font-size:21px\">أسعار مخصّصة</span>' : price > 0 ? '<span class="num">' + ar(price) + '</span> <span class="cur2">ر.س / ' + (PERIOD === 'yearly' ? 'سنة' : 'شهر') + '</span>' : '<span class="num">مجانًا</span>')
       + '</div>'
       + '<ul class="feats">' + feats + '</ul>'
       + btn
