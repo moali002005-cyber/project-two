@@ -4842,6 +4842,32 @@ async function submitCampaign(event) {
     if (!_n) { showToast('حملة الكود تحتاج أكواد خصم — الصق الأكواد (كل كود بسطر).', 'error'); submitBtn.disabled = false; submitBtn.textContent = original; return; }
   }
 
+
+  // ===== حدود الباقة (الشركات) =====
+  if (!editingCampaignId) {
+    try {
+      const _psRes = await supabaseClient.rpc('brand_plan_status');
+      const _P = _psRes && _psRes.data;
+      if (_P && !_P.error) {
+        const _size = Number(campaign.campaign_size || 0);
+        let _block = '';
+        if (_P.max_active_campaigns != null && Number(_P.active_campaigns) >= Number(_P.max_active_campaigns)) {
+          _block = 'باقة «' + _P.name_ar + '» تسمح بـ ' + _P.max_active_campaigns + ' حملة نشطة فقط. أنهِ حملة قائمة أو ارتقِ لباقة أعلى من صفحة الباقات.';
+        } else if (_P.max_creators_per_campaign != null && _size > Number(_P.max_creators_per_campaign)) {
+          _block = 'باقة «' + _P.name_ar + '» تسمح بحد أقصى ' + _P.max_creators_per_campaign + ' معلن في الحملة الواحدة. قلّل العدد أو ارتقِ لباقة أعلى.';
+        }
+        if (_block) {
+          showToast(_block, 'error');
+          submitBtn.disabled = false;
+          submitBtn.textContent = original;
+          const _up = document.getElementById('plan-upsell');
+          if (_up) _up.hidden = false;
+          return;
+        }
+      }
+    } catch (_planErr) { console.warn('plan check skipped', _planErr); }
+  }
+
   try {
     if (editingCampaignId) {
       // وضع التعديل
