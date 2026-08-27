@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<title>لماذا فلفلونسر - كم تكلّفك الحملة بدوننا</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" type="image/svg+xml" href="/brand/chili.svg?v=6">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--cream:#ffffff;--cream-darker:#F3EEE4;--ink:#0F1420;--ink-soft:#2C3548;--ink-muted:#8A93A6;--accent:#E23B2E;--accent-ink:#7E2119;--line:rgba(15,20,32,0.08);--font:'IBM Plex Sans Arabic','Segoe UI',Tahoma,sans-serif}
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:var(--cream);color:var(--ink);font-family:var(--font);font-size:16px;line-height:1.9}
+.container{max-width:880px;margin:0 auto;padding:0 20px}
+.nav{background:rgba(255,255,255,0.92);backdrop-filter:blur(10px);border-bottom:1px solid var(--line);position:sticky;top:0;z-index:50;padding:12px 0}
+.nav-inner{display:flex;align-items:center;justify-content:space-between}
+.nav-back{color:var(--ink);text-decoration:none;font-size:13.5px;font-weight:600}
+.hero{padding:52px 0 8px;text-align:center}
+.hero h1{font-size:clamp(26px,5vw,36px);font-weight:700}
+.hero p{color:var(--ink-muted);max-width:56ch;margin:10px auto 0;font-size:15.5px}
+.cards{display:flex;flex-direction:column;gap:16px;padding:36px 0 20px}
+.card{background:#fff;border:1.5px solid var(--line);border-radius:18px;padding:24px 26px;box-shadow:0 10px 30px rgba(15,20,32,.05)}
+.card h2{font-size:18px;font-weight:700;margin-bottom:8px;display:flex;align-items:center;gap:10px}
+.card h2 .n{width:30px;height:30px;border-radius:9px;background:#FBE9E6;color:var(--accent);display:inline-flex;align-items:center;justify-content:center;font-size:15px;font-weight:700;flex:none}
+.card p{font-size:14.5px;color:var(--ink-soft)}
+.card p + p{margin-top:10px}
+.card .big{font-size:20px;font-weight:700;color:var(--accent)}
+.example{background:#FDF7F0;border:1px dashed #E8CBB5;border-radius:12px;padding:12px 16px;margin-top:12px;font-size:13.5px;color:var(--ink-soft)}
+.pay-row{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px}
+.pay-chip{border:1.5px solid var(--line);border-radius:100px;padding:6px 16px;font-size:13px;font-weight:600}
+.tbl-wrap{overflow-x:auto;margin-top:14px}
+table{width:100%;border-collapse:collapse;font-size:14px;min-width:420px}
+th,td{padding:11px 14px;text-align:right;border-bottom:1px solid var(--line)}
+th{background:#FBE9E6;color:var(--accent-ink);font-weight:700;font-size:13.5px}
+td:first-child{font-weight:600}
+tbody tr:last-child td{border-bottom:none}
+.price-cell{font-weight:700;color:var(--ink);white-space:nowrap}
+.note{background:var(--cream-darker);border-radius:14px;padding:16px 20px;font-size:13.5px;color:var(--ink-soft);margin:8px 0 30px}
+.note a,.card a{color:var(--accent)}
+footer{border-top:1px solid var(--line);padding:26px 0 40px;text-align:center;color:var(--ink-muted);font-size:13px}
+footer a{color:var(--ink-soft);text-decoration:none;margin:0 10px;font-weight:600}
+h3{font-size:15.5px;font-weight:700;margin:16px 0 6px}
+
+.vs{display:grid;grid-template-columns:1fr 1fr;gap:16px;padding:36px 0 6px}
+.vc{background:#fff;border:1.5px solid var(--line);border-radius:18px;padding:22px 24px;box-shadow:0 10px 30px rgba(15,20,32,.05);display:flex;flex-direction:column}
+.vc.bad{border-color:#E8B4AF}
+.vc.good{border-color:#9FD8BB}
+.vc .lbl{font-size:12.5px;font-weight:700}
+.vc.bad .lbl{color:#B3261E} .vc.good .lbl{color:#0C7C46}
+.vc h2{font-size:19px;font-weight:700;margin:2px 0 12px}
+.vc ul{list-style:none;margin:0 0 14px;padding:0;display:flex;flex-direction:column;gap:7px;flex:1}
+.vc li{font-size:14px;color:var(--ink-soft);display:flex;gap:9px;line-height:1.65}
+.vc li i{font-style:normal;font-weight:700;flex:none}
+.vc.bad li i{color:#B3261E} .vc.good li i{color:#0C7C46}
+.vc .fig{border-top:1px dashed var(--line);padding-top:14px;margin-top:auto}
+.vc .fig b{display:block;font-size:32px;line-height:1.1}
+.vc.bad .fig b{color:#B3261E} .vc.good .fig b{color:#0C7C46}
+.vc .fig span{font-size:13px;color:var(--ink-muted)}
+.save{background:var(--cream-darker);border-radius:18px;padding:26px;text-align:center;margin:22px 0 8px}
+.save b{display:block;font-size:clamp(38px,8vw,58px);font-weight:700;color:#0C7C46;line-height:1.05}
+.save span{font-size:15px;color:var(--ink-soft)}
+.cta-row{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin:26px 0 10px}
+.btn{display:inline-block;background:var(--accent);color:#fff;text-decoration:none;border-radius:12px;padding:13px 28px;font-size:15px;font-weight:700}
+.btn.ghost{background:#fff;color:var(--accent);border:1.5px solid var(--accent)}
+@media(max-width:760px){.vs{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <div class="container nav-inner">
+    <a href="/" class="logo" aria-label="Flfluencer">
+      <img src="/brand/logo-nav.svg?v=2" alt="Flfluencer" style="height:54px;display:block">
+    </a>
+    <a href="/" class="nav-back">← العودة للرئيسية</a>
+  </div>
+</nav>
+
+<header class="hero">
+  <div class="container">
+    <h1>حملة بعشرين مؤثرًا — كم تكلّفك بدوننا؟</h1>
+    <p>ليست المقارنة بين نسبة ونسبة. المقارنة بين فريق يشتغل أسبوعًا كاملًا، وشخص واحد يخلّص في خمس دقائق.</p>
+  </div>
+</header>
+
+<main class="container">
+
+  <div class="vs">
+    <div class="vc bad">
+      <span class="lbl">بدون المنصة</span>
+      <h2>خمسة موظفين · أسبوع كامل</h2>
+      <ul>
+        <li><i>✕</i><span>البحث عن ٢٠ مؤثرًا وفلترتهم يدويًا</span></li>
+        <li><i>✕</i><span>التفاوض مع كل واحد على حدة — ٢٠ محادثة منفصلة</span></li>
+        <li><i>✕</i><span>إرسال البريف لكل مؤثر ومتابعة كل رد</span></li>
+        <li><i>✕</i><span>تنسيق شحن ٢٠ منتجًا وتتبّع كل شحنة</span></li>
+        <li><i>✕</i><span>ملاحقة المحتوى والموافقات ومواعيد النشر</span></li>
+        <li><i>✕</i><span>جمع الروابط وبناء التقرير يدويًا</span></li>
+        <li><i>✕</i><span>٢٠ تحويلًا بنكيًا منفصلًا وتأكيد كل واحد</span></li>
+      </ul>
+      <div class="fig"><b>20,455</b><span>ر.س تكلفة عمالة للحملة الواحدة</span></div>
+    </div>
+
+    <div class="vc good">
+      <span class="lbl">مع فلفلونسر</span>
+      <h2>شخص واحد · خمس دقائق</h2>
+      <ul>
+        <li><i>✓</i><span>تختار المؤثرين من قائمة مرتّبة بالأداء الفعلي</span></li>
+        <li><i>✓</i><span>وكيل تفاوض ذكي يفاوض العشرين نيابةً عنك</span></li>
+        <li><i>✓</i><span>بريف واحد يصل الجميع بمراحل موحّدة</span></li>
+        <li><i>✓</i><span>إكسل توصيل جاهز لمندوب الشحن</span></li>
+        <li><i>✓</i><span>المراحل تتابع نفسها وتذكّر المتأخر تلقائيًا</span></li>
+        <li><i>✓</i><span>الروابط وتقرير الحملة تُبنى تلقائيًا</span></li>
+        <li><i>✓</i><span>دفعة واحدة — والمنصة تصرف للعشرين نيابةً عنك</span></li>
+      </ul>
+      <div class="fig"><b>5</b><span>دقائق · بشخص واحد</span></div>
+    </div>
+  </div>
+
+  <div class="cards">
+    <div class="card">
+      <h2><span class="n">١</span> الحسبة الشهرية</h2>
+      <p>شركة تنفّذ ٤ حملات شهريًا بإنفاق ٢٠٠٬٠٠٠ ر.س على المؤثرين، على باقة Business:</p>
+      <div class="tbl-wrap">
+        <table>
+          <thead><tr><th>البند</th><th>بدون المنصة</th><th>مع فلفلونسر</th></tr></thead>
+          <tbody>
+            <tr><td>تكلفة العمالة</td><td class="price-cell">81,818 ر.س</td><td class="price-cell">0</td></tr>
+            <tr><td>اشتراك المنصة</td><td class="price-cell">0</td><td class="price-cell">3,999 ر.س</td></tr>
+            <tr><td>عمولة المنصة ٥٪</td><td class="price-cell">0</td><td class="price-cell">10,000 ر.س</td></tr>
+            <tr><td><b>الإجمالي فوق قيمة الحملات</b></td><td class="price-cell">81,818 ر.س</td><td class="price-cell">13,999 ر.س</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <div class="save">
+    <b>67,819</b>
+    <span>ريال توفير شهري — أي أن تكلفتنا <b style="display:inline;font-size:inherit">١٧٪</b> فقط مما ستدفعه لفريقك</span>
+  </div>
+
+  <div class="cards">
+    <div class="card">
+      <h2><span class="n">٢</span> وحتى بأكثر التقديرات تحفّظًا</h2>
+      <p>لو افترضنا شخصًا واحدًا يعمل ثلاثة أسابيع بدل خمسة موظفين لأسبوع:</p>
+      <div class="tbl-wrap">
+        <table>
+          <thead><tr><th>حجم النشاط</th><th>تكلفة العمالة</th><th>تكلفتنا</th><th>التوفير</th></tr></thead>
+          <tbody>
+            <tr><td>حملتان شهريًا</td><td class="price-cell">24,545 ر.س</td><td class="price-cell">13,999 ر.س</td><td class="price-cell">10,546 ر.س</td></tr>
+            <tr><td>٤ حملات شهريًا</td><td class="price-cell">49,091 ر.س</td><td class="price-cell">13,999 ر.س</td><td class="price-cell">35,092 ر.س</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="example"><b>الأساس:</b> راتب موظف ١٨٬٠٠٠ ر.س شهريًا على ٢٢ يوم عمل = ٨١٨ ر.س لليوم الواحد.</div>
+    </div>
+
+    <div class="card">
+      <h2><span class="n">٣</span> وأموالك مضمونة</h2>
+      <p>تدفع للمنصة مرة واحدة بعد اعتماد المؤثرين وقبل انطلاق الحملة، ونحتفظ بالمبلغ ونصرفه للمؤثرين بعد اكتمال العمل. لا تحويلات بنكية متفرقة، ولا مطالبات، ولا مبالغ تُدفع قبل التنفيذ.</p>
+      <p>ويُعرض لك التفصيل كاملًا — قيمة التعاونات وعمولة المنصة والإجمالي — قبل الدفع، ولا توجد رسوم خفية من أي نوع.</p>
+    </div>
+  </div>
+
+  <div class="cta-row">
+    <a class="btn" href="/signup.html?role=brand">ابدأ بلا اشتراك</a>
+    <a class="btn ghost" href="/plans.html">شوف الباقات</a>
+  </div>
+
+  <div class="note">تبي نحسبها على أرقام نشاطك أنت؟ راسلنا على <b>flfluencerai@gmail.com</b> ونرجع لك بمقارنة مبنية على حجم حملاتك الفعلي.</div>
+</main>
+
+<footer>
+  <div class="container">
+    <div><a href="/why.html">لماذا فلفلونسر</a><a href="/pricing.html">الأسعار</a><a href="/refund.html">الاسترجاع والإلغاء</a><a href="/terms.html">الشروط والأحكام</a><a href="/privacy.html">سياسة الخصوصية</a></div>
+    <div style="margin-top:8px">مؤسسة فلفلونسر آي — سجل تجاري (الرقم الوطني الموحد): 7051501588 — المملكة العربية السعودية<br>© Flfluencer — جميع الحقوق محفوظة</div>
+  </div>
+</footer>
+
+</body>
+</html>
