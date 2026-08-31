@@ -107,7 +107,7 @@ module.exports = async function handler(req, res) {
   if (typeof body === "string") { try { body = JSON.parse(body); } catch (e) { body = {}; } }
   const plan = String(body.plan || "");
   const period = String(body.period || "monthly");
-  if (!/^[a-z]{3,12}$/.test(plan)) return res.status(400).json({ error: "bad plan" });
+  if (!/^[a-z][a-z_]{2,15}$/.test(plan)) return res.status(400).json({ error: "bad plan" });
   if (period !== "monthly" && period !== "yearly") return res.status(400).json({ error: "bad period" });
 
   const started = await sbRpcAsUser("start_subscription", { p_plan: plan, p_period: period }, token);
