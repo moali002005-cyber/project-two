@@ -314,6 +314,156 @@ body {
 </section>
 
 
+
+<!-- ===== قسم الباقات ===== -->
+<section class="plansec" id="plans">
+  <div class="container">
+    <div class="ps-head">
+      <div class="ps-eyebrow">الباقات</div>
+      <h2 class="ps-title">اشترك مرّة… ووفّر على كل صفقة</h2>
+      <p class="ps-sub">عمولة المنصة تنزل كل ما ارتفعت باقتك. الاشتراك يدفع نفسه من أول شهر تتجاوز فيه نقطة التعادل.</p>
+      <div class="ps-tabs">
+        <button type="button" class="ps-tab on" data-aud="brand">للشركات</button>
+        <button type="button" class="ps-tab" data-aud="creator">لصنّاع المحتوى</button>
+      </div>
+    </div>
+    <div class="ps-grid" id="psGrid"><div class="ps-load">جارٍ تحميل الباقات…</div></div>
+    <div class="ps-foot">
+      <a class="ps-all" id="psAll" href="/plans.html">شوف كل المزايا والمقارنة الكاملة ←</a>
+      <p class="ps-fine">نقطة التعادل = المبلغ الشهري الذي يتساوى عنده الاشتراك مع ما توفّره من العمولة. فوقه تربح، وتحته الباقة المجانية أوفر لك.</p>
+    </div>
+  </div>
+</section>
+
+<style>
+.plansec{padding:96px 0 88px;background:linear-gradient(180deg,#fff 0%,#FBF8F2 100%);border-top:1px solid var(--line)}
+.ps-head{text-align:center;max-width:660px;margin:0 auto 44px}
+.ps-eyebrow{display:inline-block;font-size:12px;font-weight:700;letter-spacing:.14em;color:var(--accent);background:rgba(226,59,46,.08);padding:6px 14px;border-radius:999px;margin-bottom:18px}
+.ps-title{font-size:clamp(26px,3.4vw,40px);font-weight:700;line-height:1.35;color:var(--ink);margin-bottom:14px}
+.ps-sub{font-size:16px;color:var(--ink-muted);line-height:1.9}
+.ps-tabs{display:inline-flex;gap:4px;margin-top:26px;padding:4px;background:#fff;border:1px solid var(--line);border-radius:999px}
+.ps-tab{font-family:inherit;font-size:14px;font-weight:600;color:var(--ink-muted);background:none;border:0;padding:9px 22px;border-radius:999px;cursor:pointer;transition:.18s}
+.ps-tab.on{background:var(--ink);color:#fff}
+.ps-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;align-items:stretch}
+.ps-load{grid-column:1/-1;text-align:center;color:var(--ink-faint);padding:40px 0}
+.ps-card{background:#fff;border:1px solid var(--line);border-radius:20px;padding:30px 26px 26px;display:flex;flex-direction:column;position:relative;transition:.2s}
+.ps-card:hover{border-color:var(--line-strong);transform:translateY(-3px)}
+.ps-card.feat{border-color:var(--accent);box-shadow:0 14px 40px rgba(226,59,46,.10)}
+.ps-ribbon{position:absolute;top:-11px;inset-inline-start:26px;background:var(--accent);color:#fff;font-size:11px;font-weight:700;padding:4px 12px;border-radius:999px}
+.ps-name{font-size:21px;font-weight:700;color:var(--ink)}
+.ps-tag{font-size:13.5px;color:var(--ink-muted);margin-top:5px;min-height:42px;line-height:1.6}
+.ps-price{margin:16px 0 4px;display:flex;align-items:baseline;gap:7px}
+.ps-num{font-size:34px;font-weight:700;color:var(--ink);letter-spacing:-.5px}
+.ps-per{font-size:13px;color:var(--ink-muted)}
+.ps-comm{display:inline-block;font-size:12.5px;font-weight:700;color:var(--accent-ink);background:rgba(226,59,46,.07);border-radius:8px;padding:5px 11px;margin-bottom:6px}
+.ps-be{font-size:12.5px;color:var(--olive);min-height:20px;margin-bottom:14px}
+.ps-feats{list-style:none;margin:0 0 22px;padding:0;flex:1}
+.ps-feats li{display:flex;gap:9px;font-size:14px;color:var(--ink-soft);line-height:1.75;margin-bottom:9px}
+.ps-feats .tk{color:var(--accent);flex-shrink:0;font-weight:700}
+.ps-cta{display:block;text-align:center;font-family:inherit;font-size:14.5px;font-weight:700;padding:13px 18px;border-radius:12px;text-decoration:none;border:1px solid var(--ink);color:var(--ink);background:#fff;transition:.18s}
+.ps-cta:hover{background:var(--ink);color:#fff}
+.ps-cta.solid{background:var(--accent);border-color:var(--accent);color:#fff}
+.ps-cta.solid:hover{background:var(--accent-ink);border-color:var(--accent-ink)}
+.ps-foot{text-align:center;margin-top:38px}
+.ps-all{display:inline-block;font-size:15px;font-weight:700;color:var(--ink);text-decoration:none;border-bottom:2px solid var(--accent);padding-bottom:2px}
+.ps-fine{font-size:12.5px;color:var(--ink-faint);max-width:620px;margin:18px auto 0;line-height:1.85}
+@media (max-width:900px){.ps-grid{grid-template-columns:1fr;gap:16px}.plansec{padding:66px 0 60px}.ps-tag{min-height:0}}
+</style>
+
+<script>
+(function psInit(){
+  var PS = { brand: [], creator: [] };
+  var aud = 'brand';
+
+  function n(v){ return Number(v||0).toLocaleString('en-US'); }
+  function esc(s){ return String(s==null?'':s).replace(/[&<>"']/g, function(c){
+    return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]; }); }
+
+  function breakEven(p, base){
+    if (!base || !(Number(p.price_monthly) > 0)) return '';
+    var gap = Number(base.commission_pct) - Number(p.commission_pct);
+    if (!(gap > 0)) return '';
+    var e = Math.round(Number(p.price_monthly) / (gap/100));
+    var word = aud === 'brand' ? 'إنفاق شهري' : 'دخل شهري';
+    return 'تبدأ توفّر من ' + n(e) + ' ر.س ' + word;
+  }
+
+  function card(p, base, featured){
+    var price = Number(p.price_monthly) > 0
+      ? '<span class="ps-num">' + n(p.price_monthly) + '</span><span class="ps-per">ر.س / شهر</span>'
+      : '<span class="ps-num">مجانًا</span>';
+    var feats = (Array.isArray(p.features_ar) ? p.features_ar : []).slice(0,4).map(function(x){
+      x = String(x); if (x.indexOf('no|') === 0 || x.indexOf('ok|') === 0) x = x.slice(3);
+      return '<li><span class="tk">✓</span><span>' + esc(x) + '</span></li>';
+    }).join('');
+    var isFree = !(Number(p.price_monthly) > 0);
+    var href = isFree
+      ? '/signup.html?role=' + (aud === 'brand' ? 'brand' : 'creator')
+      : (aud === 'brand' ? '/plans.html' : '/plans-creator.html');
+    var label = isFree ? 'ابدأ مجانًا' : 'اشترك الآن';
+    var be = breakEven(p, base);
+    return '<div class="ps-card' + (featured ? ' feat' : '') + '">'
+      + (featured ? '<div class="ps-ribbon">الأكثر شيوعًا</div>' : '')
+      + '<div class="ps-name">' + esc(p.name_ar) + '</div>'
+      + '<div class="ps-tag">' + esc(p.tagline_ar || '') + '</div>'
+      + '<div class="ps-price">' + price + '</div>'
+      + '<div><span class="ps-comm">عمولة ' + n(p.commission_pct) + '٪ على كل صفقة</span></div>'
+      + '<div class="ps-be">' + esc(be) + '</div>'
+      + '<ul class="ps-feats">' + feats + '</ul>'
+      + '<a class="ps-cta' + (featured ? ' solid' : '') + '" href="' + href + '">' + label + '</a>'
+      + '</div>';
+  }
+
+  function render(){
+    var g = document.getElementById('psGrid');
+    var list = PS[aud] || [];
+    if (!list.length){ g.innerHTML = '<div class="ps-load">تعذّر تحميل الباقات — <a href="/plans.html" style="color:inherit">شوف صفحة الباقات</a></div>'; return; }
+    var base = list.filter(function(p){ return !(Number(p.price_monthly) > 0); })[0] || null;
+    var paid = list.filter(function(p){ return Number(p.price_monthly) > 0; });
+    var top = paid.length ? paid[paid.length-1].code : null;
+    var mid = paid.length > 1 ? paid[0].code : top;
+    g.innerHTML = list.map(function(p){ return card(p, base, p.code === mid); }).join('');
+    var all = document.getElementById('psAll');
+    if (all) all.href = aud === 'brand' ? '/plans.html' : '/plans-creator.html';
+  }
+
+  function bindTabs(){
+    var tabs = document.querySelectorAll('.ps-tab');
+    Array.prototype.forEach.call(tabs, function(t){
+      t.addEventListener('click', function(){
+        Array.prototype.forEach.call(tabs, function(x){ x.classList.remove('on'); });
+        t.classList.add('on');
+        aud = t.getAttribute('data-aud');
+        render();
+      });
+    });
+  }
+
+  async function load(){
+    bindTabs();
+    for (var i = 0; i < 40 && !window.supabaseClient; i++){ await new Promise(function(r){ setTimeout(r, 150); }); }
+    if (!window.supabaseClient){ render(); return; }
+    try {
+      var res = await window.supabaseClient
+        .from('plans')
+        .select('code,name_ar,tagline_ar,price_monthly,commission_pct,features_ar,audience,sort_order,is_custom_price')
+        .eq('is_active', true)
+        .order('sort_order', { ascending: true })
+        .order('price_monthly', { ascending: true });
+      var rows = (res && res.data) || [];
+      rows.forEach(function(p){
+        if (p.is_custom_price) return;
+        if (p.audience === 'creator') PS.creator.push(p); else PS.brand.push(p);
+      });
+    } catch (e){ console.warn('plans load failed', e); }
+    render();
+  }
+
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', load);
+  else load();
+})();
+</script>
+
 <script>document.write('<script src="supabase-config.js?v=' + Date.now() + '"><\/script>');</script>
 <script>
 // ============ موجّه تثبيت التطبيق (PWA) ============
