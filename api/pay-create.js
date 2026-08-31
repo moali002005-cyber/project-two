@@ -1,3 +1,4 @@
+/* بوابة ميسر مفعّلة — 31 أغسطس 2026 */
 // Vercel Serverless Function: /api/pay-create
 // POST { campaign_id }  + Authorization: Bearer <توكن جلسة الشركة>
 //   → يتحقق أن المستدعي شركة الحملة، يحسب مجموع الصفقات المعتمدة غير المدفوعة،
