@@ -364,6 +364,8 @@ body {
 .ps-cta:hover{background:var(--ink);color:#fff}
 .ps-cta.solid{background:var(--accent);border-color:var(--accent);color:#fff}
 .ps-cta.solid:hover{background:var(--accent-ink);border-color:var(--accent-ink)}
+.ps-card.mine{border-color:var(--ink);background:#FCFBF8}
+.ps-cta.mineb{border-color:var(--line-strong);color:var(--ink-muted);background:#F7F5F1;cursor:default}
 .ps-foot{text-align:center;margin-top:38px}
 .ps-all{display:inline-block;font-size:15px;font-weight:700;color:var(--ink);text-decoration:none;border-bottom:2px solid var(--accent);padding-bottom:2px}
 .ps-fine{font-size:12.5px;color:var(--ink-faint);max-width:620px;margin:18px auto 0;line-height:1.85}
@@ -374,6 +376,7 @@ body {
 (function psInit(){
   var PS = { brand: [], creator: [] };
   var aud = 'brand';
+  var ME = null;
 
   function n(v){ return Number(v||0).toLocaleString('en-US'); }
   function esc(s){ return String(s==null?'':s).replace(/[&<>"']/g, function(c){
@@ -401,6 +404,7 @@ body {
       ? '/signup.html?role=' + (aud === 'brand' ? 'brand' : 'creator')
       : (aud === 'brand' ? '/plans.html' : '/plans-creator.html');
     var label = isFree ? 'ابدأ مجانًا' : 'اشترك الآن';
+    var mine = !!(ME && ME.code === p.code);
     var be = breakEven(p, base);
     return '<div class="ps-card' + (featured ? ' feat' : '') + '">'
       + (featured ? '<div class="ps-ribbon">الأكثر شيوعًا</div>' : '')
@@ -410,7 +414,7 @@ body {
       + '<div><span class="ps-comm">عمولة ' + n(p.commission_pct) + '٪ على كل صفقة</span></div>'
       + '<div class="ps-be">' + esc(be) + '</div>'
       + '<ul class="ps-feats">' + feats + '</ul>'
-      + '<a class="ps-cta' + (featured ? ' solid' : '') + '" href="' + href + '">' + label + '</a>'
+      + (mine ? '<span class="ps-cta mineb">باقتك الحالية</span>' : '<a class="ps-cta' + (featured ? ' solid' : '') + '" href="' + href + '">' + label + '</a>')
       + '</div>';
   }
 
@@ -443,6 +447,23 @@ body {
     bindTabs();
     for (var i = 0; i < 40 && !window.supabaseClient; i++){ await new Promise(function(r){ setTimeout(r, 150); }); }
     if (!window.supabaseClient){ render(); return; }
+    try {
+      var sess = await window.supabaseClient.auth.getSession();
+      if (sess && sess.data && sess.data.session) {
+        var st = await window.supabaseClient.rpc('my_plan_status');
+        var me = st && st.data;
+        if (me && !me.error && (me.role === 'brand' || me.role === 'creator')) {
+          ME = me;
+          aud = me.role;
+          var tb = document.querySelector('.ps-tabs');
+          if (tb) tb.style.display = 'none';
+          var sb = document.querySelector('.ps-sub');
+          if (sb) sb.textContent = (me.role === 'brand')
+            ? 'باقات الشركات — كل ترقية تنزّل عمولتك على كل حملة. الاشتراك يدفع نفسه من أول شهر تتجاوز فيه نقطة التعادل.'
+            : 'باقات المعلنين — كل ترقية تنزّل العمولة على مستحقاتك. الاشتراك يدفع نفسه من أول شهر تتجاوز فيه نقطة التعادل.';
+        }
+      }
+    } catch (e){ console.warn('plan role detect skipped', e); }
     try {
       var res = await window.supabaseClient
         .from('plans')
