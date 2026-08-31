@@ -316,7 +316,7 @@ body {
 
 
 <!-- ===== قسم الباقات ===== -->
-<section class="plansec" id="plans">
+<section class="plansec" id="plans" style="display:none">
   <div class="container">
     <div class="ps-head">
       <div class="ps-eyebrow">الباقات</div>
@@ -447,7 +447,7 @@ body {
   async function load(){
     bindTabs();
     for (var i = 0; i < 40 && !window.supabaseClient; i++){ await new Promise(function(r){ setTimeout(r, 150); }); }
-    if (!window.supabaseClient){ render(); return; }
+    if (!window.supabaseClient){ return; }
     try {
       var sess = await window.supabaseClient.auth.getSession();
       if (sess && sess.data && sess.data.session) {
@@ -465,6 +465,11 @@ body {
         }
       }
     } catch (e){ console.warn('plan role detect skipped', e); }
+
+    // القسم لا يظهر إلا لمستخدم مسجّل دخوله، وبباقات دوره فقط
+    if (!ME) return;
+    var sec = document.getElementById('plans');
+    if (sec) sec.style.display = '';
     try {
       var res = await window.supabaseClient
         .from('plans')
