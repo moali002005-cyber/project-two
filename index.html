@@ -400,10 +400,11 @@ body {
       return '<li><span class="tk">✓</span><span>' + esc(x) + '</span></li>';
     }).join('');
     var isFree = !(Number(p.price_monthly) > 0);
-    var href = isFree
+    var page = (aud === 'brand') ? '/plans.html' : '/plans-creator.html';
+    var href = (isFree && !ME)
       ? '/signup.html?role=' + (aud === 'brand' ? 'brand' : 'creator')
-      : (aud === 'brand' ? '/plans.html' : '/plans-creator.html');
-    var label = isFree ? 'ابدأ مجانًا' : 'اشترك الآن';
+      : page;
+    var label = isFree ? (ME ? 'الباقة الأساسية' : 'ابدأ مجانًا') : 'اشترك الآن';
     var mine = !!(ME && ME.code === p.code);
     var be = breakEven(p, base);
     return '<div class="ps-card' + (featured ? ' feat' : '') + '">'
