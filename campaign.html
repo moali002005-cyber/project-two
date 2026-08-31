@@ -528,7 +528,12 @@ async function init() {
 
     // واصل التحديث إذا لم تكتمل الصفقة (status أو الاعتماد)
     if (!dealClosed || !approvedClose) {
-      pollInterval = setInterval(checkNewMessages, 5000);
+      pollInterval = setInterval(() => { if (!document.hidden) checkNewMessages(); }, 5000);
+      /* لا نستهلك الخادم والتبويب مخفي، ونفحص فورًا عند الرجوع إليه */
+      if (!window.__vizHooked) {
+        window.__vizHooked = true;
+        document.addEventListener('visibilitychange', () => { if (!document.hidden && pollInterval) checkNewMessages(); });
+      }
     }
   } catch (err) {
     console.error(err);
