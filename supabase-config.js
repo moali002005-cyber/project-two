@@ -624,3 +624,578 @@ window.simblUpgradeCard = simblUpgradeCard;
 
 // نجلب الباقة مبكرًا مرة واحدة حتى تُضبط الحدود قبل أول رفع مرفقات
 try { simblPlan(); } catch (e) {}
+/* ================= مميزات الباقات — تركيب تلقائي (فلفلونسر) ================= */
+(function () {
+  'use strict';
+  if (window.__flfFeatInit) return;
+  window.__flfFeatInit = true;
+
+  var ACC = '#E23B2E';
+
+  function esc(s) {
+    return String(s == null ? '' : s)
+      .split('&').join('&amp;').split('<').join('&lt;')
+      .split('>').join('&gt;').split('"').join('&quot;');
+  }
+  function num(n) {
+    var v = Number(n);
+    if (!isFinite(v)) return '—';
+    return Math.round(v).toLocaleString('en-US');
+  }
+  function money(n) {
+    var v = Number(n);
+    if (!isFinite(v)) return '—';
+    return Math.round(v).toLocaleString('en-US') + ' ر.س';
+  }
+  function shortNum(n) {
+    var v = Number(n) || 0;
+    if (v >= 1000000) return (v / 1000000).toFixed(1).replace('.0', '') + 'M';
+    if (v >= 1000) return (v / 1000).toFixed(1).replace('.0', '') + 'K';
+    return String(v);
+  }
+  function dateAr(s) {
+    if (!s) return '—';
+    try {
+      var d = new Date(s);
+      return d.getFullYear() + '/' + (d.getMonth() + 1) + '/' + d.getDate();
+    } catch (e) { return '—'; }
+  }
+
+  function css() {
+    if (document.getElementById('flf-feat-css')) return;
+    var st = document.createElement('style');
+    st.id = 'flf-feat-css';
+    st.textContent = [
+      '.flf-bar{display:flex;gap:8px;flex-wrap:wrap;margin:14px 0 4px}',
+      '.flf-bar button{display:inline-flex;align-items:center;gap:6px;background:#fff;border:1.5px solid rgba(15,20,32,.14);',
+      'border-radius:100px;padding:9px 15px;font-family:inherit;font-size:13.5px;font-weight:600;color:#0F1420;cursor:pointer;transition:.15s}',
+      '.flf-bar button:hover{border-color:' + ACC + ';color:' + ACC + '}',
+      '.flf-bar button.locked{color:#8A93A6;border-style:dashed}',
+      '.flf-ov{position:fixed;inset:0;z-index:99998;background:rgba(15,20,32,.55);display:flex;align-items:center;',
+      'justify-content:center;padding:16px;overflow-y:auto}',
+      '.flf-mo{background:#fff;border-radius:20px;width:100%;max-width:760px;max-height:88vh;overflow-y:auto;',
+      'box-shadow:0 24px 70px rgba(15,20,32,.3);font-family:inherit;direction:rtl}',
+      '.flf-mh{position:sticky;top:0;background:#fff;display:flex;align-items:center;justify-content:space-between;',
+      'gap:12px;padding:18px 22px 12px;border-bottom:1px solid rgba(15,20,32,.08);z-index:2}',
+      '.flf-mh h3{margin:0;font-size:17px;font-weight:800;color:#0F1420}',
+      '.flf-x{background:none;border:0;font-size:22px;line-height:1;color:#8A93A6;cursor:pointer;padding:2px 6px}',
+      '.flf-mb{padding:18px 22px 24px}',
+      '.flf-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px}',
+      '.flf-kpi{background:#FAFAFB;border:1px solid rgba(15,20,32,.07);border-radius:14px;padding:13px 14px}',
+      '.flf-kpi .k{font-size:11.5px;color:#8A93A6;font-weight:600;margin-bottom:5px}',
+      '.flf-kpi .v{font-size:20px;font-weight:800;color:#0F1420;letter-spacing:-.4px}',
+      '.flf-kpi .s{font-size:11.5px;color:#8A93A6;margin-top:3px}',
+      '.flf-kpi.hi .v{color:' + ACC + '}',
+      '.flf-tbl{width:100%;border-collapse:collapse;font-size:13px;margin-top:14px}',
+      '.flf-tbl th{text-align:right;font-size:11.5px;color:#8A93A6;font-weight:700;padding:8px 6px;border-bottom:1px solid rgba(15,20,32,.1)}',
+      '.flf-tbl td{padding:10px 6px;border-bottom:1px solid rgba(15,20,32,.06);color:#0F1420}',
+      '.flf-tbl a{color:' + ACC + ';text-decoration:none;font-weight:600}',
+      '.flf-empty{text-align:center;color:#8A93A6;padding:34px 10px;font-size:14px}',
+      '.flf-load{text-align:center;color:#8A93A6;padding:34px 10px;font-size:14px}',
+      '.flf-note{background:#FFF6F5;border:1px solid rgba(226,59,46,.18);border-radius:12px;padding:12px 14px;',
+      'font-size:13px;color:#7E2119;margin-top:14px;line-height:1.7}',
+      '.flf-act{display:flex;gap:8px;flex-wrap:wrap;margin-top:16px}',
+      '.flf-act button,.flf-act a{background:' + ACC + ';color:#fff;border:0;border-radius:100px;padding:10px 18px;',
+      'font-family:inherit;font-size:13.5px;font-weight:700;cursor:pointer;text-decoration:none;display:inline-block}',
+      '.flf-act button.gh{background:#fff;color:#0F1420;border:1.5px solid rgba(15,20,32,.14)}',
+      '.flf-inv{background:#fff;border:1.5px solid rgba(226,59,46,.35);color:' + ACC + ';border-radius:100px;',
+      'padding:5px 12px;font-family:inherit;font-size:12px;font-weight:700;cursor:pointer;margin-top:6px}',
+      '.flf-inv.in{background:' + ACC + ';color:#fff;border-color:' + ACC + '}',
+      '.flf-lockcard{background:#FAFAFB;border:1.5px dashed rgba(15,20,32,.16);border-radius:16px;padding:22px;',
+      'text-align:center;color:#8A93A6;font-size:13.5px;line-height:1.8}',
+      '.flf-lockcard a{color:' + ACC + ';font-weight:700;text-decoration:none}',
+      '@media(max-width:640px){.flf-mo{max-width:100%}.flf-mb{padding:14px 14px 20px}}'
+    ].join('');
+    document.head.appendChild(st);
+  }
+
+  function modal(title) {
+    css();
+    var ov = document.createElement('div');
+    ov.className = 'flf-ov';
+    var mo = document.createElement('div');
+    mo.className = 'flf-mo';
+    var mh = document.createElement('div');
+    mh.className = 'flf-mh';
+    var h = document.createElement('h3');
+    h.textContent = title;
+    var x = document.createElement('button');
+    x.className = 'flf-x';
+    x.textContent = '×';
+    x.onclick = function () { ov.remove(); };
+    mh.appendChild(h); mh.appendChild(x);
+    var mb = document.createElement('div');
+    mb.className = 'flf-mb';
+    mb.innerHTML = '<div class="flf-load">جاري التحميل…</div>';
+    mo.appendChild(mh); mo.appendChild(mb);
+    ov.appendChild(mo);
+    ov.onclick = function (e) { if (e.target === ov) ov.remove(); };
+    document.body.appendChild(ov);
+    return { ov: ov, body: mb };
+  }
+
+  async function rpc(fn, args) {
+    try {
+      var r = await window.supabaseClient.rpc(fn, args || {});
+      if (r && r.error) return { error: 'rpc' };
+      return r ? r.data : null;
+    } catch (e) { return { error: 'rpc' }; }
+  }
+
+  function kpi(k, v, s, hi) {
+    return '<div class="flf-kpi' + (hi ? ' hi' : '') + '"><div class="k">' + esc(k) + '</div>'
+      + '<div class="v">' + v + '</div>'
+      + (s ? '<div class="s">' + esc(s) + '</div>' : '') + '</div>';
+  }
+
+  function failBody(m, d) {
+    if (d && d.error === 'plan') return '<div class="flf-empty">هذه الميزة غير متاحة في باقتك الحالية.</div>';
+    m.body.innerHTML = '<div class="flf-empty">تعذّر تحميل البيانات. حاول مرة ثانية.</div>';
+    return null;
+  }
+
+  /* ---------- 1) إحصائيات السوق ---------- */
+  window.flfMarketStats = async function () {
+    if (!(await window.simblGate('can_stats', 'إحصائيات السوق',
+      'شوف موقعك مقابل السوق: متوسط المتابعين، وسيط الأسعار، ترتيبك المئوي، وعدد الحملات المفتوحة على منصتك.'))) return;
+    var m = modal('إحصائيات السوق');
+    var d = await rpc('my_market_stats');
+    if (!d || d.error) { failBody(m, d); return; }
+    var fp = Number(d.followers_percentile) || 0;
+    var pp = Number(d.price_percentile) || 0;
+    var html = '<div class="flf-grid">'
+      + kpi('متابعوك', num(d.my_followers), 'متوسط السوق ' + num(d.avg_followers))
+      + kpi('ترتيبك بالمتابعين', 'أعلى من ' + fp + '%', 'من ' + num(d.peers_platform) + ' معلن على منصتك', true)
+      + kpi('سعرك المعلن', money(d.my_price), 'وسيط السوق ' + money(d.median_price))
+      + kpi('ترتيبك بالسعر', 'أعلى من ' + pp + '%', 'من معلني منصتك')
+      + kpi('متوسط الصفقة', money(d.avg_deal_90d), 'آخر ٩٠ يوم على منصتك')
+      + kpi('الطلب الحالي', num(d.open_campaigns), 'حملة مفتوحة تناسب منصتك', true)
+      + kpi('منافسوك بنفس التصنيف', num(d.peers_category), 'على نفس المنصة')
+      + '</div>';
+    var tip = '';
+    if (pp - fp >= 25) {
+      tip = 'سعرك في الشريحة العليا بينما وصولك أقل منها — هذا يقلّل فرص قبولك. جرّب تنزيل السعر قليلاً أو أبرز نتائجك السابقة في ملفك.';
+    } else if (fp - pp >= 25) {
+      tip = 'وصولك أعلى بكثير من سعرك — عندك مساحة ترفع سعرك بدون ما تخسر فرص.';
+    } else {
+      tip = 'سعرك متوازن مع وصولك مقارنة بالسوق. ركّز على سرعة الرد وجودة التسليم لرفع درجة ثقتك.';
+    }
+    html += '<div class="flf-note">' + esc(tip) + '</div>';
+    m.body.innerHTML = html;
+  };
+
+  /* ---------- 2) أرشيف الأعمال ---------- */
+  window.flfPostArchive = async function () {
+    if (!(await window.simblGate('can_post_archive', 'أرشيف أعمالي',
+      'أرشيف دائم لكل أعمالك المنشورة مع الروابط والأرقام والتقييمات — جاهز تعرضه لأي شركة.'))) return;
+    var m = modal('أرشيف أعمالي');
+    var d = await rpc('my_post_archive');
+    if (!d || d.error) { failBody(m, d); return; }
+    var items = (d && d.items) || [];
+    if (!items.length) {
+      m.body.innerHTML = '<div class="flf-empty">ما عندك أعمال منشورة بعد. أول ما تكمل صفقة بتظهر هنا تلقائياً.</div>';
+      return;
+    }
+    var tv = 0, te = 0, tr = 0, nr = 0;
+    items.forEach(function (it) {
+      tv += Number(it.views) || 0;
+      te += Number(it.net != null ? it.net : it.price) || 0;
+      if (it.stars) { tr += Number(it.stars); nr++; }
+    });
+    var html = '<div class="flf-grid">'
+      + kpi('عدد الأعمال', num(items.length), '')
+      + kpi('إجمالي المشاهدات', num(tv), '', true)
+      + kpi('إجمالي الأرباح', money(te), '')
+      + kpi('متوسط التقييم', nr ? (tr / nr).toFixed(1) + ' ★' : '—', nr ? num(nr) + ' تقييم' : 'لا تقييمات')
+      + '</div>';
+    html += '<table class="flf-tbl"><thead><tr><th>الحملة</th><th>الشركة</th><th>التاريخ</th>'
+      + '<th>المشاهدات</th><th>العائد</th><th>التقييم</th><th>الرابط</th></tr></thead><tbody>';
+    items.forEach(function (it) {
+      html += '<tr><td>' + esc(it.title || 'حملة') + '</td>'
+        + '<td>' + esc(it.brand || '—') + '</td>'
+        + '<td>' + dateAr(it.dt) + '</td>'
+        + '<td>' + (it.views != null ? num(it.views) : '—') + '</td>'
+        + '<td>' + money(it.net != null ? it.net : it.price) + '</td>'
+        + '<td>' + (it.stars ? Number(it.stars).toFixed(1) + ' ★' : '—') + '</td>'
+        + '<td>' + (it.url ? '<a href="' + esc(it.url) + '" target="_blank" rel="noopener">فتح</a>' : '—') + '</td></tr>';
+    });
+    html += '</tbody></table>';
+    m.body.innerHTML = html;
+  };
+
+  /* ---------- 3) بطاقة الإنجاز ---------- */
+  window.flfAchievementCard = async function () {
+    if (!(await window.simblGate('can_achievement_card', 'بطاقة إنجازي',
+      'بطاقة جاهزة للنشر تلخّص إنجازك على فلفلونسر: صفقاتك وتقييمك وترتيبك — تنزّلها صورة وتنشرها.'))) return;
+    var m = modal('بطاقة إنجازي');
+    var d = await rpc('my_achievement_card');
+    if (!d || d.error) { failBody(m, d); return; }
+    var cv = document.createElement('canvas');
+    cv.width = 1080; cv.height = 1350;
+    cv.style.cssText = 'width:100%;max-width:360px;display:block;margin:0 auto;border-radius:16px;box-shadow:0 10px 34px rgba(15,20,32,.18)';
+    var g = cv.getContext('2d');
+    var grd = g.createLinearGradient(0, 0, 1080, 1350);
+    grd.addColorStop(0, '#7E2119'); grd.addColorStop(1, '#E23B2E');
+    g.fillStyle = grd; g.fillRect(0, 0, 1080, 1350);
+    g.fillStyle = 'rgba(255,255,255,.10)';
+    g.beginPath(); g.arc(900, 190, 300, 0, Math.PI * 2); g.fill();
+    g.beginPath(); g.arc(140, 1180, 260, 0, Math.PI * 2); g.fill();
+    g.textAlign = 'center'; g.fillStyle = '#fff';
+    g.font = '700 34px system-ui, sans-serif';
+    g.fillText('FLFLUENCER', 540, 130);
+    g.font = '800 74px system-ui, sans-serif';
+    g.fillText(String(d.name || 'معلن'), 540, 300);
+    g.font = '500 40px system-ui, sans-serif';
+    g.fillStyle = 'rgba(255,255,255,.85)';
+    g.fillText(String(d.handle || ''), 540, 366);
+    var stats = [
+      [num(d.deals), 'صفقة مكتملة'],
+      [(d.avg_rating ? Number(d.avg_rating).toFixed(1) + ' ★' : '—'), 'متوسط التقييم'],
+      ['#' + num(d.rank), 'ترتيبك على منصتك'],
+      [shortNum(d.followers), 'متابع']
+    ];
+    var y = 520;
+    stats.forEach(function (s) {
+      g.fillStyle = 'rgba(255,255,255,.13)';
+      var rx = 110, rw = 860, rh = 150;
+      g.beginPath();
+      if (g.roundRect) { g.roundRect(rx, y, rw, rh, 34); } else { g.rect(rx, y, rw, rh); }
+      g.fill();
+      g.fillStyle = '#fff';
+      g.font = '800 66px system-ui, sans-serif';
+      g.textAlign = 'right';
+      g.fillText(String(s[0]), 930, y + 98);
+      g.fillStyle = 'rgba(255,255,255,.82)';
+      g.font = '500 36px system-ui, sans-serif';
+      g.textAlign = 'left';
+      g.fillText(String(s[1]), 160, y + 95);
+      y += 180;
+    });
+    g.textAlign = 'center';
+    g.fillStyle = 'rgba(255,255,255,.72)';
+    g.font = '500 32px system-ui, sans-serif';
+    g.fillText('flfluencer.com', 540, 1290);
+    m.body.innerHTML = '';
+    m.body.appendChild(cv);
+    var act = document.createElement('div');
+    act.className = 'flf-act';
+    act.style.justifyContent = 'center';
+    var dl = document.createElement('button');
+    dl.textContent = 'تنزيل الصورة';
+    dl.onclick = function () {
+      try {
+        var a = document.createElement('a');
+        a.download = 'flfluencer-card.png';
+        a.href = cv.toDataURL('image/png');
+        a.click();
+      } catch (e) { alert('تعذّر التنزيل على هذا المتصفح'); }
+    };
+    act.appendChild(dl);
+    m.body.appendChild(act);
+  };
+
+  /* ---------- 4) تحليلات الترتيب ---------- */
+  window.flfRankAnalytics = async function () {
+    if (!(await window.simblGate('can_rank_analytics', 'تحليلات ترتيبي',
+      'ترتيبك الدقيق: عام، وفي مدينتك، وفي تصنيفك، وبعدد الصفقات — وكم متابع يفصلك عن المركز اللي فوقك.'))) return;
+    var m = modal('تحليلات ترتيبي');
+    var d = await rpc('my_rank_analytics');
+    if (!d || d.error) { failBody(m, d); return; }
+    function pct(r, p) {
+      if (!p) return '—';
+      return Math.max(0, Math.round(100 - (Number(r) / Number(p)) * 100)) + '%';
+    }
+    var html = '<div class="flf-grid">'
+      + kpi('ترتيبك على منصتك', '#' + num(d.rank_all), 'من ' + num(d.pool_all) + ' معلن · أعلى من ' + pct(d.rank_all, d.pool_all), true)
+      + kpi('في مدينتك', '#' + num(d.rank_city), esc(d.city || '—') + ' · من ' + num(d.pool_city))
+      + kpi('في تصنيفك', '#' + num(d.rank_category), esc(d.category || '—') + ' · من ' + num(d.pool_category))
+      + kpi('بعدد الصفقات', '#' + num(d.rank_deals), num(d.my_deals) + ' صفقة · من ' + num(d.pool_deals) + ' منافس')
+      + '</div>';
+    if (d.followers_to_next != null && Number(d.followers_to_next) > 0) {
+      html += '<div class="flf-note">يفصلك عن المركز اللي فوقك <b>' + num(d.followers_to_next)
+        + '</b> متابع فقط. الترتيب يتحدّث تلقائياً كل ما تغيّرت أرقامك.</div>';
+    } else {
+      html += '<div class="flf-note">أنت في القمة على منصتك ضمن هذه القائمة 👑</div>';
+    }
+    html += '<div class="flf-note" style="background:#FAFAFB;border-color:rgba(15,20,32,.08);color:#5A6377">'
+      + 'أسرع طريقة ترفع ترتيبك: أكمل صفقاتك في وقتها واطلب التقييم بعد كل عمل — درجة الثقة أثقل من عدد المتابعين في نتائج بحث الشركات.</div>';
+    m.body.innerHTML = html;
+  };
+
+  /* ---------- 5) نتائج المحتوى (شركة) ---------- */
+  window.flfContentResults = async function (campaignId) {
+    if (!(await window.simblGate('can_content_results', 'نتائج المحتوى',
+      'أرقام كل عمل نُشر في حملاتك: المشاهدات والتفاعل وتكلفة الألف مشاهدة لكل معلن.'))) return;
+    var m = modal('نتائج المحتوى');
+    var d = await rpc('brand_content_results', campaignId ? { p_campaign: campaignId } : {});
+    if (!d || d.error) { failBody(m, d); return; }
+    var items = (d && d.items) || [];
+    if (!items.length) {
+      m.body.innerHTML = '<div class="flf-empty">ما فيه أعمال منشورة بعد. تظهر هنا تلقائياً بعد نشر المعلنين لمحتواهم.</div>';
+      return;
+    }
+    var tv = 0, tc = 0, teng = 0;
+    items.forEach(function (it) {
+      tv += Number(it.views) || 0;
+      tc += Number(it.price) || 0;
+      teng += (Number(it.likes) || 0) + (Number(it.comments) || 0) + (Number(it.shares) || 0);
+    });
+    var cpm = tv > 0 ? (tc / tv) * 1000 : null;
+    var html = '<div class="flf-grid">'
+      + kpi('إجمالي المشاهدات', num(tv), '', true)
+      + kpi('إجمالي التفاعل', num(teng), 'إعجاب + تعليق + مشاركة')
+      + kpi('إجمالي الإنفاق', money(tc), '')
+      + kpi('تكلفة الألف مشاهدة', cpm != null ? money(cpm) : '—', 'CPM')
+      + '</div>';
+    html += '<table class="flf-tbl"><thead><tr><th>المعلن</th><th>الحملة</th><th>المشاهدات</th>'
+      + '<th>التفاعل</th><th>نسبة التفاعل</th><th>التكلفة</th><th>CPM</th><th>الرابط</th></tr></thead><tbody>';
+    items.forEach(function (it) {
+      var v = Number(it.views) || 0;
+      var e = (Number(it.likes) || 0) + (Number(it.comments) || 0) + (Number(it.shares) || 0);
+      var er = v > 0 ? ((e / v) * 100).toFixed(1) + '%' : '—';
+      var c1 = Number(it.price) || 0;
+      var cm = v > 0 ? money((c1 / v) * 1000) : '—';
+      html += '<tr><td>' + esc(it.creator || '—') + '<div style="font-size:11px;color:#8A93A6">'
+        + esc(it.handle || '') + '</div></td>'
+        + '<td>' + esc(it.campaign || '—') + '</td>'
+        + '<td>' + (it.views != null ? num(it.views) : '—') + '</td>'
+        + '<td>' + num(e) + '</td>'
+        + '<td>' + er + '</td>'
+        + '<td>' + money(c1) + '</td>'
+        + '<td>' + cm + '</td>'
+        + '<td>' + (it.url ? '<a href="' + esc(it.url) + '" target="_blank" rel="noopener">فتح</a>' : '—') + '</td></tr>';
+    });
+    html += '</tbody></table>';
+    html += '<div class="flf-note" style="background:#FAFAFB;border-color:rgba(15,20,32,.08);color:#5A6377">'
+      + 'الأرقام تُسحب من المنصة بعد النشر. الخانات الفاضية تعني إن المحتوى لسه ما نُشر أو ما تم جلب أرقامه بعد.</div>';
+    m.body.innerHTML = html;
+  };
+
+  /* ---------- 6) تصدير القائمة (شركة) ---------- */
+  window.flfTopExport = async function () {
+    if (!(await window.simblGate('can_top_export', 'تصدير القائمة',
+      'نزّل قائمة أفضل المعلنين ملف CSV تشتغل عليه في إكسل وتشاركه مع فريقك.'))) return;
+    var rows = [];
+    try { if (typeof RANKED !== 'undefined' && RANKED && RANKED.length) rows = RANKED; } catch (e) { rows = []; }
+    if (!rows.length) { alert('القائمة لسه ما حمّلت. انتظر ثانية وأعد المحاولة.'); return; }
+    var NL = String.fromCharCode(10);
+    var head = ['الترتيب', 'الاسم', 'المعرّف', 'المنصة', 'التصنيف', 'المتابعون', 'الدولة', 'درجة الثقة', 'الصفقات', 'التقييم'];
+    function cell(v) {
+      var s = String(v == null ? '' : v);
+      if (s.indexOf(',') >= 0 || s.indexOf('"') >= 0) return '"' + s.split('"').join('""') + '"';
+      return s;
+    }
+    var out = [head.map(cell).join(',')];
+    rows.forEach(function (c) {
+      out.push([
+        c.rank, c.name, c.handle, c.platform, c.category,
+        c.followers, c.country || 'SA',
+        (c.score != null ? Math.round(c.score) : ''),
+        (c.deals_count != null ? c.deals_count : ''),
+        (c.avg_rating != null ? Number(c.avg_rating).toFixed(1) : '')
+      ].map(cell).join(','));
+    });
+    var blob = new Blob([String.fromCharCode(65279) + out.join(NL)], { type: 'text/csv;charset=utf-8;' });
+    var a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = 'flfluencer-top.csv';
+    a.click();
+    setTimeout(function () { URL.revokeObjectURL(a.href); }, 4000);
+  };
+
+  /* ---------- 7) دعوة معلن من القائمة (شركة) ---------- */
+  function cartGet() {
+    try { return JSON.parse(localStorage.getItem('simbl_cart') || '[]') || []; } catch (e) { return []; }
+  }
+  function cartSet(a) {
+    try { localStorage.setItem('simbl_cart', JSON.stringify(a)); } catch (e) {}
+  }
+  window.flfTopInvite = async function (id, btn) {
+    if (!(await window.simblGate('can_top_invite', 'الدعوة المباشرة من القائمة',
+      'ادعُ أي معلن من قائمة الأفضل مباشرة لحملة خاصة بك بدون ما تنتظر يتقدّم.'))) return;
+    var a = cartGet();
+    var i = a.indexOf(id);
+    var nowIn;
+    if (i >= 0) { a.splice(i, 1); nowIn = false; } else { a.push(id); nowIn = true; }
+    cartSet(a);
+    if (btn) {
+      btn.classList.toggle('in', nowIn);
+      btn.textContent = nowIn ? 'في السلة ✓' : 'دعوة';
+    }
+    if (nowIn && !document.getElementById('flf-cart-go')) {
+      var bar = document.createElement('a');
+      bar.id = 'flf-cart-go';
+      bar.href = '/cart.html';
+      bar.textContent = 'إكمال الدعوات في السلة ←';
+      bar.style.cssText = 'position:fixed;bottom:18px;right:50%;transform:translateX(50%);z-index:99997;'
+        + 'background:' + ACC + ';color:#fff;padding:12px 22px;border-radius:100px;font-family:inherit;'
+        + 'font-size:14px;font-weight:700;text-decoration:none;box-shadow:0 10px 28px rgba(226,59,46,.4)';
+      document.body.appendChild(bar);
+    }
+  };
+
+  /* ---------- قفل عناصر مبنية مسبقاً ---------- */
+  function lockEl(el, title, body) {
+    if (!el || el.getAttribute('data-flf-lock')) return;
+    el.setAttribute('data-flf-lock', '1');
+    if (el.textContent && el.textContent.indexOf('🔒') < 0) {
+      var lbl = el.querySelector('span:not(.filter-count)') || el;
+      if (lbl === el) { el.textContent = '🔒 ' + el.textContent.trim(); }
+      else { lbl.textContent = '🔒 ' + lbl.textContent.trim(); }
+    }
+    el.style.opacity = '.72';
+    el.addEventListener('click', async function (ev) {
+      ev.preventDefault(); ev.stopPropagation(); ev.stopImmediatePropagation();
+      var pl = null;
+      try { pl = await window.simblPlan(); } catch (e) {}
+      var url = (pl && pl.role === 'creator') ? '/plans-creator.html' : '/plans.html';
+      window.simblUpgradeCard(title, body, pl && pl.name_ar, url);
+    }, true);
+  }
+
+  /* ---------- التركيب التلقائي ---------- */
+  function path() {
+    var p = (location.pathname || '').toLowerCase();
+    if (p === '/' || p === '') return '/index.html';
+    if (p.indexOf('.') < 0) return p + '.html';
+    return p;
+  }
+
+  function bar(items) {
+    css();
+    var d = document.createElement('div');
+    d.className = 'flf-bar';
+    items.forEach(function (it) {
+      var b = document.createElement('button');
+      b.textContent = it[0];
+      b.onclick = it[1];
+      d.appendChild(b);
+    });
+    return d;
+  }
+
+  async function mount() {
+    var p = path();
+    var plan = null;
+    try { plan = await window.simblPlan(); } catch (e) { plan = null; }
+    var role = plan && plan.role;
+
+    if (p.indexOf('creator.html') >= 0 && role !== 'brand') {
+      var host = document.getElementById('my-trust');
+      if (host && !document.querySelector('.flf-bar')) {
+        var b = bar([
+          ['📊 إحصائيات السوق', window.flfMarketStats],
+          ['🗂️ أرشيف أعمالي', window.flfPostArchive],
+          ['🏅 بطاقة إنجازي', window.flfAchievementCard],
+          ['📈 تحليلات ترتيبي', window.flfRankAnalytics]
+        ]);
+        host.parentNode.insertBefore(b, host.nextSibling);
+        ['can_stats', 'can_post_archive', 'can_achievement_card', 'can_rank_analytics'].forEach(function (f, i) {
+          if (plan && plan[f] !== true && !plan.__unknown) {
+            b.children[i].classList.add('locked');
+          }
+        });
+      }
+    }
+
+    if (p.indexOf('top.html') >= 0) {
+      if (plan && plan.can_top_filters !== true && !plan.__unknown) {
+        lockEl(document.getElementById('filter-btn'), 'فلترة القائمة',
+          'صفِّ قائمة الأفضل حسب المنصة والتصنيف عشان توصل للمعلن المناسب أسرع.');
+      }
+      var tools = document.querySelector('.tools-row');
+      if (tools && !document.getElementById('flf-top-export')) {
+        var ex = document.createElement('button');
+        ex.id = 'flf-top-export';
+        ex.className = 'filter-btn';
+        var exLocked = (plan && plan.can_top_export !== true && !plan.__unknown);
+        ex.textContent = exLocked ? '🔒 تصدير' : '⇩ تصدير';
+        ex.onclick = window.flfTopExport;
+        if (exLocked) ex.style.opacity = '.72';
+        tools.appendChild(ex);
+      }
+      if (role === 'brand') {
+        var addInv = function () {
+          document.querySelectorAll('.titem').forEach(function (el) {
+            if (el.querySelector('.flf-inv')) return;
+            var id = (el.id || '').indexOf('ti-') === 0 ? el.id.slice(3) : '';
+            if (!id) return;
+            var side = el.querySelector('.tside');
+            if (!side) return;
+            var bt = document.createElement('button');
+            bt.className = 'flf-inv';
+            var inCart = cartGet().indexOf(id) >= 0;
+            if (inCart) bt.classList.add('in');
+            bt.textContent = inCart ? 'في السلة ✓' : 'دعوة';
+            bt.onclick = function (ev) { ev.stopPropagation(); window.flfTopInvite(id, bt); };
+            side.appendChild(bt);
+          });
+        };
+        addInv();
+        var lst = document.getElementById('list');
+        if (lst && window.MutationObserver) {
+          new MutationObserver(function () { addInv(); }).observe(lst, { childList: true });
+        }
+      }
+    }
+
+    if (p.indexOf('creators.html') >= 0) {
+      if (plan && plan.can_direct_invite !== true && !plan.__unknown) {
+        var lockCarts = function () {
+          document.querySelectorAll('.cart-btn').forEach(function (el) {
+            lockEl(el, 'الدعوة المباشرة',
+              'ادعُ المعلنين مباشرة لحملة خاصة بك بدون ما تنتظرهم يتقدّمون — متاحة في الباقات الأعلى.');
+          });
+        };
+        lockCarts();
+        var grid = document.getElementById('grid');
+        if (grid && window.MutationObserver) {
+          new MutationObserver(function () { lockCarts(); }).observe(grid, { childList: true, subtree: true });
+        }
+      }
+    }
+
+    if (p.indexOf('myteam.html') >= 0) {
+      if (plan && plan.can_team_activity !== true && !plan.__unknown) {
+        var hideFeed = function () {
+          document.querySelectorAll('.feed').forEach(function (el) {
+            if (el.getAttribute('data-flf-lock')) return;
+            el.setAttribute('data-flf-lock', '1');
+            el.innerHTML = '<div class="flf-lockcard">🔒 سجل نشاط الفريق متاح في باقة أعلى<br>'
+              + '<a href="/plans.html">شوف الباقات</a></div>';
+          });
+        };
+        css(); hideFeed();
+        if (window.MutationObserver) {
+          new MutationObserver(function () { hideFeed(); })
+            .observe(document.body, { childList: true, subtree: true });
+        }
+      }
+    }
+
+    if (p.indexOf('company.html') >= 0 && role === 'brand') {
+      var tabs = document.querySelector('.tabs') || (document.querySelector('.tab') && document.querySelector('.tab').parentNode);
+      if (tabs && !document.getElementById('flf-cr-btn')) {
+        var cb = document.createElement('button');
+        cb.id = 'flf-cr-btn';
+        cb.className = 'tab';
+        cb.textContent = 'نتائج المحتوى';
+        if (plan && plan.can_content_results !== true && !plan.__unknown) {
+          cb.textContent = '🔒 نتائج المحتوى';
+        }
+        cb.onclick = function (ev) {
+          ev.preventDefault(); ev.stopPropagation();
+          window.flfContentResults();
+        };
+        tabs.appendChild(cb);
+      }
+    }
+  }
+
+  function boot() {
+    setTimeout(function () { mount().catch(function () {}); }, 600);
+  }
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', boot);
+  } else { boot(); }
+})();
