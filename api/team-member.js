@@ -33,7 +33,7 @@ async function getAuthedUser(req) {
     if (!r.ok) return null;
     const au = await r.json();
     if (!au || !au.id) return null;
-    const rows = await sbGet(`users?auth_id=eq.${au.id}&select=id,role,company_name,is_test`);
+    const rows = await sbGet(`users?auth_id=eq.${au.id}&select=id,role,company_name,is_test,plan_code,plan_expires_at`);
     return (rows && rows[0]) || null;
   } catch (e) { console.error('getAuthedUser error:', e); return null; }
 }
@@ -44,6 +44,25 @@ export default async function handler(req, res) {
   const owner = await getAuthedUser(req);
   if (!owner) return res.status(401).json({ error: 'يلزم تسجيل الدخول من جديد' });
   if (owner.role !== 'brand') return res.status(403).json({ error: 'مساحات الفرق مخصّصة لحسابات الشركات' });
+
+  // ===== سقف مقاعد الفريق حسب الباقة (الفرض الحقيقي هنا لا في الواجهة) =====
+  try {
+    var _pcode = owner.plan_code || 'trial';
+    if (owner.plan_expires_at && new Date(owner.plan_expires_at) < new Date() && _pcode !== 'trial_legacy') _pcode = 'trial';
+    var _planRows = await sbGet('plans?code=eq.' + encodeURIComponent(_pcode) + '&select=name_ar,max_seats');
+    var _plan = _planRows && _planRows[0];
+    var _cap = _plan && _plan.max_seats != null ? Number(_plan.max_seats) : null;
+    if (_cap != null) {
+      var _cur = await sbGet('team_members?owner_id=eq.' + owner.id + "&status=eq.active&select=member_id");
+      var _used = (_cur ? _cur.length : 0) + 1; // +1 لصاحب الحساب نفسه
+      if (_used >= _cap) {
+        return res.status(403).json({
+          error: 'باقة «' + (_plan.name_ar || 'الحالية') + '» تسمح بـ ' + _cap + ' مقعدًا فقط، وقد اكتملت. ارتقِ لباقة أعلى لإضافة أعضاء.',
+          code: 'seat_limit'
+        });
+      }
+    }
+  } catch (e) { console.error('seat cap check failed:', e); }
 
   let { name, email, password, permissions } = req.body || {};
   name = String(name || '').trim();
