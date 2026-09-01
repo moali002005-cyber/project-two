@@ -446,22 +446,16 @@ function duesRowFilled(a, camp, idx, totals) {
     const d = publishIso ? new Date(publishIso) : null;
     if (d && !isNaN(d.getTime())) { dateCopy = d.toLocaleDateString('en-GB'); dateDisp = duesDateText(publishIso); }
   }
+  // الشركة تدفع للمنصة مقدّمًا — فالحالة عندها = هل سُدّدت هذه الصفقة للمنصة، لا التحويل للمعلن
+  const paidToPlatform = (a.platform_paid === true);
+  if (paidToPlatform) totals.paid += amountNum; else totals.due += amountNum;
   if (stg < 9) {
-    statusPlain = 'قيد التنفيذ - ' + (DUES_STAGE_NAMES[stg] || ('مرحلة ' + stg));
+    statusPlain = 'قيد التنفيذ - ' + (DUES_STAGE_NAMES[stg] || ('مرحلة ' + stg)) + (paidToPlatform ? ' · مدفوعة' : '');
     statusHtml = '<span class="dp dp-prog">' + escHtml(statusPlain) + '</span>';
+  } else if (paidToPlatform) {
+    statusPlain = 'مدفوعة'; statusHtml = '<span class="dp dp-paid">💳 مدفوعة ✓</span>';
   } else {
-    if (ps === 'confirmed') {
-      statusPlain = 'تم الدفع'; statusHtml = '<span class="dp dp-paid">تم الدفع ✓</span>'; totals.paid += amountNum;
-    } else if (ps === 'marked_paid') {
-      statusPlain = 'حوّلت - بانتظار التأكيد'; statusHtml = '<span class="dp dp-wait">حوّلت — بانتظار التأكيد</span>'; totals.due += amountNum;
-    } else if (ps === 'disputed') {
-      statusPlain = 'نزاع استلام'; statusHtml = '<span class="dp dp-due">نزاع استلام</span>'; totals.due += amountNum;
-      action = '';
-    } else {
-      const overdue = duesIsOverdue(a, camp);
-      statusPlain = 'باقي' + (overdue ? ' - متأخر' : ''); statusHtml = '<span class="dp dp-due">' + escHtml(statusPlain) + '</span>'; totals.due += amountNum;
-      action = '';
-    }
+    statusPlain = 'بانتظار الدفع'; statusHtml = '<span class="dp dp-due">بانتظار الدفع</span>';
   }
 
   // تجاوز الحالة عند وجود طلب تصحيح: بانتظار تعديل المعلن (كهرماني) → عُدّل جاهز للمراجعة (أخضر)
@@ -598,8 +592,8 @@ function renderCampaignBlock(camp, deals) {
   const colLetters = ['A', 'B', 'C', 'D', 'E', 'F', 'G'].map(L => '<th class="xl-colh">' + L + '</th>').join('');
   const launch = duesDateText(camp.created_at);
   const sumChips =
-    '<span class="dues-chip due">المتبقّي: ' + totals.due.toLocaleString('en-US') + ' ر.س</span>' +
-    '<span class="dues-chip paid">المدفوع: ' + totals.paid.toLocaleString('en-US') + ' ر.س</span>';
+    '<span class="dues-chip due">بانتظار الدفع: ' + totals.due.toLocaleString('en-US') + ' ر.س</span>' +
+    '<span class="dues-chip paid">مدفوع للمنصة: ' + totals.paid.toLocaleString('en-US') + ' ر.س</span>';
 
   return '<div class="camp-block" data-campid="' + camp.id + '">'
     + '<div class="camp-bar">'
