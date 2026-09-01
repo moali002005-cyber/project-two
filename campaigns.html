@@ -2906,22 +2906,16 @@ function renderDues() {
         dateDisp = duesDateText(publishIso);
       }
     }
+    // الشركة تدفع للمنصة مقدّمًا — فالحالة عندها = هل سُدّدت هذه الصفقة للمنصة، لا التحويل للمعلن
+    const paidToPlatform = (a.platform_paid === true);
+    if (paidToPlatform) totalPaid += amountNum; else totalDue += amountNum;
     if (stg < 9) {
-      statusPlain = 'قيد التنفيذ - ' + (DUES_STAGE_NAMES[stg] || ('مرحلة ' + stg));
+      statusPlain = 'قيد التنفيذ - ' + (DUES_STAGE_NAMES[stg] || ('مرحلة ' + stg)) + (paidToPlatform ? ' · مدفوعة' : '');
       statusHtml = '<span class="dp dp-prog">' + escHtml(statusPlain) + '</span>';
+    } else if (paidToPlatform) {
+      statusPlain = 'مدفوعة'; statusHtml = '<span class="dp dp-paid">💳 مدفوعة ✓</span>';
     } else {
-      if (ps === 'confirmed') {
-        statusPlain = 'تم الدفع'; statusHtml = '<span class="dp dp-paid">تم الدفع ✓</span>'; totalPaid += amountNum;
-      } else if (ps === 'marked_paid') {
-        statusPlain = 'حوّلت - بانتظار التأكيد'; statusHtml = '<span class="dp dp-wait">حوّلت — بانتظار التأكيد</span>'; totalDue += amountNum;
-      } else if (ps === 'disputed') {
-        statusPlain = 'نزاع استلام'; statusHtml = '<span class="dp dp-due">نزاع استلام</span>'; totalDue += amountNum;
-        action = '';
-      } else {
-        const overdue = duesIsOverdue(a, camp);
-        statusPlain = 'باقي' + (overdue ? ' - متأخر' : ''); statusHtml = '<span class="dp dp-due">' + escHtml(statusPlain) + '</span>'; totalDue += amountNum;
-        action = '';
-      }
+      statusPlain = 'بانتظار الدفع'; statusHtml = '<span class="dp dp-due">بانتظار الدفع</span>';
     }
 
     // 1) الاسم (نسخ)
@@ -2952,8 +2946,8 @@ function renderDues() {
   }).join('');
 
   const sumChips =
-    '<span class="dues-chip due">المتبقّي: ' + totalDue.toLocaleString('en-US') + ' ر.س</span>' +
-    '<span class="dues-chip paid">المدفوع: ' + totalPaid.toLocaleString('en-US') + ' ر.س</span>';
+    '<span class="dues-chip due">بانتظار الدفع: ' + totalDue.toLocaleString('en-US') + ' ر.س</span>' +
+    '<span class="dues-chip paid">مدفوع للمنصة: ' + totalPaid.toLocaleString('en-US') + ' ر.س</span>';
 
   const colLetters = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'].map(L => '<th class="xl-colh">' + L + '</th>').join('');
 
