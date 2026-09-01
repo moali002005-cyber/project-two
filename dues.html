@@ -715,7 +715,9 @@ function renderDues() {
 
 // ============ تصدير شيت الدفع المختصر: رابط الفيديو + الاسم بالبنك + الآيبان ============
 // يُبنى لحظة الضغط من أحدث البيانات (يشمل أي تنظيف/تعديل سويته) — فهو محدّث تلقائيًا.
-function exportPaySheetCSV(onlyCampId) {
+async function exportPaySheetCSV(onlyCampId) {
+  // قيد الباقة
+  if (typeof simblGate === 'function' && !await simblGate('can_pay_csv', 'شيت الدفع', 'ملف جاهز لتحويل مستحقات المعلنين دفعة واحدة إلى البنك — متاح مع باقة Business.')) return;
   let camps = (myCampaigns || []).slice().sort((a, b) => new Date(b.created_at || 0) - new Date(a.created_at || 0));
   if (onlyCampId) camps = camps.filter(c => c.id === onlyCampId);
   const header = ['#', 'رابط الفيديو', 'الاسم بالبنك', 'الآيبان', 'البنك', 'المبلغ'];
@@ -782,7 +784,9 @@ function _lnkPair(url, n) {
     + escHtml(_lnkShort(url)) + '</a></td>';
 }
 
-function exportLinksPDF(onlyCampId) {
+async function exportLinksPDF(onlyCampId) {
+  // قيد الباقة
+  if (typeof simblGate === 'function' && !await simblGate('can_links_pdf', 'شيت الروابط PDF', 'كل روابط المحتوى المنشور في ملف واحد جاهز للطباعة والمشاركة — متاح مع باقة Pro فأعلى.')) return;
   var camps = (myCampaigns || []).slice().sort(function (a, b) {
     return new Date(b.created_at || 0) - new Date(a.created_at || 0);
   });
