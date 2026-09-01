@@ -82,8 +82,8 @@ h3{font-size:15.5px;font-weight:700;margin:16px 0 6px}
 
 <header class="hero">
   <div class="container">
-    <h1>باقات المعلنين</h1>
-    <p>جرّب المنصة كاملة في ٣ حملات بعمولة ٢٠٪. ومع كل ترقية تنزل العمولة على مستحقاتك — ١٥٪ على Pro و٧٪ على Premium — مع حملات بلا حد وأولوية أعلى أمام الشركات. الاشتراك شهري وتقدر تلغيه في أي وقت. تستلم مستحقاتك من المنصة مباشرة كل يوم اثنين بعد خصم عمولة باقتك — بلا انتظار تحويل من الشركة.</p>
+    <h1 id="pg-title">باقات المعلنين</h1>
+    <p id="pg-intro">جرّب المنصة كاملة في ٣ حملات بعمولة ٢٠٪. ومع كل ترقية تنزل العمولة على مستحقاتك — ١٥٪ على Pro و٧٪ على Premium — مع حملات بلا حد وأولوية أعلى أمام الشركات. الاشتراك شهري وتقدر تلغيه في أي وقت. تستلم مستحقاتك من المنصة مباشرة كل يوم اثنين بعد خصم عمولة باقتك — بلا انتظار تحويل من الشركة.</p>
     <div class="toggle" id="period-toggle" hidden></div>
     <div id="my-plan" class="myplan" hidden></div>
   </div>
@@ -94,7 +94,7 @@ h3{font-size:15.5px;font-weight:700;margin:16px 0 6px}
     <div class="loading">جاري تحميل الباقات…</div>
   </div>
 
-  <div class="note">
+  <div class="note" id="pg-note">
     <b>متى تستحق الترقية؟</b> العمولة تنزل مع الباقة: ٢٠٪ على Free، و١٥٪ على Pro، و٧٪ على Premium. الباقة المجانية محدودة بثلاث حملات مدى الحياة، فالمقارنة الحقيقية بين Pro وPremium: عند دخل شهري <b>٧٬٥٠٠ ر.س</b> فأكثر تصير Premium أوفر لك، وتحتها Pro هي الأنسب. وفوق توفير العمولة تحصل على حملات بلا حد وترتيب أعلى في ترشيحات الشركات.
   </div>
 
@@ -133,10 +133,10 @@ function renderPlans(){
     }).join('');
     var btn;
     if (isCur) btn = '<button class="cta cur" disabled>باقتك الحالية</button>';
-    else if (Number(price) === 0) btn = '<a class="cta ghost" href="/signup.html?role=creator">ابدأ مجانًا</a>';
+    else if (!(Number(price) > 0)) btn = '<button class="cta cur" disabled>الباقة الأساسية</button>';
     else btn = '<button class="cta" onclick="subscribe(\'' + p.code + '\')">اشترك الآن</button>';
-    return '<div class="plan' + (p.code === 'c_pro' ? ' feat' : '') + (isCur ? ' mine' : '') + '">'
-      + (p.code === 'c_pro' ? '<div class="ribbon">الأكثر اختيارًا</div>' : '')
+    return '<div class="plan' + (FEAT(p) ? ' feat' : '') + (isCur ? ' mine' : '') + '">'
+      + (FEAT(p) ? '<div class="ribbon">' + (AUD === 'creator' ? 'الأكثر اختيارًا' : 'الأكثر شيوعًا') + '</div>' : '')
       + '<h3>' + esc(p.name_ar) + '</h3>'
       + '<p class="tag">' + esc(p.tagline_ar || '') + '</p>'
       + '<div class="price">' + (price > 0 ? '<span class="num">' + ar(price) + '</span> <span class="cur2">ر.س / ' + (PERIOD === 'yearly' ? 'سنة' : 'شهر') + '</span>' : '<span class="num">مجانًا</span>')
@@ -188,6 +188,28 @@ async function checkReturn(){
   } catch (e){}
 }
 
+var AUD = 'brand';
+var COPY = {
+  brand: {
+    title: 'باقات الشركات',
+    intro: 'ابدأ بلا اشتراك على باقة Starter وادفع عمولة فقط على ما تنفّذه. ومع كل ترقية تنزل العمولة: ١٥٪ على Starter، و١٠٪ على Pro، و٥٪ على Business — مع معلنين ومقاعد ومزايا أكثر. الاشتراك شهري وتقدر تلغيه في أي وقت.',
+    note: '<b>كيف تُحتسب التكلفة؟</b> اشتراك الباقة (إن وُجد) مقابل استخدام المنصة ويُدفع شهريًا. أما قيمة الحملة نفسها فهي مجموع أسعار التعاونات المتفق عليها مع المعلنين، تُضاف إليها عمولة باقتك، ويُعرض التفصيل كاملًا — القيمة والعمولة والإجمالي — في بطاقة الحملة وفي شاشة تأكيد قبل الدفع.<div class="example"><b>مثال على Starter:</b> حملة بـ ٢٬٠٠٠ ر.س ← عمولة المنصة ١٥٪ = ٣٠٠ ر.س، والإجمالي المستحق ٢٬٣٠٠ ر.س. ونفس الحملة على Pro: عمولة ١٠٪ = ٢٠٠ ر.س والإجمالي ٢٬٢٠٠ ر.س.</div>'
+  },
+  creator: {
+    title: 'باقات المعلنين',
+    intro: 'جرّب المنصة كاملة في ٣ حملات بعمولة ٢٠٪. ومع كل ترقية تنزل العمولة على مستحقاتك — ١٥٪ على Pro و٧٪ على Premium — مع حملات بلا حد وأولوية أعلى في الترشيحات. الاشتراك شهري وتقدر تلغيه في أي وقت. تستلم مستحقاتك من المنصة مباشرة كل يوم اثنين بعد خصم عمولة باقتك.',
+    note: '<b>متى تستحق الترقية؟</b> العمولة تنزل مع الباقة: ٢٠٪ على Free، و١٥٪ على Pro، و٧٪ على Premium. الباقة المجانية محدودة بثلاث حملات مدى الحياة، فالمقارنة الحقيقية بين Pro وPremium: عند دخل شهري <b>٧٬٥٠٠ ر.س</b> فأكثر تصير Premium أوفر لك، وتحتها Pro هي الأنسب. وفوق توفير العمولة تحصل على حملات بلا حد وترتيب أعلى في الترشيحات.'
+  }
+};
+function applyRoleCopy(a){
+  var c = COPY[a] || COPY.brand;
+  document.title = c.title + ' - Flfluencer';
+  var t = document.getElementById('pg-title'); if (t) t.textContent = c.title;
+  var i = document.getElementById('pg-intro'); if (i) i.textContent = c.intro;
+  var n = document.getElementById('pg-note'); if (n) n.innerHTML = c.note;
+}
+function FEAT(p){ return AUD === 'creator' ? (p.code === 'c_pro') : (p.code === 'hot'); }
+
 async function init(){
   // بوابة: الصفحة للمسجّلين فقط، وكل دور يرى باقاته هو
   try {
@@ -195,11 +217,12 @@ async function init(){
     if (!s0 || !s0.data || !s0.data.session){ location.replace('/login.html'); return; }
     var g0 = await window.supabaseClient.rpc('my_plan_status');
     var role0 = (g0 && g0.data && !g0.data.error) ? g0.data.role : null;
-    if (role0 === 'brand'){ location.replace('/plans.html' + location.search); return; }
+    AUD = (role0 === 'creator') ? 'creator' : 'brand';
+    applyRoleCopy(AUD);
   } catch (e){ location.replace('/login.html'); return; }
 
   try {
-    var r = await window.supabaseClient.from('plans').select('*').eq('is_active', true).eq('audience', 'creator').order('sort_order');
+    var r = await window.supabaseClient.from('plans').select('*').eq('is_active', true).eq('audience', AUD).order('sort_order');
     PLANS = r.data || [];
   } catch (e){ PLANS = []; }
   try {
