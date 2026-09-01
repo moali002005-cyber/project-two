@@ -456,11 +456,11 @@ function duesRowFilled(a, camp, idx, totals) {
       statusPlain = 'حوّلت - بانتظار التأكيد'; statusHtml = '<span class="dp dp-wait">حوّلت — بانتظار التأكيد</span>'; totals.due += amountNum;
     } else if (ps === 'disputed') {
       statusPlain = 'نزاع استلام'; statusHtml = '<span class="dp dp-due">نزاع استلام</span>'; totals.due += amountNum;
-      action = '<button class="dues-mark" onclick="setBrandPaid(\'' + a.id + '\')">تم التحويل ✓</button>';
+      action = '';
     } else {
       const overdue = duesIsOverdue(a, camp);
       statusPlain = 'باقي' + (overdue ? ' - متأخر' : ''); statusHtml = '<span class="dp dp-due">' + escHtml(statusPlain) + '</span>'; totals.due += amountNum;
-      action = '<button class="dues-mark" onclick="setBrandPaid(\'' + a.id + '\')">تم التحويل ✓</button>';
+      action = '';
     }
   }
 
@@ -478,9 +478,6 @@ function duesRowFilled(a, camp, idx, totals) {
   }
 
   const nameCell = '<td class="cell dues-editable" data-appid="' + a.id + '" data-field="name" data-copy="' + escHtml(nameRaw) + '" onclick="duesCopy(this)">' + name + '</td>';
-  const phoneCell = phoneRaw
-    ? '<td><div style="display:flex;gap:8px;align-items:center;justify-content:center;white-space:nowrap;"><a class="dues-link" href="' + escHtml(duesWaLink(phoneRaw)) + '" target="_blank" rel="noopener">واتساب ↗</a><span style="color:var(--line,#ddd);">|</span><span class="dues-link" data-copy="' + escHtml(phoneRaw) + '" onclick="duesCopy(this)" style="cursor:pointer;">' + escHtml(phoneRaw) + '</span></div></td>'
-    : '<td class="dim">—</td>';
   const acctCell = acctLink
     ? '<td><a class="dues-link" href="' + escHtml(acctLink) + '" target="_blank" rel="noopener">رابط الحساب ↗</a></td>'
     : '<td class="dim">—</td>';
@@ -489,19 +486,14 @@ function duesRowFilled(a, camp, idx, totals) {
     ? '<td><div style="display:flex;gap:8px;align-items:center;justify-content:center;white-space:nowrap;"><a class="dues-link" href="' + escHtml(pub) + '" target="_blank" rel="noopener">فتح ↗</a><span style="color:var(--line,#ddd);">|</span><span class="dues-link" data-copy="' + escHtml(pub) + '" onclick="duesCopy(this)" style="cursor:pointer;">نسخ ⎘</span></div></td>'
     : '<td class="dim">—</td>';
   const promoCell = '<td class="cell dues-editable dues-masklabel" data-appid="' + a.id + '" data-field="promo" data-copy="' + escHtml(promo) + '" data-real="' + escHtml(promo) + '" onclick="duesCopy(this)">' + (promo ? '<span class="dues-link">انسخ كود الترويج ⎘</span>' : '') + '</td>';
-  const ibanBad = (ibanRaw && !ibanLooksValid(ibanRaw)) ? ' iban-bad' : '';
-  const ibanCell = '<td class="cell xl-iban dues-editable' + ibanBad + '" data-appid="' + a.id + '" data-field="iban" data-copy="' + escHtml(ibanRaw) + '" onclick="duesCopy(this)">' + escHtml(ibanRaw || '') + '</td>';
-  const bankName = bankFromIban(ibanRaw);
-  const bankCell = '<td class="cell dim" style="white-space:nowrap;">' + escHtml(bankName || '—') + '</td>';
-  const holderCell = '<td class="cell dues-editable" data-appid="' + a.id + '" data-field="holder" data-copy="' + escHtml(holderRaw) + '" onclick="duesCopy(this)">' + escHtml(holderRaw || '') + '</td>';
   const amountCell = '<td class="cell xl-amount" data-copy="' + amountNum + '" onclick="duesCopy(this)">' + amountDisp + '</td>';
   const statusCell = '<td class="cell" data-copy="' + escHtml(statusPlain) + '" onclick="duesCopy(this)">' + statusHtml + '</td>';
   const fixBtn = (stg >= 1) ? '<button class="dues-fix" onclick="requestFix(\'' + a.id + '\')">↩︎ طلب تصحيح</button>' : '';
   const actionCell = '<td><div style="display:flex;gap:4px;align-items:center;justify-content:center;flex-wrap:wrap;">' + (action || '') + fixBtn + ((action || fixBtn) ? '' : '<span class="dim">—</span>') + '</div></td>';
 
-  const rowTSV = [nameRaw, phoneRaw || '—', acctLink || '—', dateCopy || '—', pub || '—', promo || '—', ibanRaw || '—', bankName || '—', holderRaw || '—', amountNum, statusPlain].join('\t');
+  const rowTSV = [nameRaw, acctLink || '—', dateCopy || '—', pub || '—', promo || '—', amountNum, statusPlain].join(String.fromCharCode(9));
   return '<tr><td class="xl-rowh xl-rowcopy" data-copy="' + escHtml(rowTSV) + '" onclick="duesCopyRow(this)" title="نسخ الصف كامل">' + toArabic(idx) + '</td>'
-    + nameCell + phoneCell + acctCell + dateCell + videoCell + promoCell + ibanCell + bankCell + holderCell + amountCell + statusCell + actionCell + '</tr>';
+    + nameCell + acctCell + dateCell + videoCell + promoCell + amountCell + statusCell + actionCell + '</tr>';
 }
 
 // نسخ الصف كامل (مفصول بـ Tab — جاهز للّصق في إكسل)
@@ -525,7 +517,7 @@ function csvCell(v) {
 function exportDuesCSV(onlyCampId) {
   let camps = (myCampaigns || []).slice().sort((a, b) => new Date(b.created_at || 0) - new Date(a.created_at || 0));
   if (onlyCampId) camps = camps.filter(c => c.id === onlyCampId);
-  const header = ['الحملة', 'تاريخ انطلاق الحملة', 'الاسم', 'الجوال', 'رابط الحساب', 'تاريخ النشر', 'رابط الفيديو', 'كود الترويج', 'الآيبان', 'البنك', 'الاسم بالبنك', 'المبلغ', 'حالة الدفع'];
+  const header = ['الحملة', 'تاريخ انطلاق الحملة', 'الاسم', 'رابط الحساب', 'تاريخ النشر', 'رابط الفيديو', 'كود الترويج', 'المبلغ', 'حالة الدفع'];
   const lines = [header];
   let count = 0;
   camps.forEach(c => {
@@ -552,10 +544,8 @@ function exportDuesCSV(onlyCampId) {
       else if (ps === 'disputed') statusPlain = 'نزاع استلام';
       else statusPlain = 'باقي' + (duesIsOverdue(a, c) ? ' - متأخر' : '');
       const nameOut = cleanField(ov.name != null ? ov.name : (creator.name || 'معلن'));
-      const ibanOut = cleanIban(ov.iban != null ? ov.iban : (bank.iban || ''));
-      const holderOut = cleanField(ov.holder != null ? ov.holder : (bank.account_holder || ''));
-      lines.push([cleanField(c.title || 'حملة'), launch, nameOut, cleanField(creator.whatsapp || creator.phone || ''), cleanField(duesAccountLink(creator) || ''), dateCsv,
-        cleanUrl(st7.publish_link || ''), cleanField(ov.promo != null ? ov.promo : (st7.promo_code || '')), ibanOut, bankFromIban(ibanOut), holderOut, amountNum, statusPlain]);
+      lines.push([cleanField(c.title || 'حملة'), launch, nameOut, cleanField(duesAccountLink(creator) || ''), dateCsv,
+        cleanUrl(st7.publish_link || ''), cleanField(ov.promo != null ? ov.promo : (st7.promo_code || '')), amountNum, statusPlain]);
       count++;
     });
   });
@@ -575,7 +565,7 @@ function exportDuesCSV(onlyCampId) {
 // صف فاضي (مقعد معلن لم يُملأ بعد)
 function duesRowEmpty(idx) {
   let tds = '';
-  for (let k = 0; k < 11; k++) tds += '<td>&nbsp;</td>';
+  for (let k = 0; k < 7; k++) tds += '<td>&nbsp;</td>';
   return '<tr class="xl-empty"><td class="xl-rowh">' + toArabic(idx) + '</td>' + tds
     + '<td><span class="dim">—</span></td></tr>';
 }
@@ -605,7 +595,7 @@ function renderCampaignBlock(camp, deals) {
     body += deals[i] ? duesRowFilled(deals[i], camp, i + 1, totals) : duesRowEmpty(i + 1);
   }
 
-  const colLetters = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K'].map(L => '<th class="xl-colh">' + L + '</th>').join('');
+  const colLetters = ['A', 'B', 'C', 'D', 'E', 'F', 'G'].map(L => '<th class="xl-colh">' + L + '</th>').join('');
   const launch = duesDateText(camp.created_at);
   const sumChips =
     '<span class="dues-chip due">المتبقّي: ' + totals.due.toLocaleString('en-US') + ' ر.س</span>' +
@@ -621,12 +611,12 @@ function renderCampaignBlock(camp, deals) {
     +       '<span>✅ معتمد: <strong>' + toArabic(deals.length) + (size ? '/' + toArabic(size) : '') + '</strong></span>'
     +     '</div>'
     +   '</div>'
-    +   '<div class="dues-sum">' + sumChips + '<div class="camp-exports"><button class="camp-exp-btn edit" onclick="toggleCampEdit(\'' + camp.id + '\', this)">✏️ تعديل</button><button class="camp-exp-btn pay" onclick="exportPaySheetCSV(\'' + camp.id + '\')">💳 شيت الدفع</button><button class="camp-exp-btn links" onclick="exportLinksPDF(\'' + camp.id + '\')">🔗 شيت الروابط PDF</button><button class="camp-exp-btn xls" onclick="exportDuesCSV(\'' + camp.id + '\')">📥 Excel</button></div></div>'
+    +   '<div class="dues-sum">' + sumChips + '<div class="camp-exports"><button class="camp-exp-btn links" onclick="exportLinksPDF(\'' + camp.id + '\')">🔗 شيت الروابط PDF</button><button class="camp-exp-btn xls" onclick="exportDuesCSV(\'' + camp.id + '\')">📥 Excel</button></div></div>'
     + '</div>'
     + '<div class="dues-grid-wrap"><table class="xl">'
     + '<thead>'
     + '<tr><th class="xl-corner"></th>' + colLetters + '</tr>'
-    + '<tr><th class="xl-rowh"></th><th class="xl-label">الاسم</th><th class="xl-label">الجوال</th><th class="xl-label">رابط الحساب</th><th class="xl-label">تاريخ النشر</th><th class="xl-label">رابط الفيديو</th><th class="xl-label">كود الترويج</th><th class="xl-label">الآيبان</th><th class="xl-label">البنك</th><th class="xl-label">الاسم بالبنك</th><th class="xl-label">المبلغ</th><th class="xl-label">حالة الدفع</th><th class="xl-label">إجراء</th></tr>'
+    + '<tr><th class="xl-rowh"></th><th class="xl-label">الاسم</th><th class="xl-label">رابط الحساب</th><th class="xl-label">تاريخ النشر</th><th class="xl-label">رابط الفيديو</th><th class="xl-label">كود الترويج</th><th class="xl-label">المبلغ</th><th class="xl-label">حالة الدفع</th><th class="xl-label">إجراء</th></tr>'
     + '</thead><tbody>' + body + '</tbody></table></div>'
     + '</div>';
 }
@@ -716,6 +706,10 @@ function renderDues() {
 // ============ تصدير شيت الدفع المختصر: رابط الفيديو + الاسم بالبنك + الآيبان ============
 // يُبنى لحظة الضغط من أحدث البيانات (يشمل أي تنظيف/تعديل سويته) — فهو محدّث تلقائيًا.
 async function exportPaySheetCSV(onlyCampId) {
+  // التحويل المباشر أُلغي — المنصة تستلم وتصرف للمعلنين، فما فيه شيت بيانات بنكية للشركة
+  showToast('التحويل المباشر أُلغي — فلفلونسر تستلم المبلغ وتصرف مستحقات المعلنين.', 'error', 5000);
+  return;
+  /* eslint-disable no-unreachable */
   // قيد الباقة
   if (typeof simblGate === 'function' && !await simblGate('can_pay_csv', 'شيت الدفع', 'ملف جاهز لتحويل مستحقات المعلنين دفعة واحدة إلى البنك — متاح مع باقة Business.')) return;
   let camps = (myCampaigns || []).slice().sort((a, b) => new Date(b.created_at || 0) - new Date(a.created_at || 0));
