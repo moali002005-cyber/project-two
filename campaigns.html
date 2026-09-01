@@ -3890,6 +3890,8 @@ function loadXLSX() {
 }
 
 async function downloadDeliveryExcel(campaignId) {
+  // قيد الباقة
+  if (typeof simblGate === 'function' && !await simblGate('can_delivery_excel', 'إكسل التوصيل', 'جدول شحن جاهز تسلّمه لمندوب التوصيل بعناوين المعلنين كاملة — متاح مع باقة Pro فأعلى.')) return;
   const rows = getDeliveryRows(campaignId);
   const hasAny = rows.some(r => r.address || r.phone);
   if (!hasAny) { showToast('ما فيه بيانات توصيل بعد', 'error'); return; }
@@ -3998,6 +4000,8 @@ function renderSingleCampaign(c) {
 
 // ============ رابط مشاركة العرض (قراءة فقط بدون تسجيل دخول — الرابط يحمل البيانات) ============
 async function shareCampaignSnapshot(cid) {
+  // قيد الباقة
+  if (typeof simblGate === 'function' && !await simblGate('can_share_link', 'رابط المشاركة', 'رابط للقراءة فقط تعرض به تقدّم الحملة على إدارتك أو عميلك بلا حساب — متاح مع باقة Business.')) return;
   try {
     const c = (typeof myCampaigns !== 'undefined' && myCampaigns ? myCampaigns : []).find(x => x.id === cid) || {};
     const table = document.getElementById('apps-' + cid);
@@ -5021,6 +5025,16 @@ function openRebookModal(id){
 }
 function closeRebookModal(){ document.getElementById('rebook-overlay').style.display = 'none'; }
 async function submitRebook(){
+  // قيد الباقة — كان هذا المسار يتجاوز فحص حدود الباقة المطبّق على الإنشاء العادي
+  if (typeof simblGate === 'function' && !await simblGate('can_rebook', 'إعادة الحملة بنفس المعلنين', 'أعد إطلاق الحملة على نفس المعلنين بضغطة بدل إعادة التفاوض من الصفر — متاح مع باقة Business.')) return;
+  try {
+    const _rb = await supabaseClient.rpc('brand_plan_status');
+    const _RP = _rb && _rb.data;
+    if (_RP && !_RP.error && _RP.max_active_campaigns != null && Number(_RP.active_campaigns) >= Number(_RP.max_active_campaigns)) {
+      showToast('باقة «' + _RP.name_ar + '» تسمح بـ ' + _RP.max_active_campaigns + ' حملة نشطة فقط. أنهِ حملة قائمة أو ارتقِ لباقة أعلى.', 'error');
+      return;
+    }
+  } catch (e) { console.warn('rebook plan check skipped', e); }
   var title = document.getElementById('rb-title').value.trim();
   var brief = document.getElementById('rb-brief').value.trim();
   if (!title || !brief) { showToast('اكتب اسم الحملة الجديد والرسالة الجديدة', 'error'); return; }
