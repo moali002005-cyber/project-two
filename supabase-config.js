@@ -517,3 +517,103 @@ window.simblBriefRemove = simblBriefRemove;
 window.simblBriefSaveList = simblBriefSaveList;
 window.simblFetchAll = simblFetchAll;
 window.dbGetAppsForCampaigns = dbGetAppsForCampaigns;
+
+// ============ حارس الباقات — مصدر واحد لكل الصفحات ============
+// simblPlan()            → صف الباقة كاملًا (my_plan_status) مع تخزين مؤقت
+// simblCan('can_x')      → هل الميزة متاحة في باقة المستخدم
+// simblLimit('max_x')    → الحد الرقمي (null = بلا حد)
+// simblGate('can_x', ...)→ يفحص، وإن لم تتوفر يعرض بطاقة الترقية ويرجع false
+//
+// سياسة الفشل: لو تعذّر جلب الباقة (شبكة/عطل مؤقت) نسمح بالميزة ولا نحجبها،
+// لأن تعطيل ميزة يدفع ثمنها مشترك أسوأ من تسريب ميزة لدقيقة. والحدود الحقيقية
+// (حجم الحملة، عدد الحملات المجانية، نسبة العمولة) مفروضة في قاعدة البيانات أصلًا.
+
+var __simblPlan = null, __simblPlanAt = 0;
+
+async function simblPlan(force) {
+  var now = Date.now();
+  if (!force && __simblPlan && (now - __simblPlanAt) < 60000) return __simblPlan;
+  try {
+    var s = await window.supabaseClient.auth.getSession();
+    if (!s || !s.data || !s.data.session) return null;
+    var r = await window.supabaseClient.rpc('my_plan_status');
+    var d = r && r.data;
+    if (!d || d.error) throw new Error('plan rpc');
+    __simblPlan = d; __simblPlanAt = now;
+    try { sessionStorage.setItem('simbl_plan', JSON.stringify(d)); } catch (e) {}
+    return d;
+  } catch (e) {
+    console.warn('simblPlan failed, falling back', e);
+    try {
+      var c = sessionStorage.getItem('simbl_plan');
+      if (c) { __simblPlan = JSON.parse(c); return __simblPlan; }
+    } catch (e2) {}
+    return { __unknown: true };
+  }
+}
+
+async function simblCan(flag) {
+  var p = await simblPlan();
+  if (!p) return false;
+  if (p.__unknown) return true;
+  return p[flag] === true;
+}
+
+async function simblLimit(key) {
+  var p = await simblPlan();
+  if (!p || p.__unknown) return null;
+  var v = p[key];
+  return (v === null || v === undefined) ? null : Number(v);
+}
+
+function simblPlansUrl(p) {
+  return (p && p.role === 'creator') ? '/plans-creator.html' : '/plans.html';
+}
+
+// بطاقة ترقية موحّدة — مستقلة بذاتها فتعمل في أي صفحة بلا اعتماد على أنماطها
+function simblUpgradeCard(title, body, planName, url) {
+  var old = document.getElementById('simbl-upg');
+  if (old) old.remove();
+  var wrap = document.createElement('div');
+  wrap.id = 'simbl-upg';
+  wrap.setAttribute('dir', 'rtl');
+  wrap.style.cssText = 'position:fixed;inset:0;z-index:99999;background:rgba(15,20,32,.55);display:flex;align-items:center;justify-content:center;padding:20px;font-family:"IBM Plex Sans Arabic","Segoe UI",Tahoma,sans-serif';
+  var card = document.createElement('div');
+  card.style.cssText = 'background:#fff;border-radius:20px;max-width:420px;width:100%;padding:30px 26px 24px;box-shadow:0 24px 60px rgba(0,0,0,.22);text-align:center';
+  var h = document.createElement('div');
+  h.style.cssText = 'font-size:20px;font-weight:700;color:#0F1420;margin-bottom:10px';
+  h.textContent = title;
+  var p = document.createElement('div');
+  p.style.cssText = 'font-size:14.5px;line-height:1.9;color:#5b6070;margin-bottom:8px';
+  p.textContent = body;
+  var cur = document.createElement('div');
+  cur.style.cssText = 'font-size:12.5px;color:#8A93A6;margin-bottom:20px';
+  cur.textContent = planName ? ('باقتك الحالية: ' + planName) : '';
+  var go = document.createElement('a');
+  go.href = url;
+  go.textContent = 'شوف الباقات ←';
+  go.style.cssText = 'display:block;background:#E23B2E;color:#fff;text-decoration:none;font-weight:700;font-size:15px;padding:13px;border-radius:12px;margin-bottom:10px';
+  var no = document.createElement('button');
+  no.type = 'button';
+  no.textContent = 'لاحقًا';
+  no.style.cssText = 'width:100%;background:none;border:0;color:#8A93A6;font-family:inherit;font-size:14px;padding:8px;cursor:pointer';
+  no.onclick = function () { wrap.remove(); };
+  wrap.onclick = function (e) { if (e.target === wrap) wrap.remove(); };
+  card.appendChild(h); card.appendChild(p); card.appendChild(cur); card.appendChild(go); card.appendChild(no);
+  wrap.appendChild(card);
+  document.body.appendChild(wrap);
+}
+
+// الاستخدام: if (!await simblGate('can_analytics','لوحة الأداء','...')) return;
+async function simblGate(flag, title, body) {
+  if (await simblCan(flag)) return true;
+  var p = await simblPlan();
+  simblUpgradeCard(title, body, p && p.name_ar, simblPlansUrl(p));
+  return false;
+}
+
+window.simblPlan = simblPlan;
+window.simblCan = simblCan;
+window.simblLimit = simblLimit;
+window.simblGate = simblGate;
+window.simblUpgradeCard = simblUpgradeCard;
