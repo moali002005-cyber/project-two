@@ -163,7 +163,8 @@ function trustScore(c){
 
 function badgeHtml(c){
   const deals = Number(c.deals_count)||0;
-  if (deals >= 1) return '<span class="vbadge verified">موثّق ✓</span>';
+  if (c && c.verified === true) return '<span class="vbadge verified">موثّق ✓</span>';
+  if (deals >= 1) return '<span class="vbadge promising">نشِط</span>';
   return '<span class="vbadge promising">واعد</span>';
 }
 function starsHtml(c){
