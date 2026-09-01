@@ -2465,7 +2465,9 @@ function handleTiktokReturn(){
   } catch (e) { /* تجاهل */ }
 }
 
-function connectTiktok(){
+async function connectTiktok(){
+  // قيد الباقة
+  if (typeof simblGate === 'function' && !await simblGate('can_tiktok_connect', 'ربط تيك توك', 'اربط حسابك ليسحب أرقام مشاهدات وتفاعل منشوراتك تلقائيًا وتظهر للشركات — متاح مع باقة Pro فأعلى.')) return;
   if (!currentUser || !currentUser.id) { showToast('سجّل الدخول أولاً', 'error'); return; }
   window.location.href = 'https://chpzecgpylxqsutjydkb.supabase.co/functions/v1/tiktok-auth-start?creator=' + encodeURIComponent(currentUser.id);
 }
