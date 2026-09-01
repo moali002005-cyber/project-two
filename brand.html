@@ -2571,11 +2571,11 @@ function renderDues() {
         statusPlain = 'حوّلت - بانتظار التأكيد'; statusHtml = '<span class="dp dp-wait">حوّلت — بانتظار التأكيد</span>'; totalDue += amountNum;
       } else if (ps === 'disputed') {
         statusPlain = 'نزاع استلام'; statusHtml = '<span class="dp dp-due">نزاع استلام</span>'; totalDue += amountNum;
-        action = '<button class="dues-mark" onclick="setBrandPaid(\'' + a.id + '\')">تم التحويل ✓</button>';
+        action = '';
       } else {
         const overdue = duesIsOverdue(a, camp);
         statusPlain = 'باقي' + (overdue ? ' - متأخر' : ''); statusHtml = '<span class="dp dp-due">' + escHtml(statusPlain) + '</span>'; totalDue += amountNum;
-        action = '<button class="dues-mark" onclick="setBrandPaid(\'' + a.id + '\')">تم التحويل ✓</button>';
+        action = '';
       }
     }
 
@@ -2591,15 +2591,7 @@ function renderDues() {
     const videoCell = pub
       ? '<td><a class="dues-link" href="' + escHtml(pub) + '" target="_blank" rel="noopener">رابط الفيديو ↗</a></td>'
       : '<td class="dim">—</td>';
-    // 5) الآيبان (نسخ)
-    const ibanCell = ibanRaw
-      ? '<td class="cell xl-iban" data-copy="' + escHtml(ibanRaw) + '" onclick="duesCopy(this)">' + escHtml(ibanRaw) + '</td>'
-      : '<td class="dim">—</td>';
-    // 6) الاسم بالبنك (نسخ)
-    const holderCell = holderRaw
-      ? '<td class="cell" data-copy="' + escHtml(holderRaw) + '" onclick="duesCopy(this)">' + escHtml(holderRaw) + '</td>'
-      : '<td class="dim">—</td>';
-    // 7) المبلغ (نسخ)
+    // 5) المبلغ (نسخ)
     const amountCell = '<td class="cell xl-amount" data-copy="' + amountNum + '" onclick="duesCopy(this)">' + amountDisp + '</td>';
     // 8) حالة الدفع (نسخ)
     const statusCell = '<td class="cell" data-copy="' + escHtml(statusPlain) + '" onclick="duesCopy(this)">' + statusHtml + '</td>';
@@ -2607,14 +2599,14 @@ function renderDues() {
     const actionCell = '<td>' + (action || '<span class="dim">—</span>') + '</td>';
 
     return '<tr><td class="xl-rowh">' + toArabic(i + 1) + '</td>'
-      + nameCell + acctCell + dateCell + videoCell + ibanCell + holderCell + amountCell + statusCell + actionCell + '</tr>';
+      + nameCell + acctCell + dateCell + videoCell + amountCell + statusCell + actionCell + '</tr>';
   }).join('');
 
   const sumChips =
     '<span class="dues-chip due">المتبقّي: ' + totalDue.toLocaleString('en-US') + ' ر.س</span>' +
     '<span class="dues-chip paid">المدفوع: ' + totalPaid.toLocaleString('en-US') + ' ر.س</span>';
 
-  const colLetters = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I'].map(L => '<th class="xl-colh">' + L + '</th>').join('');
+  const colLetters = ['A', 'B', 'C', 'D', 'E', 'F', 'G'].map(L => '<th class="xl-colh">' + L + '</th>').join('');
 
   host.innerHTML =
     '<div class="dues-wrap">'
@@ -2623,7 +2615,7 @@ function renderDues() {
     + '<div class="dues-grid-wrap"><table class="xl">'
     + '<thead>'
     + '<tr><th class="xl-corner"></th>' + colLetters + '</tr>'
-    + '<tr><th class="xl-rowh"></th><th class="xl-label">الاسم</th><th class="xl-label">رابط الحساب</th><th class="xl-label">تاريخ النشر</th><th class="xl-label">رابط الفيديو</th><th class="xl-label">الآيبان</th><th class="xl-label">الاسم بالبنك</th><th class="xl-label">المبلغ</th><th class="xl-label">حالة الدفع</th><th class="xl-label">إجراء</th></tr>'
+    + '<tr><th class="xl-rowh"></th><th class="xl-label">الاسم</th><th class="xl-label">رابط الحساب</th><th class="xl-label">تاريخ النشر</th><th class="xl-label">رابط الفيديو</th><th class="xl-label">المبلغ</th><th class="xl-label">حالة الدفع</th><th class="xl-label">إجراء</th></tr>'
     + '</thead><tbody>' + rows + '</tbody></table></div>'
     + '</div>';
 }
@@ -3258,11 +3250,8 @@ function renderBrandPaymentCard(app, campaign) {
   const bank = sd[8] || sd['8'] || {};
   const deadline = paymentDeadlineTextBrand(app, campaign);
   const deadlineLine = deadline ? `<div class="pay-deadline">آخر موعد للدفع المتفق عليه: ${deadline}</div>` : '';
-  const bankBox = (bank.iban || bank.account_holder) ? `<div class="pay-bank-box">
-      ${bank.account_holder ? `<div class="pbk-row"><strong>اسم صاحب الحساب:</strong> ${escHtml(bank.account_holder)}</div>` : ''}
-      ${bank.iban ? `<div class="pbk-row"><strong>الآيبان:</strong> <span class="iban-val">${escHtml(bank.iban)}</span></div>` : ''}
-      ${bank.bank_name ? `<div class="pbk-row"><strong>البنك:</strong> ${escHtml(bank.bank_name)}</div>` : ''}
-    </div>` : '';
+  // التحويل المباشر أُلغي — لا تُعرض بيانات المعلن البنكية للشركة إطلاقًا
+  const bankBox = '';
 
   if (status === 'confirmed') {
     return `<div class="stage-action complete"><div class="sa-title">🎉 اكتمل الدفع</div><div class="sa-desc">المعلن أكّد استلام المبلغ. تمت الصفقة بالكامل.</div></div>`;
@@ -3271,8 +3260,7 @@ function renderBrandPaymentCard(app, campaign) {
     return `<div class="stage-action" style="background:rgba(201,48,48,0.05);border-color:rgba(201,48,48,0.3)">
       <div class="sa-title">⚠️ المعلن أبلغ بعدم استلام المبلغ</div>
       <div class="sa-desc">تواصل مع المعلن وتأكّد من التحويل. بعد ما تتأكّد، اضغط «تم التحويل» مرة ثانية.</div>
-      ${bankBox}
-      <div class="pay-actions"><button class="sa-btn" onclick="setBrandPaid('${app.id}')">تم التحويل ✓</button></div>
+      <div class="sa-desc" style="margin-top:8px">راسل فريق فلفلونسر لمتابعة الصرف — التحويل يتم من المنصة.</div>
     </div>`;
   }
   if (status === 'marked_paid') {
@@ -3282,13 +3270,11 @@ function renderBrandPaymentCard(app, campaign) {
       ${deadlineLine}
     </div>`;
   }
-  // unpaid (الافتراضي)
-  return `<div class="stage-action mine">
-    <div class="sa-title">💸 حان موعد الدفع</div>
-    <div class="sa-desc">الحملة اكتملت. حوّل المبلغ المتفق عليه (<strong>${amount} ر.س</strong>) لحساب المعلن، ثم اضغط «تم التحويل».</div>
-    ${bankBox}
+  // unpaid (الافتراضي) — المنصة تستلم وتصرف، فما فيه تحويل مباشر من الشركة
+  return `<div class="stage-action complete">
+    <div class="sa-title">🔒 المبلغ محفوظ لدى المنصة</div>
+    <div class="sa-desc">الحملة اكتملت. مبلغ الصفقة (<strong>${amount} ر.س</strong>) محفوظ لدى فلفلونسر، وتُصرف مستحقات المعلن منها ضمن دفعة الأسبوع.</div>
     ${deadlineLine}
-    <div class="pay-actions"><button class="sa-btn" onclick="setBrandPaid('${app.id}')">تم التحويل ✓</button></div>
   </div>`;
 }
 
