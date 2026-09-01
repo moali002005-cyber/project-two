@@ -446,16 +446,13 @@ function duesRowFilled(a, camp, idx, totals) {
     const d = publishIso ? new Date(publishIso) : null;
     if (d && !isNaN(d.getTime())) { dateCopy = d.toLocaleDateString('en-GB'); dateDisp = duesDateText(publishIso); }
   }
-  // الشركة تدفع للمنصة مقدّمًا — فالحالة عندها = هل سُدّدت هذه الصفقة للمنصة، لا التحويل للمعلن
-  const paidToPlatform = (a.platform_paid === true);
-  if (paidToPlatform) totals.paid += amountNum; else totals.due += amountNum;
+  // الشركة تسدّد للمنصة عند اعتماد الأسماء عبر زر «ادفع مستحقات الحملة»، فما فيه حالة «بانتظار الدفع» هنا إطلاقًا
+  totals.paid += amountNum;
   if (stg < 9) {
-    statusPlain = 'قيد التنفيذ - ' + (DUES_STAGE_NAMES[stg] || ('مرحلة ' + stg)) + (paidToPlatform ? ' · مدفوعة' : '');
+    statusPlain = 'قيد التنفيذ - ' + (DUES_STAGE_NAMES[stg] || ('مرحلة ' + stg));
     statusHtml = '<span class="dp dp-prog">' + escHtml(statusPlain) + '</span>';
-  } else if (paidToPlatform) {
-    statusPlain = 'مدفوعة'; statusHtml = '<span class="dp dp-paid">💳 مدفوعة ✓</span>';
   } else {
-    statusPlain = 'بانتظار الدفع'; statusHtml = '<span class="dp dp-due">بانتظار الدفع</span>';
+    statusPlain = 'مدفوعة'; statusHtml = '<span class="dp dp-paid">💳 مدفوعة ✓</span>';
   }
 
   // تجاوز الحالة عند وجود طلب تصحيح: بانتظار تعديل المعلن (كهرماني) → عُدّل جاهز للمراجعة (أخضر)
@@ -592,7 +589,6 @@ function renderCampaignBlock(camp, deals) {
   const colLetters = ['A', 'B', 'C', 'D', 'E', 'F', 'G'].map(L => '<th class="xl-colh">' + L + '</th>').join('');
   const launch = duesDateText(camp.created_at);
   const sumChips =
-    '<span class="dues-chip due">بانتظار الدفع: ' + totals.due.toLocaleString('en-US') + ' ر.س</span>' +
     '<span class="dues-chip paid">مدفوع للمنصة: ' + totals.paid.toLocaleString('en-US') + ' ر.س</span>';
 
   return '<div class="camp-block" data-campid="' + camp.id + '">'
