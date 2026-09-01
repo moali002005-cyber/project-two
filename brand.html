@@ -2561,16 +2561,13 @@ function renderDues() {
         dateDisp = duesDateText(publishIso);
       }
     }
-    // الشركة تدفع للمنصة مقدّمًا — فالحالة عندها = هل سُدّدت هذه الصفقة للمنصة، لا التحويل للمعلن
-    const paidToPlatform = (a.platform_paid === true);
-    if (paidToPlatform) totalPaid += amountNum; else totalDue += amountNum;
+    // الشركة تسدّد للمنصة عند اعتماد الأسماء عبر زر «ادفع مستحقات الحملة»، فما فيه حالة «بانتظار الدفع» هنا إطلاقًا
+    totalPaid += amountNum;
     if (stg < 9) {
-      statusPlain = 'قيد التنفيذ - ' + (DUES_STAGE_NAMES[stg] || ('مرحلة ' + stg)) + (paidToPlatform ? ' · مدفوعة' : '');
+      statusPlain = 'قيد التنفيذ - ' + (DUES_STAGE_NAMES[stg] || ('مرحلة ' + stg));
       statusHtml = '<span class="dp dp-prog">' + escHtml(statusPlain) + '</span>';
-    } else if (paidToPlatform) {
-      statusPlain = 'مدفوعة'; statusHtml = '<span class="dp dp-paid">💳 مدفوعة ✓</span>';
     } else {
-      statusPlain = 'بانتظار الدفع'; statusHtml = '<span class="dp dp-due">بانتظار الدفع</span>';
+      statusPlain = 'مدفوعة'; statusHtml = '<span class="dp dp-paid">💳 مدفوعة ✓</span>';
     }
 
     // 1) الاسم (نسخ)
@@ -2597,7 +2594,6 @@ function renderDues() {
   }).join('');
 
   const sumChips =
-    '<span class="dues-chip due">بانتظار الدفع: ' + totalDue.toLocaleString('en-US') + ' ر.س</span>' +
     '<span class="dues-chip paid">مدفوع للمنصة: ' + totalPaid.toLocaleString('en-US') + ' ر.س</span>';
 
   const colLetters = ['A', 'B', 'C', 'D', 'E', 'F', 'G'].map(L => '<th class="xl-colh">' + L + '</th>').join('');
