@@ -837,6 +837,50 @@ async function init(){
       hideAll('[onclick^="openCompanyReport"]'); hideAll('[onclick^="exportCompanyExcel"]');
     }
   }
+
+  // ===== قيود الباقة: نُبقي العنصر ظاهرًا مقفولًا بدل إخفائه، فيعرف المشترك المحتمل ما الذي يكسبه =====
+  try {
+    const PLAN = await simblPlan();
+    if (PLAN && !PLAN.__unknown) {
+      const lock = (sel, flag, title, body) => {
+        if (PLAN[flag] === true) return;
+        document.querySelectorAll(sel).forEach(el => {
+          if (el.style.display === 'none') return;
+          el.setAttribute('data-plan-lock', '1');
+          el.setAttribute('data-lock-title', title);
+          el.setAttribute('data-lock-body', body);
+          if (el.textContent.indexOf('🔒') < 0) el.textContent = '🔒 ' + el.textContent.trim();
+        });
+      };
+      lock('.tab[data-tab="analytics"]', 'can_analytics', 'لوحة الأداء والتحليلات',
+        'تفصيل أداء كل حملة وأرقام النتائج — متاح مع باقة Pro فأعلى.');
+      lock('.tab[data-tab="compare"]', 'can_compare', 'مقارنة الحملات',
+        'قارن أداء حملاتك جنبًا إلى جنب في شاشة واحدة — متاح مع باقة Business.');
+      lock('.tab[data-tab="recommend"]', 'can_suggested_creators', 'مؤثرون مقترحون',
+        'ترشيحات جاهزة لمؤثرين يناسبون حملتك بدل البحث اليدوي — متاح مع باقة Pro فأعلى.');
+      lock('[onclick^="exportCompanyExcel"]', 'can_deals_export', 'تصدير الصفقات',
+        'نزّل كل صفقاتك بجدول جاهز للمحاسبة — متاح مع باقة Business.');
+      lock('[onclick^="openCompanyReport"]', 'can_reports', 'تقرير الأداء PDF',
+        'تقرير أداء جاهز للطباعة والمشاركة مع إدارتك أو عميلك — متاح مع باقة Business.');
+
+      // اعتراض في طور الالتقاط على مستوى المستند، فيسبق أي معالج مربوط بالعنصر نفسه
+      if (!window.__simblLockHooked) {
+        window.__simblLockHooked = true;
+        document.addEventListener('click', function (ev) {
+          const t = ev.target && ev.target.closest ? ev.target.closest('[data-plan-lock]') : null;
+          if (!t) return;
+          ev.preventDefault();
+          ev.stopPropagation();
+          ev.stopImmediatePropagation();
+          simblUpgradeCard(t.getAttribute('data-lock-title'), t.getAttribute('data-lock-body'),
+            PLAN.name_ar, '/plans.html');
+        }, true);
+      }
+      const st = document.createElement('style');
+      st.textContent = '[data-plan-lock]{opacity:.62}';
+      document.head.appendChild(st);
+    }
+  } catch (e) { console.warn('plan gate skipped', e); }
   let approvalStatus=currentUser.approval_status;
   try{ const {data:meRow}=await supabaseClient.from('users').select('approval_status').eq('id',currentUser.id).maybeSingle(); if(meRow&&meRow.approval_status){approvalStatus=meRow.approval_status; currentUser.approval_status=approvalStatus; saveCurrentUser(currentUser);} }catch(e){}
   if(!window.TEAM_WS && (approvalStatus==='pending'||approvalStatus==='rejected'||approvalStatus==='suspended')){ showPending(approvalStatus); return; }
