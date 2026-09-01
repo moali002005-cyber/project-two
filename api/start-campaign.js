@@ -94,6 +94,12 @@ export default async function handler(req, res) {
     if (_tok) {
       const P = await sbRpcAsUser('brand_plan_status', {}, _tok);
       if (P && !P.error) {
+        if (P.can_direct_invite !== true) {
+          return res.status(403).json({
+            error: 'الدعوة المباشرة للمعلنين متاحة في باقة Business. ارتقِ لباقة أعلى، أو انشر حملة عامة يتقدّم لها المعلنون.',
+            code: 'plan_direct_invite'
+          });
+        }
         if (P.max_active_campaigns != null) {
           const room = Number(P.max_active_campaigns) - Number(P.active_campaigns || 0);
           if (room <= 0) {
