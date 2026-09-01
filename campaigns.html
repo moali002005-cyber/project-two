@@ -2916,11 +2916,11 @@ function renderDues() {
         statusPlain = 'حوّلت - بانتظار التأكيد'; statusHtml = '<span class="dp dp-wait">حوّلت — بانتظار التأكيد</span>'; totalDue += amountNum;
       } else if (ps === 'disputed') {
         statusPlain = 'نزاع استلام'; statusHtml = '<span class="dp dp-due">نزاع استلام</span>'; totalDue += amountNum;
-        action = '<button class="dues-mark" onclick="setBrandPaid(\'' + a.id + '\')">تم التحويل ✓</button>';
+        action = '';
       } else {
         const overdue = duesIsOverdue(a, camp);
         statusPlain = 'باقي' + (overdue ? ' - متأخر' : ''); statusHtml = '<span class="dp dp-due">' + escHtml(statusPlain) + '</span>'; totalDue += amountNum;
-        action = '<button class="dues-mark" onclick="setBrandPaid(\'' + a.id + '\')">تم التحويل ✓</button>';
+        action = '';
       }
     }
 
@@ -2940,15 +2940,7 @@ function renderDues() {
     const promoCell = promo
       ? '<td class="cell" data-copy="' + escHtml(promo) + '" onclick="duesCopy(this)"><span class="dues-link">انسخ كود الترويج ⎘</span></td>'
       : '<td class="dim">—</td>';
-    // 5) الآيبان (نسخ)
-    const ibanCell = ibanRaw
-      ? '<td class="cell xl-iban" data-copy="' + escHtml(ibanRaw) + '" onclick="duesCopy(this)">' + escHtml(ibanRaw) + '</td>'
-      : '<td class="dim">—</td>';
-    // 6) الاسم بالبنك (نسخ)
-    const holderCell = holderRaw
-      ? '<td class="cell" data-copy="' + escHtml(holderRaw) + '" onclick="duesCopy(this)">' + escHtml(holderRaw) + '</td>'
-      : '<td class="dim">—</td>';
-    // 7) المبلغ (نسخ)
+    // 5) المبلغ (نسخ)
     const amountCell = '<td class="cell xl-amount" data-copy="' + amountNum + '" onclick="duesCopy(this)">' + amountDisp + '</td>';
     // 8) حالة الدفع (نسخ)
     const statusCell = '<td class="cell" data-copy="' + escHtml(statusPlain) + '" onclick="duesCopy(this)">' + statusHtml + '</td>';
@@ -2956,14 +2948,14 @@ function renderDues() {
     const actionCell = '<td>' + (action || '<span class="dim">—</span>') + '</td>';
 
     return '<tr><td class="xl-rowh">' + toArabic(i + 1) + '</td>'
-      + nameCell + acctCell + dateCell + videoCell + promoCell + ibanCell + holderCell + amountCell + statusCell + actionCell + '</tr>';
+      + nameCell + acctCell + dateCell + videoCell + promoCell + amountCell + statusCell + actionCell + '</tr>';
   }).join('');
 
   const sumChips =
     '<span class="dues-chip due">المتبقّي: ' + totalDue.toLocaleString('en-US') + ' ر.س</span>' +
     '<span class="dues-chip paid">المدفوع: ' + totalPaid.toLocaleString('en-US') + ' ر.س</span>';
 
-  const colLetters = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J'].map(L => '<th class="xl-colh">' + L + '</th>').join('');
+  const colLetters = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'].map(L => '<th class="xl-colh">' + L + '</th>').join('');
 
   host.innerHTML =
     '<div class="dues-wrap">'
@@ -2972,7 +2964,7 @@ function renderDues() {
     + '<div class="dues-grid-wrap"><table class="xl">'
     + '<thead>'
     + '<tr><th class="xl-corner"></th>' + colLetters + '</tr>'
-    + '<tr><th class="xl-rowh"></th><th class="xl-label">الاسم</th><th class="xl-label">رابط الحساب</th><th class="xl-label">تاريخ النشر</th><th class="xl-label">رابط الفيديو</th><th class="xl-label">كود الترويج</th><th class="xl-label">الآيبان</th><th class="xl-label">الاسم بالبنك</th><th class="xl-label">المبلغ</th><th class="xl-label">حالة الدفع</th><th class="xl-label">إجراء</th></tr>'
+    + '<tr><th class="xl-rowh"></th><th class="xl-label">الاسم</th><th class="xl-label">رابط الحساب</th><th class="xl-label">تاريخ النشر</th><th class="xl-label">رابط الفيديو</th><th class="xl-label">كود الترويج</th><th class="xl-label">المبلغ</th><th class="xl-label">حالة الدفع</th><th class="xl-label">إجراء</th></tr>'
     + '</thead><tbody>' + rows + '</tbody></table></div>'
     + '</div>';
 }
