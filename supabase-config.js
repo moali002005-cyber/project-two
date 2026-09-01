@@ -540,6 +540,10 @@ async function simblPlan(force) {
     var d = r && r.data;
     if (!d || d.error) throw new Error('plan rpc');
     __simblPlan = d; __simblPlanAt = now;
+    // حد مرفقات البريف يتبع الباقة (٣ · ٨ · ١٥) — الصفحات كلها تقرأ هذا المتغيّر
+    if (d.max_brief_attachments !== null && d.max_brief_attachments !== undefined) {
+      window.SIMBL_BRIEF_MAX_FILES = Number(d.max_brief_attachments);
+    }
     try { sessionStorage.setItem('simbl_plan', JSON.stringify(d)); } catch (e) {}
     return d;
   } catch (e) {
@@ -617,3 +621,6 @@ window.simblCan = simblCan;
 window.simblLimit = simblLimit;
 window.simblGate = simblGate;
 window.simblUpgradeCard = simblUpgradeCard;
+
+// نجلب الباقة مبكرًا مرة واحدة حتى تُضبط الحدود قبل أول رفع مرفقات
+try { simblPlan(); } catch (e) {}
