@@ -13,6 +13,13 @@ const PLATFORM_LABELS = { tiktok: 'تيك توك', snapchat: 'سناب شات', 
 function svcHeaders() {
   return { 'apikey': SUPABASE_SERVICE_KEY, 'Authorization': `Bearer ${SUPABASE_SERVICE_KEY}`, 'Content-Type': 'application/json' };
 }
+async function sbRpc(fn, args) {
+  const res = await fetch(SUPABASE_URL + '/rest/v1/rpc/' + fn, {
+    method: 'POST', headers: svcHeaders(), body: JSON.stringify(args || {})
+  });
+  if (!res.ok) { console.error('rpc ' + fn, await res.text()); return null; }
+  return res.json();
+}
 async function sbGet(path) {
   const res = await fetch(`${SUPABASE_URL}/rest/v1/${path}`, { headers: svcHeaders() });
   if (!res.ok) { console.error('sbGet error:', await res.text()); throw new Error('GET failed'); }
@@ -38,6 +45,17 @@ export default async function handler(req, res) {
   const user = await getAuthedUser(req);
   if (!user) return res.status(401).json({ error: 'يلزم تسجيل الدخول من جديد' });
   if (user.role !== 'brand') return res.status(403).json({ error: 'هذه الميزة مخصّصة لحسابات الشركات' });
+
+  // ===== حصة البريف الذكي الشهرية حسب الباقة =====
+  // العدّ والخصم يتمّان في قاعدة البيانات ذرّيًا، فلا يمكن تجاوزهما من المتصفح.
+  const quota = await sbRpc('consume_ai_brief', { p_brand: user.id });
+  if (quota && quota.ok === false) {
+    const lim = Number(quota.limit || 0);
+    const msg = lim === 0
+      ? 'البريف بالذكاء الاصطناعي متاح مع باقة Pro فأعلى. باقتك الحالية: ' + (quota.plan || 'Starter') + '.'
+      : 'استهلكت حصة هذا الشهر من البريف الذكي (' + lim + '). تتجدد أول الشهر القادم، أو ارتقِ لباقة Business للاستخدام بلا حد.';
+    return res.status(403).json({ error: msg, code: 'brief_quota', limit: lim, used: quota.used });
+  }
 
   const apiKey = process.env.ANTHROPIC_API_KEY;
   if (!apiKey) return res.status(500).json({ error: 'الخدمة غير مهيّأة حاليًا' });
