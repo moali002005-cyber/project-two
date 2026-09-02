@@ -137,6 +137,11 @@ export default async function handler(req, res) {
         results.push({ creatorId, ok: false, reason: 'مؤثر غير موجود' });
         continue;
       }
+      // عزل البيئة التجريبية: حساب تجريبي لا يدعو معلنًا حقيقيًا، والعكس كذلك.
+      if (!!cr.is_test !== !!brand.is_test) {
+        results.push({ creatorId, ok: false, reason: 'هذا المؤثر خارج بيئة حسابك' });
+        continue;
+      }
 
       // الميزانية المُدخلة = السقف. نعطي الوكيل مجالاً يفتح أقل (≈70٪) ويقفل تحت السقف.
       const low = Math.max(50, Math.round(ceiling * 0.7));
