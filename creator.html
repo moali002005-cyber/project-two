@@ -98,7 +98,7 @@ body {
   font-weight: 500;
   font-size: 12px;
 }
-.user-name { font-size: 14px; font-weight: 500; }
+.user-name { font-size: 14px; font-weight: 500; max-width: 180px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .btn-logout {
   background: transparent;
   border: 1px solid var(--line-strong);
@@ -1664,10 +1664,11 @@ async function init() {
     return;
   }
 
-  const firstName = (currentUser.name || 'بك').split(' ')[0];
-  document.getElementById('user-name').textContent = firstName;
-  document.getElementById('user-initial').textContent = firstName[0];
-  document.getElementById('welcome-name').textContent = firstName;
+  // الاسم الكامل كما سجّله المستخدم — لا نقتطع منه شيئًا
+  const fullName = String(currentUser.name || 'بك').replace(/\s+/g, ' ').trim() || 'بك';
+  document.getElementById('user-name').textContent = fullName;
+  document.getElementById('user-initial').textContent = fullName.charAt(0);
+  document.getElementById('welcome-name').textContent = fullName;
   renderMyAvatar();
   // حدّث الصورة من قاعدة البيانات (تعكس أي صورة أضافها الأدمن بعد آخر تسجيل دخول)
   refreshMyAvatarFromDB();
