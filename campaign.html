@@ -417,6 +417,7 @@ body {
 </main>
 
 <script>document.write('<script src="supabase-config.js?v=' + Date.now() + '"><\/script>');</script>
+<script>document.write('<script src="notifications.js?v=' + Date.now() + '"><\/script>');</script>
 <script>
 let currentUser = null;
 let campaign = null;
@@ -925,12 +926,9 @@ async function sendDirectMessage() {
         : (application.creator_name || 'المعلن');
       const title = '💬 رسالة جديدة من ' + senderLabel;
       const link = '/campaign.html?app=' + application.id;
+      // إدراج الإشعار يشغّل إرسال الـ push من القاعدة تلقائيًا، فلا حاجة لنداء مباشر.
+      // (النداء القديم كان يشير إلى مشروع سيمبل لا فلفلونسر، فما كان يصل أصلًا.)
       try { await createNotification(recipientId, 'new_message', title, text, link); } catch (e) { console.error(e); }
-      fetch('https://rdzzzasbyzugxogbgwwn.supabase.co/functions/v1/send-push', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + supabaseClient.supabaseKey },
-        body: JSON.stringify({ title, body: text, url: link, target_users: [recipientId] })
-      }).catch(console.error);
     }
   } catch (err) {
     console.error('Failed to send direct message:', err);
