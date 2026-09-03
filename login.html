@@ -495,14 +495,12 @@ function resetOtp() {
   if (!wrap || !hidden) return;
   var boxes = Array.prototype.slice.call(wrap.querySelectorAll('input'));
 
-  // نحوّل الأرقام العربية والفارسية إلى لاتينية حتى يقبلها التحقق
+  // أرقام لاتينية فقط (0-9). أي رمز آخر — بما فيه الأرقام العربية والفارسية — يُرفض.
   function toLatinDigits(str) {
     var out = '';
     var t = String(str == null ? '' : str);
     for (var i = 0; i < t.length; i++) {
       var cc = t.charCodeAt(i);
-      if (cc >= 1632 && cc <= 1641) { out += String(cc - 1632); continue; }
-      if (cc >= 1776 && cc <= 1785) { out += String(cc - 1776); continue; }
       if (cc >= 48 && cc <= 57) { out += t.charAt(i); }
     }
     return out;
