@@ -1549,11 +1549,25 @@ function kitToast(msg){
 }
 
 // ===== «كمّل مدينتك»: نطلب المدينة من المعلن اللي مدينته فاضية (لتنظيف البيانات قبل الاستهداف الصارم) =====
-function maybePromptCity(){
+async function maybePromptCity(){
   try{
     if(!currentUser) return;
     if(currentUser.city && String(currentUser.city).trim()) return;      // عنده مدينة → لا شيء
     if(sessionStorage.getItem('simbl_city_skip')==='1') return;          // أجّلها هذي الجلسة
+
+    // الكائن المخزّن في المتصفح قد يكون قديمًا ولا يحمل حقل المدينة أصلًا،
+    // فنسأل القاعدة قبل ما نزعج المستخدم بطلب شيء عبّاه من قبل.
+    try{
+      const { data: fresh, error } = await supabaseClient
+        .from('users').select('city, country').eq('id', currentUser.id).maybeSingle();
+      if(error) return;                                                  // تعذّر التأكد → لا نزعجه
+      if(fresh){
+        currentUser = Object.assign({}, currentUser, fresh);
+        if(typeof saveCurrentUser==='function') saveCurrentUser(currentUser);
+        if(fresh.city && String(fresh.city).trim()) return;              // مدينته موجودة فعلًا
+      }
+    }catch(e){ return; }
+
     var m=document.getElementById('city-modal'); if(m) m.classList.add('on');
   }catch(e){ /* تجاهل */ }
 }
@@ -1685,7 +1699,7 @@ async function init() {
     return;
   }
 
-  maybePromptCity();
+  await maybePromptCity();
   maybePromptGroup();
 
   await loadData();
