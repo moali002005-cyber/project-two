@@ -878,9 +878,19 @@ async function submitForm(event, role) {
     //        - فشل الدخول → تسجيل مكرر فعلي بكلمة سر مختلفة → رسالة واضحة.
     let authUser = null;
     const { data: sessData0 } = await supabaseClient.auth.getSession();
-    if (sessData0 && sessData0.session && sessData0.session.user) {
-      authUser = sessData0.session.user;
+    const sessUser0 = (sessData0 && sessData0.session && sessData0.session.user) ? sessData0.session.user : null;
+    const sessEmail0 = sessUser0 ? String(sessUser0.email || '').trim().toLowerCase() : '';
+    // نعيد استخدام الجلسة القائمة فقط إذا كان بريدها هو نفس البريد المكتوب
+    // (حالة «إكمال ملف ناقص»). أما لو كان المستخدم مسجّل دخوله بحساب آخر ويريد
+    // إنشاء حساب جديد فنخرجه من الجلسة أولاً، وإلا ظهر خطأ «البريد مسجل مسبقاً»
+    // مهما كان البريد المكتوب — لأن الفحص كان يقع على ملف الجلسة لا على البريد.
+    if (sessEmail0 && sessEmail0 === String(email || '').trim().toLowerCase()) {
+      authUser = sessUser0;
     } else {
+      if (sessEmail0) {
+        try { await supabaseClient.auth.signOut({ scope: 'local' }); }
+        catch (soErr) { console.error('signOut before signup (non-blocking):', soErr); }
+      }
       const { data: authData, error: authErr } = await supabaseClient.auth.signUp({ email, password });
       if (authErr) {
         const am = (authErr.message || '').toLowerCase();
