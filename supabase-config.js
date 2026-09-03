@@ -6,13 +6,32 @@ if (!window.supabase) {
   console.error('Supabase library not loaded!');
 }
 
+// ===== وضع «جلسة مستقلة لكل تبويب» (للاختبار فقط) =====
+// افتح أي صفحة بـ ?multi=1 فيصير لهذا التبويب تسجيل دخول مستقل تماماً عن بقية
+// التبويبات: نستخدم sessionStorage (خاص بالتبويب) بدل localStorage (مشترك بينها)،
+// ونوقف كوكي الاستعادة لأنها مشتركة كذلك. الوسم يُحفظ في sessionStorage فيبقى مع
+// التنقّل داخل نفس التبويب ويموت بإغلاقه.
+// أي تبويب لم يُفتح بهذا الوسم يبقى على سلوكه الأصلي حرفياً بلا أي تغيير.
+window.__flfMultiSession = false;
+try {
+  if (new URLSearchParams(window.location.search).get('multi') === '1') {
+    window.sessionStorage.setItem('flf_multi', '1');
+  }
+  window.__flfMultiSession = (window.sessionStorage.getItem('flf_multi') === '1');
+} catch (e) { window.__flfMultiSession = false; }
+
+function flfStore() {
+  try { return window.__flfMultiSession ? window.sessionStorage : window.localStorage; }
+  catch (e) { return window.localStorage; }
+}
+
 // إعدادات الجلسة: حفظ دائم + تجديد تلقائي - الجلسة ما تنتهي إلا لما المستخدم نفسه يضغط خروج
 window.supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
   auth: {
     persistSession: true,
     autoRefreshToken: true,
     detectSessionInUrl: true,
-    storage: window.localStorage
+    storage: flfStore()
   }
 });
 
@@ -121,7 +140,7 @@ try {
     window.supabaseClient.auth.onAuthStateChange(function (event) {
       if (event === 'SIGNED_OUT' && !window.__simblLoggingOut) {
         try {
-          if (localStorage.getItem('simbl_current_user')
+          if (flfStore().getItem('simbl_current_user')
               && typeof simblOnLoginPage === 'function' && !simblOnLoginPage()
               && typeof simblShowSessionExpired === 'function') {
             simblShowSessionExpired();
@@ -291,11 +310,12 @@ async function dbGetCampaignApplications(campaignId) {
 }
 
 function getCurrentUser() {
-  // أولاً نحاول من localStorage
-  let json = localStorage.getItem('simbl_current_user');
+  // أولاً نحاول من مخزن التبويب (localStorage عادةً، sessionStorage في وضع ?multi=1)
+  let json = flfStore().getItem('simbl_current_user');
 
-  // لو ما لقينا، نحاول من cookie كنسخة احتياطية
-  if (!json) {
+  // لو ما لقينا، نحاول من cookie كنسخة احتياطية — إلا في وضع الجلسة المستقلة،
+  // لأن الكوكي مشتركة بين كل التبويبات فتخلط الحسابين
+  if (!json && !window.__flfMultiSession) {
     const cookieMatch = document.cookie.match(/simbl_user_id=([^;]+)/);
     if (cookieMatch) {
       // فيه cookie، لكن البيانات في localStorage راحت
@@ -308,19 +328,22 @@ function getCurrentUser() {
 }
 
 function saveCurrentUser(user) {
-  // نحفظ في localStorage (الأساسي) - يبقى للأبد إلا لو المستخدم مسح بيانات المتصفح
-  localStorage.setItem('simbl_current_user', JSON.stringify(user));
+  // نحفظ في مخزن التبويب - يبقى للأبد إلا لو المستخدم مسح بيانات المتصفح
+  flfStore().setItem('simbl_current_user', JSON.stringify(user));
 
-  // نحفظ id في cookie لمدة 10 سنوات كاحتياطي
+  // نحفظ id في cookie لمدة 10 سنوات كاحتياطي — إلا في وضع الجلسة المستقلة
+  if (window.__flfMultiSession) return;
   const expires = new Date();
   expires.setFullYear(expires.getFullYear() + 10);
   document.cookie = `simbl_user_id=${user.id}; expires=${expires.toUTCString()}; path=/; SameSite=Lax`;
 }
 
 function clearCurrentUser() {
-  localStorage.removeItem('simbl_current_user');
-  // نمسح الـ cookie
-  document.cookie = 'simbl_user_id=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/';
+  flfStore().removeItem('simbl_current_user');
+  // نمسح الـ cookie — إلا في وضع الجلسة المستقلة حتى لا نُخرج التبويب الآخر
+  if (!window.__flfMultiSession) {
+    document.cookie = 'simbl_user_id=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/';
+  }
 
   // نسجّل خروج من Supabase Auth كذلك عشان الجلسة تنتهي كاملة
   try {
@@ -377,14 +400,16 @@ async function tryRestoreSession() {
   // 0) تأكّد إن جلسة Auth حيّة فعلًا؛ لو ماتت والهوية محفوظة → اعرض "انتهت جلستك"
   const __alive = await simblSessionAlive();
   if (!__alive) {
-    const __hasIdentity = !!localStorage.getItem('simbl_current_user') || /simbl_user_id=/.test(document.cookie);
+    const __hasIdentity = !!flfStore().getItem('simbl_current_user')
+      || (!window.__flfMultiSession && /simbl_user_id=/.test(document.cookie));
     if (__hasIdentity && !simblOnLoginPage()) { simblShowSessionExpired(); return false; }
   }
 
-  // لو الجلسة موجودة في localStorage، خلاص
-  if (localStorage.getItem('simbl_current_user')) return true;
+  // لو الهوية موجودة في مخزن التبويب، خلاص
+  if (flfStore().getItem('simbl_current_user')) return true;
 
-  // نشوف cookie
+  // نشوف cookie — لا نستعملها في وضع الجلسة المستقلة (مشتركة بين التبويبات)
+  if (window.__flfMultiSession) return false;
   const cookieMatch = document.cookie.match(/simbl_user_id=([^;]+)/);
   if (!cookieMatch) return false;
 
@@ -1005,10 +1030,10 @@ try { simblPlan(); } catch (e) {}
 
   /* ---------- 7) دعوة معلن من القائمة (شركة) ---------- */
   function cartGet() {
-    try { return JSON.parse(localStorage.getItem('simbl_cart') || '[]') || []; } catch (e) { return []; }
+    try { return JSON.parse(flfStore().getItem('simbl_cart') || '[]') || []; } catch (e) { return []; }
   }
   function cartSet(a) {
-    try { localStorage.setItem('simbl_cart', JSON.stringify(a)); } catch (e) {}
+    try { flfStore().setItem('simbl_cart', JSON.stringify(a)); } catch (e) {}
   }
   window.flfTopInvite = async function (id, btn) {
     if (!(await window.simblGate('can_top_invite', 'الدعوة المباشرة من القائمة',
