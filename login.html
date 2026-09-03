@@ -366,7 +366,7 @@ async function finishLogin(email, authUser) {
   // نحاول الربط عبر auth_id أولاً
   if (authUser && authUser.id) {
     const { data } = await supabaseClient
-      .from('users').select('id, role, name, platform, handle, followers, category, bio, company_name, industry, size, position, website, created_at, auth_id, approval_status, cr_number, is_test').eq('auth_id', authUser.id).maybeSingle();
+      .from('users').select('id, role, name, platform, handle, followers, category, bio, company_name, industry, size, position, website, created_at, auth_id, approval_status, cr_number, is_test, avatar_url, country, city, creator_tier').eq('auth_id', authUser.id).maybeSingle();
     profile = data || null;
   }
   // احتياطي: عبر دالة آمنة تُرجّع ملف المتصل نفسه فقط (ونربط auth_id لو ناقص)
