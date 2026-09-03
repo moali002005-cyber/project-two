@@ -632,5 +632,15 @@ async function initNotifications(bellContainerId) {
   await loadNotifications();
   // تحديث كل دقيقة
   if (notifPollInterval) clearInterval(notifPollInterval);
-  notifPollInterval = setInterval(loadNotifications, 60000);
+  notifPollInterval = setInterval(function(){ if (!document.hidden) loadNotifications(); }, 60000);
+  if (!window.__flfNotifVizHooked) {
+    window.__flfNotifVizHooked = true;
+    var __notifVizAt = 0;
+    document.addEventListener('visibilitychange', function(){
+      if (document.hidden) return;
+      if (Date.now() - __notifVizAt < 45000) return;
+      __notifVizAt = Date.now();
+      loadNotifications();
+    });
+  }
 }
