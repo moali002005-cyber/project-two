@@ -132,6 +132,19 @@ input:focus {
 }
 input::placeholder { color: var(--ink-faint); }
 
+/* خانات كود التحقق الست */
+.otp-boxes { display: flex; gap: 10px; justify-content: center; direction: ltr; margin-bottom: 4px; }
+.otp-boxes input {
+  width: 52px; height: 60px; padding: 0;
+  text-align: center; font-size: 24px; font-weight: 700;
+  letter-spacing: 0; border-radius: 12px; caret-color: var(--accent);
+}
+.otp-boxes input.filled { border-color: var(--accent-soft); background: #FFF7F6; }
+@media (max-width: 420px) {
+  .otp-boxes { gap: 7px; }
+  .otp-boxes input { width: 44px; height: 54px; font-size: 21px; }
+}
+
 .btn-submit {
   display: block;
   width: 100%;
@@ -304,7 +317,15 @@ input::placeholder { color: var(--ink-faint); }
       <form onsubmit="verifyOtp(event)" id="otp-code-form" style="display:none">
         <div class="field">
           <label><span data-i18n="login_code_to">الكود المرسل إلى</span> <span id="otp-email-label" style="color:var(--accent-ink)"></span></label>
-          <input type="text" id="otp-code" required placeholder="••••••" inputmode="numeric" maxlength="6" autocomplete="one-time-code" style="text-align:center; letter-spacing:8px; font-size:20px">
+          <div class="otp-boxes" id="otp-boxes" dir="ltr">
+            <input type="text" inputmode="numeric" pattern="[0-9]*" maxlength="1" autocomplete="one-time-code" aria-label="1">
+            <input type="text" inputmode="numeric" pattern="[0-9]*" maxlength="1" aria-label="2">
+            <input type="text" inputmode="numeric" pattern="[0-9]*" maxlength="1" aria-label="3">
+            <input type="text" inputmode="numeric" pattern="[0-9]*" maxlength="1" aria-label="4">
+            <input type="text" inputmode="numeric" pattern="[0-9]*" maxlength="1" aria-label="5">
+            <input type="text" inputmode="numeric" pattern="[0-9]*" maxlength="1" aria-label="6">
+          </div>
+          <input type="hidden" id="otp-code">
           <div class="field-hint">
             <span data-i18n="login_resend_q">ما وصلك الكود؟</span> <button type="button" class="muted-link" onclick="resendOtp()" data-i18n="login_resend">إعادة الإرسال</button>
             · <button type="button" class="muted-link" onclick="resetOtp()" data-i18n="login_change_email">تغيير الإيميل</button>
@@ -450,7 +471,7 @@ async function sendOtp(event) {
     document.getElementById('otp-email-label').textContent = otpEmail;
     document.getElementById('otp-email-form').style.display = 'none';
     document.getElementById('otp-code-form').style.display = 'block';
-    document.getElementById('otp-code').focus();
+    if (window.__otpFocus) window.__otpFocus();
     btn.disabled = false; btn.textContent = 'إرسال الكود';
   } catch (err) {
     console.error(err);
@@ -464,8 +485,98 @@ function resetOtp() {
   hideError();
   document.getElementById('otp-code-form').style.display = 'none';
   document.getElementById('otp-email-form').style.display = 'block';
-  document.getElementById('otp-code').value = '';
+  if (window.__otpClear) window.__otpClear();
 }
+
+// ===== خانات الكود الست: تنقّل تلقائي، لصق، أرقام عربية، إرسال فوري عند الاكتمال =====
+(function initOtpBoxes() {
+  var wrap = document.getElementById('otp-boxes');
+  var hidden = document.getElementById('otp-code');
+  if (!wrap || !hidden) return;
+  var boxes = Array.prototype.slice.call(wrap.querySelectorAll('input'));
+
+  // نحوّل الأرقام العربية والفارسية إلى لاتينية حتى يقبلها التحقق
+  function toLatinDigits(str) {
+    var out = '';
+    var t = String(str == null ? '' : str);
+    for (var i = 0; i < t.length; i++) {
+      var cc = t.charCodeAt(i);
+      if (cc >= 1632 && cc <= 1641) { out += String(cc - 1632); continue; }
+      if (cc >= 1776 && cc <= 1785) { out += String(cc - 1776); continue; }
+      if (cc >= 48 && cc <= 57) { out += t.charAt(i); }
+    }
+    return out;
+  }
+
+  function sync() {
+    var v = '';
+    for (var i = 0; i < boxes.length; i++) {
+      v += boxes[i].value;
+      if (boxes[i].value) { boxes[i].classList.add('filled'); }
+      else { boxes[i].classList.remove('filled'); }
+    }
+    hidden.value = v;
+    return v;
+  }
+
+  function focusAt(i) {
+    if (i < 0) i = 0;
+    if (i > boxes.length - 1) i = boxes.length - 1;
+    boxes[i].focus();
+    try { boxes[i].select(); } catch (e) {}
+  }
+
+  function maybeSubmit(v) {
+    if (v.length !== boxes.length) return;
+    var btn = document.getElementById('otp-verify-btn');
+    if (btn && !btn.disabled) btn.click();
+  }
+
+  function fillFrom(index, digits) {
+    for (var k = 0; k < digits.length && index + k < boxes.length; k++) {
+      boxes[index + k].value = digits.charAt(k);
+    }
+    var last = Math.min(index + digits.length, boxes.length - 1);
+    focusAt(last);
+    maybeSubmit(sync());
+  }
+
+  boxes.forEach(function (b, i) {
+    b.addEventListener('input', function () {
+      var d = toLatinDigits(b.value);
+      if (d.length > 1) { b.value = ''; fillFrom(i, d); return; }
+      b.value = d;
+      if (d) focusAt(i + 1);
+      maybeSubmit(sync());
+    });
+
+    b.addEventListener('keydown', function (e) {
+      if (e.key === 'Backspace') {
+        if (!b.value && i > 0) { e.preventDefault(); boxes[i - 1].value = ''; sync(); focusAt(i - 1); }
+        return;
+      }
+      if (e.key === 'ArrowLeft')  { e.preventDefault(); focusAt(i - 1); return; }
+      if (e.key === 'ArrowRight') { e.preventDefault(); focusAt(i + 1); return; }
+    });
+
+    b.addEventListener('paste', function (e) {
+      e.preventDefault();
+      var cd = e.clipboardData || window.clipboardData;
+      var d = toLatinDigits(cd ? cd.getData('text') : '');
+      if (!d) return;
+      for (var k = 0; k < boxes.length; k++) boxes[k].value = '';
+      fillFrom(0, d.slice(0, boxes.length));
+    });
+
+    b.addEventListener('focus', function () { try { b.select(); } catch (e) {} });
+  });
+
+  window.__otpClear = function () {
+    for (var i = 0; i < boxes.length; i++) boxes[i].value = '';
+    sync();
+  };
+  window.__otpFocus = function () { focusAt(0); };
+})();
 
 async function verifyOtp(event) {
   event.preventDefault();
@@ -482,6 +593,8 @@ async function verifyOtp(event) {
     });
     if (error) {
       showError('الكود غير صحيح أو منتهي. أعد المحاولة.');
+      if (window.__otpClear) window.__otpClear();
+      if (window.__otpFocus) window.__otpFocus();
       btn.disabled = false; btn.textContent = 'تأكيد ودخول';
       return;
     }
