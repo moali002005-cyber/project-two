@@ -159,8 +159,6 @@ export default async function handler(req, res) {
         follower_range: null,
         campaign_size: 1,
         city: null,
-        payment_min_days: 7,
-        payment_max_days: 30,
         tags: brand.industry ? [brand.industry] : [],
         brand_id: brandId,
         status: 'active',
