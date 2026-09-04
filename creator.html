@@ -1902,6 +1902,8 @@ function renderCreatorDealCard(c, a) {
   const initial = (c.title || 'ح')[0];
   const isClosed = a.status === 'closed';
   const isApproved = isClosed && a.brand_approved === true;
+  // اعتُمد المعلن، لكن الشركة ما سدّدت لفلفلونسر بعد → الحملة ما انطلقت والمراحل ما تبدأ
+  const awaitingLaunch = isApproved && a.platform_paid !== true;
   const awaitingApproval = isClosed && !isApproved;
   const isNegotiating = !isClosed;
   const isWaitlisted = a.status === 'waitlisted';
@@ -1918,11 +1920,13 @@ function renderCreatorDealCard(c, a) {
   const attachBtnHtml = attachCount ? `<button class="brief-pill" onclick="event.stopPropagation(); openAttachModal('${a.id}')">📎 المرفقات (${attachCount})</button>` : '';
 
   let badge;
-  const isCompleted = isApproved && stageNow >= 9;
+  const isCompleted = isApproved && !awaitingLaunch && stageNow >= 9;
   if (didntWin) {
     badge = `<span class="dc-badge full">اكتمل العدد</span>`;
   } else if (isWaitlisted) {
     badge = `<span class="dc-badge" style="background:#FCE9D2;color:#9A4B06;border:1px solid #F0C79A;">🕓 قائمة الانتظار</span>`;
+  } else if (awaitingLaunch) {
+    badge = `<span class="dc-badge amber">🚀 بانتظار إطلاق الحملة</span>`;
   } else if (isApproved) {
     if (stageNow >= 9) badge = `<span class="dc-badge success">✓ مكتملة بنجاح</span>`;
     else if (isCreatorTurn(stageNow)) badge = `<span class="dc-badge mine">دورك</span>`;
@@ -1948,6 +1952,8 @@ function renderCreatorDealCard(c, a) {
     body = `<div class="dc-note full">اكتمل العدد المطلوب لهذي الحملة واعتمدت الشركة معلنيها. نشكر لك مشاركتك — تابع الحملات الجديدة وقدّم بسرعة، حظ أوفر 🌟</div>`;
   } else if (isWaitlisted) {
     body = `<div class="dc-note" style="background:#FFF6EC;color:#9A4B06;border-right:3px solid #E8850C;">🕓 أنت في قائمة الانتظار لهذي الحملة<span data-wpos="${a.id}"></span>. العدد المطلوب اكتمل حالياً، وبمجرد ما ينفتح مكان بننبّهك فورًا ويبدأ الوكيل يفاوضك. خلّك متابع 🌿</div>`;
+  } else if (awaitingLaunch) {
+    body = `<div class="dc-note amber">🎉 <b>تم اعتمادك في الحملة</b> بسعر ${price.toLocaleString('en-US')} ر.س. باقي الشركة تسدّد قيمة الصفقات لفلفلونسر وتطلق الحملة الإعلانية. أول ما تسدّد، تبدأ مراحل التنفيذ هنا مباشرة ويوصلك إشعار 🌿</div>`;
   } else if (isApproved) {
     const flow = flowFor(c.campaign_type, c.fulfillment_mode);
     let strip = '';
