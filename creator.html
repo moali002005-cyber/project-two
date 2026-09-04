@@ -1926,7 +1926,7 @@ function renderCreatorDealCard(c, a) {
   } else if (isWaitlisted) {
     badge = `<span class="dc-badge" style="background:#FCE9D2;color:#9A4B06;border:1px solid #F0C79A;">🕓 قائمة الانتظار</span>`;
   } else if (awaitingLaunch) {
-    badge = `<span class="dc-badge amber">🚀 بانتظار إطلاق الحملة</span>`;
+    badge = `<span class="dc-badge amber">🎉 معتمد — الحملة قيد التجهيز</span>`;
   } else if (isApproved) {
     if (stageNow >= 9) badge = `<span class="dc-badge success">✓ مكتملة بنجاح</span>`;
     else if (isCreatorTurn(stageNow)) badge = `<span class="dc-badge mine">دورك</span>`;
@@ -1953,7 +1953,7 @@ function renderCreatorDealCard(c, a) {
   } else if (isWaitlisted) {
     body = `<div class="dc-note" style="background:#FFF6EC;color:#9A4B06;border-right:3px solid #E8850C;">🕓 أنت في قائمة الانتظار لهذي الحملة<span data-wpos="${a.id}"></span>. العدد المطلوب اكتمل حالياً، وبمجرد ما ينفتح مكان بننبّهك فورًا ويبدأ الوكيل يفاوضك. خلّك متابع 🌿</div>`;
   } else if (awaitingLaunch) {
-    body = `<div class="dc-note amber">🎉 <b>تم اعتمادك في الحملة</b> بسعر ${price.toLocaleString('en-US')} ر.س. باقي الشركة تسدّد قيمة الصفقات لفلفلونسر وتطلق الحملة الإعلانية. أول ما تسدّد، تبدأ مراحل التنفيذ هنا مباشرة ويوصلك إشعار 🌿</div>`;
+    body = `<div class="dc-note amber">🎉 <b>مبروك، تم اعتمادك في الحملة</b> بسعر ${price.toLocaleString('en-US')} ر.س. الحملة الآن قيد التجهيز للانطلاق، وأول ما تنطلق تبدأ مراحل التنفيذ هنا ويوصلك إشعار 🌿</div>`;
   } else if (isApproved) {
     const flow = flowFor(c.campaign_type, c.fulfillment_mode);
     let strip = '';
@@ -2267,7 +2267,7 @@ function renderOfferCard(c, a) {
   if (isNegotiating) {
     headRight = `<span class="ac-chatbtn" onclick="event.stopPropagation(); startNegotiation('${a.id}')">💬 المحادثة مع الوكيل</span>`;
   } else if (awaitingLaunch) {
-    headRight = `<span class="app-status stage-badge waiting">🚀 بانتظار إطلاق الحملة</span>`;
+    headRight = `<span class="app-status stage-badge waiting">🎉 معتمد — الحملة قيد التجهيز</span>`;
   } else if (isApproved) {
     const stg = a.stage || 1;
     const myTurn = isCreatorTurn(stg);
@@ -2292,7 +2292,7 @@ function renderOfferCard(c, a) {
         <div class="ag-info">
           <div class="ag-price">السعر النهائي: <span class="num">${(a.final_price || a.price).toLocaleString('en-US')} ر.س</span></div>
           ${feeLines(a)}
-          <div class="ag-desc">🎉 <strong>تم اعتمادك في الحملة.</strong> باقي الشركة تسدّد قيمة الصفقات لفلفلونسر وتطلق الحملة الإعلانية. أول ما تسدّد، تبدأ مراحل التنفيذ هنا مباشرة ويوصلك إشعار.</div>
+          <div class="ag-desc">🎉 <strong>مبروك، تم اعتمادك في الحملة.</strong> الحملة الآن قيد التجهيز للانطلاق، وأول ما تنطلق تبدأ مراحل التنفيذ هنا ويوصلك إشعار.</div>
         </div>
       </div>`;
   } else if (isApproved) {
@@ -2753,14 +2753,14 @@ function renderPaymentCard(app) {
     return `<div class="stage-action complete" onclick="event.stopPropagation()">
       <div class="sa-title">🔒 مبلغك محفوظ لدى المنصة</div>
       <div class="sa-desc">${fast
-        ? 'الشركة سدّدت قيمة صفقتك للمنصة. أول ما يكتمل العمل يُصرف لك في نفس اليوم — ميزة Premium.'
-        : 'الشركة سدّدت قيمة صفقتك للمنصة قبل انطلاق الحملة. كل صفقة تكتمل من الاثنين إلى الأحد ليلًا تُصرف يوم الاثنين.'}</div>
+        ? 'مبلغ صفقتك محفوظ لدى فلفلونسر. أول ما يكتمل العمل يُصرف لك في نفس اليوم — ميزة Premium.'
+        : 'مبلغ صفقتك محفوظ لدى فلفلونسر من قبل انطلاق الحملة. كل صفقة تكتمل من الاثنين إلى الأحد ليلًا تُصرف يوم الاثنين.'}</div>
       ${breakdown}
     </div>`;
   }
   return `<div class="stage-action complete" onclick="event.stopPropagation()">
     <div class="sa-title">🎉 صفقة مكتملة</div>
-    <div class="sa-desc">خلّصت كل المراحل. أول ما تسدّد الشركة للمنصة يظهر لك مستحقك هنا.</div>
+    <div class="sa-desc">خلّصت كل المراحل. مستحقك وموعد صرفه بيظهر لك هنا قريبًا.</div>
   </div>`;
 }
 
@@ -3772,7 +3772,7 @@ function renderWallet() {
     box.innerHTML = '<div class="empty-state" style="text-align:center;padding:52px 20px;">'
       + '<h3 style="font-size:16px;font-weight:600;color:var(--ink);margin-bottom:8px;">محفظتك فاضية الآن</h3>'
       + '<p style="font-size:13.5px;color:var(--ink-muted);line-height:1.8;max-width:380px;margin:0 auto;">'
-      + 'أول ما تخلّص أول صفقة وتسدّد الشركة للمنصة، يظهر لك مستحقك هنا بالتفصيل.</p></div>';
+      + 'أول ما تخلّص أول صفقة، يظهر لك مستحقك هنا بالتفصيل.</p></div>';
     return;
   }
 
@@ -3786,7 +3786,7 @@ function renderWallet() {
   const LBL = {
     paid: 'وصلك',
     way:  'في الطريق',
-    hold: 'بانتظار سداد الشركة'
+    hold: 'قيد التجهيز'
   };
 
   const rows = deals.map(function (a) {
@@ -3825,7 +3825,7 @@ function renderWallet() {
       '<div class="wal-row">'
     +   '<div class="wal-card"><div class="wal-n">' + walletMoney(paid) + '</div><div class="wal-l">وصلك (ر.س)</div></div>'
     +   '<div class="wal-card"><div class="wal-n">' + walletMoney(way) + '</div><div class="wal-l">في الطريق (ر.س)</div></div>'
-    +   '<div class="wal-card muted"><div class="wal-n">' + walletMoney(hold) + '</div><div class="wal-l">بانتظار سداد الشركة (ر.س)</div></div>'
+    +   '<div class="wal-card muted"><div class="wal-n">' + walletMoney(hold) + '</div><div class="wal-l">قيد التجهيز (ر.س)</div></div>'
     + '</div>'
     + warn
     + '<div class="wal-note">المنصة تستلم المبلغ من الشركة ثم تحوّله لك بعد خصم عمولة باقتك. التحويلات تُنفَّذ كل يوم اثنين، وباقة Premium تُصرف في نفس اليوم.</div>'
