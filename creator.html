@@ -1479,19 +1479,26 @@ function followerRangeText(c) {
     .map(v => FOLLOWER_RANGE_LABELS[v] || v).join('، ');
 }
 
-// ====== تعهّد الدفع: نص يظهر للمعلن (نطاق أيام الدفع بعد إكمال الحملة) ======
+// ====== جدول الصرف: فلفلونسر هي من تصرف، والموعد حسب باقة المعلن ======
+const PAYOUT_MONTHS = ['يناير','فبراير','مارس','أبريل','مايو','يونيو','يوليو','أغسطس','سبتمبر','أكتوبر','نوفمبر','ديسمبر'];
+function fmtPayoutDate(x) {
+  const d = (x instanceof Date) ? x : new Date(x);
+  if (!x || isNaN(d.getTime())) return '';
+  return d.getDate() + ' ' + PAYOUT_MONTHS[d.getMonth()] + ' ' + d.getFullYear();
+}
+// موعد صرف صفقة بعينها: Premium يوم الإكمال نفسه، وغيرها اثنين الأسبوع اللي بعده
+function payoutDateText(app) {
+  if (!app) return '';
+  if (app.payout_paid_at) return fmtPayoutDate(app.payout_paid_at);
+  const base = app.completed_at ? new Date(app.completed_at) : null;
+  if (!base || isNaN(base.getTime())) return '';
+  if (app.payout_speed === 'instant') return fmtPayoutDate(base);
+  const d = new Date(base.getFullYear(), base.getMonth(), base.getDate());
+  d.setDate(d.getDate() - ((d.getDay() + 6) % 7) + 7);   // اثنين الأسبوع التالي
+  return fmtPayoutDate(d);
+}
 function paymentPledgeText(c) {
-  if (!c) return '';
-  const mn = parseInt(c.payment_min_days, 10);
-  const mx = parseInt(c.payment_max_days, 10);
-  const hasMn = !isNaN(mn) && mn > 0;
-  const hasMx = !isNaN(mx) && mx > 0;
-  if (!hasMn && !hasMx) return '';
-  if (hasMn && hasMx && mn !== mx) {
-    return `الدفع خلال ${toArabic(mn)}–${toArabic(mx)} يوم بعد إكمال الحملة`;
-  }
-  const d = hasMx ? mx : mn;
-  return `الدفع خلال ${toArabic(d)} يوم بعد إكمال الحملة`;
+  return 'الصرف من فلفلونسر بعد اكتمال الصفقة — دفعة كل اثنين، وفوري مع Premium';
 }
 
 // نص الـ pill يعتمد على عدد العروض المقدّمة (غير المرفوضة):
@@ -2233,6 +2240,8 @@ function renderOfferCard(c, a) {
   const campaignTitle = c.title || a.campaigns?.title || 'إعلان';
   const isClosed = a.status === 'closed';
   const isApproved = isClosed && a.brand_approved === true;
+  // اعتُمد المعلن، لكن الشركة ما سدّدت لفلفلونسر بعد → الحملة ما انطلقت والمراحل ما تبدأ
+  const awaitingLaunch = isApproved && a.platform_paid !== true;
   const awaitingApproval = isClosed && !isApproved;
   const isNegotiating = !isClosed && !isDeadApp(a);
   const statusLabels = { pending: 'قيد المراجعة', active: 'تفاوض نشط', closed: 'مقفلة', rejected: 'مرفوضة' };
@@ -2251,6 +2260,8 @@ function renderOfferCard(c, a) {
   let headRight;
   if (isNegotiating) {
     headRight = `<span class="ac-chatbtn" onclick="event.stopPropagation(); startNegotiation('${a.id}')">💬 المحادثة مع الوكيل</span>`;
+  } else if (awaitingLaunch) {
+    headRight = `<span class="app-status stage-badge waiting">🚀 بانتظار إطلاق الحملة</span>`;
   } else if (isApproved) {
     const stg = a.stage || 1;
     const myTurn = isCreatorTurn(stg);
@@ -2267,6 +2278,15 @@ function renderOfferCard(c, a) {
           <div class="ag-price">السعر النهائي: <span class="num">${(a.final_price || a.price).toLocaleString('en-US')} ر.س</span></div>
           ${feeLines(a)}
           <div class="ag-desc">${a.is_reserve ? 'أنت ضمن قائمة الاحتياط الجاهزة — اكتمل العدد حاليًا، وبمجرد ما ينفتح مكان بنرقّيك للتعميد فورًا 🌿' : 'تم التوصّل لاتفاق، بانتظار تعميد الشركة لبدء التنفيذ.'}</div>
+        </div>
+      </div>`;
+  } else if (awaitingLaunch) {
+    expandedInner = `
+      <div class="approval-gate" onclick="event.stopPropagation()">
+        <div class="ag-info">
+          <div class="ag-price">السعر النهائي: <span class="num">${(a.final_price || a.price).toLocaleString('en-US')} ر.س</span></div>
+          ${feeLines(a)}
+          <div class="ag-desc">🎉 <strong>تم اعتمادك في الحملة.</strong> باقي الشركة تسدّد قيمة الصفقات لفلفلونسر وتطلق الحملة الإعلانية. أول ما تسدّد، تبدأ مراحل التنفيذ هنا مباشرة ويوصلك إشعار.</div>
         </div>
       </div>`;
   } else if (isApproved) {
@@ -2292,7 +2312,7 @@ function renderOfferCard(c, a) {
         </div>
         ${expandable ? '<span class="ac-chev">▾</span>' : ''}
       </div>
-      ${isApproved ? `<div class="ac-miniwrap">${miniProgress(a.stage || 1)}</div>` : ''}
+      ${(isApproved && !awaitingLaunch) ? `<div class="ac-miniwrap">${miniProgress(a.stage || 1)}</div>` : ''}
       ${(expandable && isExpanded) ? `<div class="ac-body" onclick="event.stopPropagation()">${expandedInner}</div>` : ''}
     </div>
   `;
