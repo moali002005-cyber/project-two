@@ -1584,10 +1584,9 @@ async function simblExitImpersonation(){
     <h1 class="hero-title">أهلًا <span class="nm" id="welcome-name">بكم</span></h1>
     <p class="hero-sub">أطلق حملتك، والوكيل يفاوض ويقفل لك.</p>
     <div style="display: flex; gap: 12px; flex-wrap: wrap; justify-content: center;">
-      <button class="hero-cta" onclick="window.location.href='/brand.html?view=campaigns'" style="background:linear-gradient(135deg,#EE5A44,#C0231A);color:#fff;">📣 متابعة الحملات<span id="hero-camp-count" style="display:none;background:rgba(255,255,255,.28);border-radius:100px;padding:1px 8px;margin-inline-start:7px;font-size:12px"></span></button>
+      <button class="hero-cta" onclick="goToCampaigns()" style="background:linear-gradient(135deg,#EE5A44,#C0231A);color:#fff;">📣 متابعة الحملات<span id="hero-camp-count" style="display:none;background:rgba(255,255,255,.28);border-radius:100px;padding:1px 8px;margin-inline-start:7px;font-size:12px"></span></button>
       <button class="hero-cta" onclick="openCampaignModal()">+ حملة جديدة</button>
       <button class="hero-cta" onclick="window.location.href='/company.html'">📊 الأداء</button>
-      <button class="hero-cta" onclick="goToCampaigns()">صفقات الوكيل</button>
       <button class="hero-cta" onclick="window.location.href='/dues.html'">📋 المستحقات</button>
     </div>
     <style>@media (max-width:640px){#creators-teaser{flex-direction:column!important;align-items:center!important;text-align:center!important;gap:12px!important;}#creators-teaser #teaser-avatars{justify-content:center!important;}}</style>
@@ -1609,17 +1608,9 @@ async function simblExitImpersonation(){
     </div>
   </section>
 
-  <!-- رأس صفحة «متابعة الحملات» — يظهر فقط في وضع ?view=campaigns -->
-  <div id="campaigns-view-bar" style="display:none;margin:8px 0 22px">
-    <a href="/brand.html" style="display:inline-flex;align-items:center;gap:6px;font-size:14px;color:var(--ink-muted);text-decoration:none">← لوحة التحكم</a>
-    <h1 style="font-family:var(--font-display);font-size:26px;margin:10px 0 4px;color:var(--ink)">متابعة الحملات الإعلانية</h1>
-    <p style="font-size:14px;color:var(--ink-muted);margin:0">اختر حملة لمتابعة المتقدّمين والمراحل.</p>
-  </div>
-
-  <!-- أزرار التنقل بين الحملات — يملؤها renderCampaigns()؛ غيابها كان يوقف الرسم بالكامل -->
+  <!-- حاويتان مخفيّتان: متابعة الحملات الكاملة في campaigns.html، لكن renderCampaigns()
+       يتوقّف من أول سطر إذا لم يجد العنصرين، فنُبقيهما موجودين ومخفيّين. -->
   <div class="campaign-pills" id="campaign-pills" style="display:none"></div>
-
-  <!-- حاوية قائمة الحملات — يملؤها renderCampaigns()؛ غيابها كان يسبّب انهيار loadData -->
   <div class="campaigns-list" id="campaigns-list" style="display:none"></div>
 </main>
 
@@ -2127,18 +2118,6 @@ function goToCampaigns() {
   window.location.href = '/campaigns.html';
 }
 
-// ===== وضع «متابعة الحملات»: صفحة مستقلة على نفس الملف (?view=campaigns) =====
-// اللوحة الرئيسية تبقى نظيفة، والحملات لها شاشتها الخاصة.
-function isCampaignsView() {
-  try { return new URLSearchParams(location.search).get('view') === 'campaigns'; }
-  catch (e) { return false; }
-}
-function applyCampaignsView() {
-  var hero = document.querySelector('.hero'); if (hero) hero.style.display = 'none';
-  var bar = document.getElementById('campaigns-view-bar'); if (bar) bar.style.display = '';
-  var pills = document.getElementById('campaign-pills'); if (pills) pills.style.display = '';
-  var list = document.getElementById('campaigns-list'); if (list) list.style.display = '';
-}
 
 // ====== تحكّم نموذج الإعلان (تاريخ النشر + المنصة) ======
 function togglePublishDate() {
@@ -2410,8 +2389,6 @@ async function init() {
   }
 
   initNotifications('user-menu');
-
-  if (isCampaignsView()) applyCampaignsView();
 
   await loadData();
 }
