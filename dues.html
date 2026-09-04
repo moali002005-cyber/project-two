@@ -70,6 +70,7 @@ body { background: var(--cream); color: var(--ink); font-family: var(--font-body
 .dues-chip { font-size:12px; font-weight:500; border-radius:100px; padding:5px 12px; background:var(--cream-darker); color:var(--ink-soft); }
 .dues-chip.due { background:rgba(201,48,48,0.08); color:#b32d2d; }
 .dues-chip.paid { background:rgba(226,59,46,0.12); color:var(--accent-ink); }
+.dp-wait { background:rgba(154,75,6,0.10); color:#9A4B06; }
 .dues-hint { font-size:11.5px; color:var(--ink-faint); margin:0 0 12px; display:flex; align-items:center; gap:5px; flex-wrap:wrap; }
 .dues-grid-wrap { overflow-x:auto; border:1px solid #c9ccc9; border-radius:6px; }
 .xl td:last-child, .xl th:last-child { position: sticky; left: 0; background:#fff; z-index:3; box-shadow: 2px 0 5px rgba(0,0,0,0.05); }
@@ -445,10 +446,14 @@ function duesRowFilled(a, camp, idx, totals) {
     const d = publishIso ? new Date(publishIso) : null;
     if (d && !isNaN(d.getTime())) { dateCopy = d.toLocaleDateString('en-GB'); dateDisp = duesDateText(publishIso); }
   }
-  // الشركة تسدّد للمنصة عند اعتماد الأسماء عبر زر «ادفع مستحقات الحملة»، فما فيه حالة «بانتظار الدفع» هنا إطلاقًا
-  totals.paid += amountNum;
-  if (stg < 9) {
-    statusPlain = 'قيد التنفيذ - ' + (DUES_STAGE_NAMES[stg] || ('مرحلة ' + stg));
+  // الشركة تسدّد لفلفلونسر من زر «ادفع مستحقات الحملة»، وفلفلونسر تصرف للمعلن بعدها
+  const isPaid = (a.platform_paid === true);
+  if (isPaid) totals.paid += amountNum; else totals.due += amountNum;
+  if (!isPaid) {
+    statusPlain = 'بانتظار الدفع';
+    statusHtml = '<span class="dp dp-wait">⏳ بانتظار الدفع</span>';
+  } else if (stg < 9) {
+    statusPlain = 'مدفوعة - قيد التنفيذ - ' + (DUES_STAGE_NAMES[stg] || ('مرحلة ' + stg));
     statusHtml = '<span class="dp dp-prog">' + escHtml(statusPlain) + '</span>';
   } else {
     statusPlain = 'مدفوعة'; statusHtml = '<span class="dp dp-paid">💳 مدفوعة ✓</span>';
@@ -527,9 +532,9 @@ function exportDuesCSV(onlyCampId) {
       const d = publishIso ? new Date(publishIso) : null;
       if (d && !isNaN(d.getTime())) dateCsv = d.toLocaleDateString('en-GB');
       const stg = a.stage || 1;
-      // الشركة سدّدت للمنصة عند اعتماد الأسماء، فالحالة إمّا قيد التنفيذ أو مدفوعة
       let statusPlain;
-      if (stg < 9) statusPlain = 'قيد التنفيذ - ' + (DUES_STAGE_NAMES[stg] || ('مرحلة ' + stg));
+      if (a.platform_paid !== true) statusPlain = 'بانتظار الدفع';
+      else if (stg < 9) statusPlain = 'مدفوعة - قيد التنفيذ - ' + (DUES_STAGE_NAMES[stg] || ('مرحلة ' + stg));
       else statusPlain = 'مدفوعة';
       const nameOut = cleanField(ov.name != null ? ov.name : (creator.name || 'معلن'));
       lines.push([cleanField(c.title || 'حملة'), launch, nameOut, cleanField(duesAccountLink(creator) || ''), dateCsv,
@@ -564,9 +569,8 @@ function renderCampaignBlock(camp, deals) {
 
   // ترتيب: قيد التنفيذ أولًا، ثم المكتملة المدفوعة
   function groupRank(a) {
-    const stg = a.stage || 1;
-    if (stg >= 9) return 4;
-    return 2;
+    if (a.platform_paid !== true) return 0;
+    return ((a.stage || 1) >= 9) ? 4 : 2;
   }
   deals = deals.slice().sort((a, b) => {
     const ra = groupRank(a), rb = groupRank(b);
@@ -585,7 +589,8 @@ function renderCampaignBlock(camp, deals) {
   const colLetters = ['A', 'B', 'C', 'D', 'E', 'F', 'G'].map(L => '<th class="xl-colh">' + L + '</th>').join('');
   const launch = duesDateText(camp.created_at);
   const sumChips =
-    '<span class="dues-chip paid">مدفوع للمنصة: ' + totals.paid.toLocaleString('en-US') + ' ر.س</span>';
+    '<span class="dues-chip paid">مدفوع لفلفلونسر: ' + totals.paid.toLocaleString('en-US') + ' ر.س</span>'
+    + (totals.due > 0 ? '<span class="dues-chip due">بانتظار الدفع: ' + totals.due.toLocaleString('en-US') + ' ر.س</span>' : '');
 
   return '<div class="camp-block" data-campid="' + camp.id + '">'
     + '<div class="camp-bar">'
