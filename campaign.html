@@ -481,18 +481,6 @@ const __arDigits = ['٠','١','٢','٣','٤','٥','٦','٧','٨','٩'];
 function toArabicNum(n) {
   return String(n);
 }
-// يرجّع نص المدّة مثل «7–30 يوم» أو «30 يوم»، أو '' لو ما فيه قيم (حملات قديمة)
-function paymentRangeText(c) {
-  if (!c) return '';
-  const mn = parseInt(c.payment_min_days, 10);
-  const mx = parseInt(c.payment_max_days, 10);
-  const hasMn = !isNaN(mn) && mn > 0;
-  const hasMx = !isNaN(mx) && mx > 0;
-  if (!hasMn && !hasMx) return '';
-  if (hasMn && hasMx && mn !== mx) return `${toArabicNum(mn)}–${toArabicNum(mx)} يوم`;
-  const d = hasMx ? mx : mn;
-  return `${toArabicNum(d)} يوم`;
-}
 
 async function init() {
   currentUser = getCurrentUser();
@@ -644,11 +632,8 @@ function render() {
   const isAwaiting = dealClosed && !approvedClose;
   const isFullyClosed = dealClosed && approvedClose;
 
-  // بانر تعهّد الدفع (يظهر للطرفين طول ما الصفقة ما اكتملت تسليمها)
-  const pledgeRange = paymentRangeText(campaign);
-  const pledgeBanner = pledgeRange
-    ? `<div class="pay-pledge-banner"><span class="ppb-ic">💸</span><span><strong>الشركة متعهّدة بالدفع</strong> خلال ${pledgeRange} بعد إكمال الحملة.</span></div>`
-    : '';
+  // الدفع يمر عبر المنصة: الشركة تسدّد لفلفلونسر، وفلفلونسر تصرف للمعلن
+  const pledgeBanner = `<div class="pay-pledge-banner"><span class="ppb-ic">💸</span><span><strong>الدفع عبر فلفلونسر:</strong> الشركة تسدّد للمنصة، والمنصة تصرف للمعلن بعد اكتمال الصفقة.</span></div>`;
 
   let footer;
   if (isFullyClosed) {
