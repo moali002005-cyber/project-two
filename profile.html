@@ -1096,8 +1096,8 @@ input:focus, textarea:focus { outline: none; border-color: var(--accent); box-sh
     </div>
 
     <div class="fin-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px;">
-      <div class="fin-tile"><div class="ft-l">✅ مدفوعة</div><div class="ft-v" id="fin-paid">0 ر.س</div><div class="ft-s" id="fin-paid-c">—</div></div>
-      <div class="fin-tile"><div class="ft-l">⏳ بانتظار الدفع</div><div class="ft-v" id="fin-pending">0 ر.س</div><div class="ft-s" id="fin-pending-c">—</div></div>
+      <div class="fin-tile"><div class="ft-l">✅ وصلك</div><div class="ft-v" id="fin-paid">0 ر.س</div><div class="ft-s" id="fin-paid-c">—</div></div>
+      <div class="fin-tile"><div class="ft-l">⏳ في الطريق</div><div class="ft-v" id="fin-pending">0 ر.س</div><div class="ft-s" id="fin-pending-c">—</div></div>
     </div>
 
     <div id="fin-months-wrap" style="background:var(--cream);border-radius:14px;padding:16px 18px;margin-bottom:16px;display:none;">
@@ -1194,19 +1194,26 @@ function followerRangeText(c) {
     .map(v => FOLLOWER_RANGE_LABELS[v] || v).join('، ');
 }
 
-// ====== تعهّد الدفع: نص يظهر للمعلن (نطاق أيام الدفع بعد إكمال الحملة) ======
+// ====== جدول الصرف: فلفلونسر هي من تصرف، والموعد حسب باقة المعلن ======
+const PAYOUT_MONTHS = ['يناير','فبراير','مارس','أبريل','مايو','يونيو','يوليو','أغسطس','سبتمبر','أكتوبر','نوفمبر','ديسمبر'];
+function fmtPayoutDate(x) {
+  const d = (x instanceof Date) ? x : new Date(x);
+  if (!x || isNaN(d.getTime())) return '';
+  return d.getDate() + ' ' + PAYOUT_MONTHS[d.getMonth()] + ' ' + d.getFullYear();
+}
+// موعد صرف صفقة بعينها: Premium يوم الإكمال نفسه، وغيرها اثنين الأسبوع اللي بعده
+function payoutDateText(app) {
+  if (!app) return '';
+  if (app.payout_paid_at) return fmtPayoutDate(app.payout_paid_at);
+  const base = app.completed_at ? new Date(app.completed_at) : null;
+  if (!base || isNaN(base.getTime())) return '';
+  if (app.payout_speed === 'instant') return fmtPayoutDate(base);
+  const d = new Date(base.getFullYear(), base.getMonth(), base.getDate());
+  d.setDate(d.getDate() - ((d.getDay() + 6) % 7) + 7);   // اثنين الأسبوع التالي
+  return fmtPayoutDate(d);
+}
 function paymentPledgeText(c) {
-  if (!c) return '';
-  const mn = parseInt(c.payment_min_days, 10);
-  const mx = parseInt(c.payment_max_days, 10);
-  const hasMn = !isNaN(mn) && mn > 0;
-  const hasMx = !isNaN(mx) && mx > 0;
-  if (!hasMn && !hasMx) return '';
-  if (hasMn && hasMx && mn !== mx) {
-    return `الدفع خلال ${toArabic(mn)}–${toArabic(mx)} يوم بعد إكمال الحملة`;
-  }
-  const d = hasMx ? mx : mn;
-  return `الدفع خلال ${toArabic(d)} يوم بعد إكمال الحملة`;
+  return 'الصرف من فلفلونسر بعد اكتمال الصفقة — دفعة كل اثنين، وفوري مع Premium';
 }
 
 // نص الـ pill يعتمد على عدد العروض المقدّمة (غير المرفوضة):
@@ -1401,12 +1408,13 @@ function updateHeroStats() {
   set('stat-deals', toArabic(deals));
   set('stat-active', toArabic(active));
   // ====== اللوحة المالية: أرباح هذا الشهر + مدفوعة / بانتظار الدفع ======
-  var amountOf = function(a){ return Number(a.final_price || a.price || 0); };
+  // الصافي هو اللي يوصل المعلن فعلاً (بعد عمولة باقته)، فهو الأصدق للعرض
+  var amountOf = function(a){ return Number(a.creator_net_sar != null ? a.creator_net_sar : (a.final_price || a.price || 0)); };
   var sum = function(arr){ return arr.reduce(function(s,a){ return s + amountOf(a); }, 0); };
   var sar = function(v){ return Number(v).toLocaleString('en-US') + ' ر.س'; };
   var now = new Date();
-  var confirmedArr = closedApproved.filter(function(a){ return a.payment_status === 'confirmed'; });   // مدفوعة ومؤكّدة
-  var pendingArr   = closedApproved.filter(function(a){ return a.payment_status !== 'confirmed'; });     // بانتظار الدفع أو التأكيد
+  var confirmedArr = closedApproved.filter(function(a){ return a.payout_status === 'paid'; });   // وصلت حسابك
+  var pendingArr   = closedApproved.filter(function(a){ return a.payout_status !== 'paid'; });    // في الطريق
   var monthArr = closedApproved.filter(function(a){
     var ts = a.completed_at || a.closed_at || a.created_at; if(!ts) return false;
     var d = new Date(ts);
@@ -1421,8 +1429,8 @@ function updateHeroStats() {
   var MON = ['يناير','فبراير','مارس','أبريل','مايو','يونيو','يوليو','أغسطس','سبتمبر','أكتوبر','نوفمبر','ديسمبر'];
   var byMonth = {};
   confirmedArr.forEach(function(a){
-    if(!a.received_confirmed_at) return;
-    var d = new Date(a.received_confirmed_at); if(isNaN(d.getTime())) return;
+    if(!a.payout_paid_at) return;
+    var d = new Date(a.payout_paid_at); if(isNaN(d.getTime())) return;
     var k = d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0');
     byMonth[k] = (byMonth[k] || 0) + amountOf(a);
   });
@@ -1462,14 +1470,15 @@ function updateHeroStats() {
       elist.innerHTML = closedApproved.map(function(a){
         var amt = amountOf(a).toLocaleString('en-US');
         var title = (a.campaigns && a.campaigns.title) || 'صفقة';
-        var ps = a.payment_status || 'unpaid';
-        var chip = (ps === 'confirmed')   ? { t:'✅ مستلم',        c:'#0e6b66', bg:'rgba(226,59,46,.14)' }
-                 : (ps === 'marked_paid') ? { t:'💸 أكّد استلامه',  c:'#8a5a00', bg:'rgba(200,150,20,.14)' }
-                 : (ps === 'disputed')    ? { t:'⚠️ لم يُستلم',     c:'#c93030', bg:'rgba(201,48,48,.10)' }
-                 :                          { t:'⏳ مستحق',         c:'#7a6a2a', bg:'rgba(160,140,40,.14)' };
-        var canConfirm = (ps === 'marked_paid' || ps === 'disputed');
-        var actionBtn = canConfirm
-          ? '<button type="button" onclick="setCreatorPayment(\''+a.id+'\',\'confirmed\')" style="margin-top:11px;width:100%;background:var(--accent);color:#fff;border:0;border-radius:100px;padding:11px;font-family:inherit;font-size:12.5px;font-weight:700;cursor:pointer;">استلمت المبلغ ✓</button>'
+        var ps = a.payout_status || (a.platform_paid ? 'holding' : 'none');
+        var chip = (ps === 'paid')     ? { t:'✅ وصلك',                c:'#0e6b66', bg:'rgba(226,59,46,.14)' }
+                 : (ps === 'batched')  ? { t:'🏦 في دفعة الاثنين',      c:'#8a5a00', bg:'rgba(200,150,20,.14)' }
+                 : (ps === 'eligible') ? { t:'✅ جاهز للصرف',           c:'#0e6b66', bg:'rgba(226,59,46,.10)' }
+                 : (ps === 'holding')  ? { t:'🔒 محفوظ لدى المنصة',     c:'#7a6a2a', bg:'rgba(160,140,40,.14)' }
+                 :                       { t:'⏳ بانتظار سداد الشركة',  c:'#7a6a2a', bg:'rgba(160,140,40,.10)' };
+        var when = payoutDateText(a);
+        var actionBtn = when
+          ? '<div style="margin-top:8px;font-size:11.5px;color:var(--ink-muted);">📅 موعد الصرف: <strong style="color:var(--ink);">'+when+'</strong></div>'
           : '';
         return '<div style="border:1px solid var(--line);border-radius:12px;margin-bottom:8px;padding:12px 14px;">'
           + '<div style="display:flex;justify-content:space-between;align-items:center;gap:10px;">'
@@ -1623,6 +1632,8 @@ function renderOfferCard(c, a) {
   const campaignTitle = c.title || a.campaigns?.title || 'إعلان';
   const isClosed = a.status === 'closed';
   const isApproved = isClosed && a.brand_approved === true;
+  // اعتُمد المعلن، لكن الشركة ما سدّدت لفلفلونسر بعد → الحملة ما انطلقت والمراحل ما تبدأ
+  const awaitingLaunch = isApproved && a.platform_paid !== true;
   const awaitingApproval = isClosed && !isApproved;
   const isNegotiating = !isClosed && a.status !== 'rejected';
   const statusLabels = { pending: 'قيد المراجعة', active: 'تفاوض نشط', closed: 'مقفلة', rejected: 'مرفوضة' };
@@ -1636,6 +1647,8 @@ function renderOfferCard(c, a) {
   let headRight;
   if (isNegotiating) {
     headRight = `<span class="ac-chatbtn" onclick="event.stopPropagation(); startNegotiation('${a.id}')">💬 المحادثة مع الوكيل</span>`;
+  } else if (awaitingLaunch) {
+    headRight = `<span class="app-status stage-badge waiting">🚀 بانتظار إطلاق الحملة</span>`;
   } else if (isApproved) {
     const stg = a.stage || 1;
     const myTurn = isCreatorTurn(stg);
@@ -1652,6 +1665,15 @@ function renderOfferCard(c, a) {
           <div class="ag-price">السعر النهائي: <span class="num">${(a.final_price || a.price).toLocaleString('en-US')} ر.س</span></div>
           ${feeLines(a)}
           <div class="ag-desc">تم التوصّل لاتفاق، بانتظار تعميد الشركة لبدء التنفيذ.</div>
+        </div>
+      </div>`;
+  } else if (awaitingLaunch) {
+    expandedInner = `
+      <div class="approval-gate" onclick="event.stopPropagation()">
+        <div class="ag-info">
+          <div class="ag-price">السعر النهائي: <span class="num">${(a.final_price || a.price).toLocaleString('en-US')} ر.س</span></div>
+          ${feeLines(a)}
+          <div class="ag-desc">🎉 <strong>تم اعتمادك في الحملة.</strong> باقي الشركة تسدّد قيمة الصفقات لفلفلونسر وتطلق الحملة الإعلانية. أول ما تسدّد، تبدأ مراحل التنفيذ هنا مباشرة ويوصلك إشعار.</div>
         </div>
       </div>`;
   } else if (isApproved) {
@@ -1675,7 +1697,7 @@ function renderOfferCard(c, a) {
         </div>
         ${expandable ? '<span class="ac-chev">▾</span>' : ''}
       </div>
-      ${isApproved ? `<div class="ac-miniwrap">${miniProgress(a.stage || 1)}</div>` : ''}
+      ${(isApproved && !awaitingLaunch) ? `<div class="ac-miniwrap">${miniProgress(a.stage || 1)}</div>` : ''}
       ${(expandable && isExpanded) ? `<div class="ac-body" onclick="event.stopPropagation()">${expandedInner}</div>` : ''}
     </div>
   `;
@@ -1939,72 +1961,64 @@ function toggleBrief(id, btn) {
   btn.textContent = isExpanded ? 'إخفاء ↑' : 'قراءة المزيد ↓';
 }
 
-// آخر موعد للدفع = وقت الإكمال + payment_max_days (لو متوفّرة)
-function paymentDeadlineText(app) {
-  const c = app && app.campaigns;
-  const days = c ? parseInt(c.payment_max_days, 10) : NaN;
-  if (!app || !app.completed_at || isNaN(days) || days <= 0) return '';
-  const d = new Date(app.completed_at);
-  if (isNaN(d.getTime())) return '';
-  d.setDate(d.getDate() + days);
-  try { return d.toLocaleDateString('ar-SA'); } catch (e) { return ''; }
-}
-
-// بطاقة الدفع (تظهر بعد المرحلة 9) — جهة المعلن
+// بطاقة الصرف (تظهر بعد المرحلة 9) — جهة المعلن
+// فلفلونسر تستلم من الشركة وتصرف للمعلن بعد خصم عمولة باقته.
 function renderPaymentCard(app) {
   if (!app) {
     return `<div class="stage-action complete" onclick="event.stopPropagation()"><div class="sa-title">🎉 صفقة مكتملة</div><div class="sa-desc">تم اكتمال جميع مراحل الصفقة بنجاح.</div></div>`;
   }
-  const status = app.payment_status || 'unpaid';
-  const deadline = paymentDeadlineText(app);
-  const deadlineLine = deadline ? `<div class="pay-deadline">آخر موعد متوقّع للدفع: ${deadline}</div>` : '';
+  const gross = Number(app.final_price || app.price || 0);
+  const pct   = (app.creator_fee_pct != null) ? Number(app.creator_fee_pct) : null;
+  const net   = (app.creator_net_sar != null) ? Number(app.creator_net_sar) : null;
+  const st    = app.payout_status || (app.platform_paid ? 'holding' : 'none');
+  const fast  = (app.payout_speed === 'instant');
+  const m     = (v) => Number(v || 0).toLocaleString('en-US');
+  const when  = payoutDateText(app);
+  const whenLine = when ? `<div class="pay-deadline">📅 موعد الصرف: <strong>${when}</strong></div>` : '';
+  const breakdown = (pct != null && net != null)
+    ? `<div class="pay-deadline">قيمة الصفقة ${m(gross)} ر.س · عمولة المنصة ${pct}٪ = ${m(app.creator_fee_sar)} ر.س · <strong>صافي لك ${m(net)} ر.س</strong></div>`
+    : '';
 
-  if (status === 'confirmed') {
+  if (st === 'paid') {
     return `<div class="stage-action complete" onclick="event.stopPropagation()">
-      <div class="sa-title">🎉 اكتملت الصفقة والدفع</div>
-      <div class="sa-desc">أكّدت استلام المبلغ. تمت الصفقة بالكامل — شكرًا لك.</div>
+      <div class="sa-title">🎉 وصلت مستحقاتك</div>
+      <div class="sa-desc">حوّلنا لك ${m(net)} ر.س على حسابك البنكي.</div>
+      ${whenLine}${breakdown}
     </div>`;
   }
-  if (status === 'disputed') {
-    return `<div class="stage-action" onclick="event.stopPropagation()" style="background:rgba(201,48,48,0.05);border-color:rgba(201,48,48,0.3)">
-      <div class="sa-title">⚠️ أبلغت بعدم الاستلام</div>
-      <div class="sa-desc">فريق Flfluencer يراجع الحالة مع الشركة. لو وصلك المبلغ بعد كذا، اضغط «استلمت المبلغ».</div>
-      <div class="pay-actions"><button class="sa-btn" onclick="event.stopPropagation(); setCreatorPayment('${app.id}','confirmed')">استلمت المبلغ ✓</button></div>
-    </div>`;
-  }
-  if (status === 'marked_paid') {
+  if (st === 'batched') {
     return `<div class="stage-action mine" onclick="event.stopPropagation()">
-      <div class="sa-title">💸 الشركة حوّلت المبلغ</div>
-      <div class="sa-desc">الشركة أبلغت أنها حوّلت المبلغ المتفق عليه. تأكّد من حسابك البنكي وأكّد الحالة:</div>
-      ${deadlineLine}
-      <div class="pay-actions">
-        <button class="sa-btn" onclick="event.stopPropagation(); setCreatorPayment('${app.id}','confirmed')">استلمت المبلغ ✓</button>
-        <button class="pay-btn-ghost" onclick="event.stopPropagation(); setCreatorPayment('${app.id}','disputed')">لم أستلم بعد</button>
-      </div>
+      <div class="sa-title">🏦 مستحقك في دفعة هذا الأسبوع</div>
+      <div class="sa-desc">مبلغك ضمن تحويلات الاثنين وجاري تنفيذه على حسابك البنكي.</div>
+      ${whenLine}${breakdown}
     </div>`;
   }
-  // unpaid (الافتراضي)
+  if (st === 'eligible') {
+    return `<div class="stage-action mine" onclick="event.stopPropagation()">
+      <div class="sa-title">${fast ? '⚡ صرف فوري — اليوم' : '✅ مستحقك جاهز للصرف'}</div>
+      <div class="sa-desc">${fast
+        ? 'باقتك Premium، فمستحقك يُحوَّل لك اليوم بلا انتظار دفعة الأسبوع. تأكّد أن الآيبان في ملفك صحيح.'
+        : 'يُحوَّل لك في دفعة الاثنين القادم. تأكّد أن الآيبان في ملفك صحيح.'}</div>
+      ${whenLine}${breakdown}
+    </div>`;
+  }
+  if (st === 'holding') {
+    return `<div class="stage-action complete" onclick="event.stopPropagation()">
+      <div class="sa-title">🔒 مبلغك محفوظ لدى المنصة</div>
+      <div class="sa-desc">${fast
+        ? 'الشركة سدّدت قيمة صفقتك لفلفلونسر. أول ما يكتمل العمل يُصرف لك في نفس اليوم — ميزة Premium.'
+        : 'الشركة سدّدت قيمة صفقتك لفلفلونسر. كل صفقة تكتمل من الاثنين إلى الأحد ليلًا تُصرف يوم الاثنين.'}</div>
+      ${whenLine}${breakdown}
+    </div>`;
+  }
   return `<div class="stage-action complete" onclick="event.stopPropagation()">
-    <div class="sa-title">🎉 صفقة مكتملة — بانتظار الدفع</div>
-    <div class="sa-desc">خلّصت كل المراحل. الشركة متعهّدة بتحويل المبلغ، وبتقدر تأكّد الاستلام هنا أول ما يوصلك.</div>
-    ${deadlineLine}
+    <div class="sa-title">🎉 صفقة مكتملة</div>
+    <div class="sa-desc">خلّصت كل المراحل. أول ما تسدّد الشركة لفلفلونسر يظهر لك مستحقك هنا وموعد صرفه.</div>
   </div>`;
 }
 
-async function setCreatorPayment(applicationId, newStatus) {
-  const patch = { payment_status: newStatus };
-  if (newStatus === 'confirmed') patch.received_confirmed_at = new Date().toISOString();
-  try {
-    const { data, error } = await supabaseClient
-      .from('applications').update(patch).eq('id', applicationId).select();
-    if (error) throw error;
-    if (!data || data.length === 0) throw new Error('لم يتم التحديث. تحقق من سياسات الحماية.');
-    await loadData();
-    showToast(newStatus === 'confirmed' ? 'تم تأكيد استلام المبلغ ✓' : 'تم إبلاغ Flfluencer بعدم الاستلام.');
-  } catch (err) {
-    console.error('Payment update error:', err);
-    showToast('حصل خطأ: ' + (err.message || 'حاول مرة أخرى'), 'error');
-  }
+async function setCreatorPayment() {
+  showToast('صار الصرف عبر فلفلونسر — ما تحتاج تأكيد استلام يدوي.');
 }
 
 function renderStageAction(applicationId, currentStage, viewerRole) {
