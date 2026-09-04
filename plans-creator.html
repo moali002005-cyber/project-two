@@ -94,9 +94,7 @@ h3{font-size:15.5px;font-weight:700;margin:16px 0 6px}
     <div class="loading">جاري تحميل الباقات…</div>
   </div>
 
-  <div class="note" id="pg-note">
-    <b>متى تستحق الترقية؟</b> العمولة تنزل مع الباقة: 20٪ على Free، و15٪ على Pro، و7٪ على Premium. الباقة المجانية محدودة بثلاث حملات مدى الحياة، فالمقارنة الحقيقية بين Pro وPremium: عند دخل شهري <b>7,500 ر.س</b> فأكثر تصير Premium أوفر لك، وتحتها Pro هي الأنسب. وفوق توفير العمولة تحصل على حملات بلا حد وترتيب أعلى في ترشيحات الشركات.
-  </div>
+  <div class="note" id="pg-note" hidden></div>
 
   <div class="note" style="text-align:center">
     الدفع عبر <b>ميسر</b> (مدى / Visa / Mastercard) — دفعة واحدة لكل مدة، ما نحفظ بطاقتك ولا نخصم منك تلقائيًا. لو ما جدّدت، يرجع حسابك للباقة المجانية وحده. وتسري <a href="/refund.html">سياسة الاسترجاع والإلغاء</a>.
@@ -196,12 +194,12 @@ var COPY = {
   brand: {
     title: 'باقات الشركات',
     intro: '',
-    note: '<b>كيف تُحتسب التكلفة؟</b> اشتراك الباقة (إن وُجد) مقابل استخدام المنصة ويُدفع شهريًا. أما قيمة الحملة نفسها فهي مجموع أسعار التعاونات المتفق عليها مع المعلنين، تُضاف إليها عمولة باقتك، ويُعرض التفصيل كاملًا — القيمة والعمولة والإجمالي — في بطاقة الحملة وفي شاشة تأكيد قبل الدفع.<div class="example"><b>مثال على Starter:</b> حملة بـ 2,000 ر.س ← عمولة المنصة 15٪ = 300 ر.س، والإجمالي المستحق 2,300 ر.س. ونفس الحملة على Pro: عمولة 10٪ = 200 ر.س والإجمالي 2,200 ر.س.</div>'
+    note: ''
   },
   creator: {
     title: 'باقات المعلنين',
     intro: '',
-    note: '<b>متى تستحق الترقية؟</b> العمولة تنزل مع الباقة: 20٪ على Free، و15٪ على Pro، و7٪ على Premium. الباقة المجانية محدودة بثلاث حملات مدى الحياة، فالمقارنة الحقيقية بين Pro وPremium: عند دخل شهري <b>7,500 ر.س</b> فأكثر تصير Premium أوفر لك، وتحتها Pro هي الأنسب. وفوق توفير العمولة تحصل على حملات بلا حد وترتيب أعلى في الترشيحات.'
+    note: ''
   }
 };
 function applyRoleCopy(a){
@@ -210,7 +208,8 @@ function applyRoleCopy(a){
   var t = document.getElementById('pg-title'); if (t) t.textContent = c.title;
   var i = document.getElementById('pg-intro');
   if (i) { i.textContent = c.intro || ''; i.hidden = !c.intro; }
-  var n = document.getElementById('pg-note'); if (n) n.innerHTML = c.note;
+  var n = document.getElementById('pg-note');
+  if (n) { n.innerHTML = c.note || ''; n.hidden = !c.note; }
 }
 function FEAT(p){
   // أعلى باقة مدفوعة فعّالة (PLANS مرتّبة بـ sort_order تصاعديًا)
