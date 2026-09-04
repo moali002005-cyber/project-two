@@ -83,7 +83,7 @@ h3{font-size:15.5px;font-weight:700;margin:16px 0 6px}
 <header class="hero">
   <div class="container">
     <h1 id="pg-title">باقات المعلنين</h1>
-    <p id="pg-intro">العمولة تنزل مع كل ترقية: 20٪ · 15٪ · 7٪. تدفع شهرًا بشهر بلا تجديد تلقائي.</p>
+    <p id="pg-intro" hidden></p>
     <div class="toggle" id="period-toggle" hidden></div>
     <div id="my-plan" class="myplan" hidden></div>
   </div>
@@ -195,12 +195,12 @@ var AUD = 'brand';
 var COPY = {
   brand: {
     title: 'باقات الشركات',
-    intro: 'العمولة تنزل مع كل ترقية: 15٪ · 10٪ · 5٪. تدفع شهرًا بشهر بلا تجديد تلقائي.',
+    intro: '',
     note: '<b>كيف تُحتسب التكلفة؟</b> اشتراك الباقة (إن وُجد) مقابل استخدام المنصة ويُدفع شهريًا. أما قيمة الحملة نفسها فهي مجموع أسعار التعاونات المتفق عليها مع المعلنين، تُضاف إليها عمولة باقتك، ويُعرض التفصيل كاملًا — القيمة والعمولة والإجمالي — في بطاقة الحملة وفي شاشة تأكيد قبل الدفع.<div class="example"><b>مثال على Starter:</b> حملة بـ 2,000 ر.س ← عمولة المنصة 15٪ = 300 ر.س، والإجمالي المستحق 2,300 ر.س. ونفس الحملة على Pro: عمولة 10٪ = 200 ر.س والإجمالي 2,200 ر.س.</div>'
   },
   creator: {
     title: 'باقات المعلنين',
-    intro: 'العمولة تنزل مع كل ترقية: 20٪ · 15٪ · 7٪. تدفع شهرًا بشهر بلا تجديد تلقائي.',
+    intro: '',
     note: '<b>متى تستحق الترقية؟</b> العمولة تنزل مع الباقة: 20٪ على Free، و15٪ على Pro، و7٪ على Premium. الباقة المجانية محدودة بثلاث حملات مدى الحياة، فالمقارنة الحقيقية بين Pro وPremium: عند دخل شهري <b>7,500 ر.س</b> فأكثر تصير Premium أوفر لك، وتحتها Pro هي الأنسب. وفوق توفير العمولة تحصل على حملات بلا حد وترتيب أعلى في الترشيحات.'
   }
 };
@@ -208,7 +208,8 @@ function applyRoleCopy(a){
   var c = COPY[a] || COPY.brand;
   document.title = c.title + ' - Flfluencer';
   var t = document.getElementById('pg-title'); if (t) t.textContent = c.title;
-  var i = document.getElementById('pg-intro'); if (i) i.textContent = c.intro;
+  var i = document.getElementById('pg-intro');
+  if (i) { i.textContent = c.intro || ''; i.hidden = !c.intro; }
   var n = document.getElementById('pg-note'); if (n) n.innerHTML = c.note;
 }
 function FEAT(p){
