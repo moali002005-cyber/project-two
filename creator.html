@@ -1790,7 +1790,7 @@ function planSummary(p) {
   if (free) bits.push('رقِّ باقتك لمزايا أكثر');
   else if (days != null && days <= 0) bits.push('انتهت — جدِّدها');
   else if (days != null && days <= 30) bits.push('تنتهي بعد ' + days + ' يوم');
-  else if (p.expires_at) bits.push('تتجدد ' + planDateAr(p.expires_at));
+  else if (p.expires_at) bits.push('سارية حتى ' + planDateAr(p.expires_at));
   if (!bits.length) bits.push(name);
   return { text: bits.join(' · '), soon: (days != null && days <= 30), free: free, name: name };
 }
