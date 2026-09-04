@@ -136,7 +136,7 @@ function renderPlans(){
     else if (!(Number(price) > 0)) btn = '<button class="cta cur" disabled>الباقة الأساسية</button>';
     else btn = '<button class="cta" onclick="subscribe(\'' + p.code + '\')">اشترك الآن</button>';
     return '<div class="plan' + (FEAT(p) ? ' feat' : '') + (isCur ? ' mine' : '') + '">'
-      + (FEAT(p) ? '<div class="ribbon">' + (AUD === 'creator' ? 'الأكثر اختيارًا' : 'الأكثر شيوعًا') + '</div>' : '')
+      + (FEAT(p) ? '<div class="ribbon">الأقوى</div>' : '')
       + '<h3>' + esc(p.name_ar) + '</h3>'
       + '<p class="tag">' + esc(p.tagline_ar || '') + '</p>'
       + '<div class="price">' + (price > 0 ? '<span class="num">' + ar(price) + '</span> <span class="cur2">ر.س / ' + (PERIOD === 'yearly' ? 'سنة' : 'شهر') + '</span>' : '<span class="num">مجانًا</span>')
@@ -211,7 +211,15 @@ function applyRoleCopy(a){
   var i = document.getElementById('pg-intro'); if (i) i.textContent = c.intro;
   var n = document.getElementById('pg-note'); if (n) n.innerHTML = c.note;
 }
-function FEAT(p){ return AUD === 'creator' ? (p.code === 'c_pro') : (p.code === 'hot'); }
+function FEAT(p){
+  // أعلى باقة مدفوعة فعّالة (PLANS مرتّبة بـ sort_order تصاعديًا)
+  var top = null;
+  for (var i = 0; i < PLANS.length; i++) {
+    var pr = Number(PLANS[i].price_monthly) || 0;
+    if (pr > 0) top = PLANS[i];
+  }
+  return !!(top && p.code === top.code);
+}
 
 async function init(){
   // بوابة: الصفحة للمسجّلين فقط، وكل دور يرى باقاته هو
