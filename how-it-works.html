@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<title>كيف تشتغل فلفلونسر؟ - Flfluencer</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="حملة مؤثرين كاملة من شاشة واحدة: تطلق الحملة، والوكيل يفاوض، والمنصة تتابع المراحل وتصرف للمؤثر بعد النشر.">
+<link rel="icon" type="image/svg+xml" href="/brand/chili.svg?v=6">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--cream:#ffffff;--cream-darker:#F4F5F7;--ink:#0F1420;--ink-soft:#2C3548;--ink-muted:#8A93A6;--ink-faint:#AAB2C0;--accent:#E23B2E;--accent-solid:#C0271C;--accent-text:#A81E14;--accent-ink:#7E2119;--line:rgba(15,20,32,0.08);--line-strong:rgba(15,20,32,0.16);--font:'IBM Plex Sans Arabic','Segoe UI',Tahoma,sans-serif}
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:var(--cream);color:var(--ink);font-family:var(--font);font-size:16px;line-height:1.9}
+.container{max-width:900px;margin:0 auto;padding:0 20px}
+.nav{background:rgba(255,255,255,0.92);backdrop-filter:blur(10px);border-bottom:1px solid var(--line);position:sticky;top:0;z-index:50;padding:12px 0}
+.nav-inner{display:flex;align-items:center;justify-content:space-between}
+.nav-back{color:var(--ink);text-decoration:none;font-size:13.5px;font-weight:600}
+.nav-back:hover{color:var(--accent-text)}
+
+.hero{padding:56px 0 10px;text-align:center}
+.hero h1{font-size:clamp(27px,5vw,40px);font-weight:700;line-height:1.35}
+.hero h1 .nm{color:var(--accent)}
+.hero p{color:var(--ink-soft);max-width:56ch;margin:14px auto 0;font-size:16.5px}
+.cta-row{display:flex;gap:12px;flex-wrap:wrap;justify-content:center;margin-top:26px}
+.cta{display:inline-flex;align-items:center;gap:7px;padding:13px 26px;border-radius:100px;border:1.5px solid var(--line-strong);background:#fff;color:var(--ink);font-family:inherit;font-size:15px;font-weight:500;cursor:pointer;text-decoration:none;transition:border-color .2s,color .2s,transform .15s,box-shadow .2s}
+.cta:hover{border-color:var(--accent);color:var(--accent-text);transform:translateY(-2px);box-shadow:0 6px 18px rgba(15,20,32,.07)}
+.cta.primary{background:var(--accent-solid);color:#fff;border-color:var(--accent-solid);font-weight:600}
+.cta.primary:hover{background:var(--accent);border-color:var(--accent);color:#fff}
+
+.facts{display:flex;gap:12px;flex-wrap:wrap;justify-content:center;margin:38px 0 8px}
+.fact{flex:1;min-width:150px;background:#FDECEA;border-radius:16px;padding:18px 14px;text-align:center}
+.fact b{display:block;font-size:27px;font-weight:800;color:var(--accent-ink);line-height:1.15}
+.fact span{display:block;font-size:12.5px;color:var(--ink-soft);margin-top:6px}
+.facts-note{text-align:center;font-size:12px;color:var(--ink-muted);margin-top:10px}
+
+h2{font-size:23px;font-weight:700;margin:52px 0 6px;text-align:center}
+.sec-sub{text-align:center;color:var(--ink-muted);font-size:14.5px;margin-bottom:26px}
+
+.steps{display:flex;flex-direction:column;gap:14px}
+.step{display:flex;gap:16px;align-items:flex-start;background:#fff;border:1px solid var(--line);border-radius:16px;padding:18px 20px}
+.step-n{width:38px;height:38px;border-radius:12px;background:#FDECEA;color:var(--accent-ink);font-weight:800;font-size:16px;display:inline-flex;align-items:center;justify-content:center;flex-shrink:0}
+.step-b{flex:1;min-width:0}
+.step-b h3{font-size:16.5px;font-weight:600;margin-bottom:4px}
+.step-b p{font-size:14px;color:var(--ink-soft);line-height:1.8}
+
+.cards{display:flex;gap:14px;flex-wrap:wrap}
+.card{flex:1;min-width:230px;background:#fff;border:1px solid var(--line);border-radius:16px;padding:20px}
+.card .ic{width:42px;height:42px;border-radius:12px;background:#FDECEA;display:inline-flex;align-items:center;justify-content:center;font-size:19px;margin-bottom:12px}
+.card h3{font-size:16px;font-weight:600;margin-bottom:6px}
+.card p{font-size:13.5px;color:var(--ink-soft);line-height:1.8}
+
+.qa{border-top:1px solid var(--line)}
+.qa details{border-bottom:1px solid var(--line);padding:16px 2px}
+.qa summary{cursor:pointer;font-weight:600;font-size:15.5px;list-style:none;display:flex;align-items:center;justify-content:space-between;gap:12px}
+.qa summary::-webkit-details-marker{display:none}
+.qa summary::after{content:'+';color:var(--accent);font-size:20px;font-weight:700;flex-shrink:0}
+.qa details[open] summary::after{content:'−'}
+.qa p{font-size:14px;color:var(--ink-soft);margin-top:10px;line-height:1.9}
+
+.closing{background:#F4F5F7;border-radius:20px;padding:34px 24px;text-align:center;margin:52px 0 10px}
+.closing h2{margin:0 0 8px}
+.closing p{color:var(--ink-soft);font-size:15px;max-width:52ch;margin:0 auto 22px}
+
+.foot{border-top:1px solid var(--line);margin-top:48px;padding:26px 0 40px;text-align:center;font-size:13px;color:var(--ink-muted)}
+.foot a{color:var(--ink-soft);text-decoration:none;margin:0 9px}
+.foot a:hover{color:var(--accent-text)}
+@media(max-width:640px){.hero{padding:38px 0 6px}.fact b{font-size:23px}.step{padding:16px}}
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <div class="container nav-inner">
+    <a href="/" class="logo" aria-label="Flfluencer">
+      <img src="/brand/logo-nav.svg?v=2" alt="Flfluencer" style="height:54px;display:block">
+    </a>
+    <a href="/" class="nav-back">← العودة للرئيسية</a>
+  </div>
+</nav>
+
+<main class="container">
+
+  <section class="hero">
+    <h1>حملة مؤثرين كاملة<br><span class="nm">من شاشة واحدة</span></h1>
+    <p>تُطلق الحملة مرة واحدة، ويتولّى وكيل المنصة التفاوض مع المؤثرين. تتابع كل صفقة مرحلة بمرحلة، وتصرف المنصة لهم بعد النشر.</p>
+    <div class="cta-row">
+      <a class="cta primary" href="/signup.html?role=brand">ابدأ حملتك الأولى</a>
+      <a class="cta" href="/plans.html">شوف الباقات والعمولات</a>
+    </div>
+  </section>
+
+  <div class="facts">
+    <div class="fact"><b>451</b><span>مؤثرًا معتمدًا وجاهزًا</span></div>
+    <div class="fact"><b>44.5M</b><span>مجموع متابعيهم</span></div>
+    <div class="fact"><b>16</b><span>مدينة سعودية</span></div>
+  </div>
+  <div class="facts-note">أرقام محدَّثة من المنصة. «مجموع المتابعين» تراكمي بين الحسابات وليس عدد أشخاص.</div>
+
+  <h2>الرحلة في ست خطوات</h2>
+  <p class="sec-sub">من فكرة الحملة إلى المحتوى المنشور</p>
+  <div class="steps">
+    <div class="step"><span class="step-n">1</span><div class="step-b">
+      <h3>تختار نوع حملتك</h3>
+      <p>تبدأ بالحملة المنزلية: ترسل المنتج للمؤثر ويصوّره. وحملات الزيارة والفيديو الجاهز وكود الخصم متاحة مع الباقات الأعلى.</p></div></div>
+    <div class="step"><span class="step-n">2</span><div class="step-b">
+      <h3>تكتب البريف — أو تتركه للمنصة</h3>
+      <p>اكتب البريف بنفسك، أو اكتب فكرتك بسطر وتقترح عليك المنصة بريفًا كاملًا تعدّله قبل الإطلاق <span style="color:var(--ink-muted)">(مع Pro فأعلى)</span>.</p></div></div>
+    <div class="step"><span class="step-n">3</span><div class="step-b">
+      <h3>تحدّد طريقة التسليم</h3>
+      <p>شحن للمؤثر أو استلام من فرعك. وكود الخصم — يطلب فيه المنتج من متجرك بلا شحن يدوي منك — متاح مع باقة Business.</p></div></div>
+    <div class="step"><span class="step-n">4</span><div class="step-b">
+      <h3>الوكيل يفاوض بدلًا عنك</h3>
+      <p>تصل الحملة للمؤثرين المناسبين، ويتولّى وكيل المنصة التفاوض على السعر وإقفال الاتفاق.</p></div></div>
+    <div class="step"><span class="step-n">5</span><div class="step-b">
+      <h3>تتابع كل مرحلة بتاريخها</h3>
+      <p>العنوان، الشحن، الاستلام، تجهيز المحتوى، موافقتك عليه، ثم النشر — كل خطوة مسجّلة أمامك.</p></div></div>
+    <div class="step"><span class="step-n">6</span><div class="step-b">
+      <h3>المنصة تصرف للمؤثر</h3>
+      <p>أنت تسدّد للمنصة، وهي تحوّل للمؤثر بعد اكتمال الصفقة — بلا حوالات فردية منك لكل واحد.</p></div></div>
+  </div>
+
+  <h2>ما الذي يوفّره عليك فعلًا</h2>
+  <p class="sec-sub">ليست ميزات — هذه الأشياء التي كنت تفعلها يدويًا</p>
+  <div class="cards">
+    <div class="card"><span class="ic">🗂️</span>
+      <h3>مؤثرون مدقَّقون</h3>
+      <p>451 حسابًا معتمدًا بأرقام متابعين ومنصات وتصنيفات ومدن — بدل البحث اليدوي في التطبيقات.</p></div>
+    <div class="card"><span class="ic">🤝</span>
+      <h3>تفاوض بلا رسائل</h3>
+      <p>وكيل المنصة يفاوض المؤثرين نيابةً عنك، فلا تدخل في محادثة سعر مع كل واحد.</p></div>
+    <div class="card"><span class="ic">📊</span>
+      <h3>حالة واضحة دائمًا</h3>
+      <p>تعرف في أي مرحلة كل صفقة، ومن الطرف الذي عليه الدور، بلا سؤال ولا متابعة.</p></div>
+    <div class="card"><span class="ic">💳</span>
+      <h3>دفعة واحدة</h3>
+      <p>تسدّد للمنصة وهي توزّع على المؤثرين، ويبقى لك سجل مدفوعاتك كاملًا.</p></div>
+    <div class="card"><span class="ic">📦</span>
+      <h3>لوجستيات أخف</h3>
+      <p>إكسل توصيل جاهز لمندوب الشحن بدل تجميع العناوين يدويًا <span style="color:var(--ink-muted)">(مع Pro فأعلى)</span>.</p></div>
+    <div class="card"><span class="ic">🔁</span>
+      <h3>إعادة التعاون</h3>
+      <p>المؤثر الذي نجح معك تعيد دعوته لحملة جديدة بنفس شروطه وبلا شحن جديد <span style="color:var(--ink-muted)">(مع Business)</span>.</p></div>
+  </div>
+
+  <h2>أسئلة تُسأل قبل الاشتراك</h2>
+  <p class="sec-sub">أجوبة مباشرة، بلا التفاف</p>
+  <div class="qa">
+    <details open>
+      <summary>كم تكلفني المنصة؟</summary>
+      <p>تبدأ على باقة Starter بلا اشتراك شهري، وتدفع عمولة على قيمة ما تنفّذه فقط. ومع الترقية تنزل العمولة: 15٪ ثم 10٪ ثم 5٪. التفاصيل في <a href="/plans.html" style="color:var(--accent)">صفحة الباقات</a>.</p>
+    </details>
+    <details>
+      <summary>هل يُخصم مني تلقائيًا كل شهر؟</summary>
+      <p>لا. الدفع لمرة واحدة لكل مدة، ولا نحفظ بطاقتك. إذا لم تجدّد، يرجع حسابك للباقة المجانية تلقائيًا.</p>
+    </details>
+    <details>
+      <summary>ما الذي يضمن أن المؤثر سينشر؟</summary>
+      <p>المنصة لا تحوّل للمؤثر قبل اكتمال مراحل الصفقة، ومنها النشر. أنت تسدّد للمنصة، وهي تصرف له بعد ذلك.</p>
+    </details>
+    <details>
+      <summary>هل أستطيع رفض المحتوى قبل نشره؟</summary>
+      <p>نعم. هناك مرحلة موافقة قبل النشر، ويمكنك طلب التعديل فيها.</p>
+    </details>
+    <details>
+      <summary>ماذا لو ألغيت الحملة؟</summary>
+      <p>الإلغاء قبل بدء التنفيذ يعيد كامل المبلغ، وبعد البدء يُحتسب على مستوى كل تعاون. التفاصيل في <a href="/refund.html" style="color:var(--accent)">سياسة الاسترجاع والإلغاء</a>.</p>
+    </details>
+    <details>
+      <summary>لا أملك منتجًا أشحنه — هل تناسبني؟</summary>
+      <p>فيه طريقتان بلا شحن: «كود خصم» يطلب فيه المؤثر المنتج من متجرك بنفسه، و«فيديو جاهز» لا يحتاج منتجًا إطلاقًا. الاثنتان ضمن باقة Business، فراجع <a href="/plans.html" style="color:var(--accent)">صفحة الباقات</a> قبل ما تقرّر.</p>
+    </details>
+  </div>
+
+  <div class="closing">
+    <h2>جرّب حملة واحدة</h2>
+    <p>بلا اشتراك شهري. تدفع عمولة على ما تنفّذه فقط، وتقرّر بعدها إن كانت تستحق التوسّع.</p>
+    <div class="cta-row" style="margin-top:0">
+      <a class="cta primary" href="/signup.html?role=brand">أنشئ حساب شركة</a>
+      <a class="cta" href="/creators.html">تصفّح المؤثرين أولًا</a>
+    </div>
+  </div>
+
+</main>
+
+<div class="foot">
+  <div class="container">
+    <div><a href="/plans.html">الباقات</a><a href="/pricing.html">الأسعار</a><a href="/refund.html">الاسترجاع والإلغاء</a><a href="/terms.html">الشروط والأحكام</a><a href="/privacy.html">سياسة الخصوصية</a></div>
+    <div style="margin-top:10px">© Flfluencer — جميع الحقوق محفوظة</div>
+  </div>
+</div>
+
+</body>
+</html>
