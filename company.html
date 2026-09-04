@@ -323,7 +323,7 @@ pre.json{background:var(--bg);border:1px solid var(--line);border-radius:9px;pad
 
   <div class="co-actions">
     <a class="co-btn primary" href="/brand.html">🚀 إدارة الحملات والعروض</a>
-    <a class="co-btn" href="/dues.html">📋 المستحقات بالتفصيل</a>
+    <a class="co-btn" href="/dues.html">📋 الحملات السابقة</a>
     <button class="co-btn" type="button" onclick="openCompanyReport()">📄 تقرير الأداء (PDF)</button>
     <button class="co-btn" type="button" onclick="exportCompanyExcel()">⬇️ تصدير الصفقات (Excel)</button>
   </div>
@@ -377,8 +377,9 @@ function compute(){
   const approved=apps.filter(a=>a.status==='closed'&&a.brand_approved===true);
   const completed=approved.filter(a=>(a.stage||1)>=9);
   const gmv=approved.reduce((s,a)=>s+val(a),0);
-  const paid=approved.filter(a=>a.payment_status==='confirmed').reduce((s,a)=>s+val(a),0);
-  const owed=completed.filter(a=>a.payment_status!=='confirmed').reduce((s,a)=>s+val(a),0);
+  // فلفلونسر تستلم المبلغ من الشركة وتصرف مستحقات المعلنين — فالشركة ما عليها شي للمعلنين
+  const paid=approved.filter(a=>a.platform_paid===true).reduce((s,a)=>s+val(a),0);
+  const owed=approved.filter(a=>a.platform_paid!==true).reduce((s,a)=>s+val(a),0);
   const inprog=Math.max(0,gmv-paid-owed);
   const activeCamps=camps.filter(c=>c.status==='active').length;
   const closedCount=apps.filter(a=>a.status==='closed').length;
@@ -397,8 +398,8 @@ function renderLeaderBar(){
     +'<span class="lead-live"><span class="d"></span> مباشر · محدّث الآن</span></div>'
     +'<div class="lead-figs">'
     +fig('💰','إجمالي إنفاقي (GMV)', r(c.gmv), num(c.approved.length)+' صفقة معتمدة')
-    +fig('✓','مدفوع للمؤثرين', r(c.paid), 'حُوّل فعليًا وأُكّد استلامه')
-    +fig('⚠️','مستحق عليّ للمؤثرين', r(c.owed), c.owed>0?'مكتملة وغير مدفوعة — بادر بالدفع':'ما عليك مستحقات ✓', c.owed>0?'alert':'')
+    +fig('✓','مدفوع للمنصة', r(c.paid), 'سُدّد ووصل فلفلونسر')
+    +fig('⏳','بانتظار الدفع', r(c.owed), c.owed>0?'صفقات معتمدة ما سُدّدت بعد':'كل صفقاتك مسدّدة ✓', c.owed>0?'alert':'')
     +fig('📣','حملاتي', num(c.activeCamps)+' <small>/ '+num(c.camps.length)+'</small>', 'نشطة من إجمالي حملاتك')
     +fig('📨','عروض مستلمة', num(c.apps.length), num(c.engaged)+' قيد التفاوض الآن')
     +fig('🤝','صفقات معتمدة', num(c.approved.length), 'اعتمدتها شركتك وبدأ تنفيذها')
@@ -407,11 +408,9 @@ function renderLeaderBar(){
 
 // ===== أدوات النمو: تصدير التقارير =====
 function payText(a){
-  const stg=a.stage||1, ps=a.payment_status||'unpaid';
-  if(ps==='confirmed') return 'مدفوع ومؤكّد';
-  if(ps==='marked_paid') return 'حُوّل — بانتظار تأكيد الاستلام';
-  if(stg>=9) return 'مستحق — غير مدفوع';
-  return 'قيد التنفيذ';
+  const stg=a.stage||1;
+  if(a.platform_paid!==true) return 'بانتظار الدفع';
+  return stg>=9 ? 'مدفوع — مكتمل' : ('مدفوع — قيد التنفيذ · مرحلة '+stg+'/9');
 }
 function exportCompanyExcel(){
   const campMap={}; (myCampaigns||[]).forEach(cm=>campMap[cm.id]=cm.title||'—');
@@ -466,8 +465,8 @@ function openCompanyReport(){
     +'<div class="sheet"><div class="hd"><div class="b">تقرير أداء الحملات الإعلانية</div><div class="s">'+company+' · منصة Flfluencer</div><div class="d">صدر بتاريخ '+today+'</div></div><div class="body">'
     +'<div class="rkgrid">'
     +kpi('إجمالي الإنفاق (GMV)', money(gmv),'hl')
-    +kpi('مدفوع للمؤثرين', money(paid))
-    +kpi('مستحق عليك', money(owed), owed>0?'alert':'')
+    +kpi('مدفوع للمنصة', money(paid))
+    +kpi('بانتظار الدفع', money(owed), owed>0?'alert':'')
     +kpi('قيد التنفيذ', money(inprog))
     +kpi('صفقات معتمدة', num(approved.length))
     +kpi('المؤثرون المتعاونون', num(collaborators))
@@ -499,13 +498,13 @@ function renderOverview(){
   // استلام + تحويلات
   const nowD=new Date();
   const sameMonth=d=>{if(!d)return false;const x=new Date(d);return x.getMonth()===nowD.getMonth()&&x.getFullYear()===nowD.getFullYear();};
-  const confMonth=approved.filter(a=>a.payment_status==='confirmed'&&sameMonth(a.received_confirmed_at));
+  const confMonth=approved.filter(a=>a.platform_paid===true&&sameMonth(a.platform_paid_at));
   const confMonthAmt=confMonth.reduce((s,a)=>s+val(a),0);
-  const awaiting=apps.filter(a=>a.payment_status==='marked_paid');
+  const awaiting=approved.filter(a=>a.platform_paid!==true);
   const awaitingAmt=awaiting.reduce((s,a)=>s+val(a),0);
   const cutoff=new Date(nowD.getTime()-14*86400000);
   const dayMap={};
-  apps.forEach(a=>{if(!a.paid_marked_at)return;const d=new Date(a.paid_marked_at);if(d<cutoff)return;const k=d.toLocaleDateString('en-CA');dayMap[k]=(dayMap[k]||0)+val(a);});
+  approved.forEach(a=>{if(!a.platform_paid_at)return;const d=new Date(a.platform_paid_at);if(d<cutoff)return;const k=d.toLocaleDateString('en-CA');dayMap[k]=(dayMap[k]||0)+val(a);});
   const days=Object.entries(dayMap).sort((a,b)=>a[0]<b[0]?-1:1);
   const maxD=Math.max(1,...days.map(d=>d[1]));
 
@@ -547,17 +546,17 @@ function renderOverview(){
   const feed=ev.slice(0,8);
 
   box.innerHTML=
-  '<div class="dsh-grid"><div class="dsh-card"><h4>💸 تدفّق أموالي — حقوق المؤثرين</h4><div class="hint">من إجمالي إنفاقي '+money(gmv)+': المدفوع فعليًا، المستحق عليك، وقيد التنفيذ'+(growthSub?' · '+growthSub:'')+'</div>'
-  +'<div class="dsh-flow">'+(paid>0?'<div style="flex:'+paid+';background:#C0231A">✓ مدفوع</div>':'')+(owed>0?'<div style="flex:'+owed+';background:#E23B2E">⚠ مستحق</div>':'')+(inprog>0?'<div style="flex:'+inprog+';background:#a5e3df;color:#0e6b66">قيد التنفيذ</div>':'')+((paid+owed+inprog)===0?'<div style="flex:1;background:#e6eeec;color:#7d8a87">لا صفقات معتمدة بعد</div>':'')+'</div>'
-  +'<div class="dsh-leg"><div class="dsh-lg"><span class="sw" style="background:#C0231A"></span><b>'+money(paid)+'</b><span>✓ مدفوع</span></div>'
-  +'<div class="dsh-lg"><span class="sw" style="background:#E23B2E"></span><b>'+money(owed)+'</b><span>⚠ مستحق عليك</span></div>'
+  '<div class="dsh-grid"><div class="dsh-card"><h4>💸 تدفّق أموالي</h4><div class="hint">من إجمالي إنفاقي '+money(gmv)+': المسدَّد لفلفلونسر والباقي بانتظار الدفع'+(growthSub?' · '+growthSub:'')+'</div>'
+  +'<div class="dsh-flow">'+(paid>0?'<div style="flex:'+paid+';background:#C0231A">✓ مدفوع</div>':'')+(owed>0?'<div style="flex:'+owed+';background:#E23B2E">⏳ بانتظار الدفع</div>':'')+(inprog>0?'<div style="flex:'+inprog+';background:#a5e3df;color:#0e6b66">قيد التنفيذ</div>':'')+((paid+owed+inprog)===0?'<div style="flex:1;background:#e6eeec;color:#7d8a87">لا صفقات معتمدة بعد</div>':'')+'</div>'
+  +'<div class="dsh-leg"><div class="dsh-lg"><span class="sw" style="background:#C0231A"></span><b>'+money(paid)+'</b><span>✓ مدفوع للمنصة</span></div>'
+  +'<div class="dsh-lg"><span class="sw" style="background:#E23B2E"></span><b>'+money(owed)+'</b><span>⏳ بانتظار الدفع</span></div>'
   +'<div class="dsh-lg"><span class="sw" style="background:#a5e3df"></span><b>'+money(inprog)+'</b><span>قيد التنفيذ</span></div></div></div></div>'
 
-  +'<div class="dsh-grid"><div class="dsh-card"><h4>💳 المدفوعات ومتابعة الاستلام</h4><div class="hint">تحويلاتك وتأكيد المؤثرين لاستلام حقوقهم</div>'
-  +'<div class="dsh-tiles"><div class="dsh-tile"><div class="tl">✓ مؤكّد الاستلام هذا الشهر</div><div class="tv">'+money(confMonthAmt)+'</div><div class="ts">'+num(confMonth.length)+' مؤثر أكّدوا استلامهم</div></div>'
-  +'<div class="dsh-tile warn"><div class="tl">⏳ حوّلت — بانتظار تأكيد الاستلام</div><div class="tv">'+money(awaitingAmt)+'</div><div class="ts">'+num(awaiting.length)+' مؤثر ما أكّدوا بعد</div></div></div>'
-  +'<div class="hint" style="margin:2px 0 9px">💸 تحويلاتك اليومية (آخر 14 يوم)</div>'
-  +'<div class="dsh-vb">'+(days.length?days.map(d=>'<div class="dsh-vbi"><div class="dsh-vbc" style="height:'+Math.max(4,Math.round(d[1]/maxD*100))+'%"><span class="v">'+num(d[1])+'</span></div><span class="dsh-vbcap">'+d[0].slice(5)+'</span></div>').join(''):'<div class="hint">لا تحويلات في آخر 14 يوم</div>')+'</div>'
+  +'<div class="dsh-grid"><div class="dsh-card"><h4>💳 مدفوعاتك لفلفلونسر</h4><div class="hint">فلفلونسر تستلم المبلغ منك وتصرف مستحقات المعلنين</div>'
+  +'<div class="dsh-tiles"><div class="dsh-tile"><div class="tl">✓ سدّدت هذا الشهر</div><div class="tv">'+money(confMonthAmt)+'</div><div class="ts">'+num(confMonth.length)+' صفقة سُدّدت</div></div>'
+  +'<div class="dsh-tile warn"><div class="tl">⏳ بانتظار الدفع</div><div class="tv">'+money(awaitingAmt)+'</div><div class="ts">'+num(awaiting.length)+' صفقة معتمدة ما سُدّدت</div></div></div>'
+  +'<div class="hint" style="margin:2px 0 9px">💸 سدادك اليومي (آخر 14 يوم)</div>'
+  +'<div class="dsh-vb">'+(days.length?days.map(d=>'<div class="dsh-vbi"><div class="dsh-vbc" style="height:'+Math.max(4,Math.round(d[1]/maxD*100))+'%"><span class="v">'+num(d[1])+'</span></div><span class="dsh-vbcap">'+d[0].slice(5)+'</span></div>').join(''):'<div class="hint">لا سداد في آخر 14 يوم</div>')+'</div>'
   +'</div></div>'
 
   +'<div class="dsh-grid dsh-g2"><div class="dsh-card"><h4>🎯 قمع التنفيذ</h4><div class="hint">من العرض لأول دفعة — وين توصل صفقاتك</div><div class="dsh-fun">'
@@ -585,7 +584,7 @@ function renderOverview(){
   +(feed.length?feed.map(e=>'<div class="fi"><div class="fic"><i class="ti '+e.ic+'"></i></div><div class="ft">'+e.txt+'</div><div class="fw">'+ago(e.t)+'</div></div>').join(''):'<div class="hint">لا نشاط بعد</div>')
   +'</div></div>'
 
-  +(owed>0?'<div class="dsh-alert"><div class="ic">⚠️</div><div class="tx">عليك <b>'+money(owed)+' مستحقة للمؤثرين</b> على صفقات مكتملة وغير مدفوعة. بادر بالدفع من صفحة «المستحقات بالتفصيل» حفاظًا على تفعيل حسابك.</div></div>':'');
+  +(owed>0?'<div class="dsh-alert"><div class="ic">⏳</div><div class="tx">عندك <b>'+money(owed)+'</b> على صفقات اعتمدتها وما سُدّدت لفلفلونسر بعد. سدّدها من «متابعة الحملات» عشان يبدأ تنفيذها.</div></div>':'');
 }
 
 function renderAnalytics(){
@@ -739,11 +738,10 @@ function renderCompare(){
 }
 
 function payChip(a){
-  const stg=a.stage||1, ps=a.payment_status||'unpaid';
-  if(ps==='confirmed') return '<span class="pay-chip paid">✓ مدفوع ومؤكّد</span>';
-  if(ps==='marked_paid') return '<span class="pay-chip await">⏳ بانتظار تأكيد الاستلام</span>';
-  if(stg>=9) return '<span class="pay-chip owed">⚠ مستحق — بادر بالدفع</span>';
-  return '<span class="pay-chip prog">قيد التنفيذ · مرحلة '+num(stg)+'/9</span>';
+  const stg=a.stage||1;
+  if(a.platform_paid!==true) return '<span class="pay-chip await">⏳ بانتظار الدفع</span>';
+  if(stg>=9) return '<span class="pay-chip paid">✓ مدفوع — مكتمل</span>';
+  return '<span class="pay-chip prog">مدفوع · قيد التنفيذ · مرحلة '+num(stg)+'/9</span>';
 }
 
 function renderDeals(){
@@ -758,7 +756,7 @@ function renderDeals(){
     return '<div class="deal-row"><div class="dn"><b>'+esc(u.name||'مؤثر')+'</b><small>'+esc(handle)+plat+' · '+fmtDate(a.closed_at||a.created_at)+'</small></div>'
       +payChip(a)+'<div class="damt">'+money(val(a))+'</div></div>';
   }).join('');
-  box.innerHTML='<div class="dsh-card"><h4>🤝 صفقاتي المعتمدة ('+num(deals.length)+')</h4><div class="hint">كل صفقة اعتمدتها — المؤثر والمبلغ وحالة الدفع. للتفاصيل الكاملة والدفع افتح «المستحقات بالتفصيل».</div>'+rows+'</div>';
+  box.innerHTML='<div class="dsh-card"><h4>🤝 صفقاتي المعتمدة ('+num(deals.length)+')</h4><div class="hint">كل صفقة اعتمدتها — المؤثر والمبلغ وحالة الدفع. للتفاصيل الكاملة افتح «الحملات السابقة».</div>'+rows+'</div>';
 }
 
 function renderCreators(){
@@ -802,7 +800,7 @@ function showPending(status){
   const rejected=status==='rejected', suspended=status==='suspended';
   const icon=suspended?'⏸️':(rejected?'✕':'🔎');
   const title=suspended?'حسابكم موقوف مؤقتًا':(rejected?'لم يتم تفعيل حسابكم':'حسابكم قيد المراجعة');
-  const msg=suspended?'تم إيقاف الحساب لوجود مستحقات دفع غير مُسوّاة. بعد التسوية وتأكيد المؤثر الاستلام، يعيد فريق Flfluencer التفعيل.'
+  const msg=suspended?'تم إيقاف الحساب لوجود مبالغ غير مُسدّدة لفلفلونسر. بعد السداد يعيد فريق Flfluencer التفعيل.'
     :(rejected?'نعتذر، ما تم تفعيل حسابكم حاليًا. للاستفسار: hello@flfluencer.com'
     :'نراجع حسابكم الآن، وبيشتغل تلقائيًا فور التفعيل 🌿');
   host.innerHTML='<div class="gate"><div class="gate-card"><div style="font-size:40px;margin-bottom:10px">'+icon+'</div><h1>'+title+'</h1><p>'+msg+'</p><a class="btn btn-primary" href="/brand.html">رجوع</a></div></div>';
