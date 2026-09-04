@@ -1164,11 +1164,11 @@ input:focus, textarea:focus { outline: none; border-color: var(--accent); box-sh
   var v = new URLSearchParams(location.search).get('view');
   var css;
   if (v === 'ads') {
-    css = '.hero,#my-trust,#my-deals,#app-section,#deals-head,#wallet-section,.flf-bar{display:none!important}#ads-section{display:block!important}';
+    css = '.hero,#my-deals,#app-section,#deals-head,#wallet-section,.flf-bar{display:none!important}#ads-section{display:block!important}';
   } else if (v === 'deals') {
-    css = '.hero,#my-trust,#ads-section,#wallet-section,.flf-bar{display:none!important}#deals-head{display:flex!important}';
+    css = '.hero,#ads-section,#wallet-section,.flf-bar{display:none!important}#deals-head{display:flex!important}';
   } else if (v === 'wallet') {
-    css = '.hero,#my-trust,#my-deals,#app-section,#ads-section,#deals-head,.flf-bar{display:none!important}#wallet-section{display:block!important}';
+    css = '.hero,#my-deals,#app-section,#ads-section,#deals-head,.flf-bar{display:none!important}#wallet-section{display:block!important}';
   } else {
     css = '#my-deals,#app-section,#deals-head,#wallet-section{display:none!important}';
   }
@@ -1277,14 +1277,6 @@ async function simblExitImpersonation(){
   #group-modal .gm-skip{display:inline-block;margin-top:14px;font-size:13px;color:#8a8a8a;cursor:pointer;text-decoration:underline}
   /* زر واتساب عائم دائم */
 
-.st-row{display:flex;gap:12px;max-width:520px;margin:20px auto 0;}
-.st{flex:1;background:var(--chip,#FBEDEC);border-radius:16px;padding:16px 12px;text-align:center;}
-.st-n{font-family:var(--font-display);font-size:24px;font-weight:800;color:var(--accent);line-height:1.1;}
-.st-n small{font-size:15px;}
-.st-n.st-new{font-size:18px;font-weight:700;}
-.st-l{font-size:12.5px;color:var(--ink-soft);margin-top:5px;}
-.kit-share{display:block;width:100%;margin-top:10px;background:#E23B2E;color:#fff;border:none;border-radius:12px;padding:11px;font-family:inherit;font-size:13.5px;font-weight:700;cursor:pointer}
-.kit-lock{display:block;margin-top:10px;text-align:center;background:#F4F5F7;color:#2C3548;border-radius:12px;padding:11px;font-size:12.5px;font-weight:600;text-decoration:none}
 
 /* ===== شريط التنقّل في لوحة المعلن ===== */
 .hub{max-width:520px;margin:26px auto 0;display:flex;flex-direction:column;gap:10px;}
@@ -1383,8 +1375,6 @@ async function simblExitImpersonation(){
       </a>
     </nav>
   </section>
-
-  <div id="my-trust"></div>
 
   <!-- ============ APP CONTENT ============ -->
   <div id="app-section" class="section-divider"></div>
@@ -1528,7 +1518,6 @@ function isAdsView() {
 
 function applyAdsView() {
   const hero = document.querySelector('.hero'); if (hero) hero.style.display = 'none';
-  const t = document.getElementById('my-trust'); if (t) t.style.display = 'none';
   const d = document.getElementById('my-deals'); if (d) d.style.display = 'none';
   const div = document.getElementById('app-section'); if (div) div.style.display = 'none';
   const ads = document.getElementById('ads-section'); if (ads) ads.style.display = 'block';
@@ -1571,51 +1560,6 @@ function mt2Sort(a,b){
     || ((Number(b.active_deals)||0)-(Number(a.active_deals)||0))
     || (b.score-a.score)
     || ((parseInt(b.followers)||0)-(parseInt(a.followers)||0));
-}
-
-async function loadMyTrust(){
-  var box=document.getElementById('my-trust'); if(!box||!currentUser) return;
-  try{
-    var rr=await Promise.all([
-      supabaseClient.from('creator_trust').select('deals_count, ratings_count, avg_rating').eq('creator_id', currentUser.id).maybeSingle(),
-      supabaseClient.from('simbl_creator_performance').select('completed_deals').eq('creator_id', currentUser.id).maybeSingle()
-    ]);
-    var t=(rr[0]&&rr[0].data)||{}; var p=(rr[1]&&!rr[1].error&&rr[1].data)||{};
-    var deals=Number(p.completed_deals); if(!deals) deals=Number(t.deals_count)||0;
-    var rc=Number(t.ratings_count)||0; var avg=Number(t.avg_rating)||0;
-    // تقييم حقيقي فقط — بلا أرقام مصطنعة. المعلن الجديد يرى "جديد".
-    var ratingCell = rc>0
-      ? '<div class="st-n">'+avg.toFixed(1)+' <small>\u2605</small></div><div class="st-l">تقييمك</div>'
-      : '<div class="st-n st-new">جديد</div><div class="st-l">لا توجد تقييمات بعد</div>';
-    box.innerHTML='<div class="st-row">'
-      + '<div class="st"><div class="st-n">'+toArabic(deals)+'</div><div class="st-l">صفقات مكتملة</div></div>'
-      + '<div class="st">'+ratingCell+'</div>'
-      + '</div>';
-    var _pl = null;
-    try { var _pr = await supabaseClient.rpc('my_plan_status'); if (_pr && _pr.data && !_pr.data.error) _pl = _pr.data; } catch (e) {}
-    if (_pl && _pl.can_media_kit) {
-      box.innerHTML += '<button class="kit-share" onclick="shareMyKit()">🔗 شارك ملفي العام</button>';
-    } else {
-      box.innerHTML += '<a class="kit-lock" href="/plans-creator.html">🔒 ملفك العام القابل للمشاركة — متاح مع Pro</a>';
-    }
-  }catch(e){ box.innerHTML=''; }
-}
-
-function shareMyKit(){
-  if(!currentUser) return;
-  var h = currentUser.handle ? String(currentUser.handle).replace(/^@/,'') : '';
-  var q = h ? ('u='+encodeURIComponent(h)) : ('id='+encodeURIComponent(currentUser.id));
-  var url = location.origin + '/c.html?' + q;
-  if(navigator.share){ navigator.share({title:'ملفي على Flfluencer', text:'شوف ملفي وترتيبي على Flfluencer', url:url}).catch(function(){}); return; }
-  if(navigator.clipboard && navigator.clipboard.writeText){
-    navigator.clipboard.writeText(url).then(function(){ kitToast('✓ تم نسخ رابط ملفك'); }).catch(function(){ kitToast(url); });
-  } else { kitToast(url); }
-}
-function kitToast(msg){
-  var t=document.getElementById('kit-toast');
-  if(!t){ t=document.createElement('div'); t.id='kit-toast'; document.body.appendChild(t); }
-  t.textContent=msg; t.className='show';
-  clearTimeout(window._ktt); window._ktt=setTimeout(function(){ t.className=''; },2400);
 }
 
 // ===== «كمّل مدينتك»: نطلب المدينة من المعلن اللي مدينته فاضية (لتنظيف البيانات قبل الاستهداف الصارم) =====
@@ -1763,7 +1707,6 @@ async function init() {
   maybePromptGroup();
 
   await loadData();
-  loadMyTrust();
   loadMyPlan();
 }
 
@@ -2621,6 +2564,14 @@ function getBriefText(a) {
   }
   return '';
 }
+// تنبيه صغير — تستخدمه نافذة البريف والمرفقات في هذه الصفحة
+function kitToast(msg){
+  var t=document.getElementById('kit-toast');
+  if(!t){ t=document.createElement('div'); t.id='kit-toast'; document.body.appendChild(t); }
+  t.textContent=msg; t.className='show';
+  clearTimeout(window._ktt); window._ktt=setTimeout(function(){ t.className=''; },2400);
+}
+
 function openBriefModal(appId) {
   const a = (Array.isArray(myApplications) ? myApplications : []).find(x => x.id === appId);
   if (!a) return;
