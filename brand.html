@@ -1876,24 +1876,8 @@ SIMBL-02" style="width:100%;box-sizing:border-box;font-family:inherit;"></textar
       </div>
 
       <div class="field" style="grid-column: span 2;">
-        <label>مدة الدفع (إجباري) - بعد إكمال الحملة، الدفع خلال:</label>
-        <div style="display: flex; gap: 10px; align-items: center;">
-          <input type="number" name="payment_min_days" placeholder="من" min="1" max="365" value="7" required style="flex:1;" />
-          <span>إلى</span>
-          <input type="number" name="payment_max_days" placeholder="إلى" min="1" max="365" value="30" required style="flex:1;" />
-          <span>يوم</span>
-        </div>
-        <small style="color: var(--ink-muted); font-size: 12px; margin-top: 4px; display: block;">
-          مثال: من 7 إلى 30 يوم. كلما كانت المدة أقصر، كلما زاد إقبال المؤثرين على حملتك.
-        </small>
-      </div>
-
-      <div class="field" style="grid-column: span 2;">
         <div class="pledge-box">
-          <label class="pledge-label">
-            <input type="checkbox" name="payment_pledge" id="payment-pledge">
-            <span><strong>إقرار وتعهّد بالدفع:</strong> تتعهّد الشركة بدفع المبلغ المتفق عليه للمعلن خلال المدة المحددة أعلاه بعد إكمال الحملة، وتُقرّ بأنه في حال عدم إتمام الدفع خلال المدة يحق لـ Flfluencer إيقاف حساب الشركة حتى تسوية المستحقّات.</span>
-          </label>
+          <span><strong>متى تدفع؟</strong> تنشر الحملة الآن بدون أي دفع. يفاوض الوكيل نيابةً عنك، وبعد ما تعتمد أسماء المعلنين المشاركين يظهر لك زر «ادفع مستحقات الحملة» في بطاقة الحملة — تسدّد لفلفلونسر مرة وحدة، وعندها تنطلق الحملة ويبدأ التنفيذ. وفلفلونسر هي من تصرف للمعلنين بعد اكتمال العمل، ما فيه تحويل مباشر منك.</span>
         </div>
       </div>
 
@@ -2519,16 +2503,6 @@ function duesCampMap() {
   const m = {};
   (myCampaigns || []).forEach(c => { m[c.id] = c; });
   return m;
-}
-// متأخرة؟ (مكتملة + عدّت المهلة + غير مؤكّدة)
-function duesIsOverdue(a, camp) {
-  if (!a || (a.stage || 0) < 9) return false;
-  if (a.payment_status === 'confirmed') return false;
-  const days = camp ? parseInt(camp.payment_max_days, 10) : NaN;
-  if (!a.completed_at || isNaN(days) || days <= 0) return false;
-  const d = new Date(a.completed_at); if (isNaN(d.getTime())) return false;
-  d.setDate(d.getDate() + days);
-  return Date.now() > d.getTime();
 }
 function duesDateText(iso) {
   if (!iso) return '—';
@@ -3262,16 +3236,6 @@ function toggleHistory(id) {
   if (el) el.classList.toggle('collapsed');
 }
 
-// آخر موعد للدفع = وقت الإكمال + payment_max_days (لو متوفّرة)
-function paymentDeadlineTextBrand(app, campaign) {
-  const days = campaign ? parseInt(campaign.payment_max_days, 10) : NaN;
-  if (!app || !app.completed_at || isNaN(days) || days <= 0) return '';
-  const d = new Date(app.completed_at);
-  if (isNaN(d.getTime())) return '';
-  d.setDate(d.getDate() + days);
-  try { return d.toLocaleDateString('ar-SA'); } catch (e) { return ''; }
-}
-
 // بطاقة الدفع (تظهر بعد المرحلة 9) — جهة الشركة
 function renderBrandPaymentCard(app, campaign) {
   if (!app) {
@@ -3281,8 +3245,7 @@ function renderBrandPaymentCard(app, campaign) {
   const amount = (app.final_price || app.price || 0).toLocaleString('en-US');
   const sd = (typeof app.stage_data === 'object' && app.stage_data) ? app.stage_data : {};
   const bank = sd[8] || sd['8'] || {};
-  const deadline = paymentDeadlineTextBrand(app, campaign);
-  const deadlineLine = deadline ? `<div class="pay-deadline">آخر موعد للدفع المتفق عليه: ${deadline}</div>` : '';
+  const deadlineLine = '';
   // التحويل المباشر أُلغي — لا تُعرض بيانات المعلن البنكية للشركة إطلاقًا
   const bankBox = '';
 
@@ -3561,11 +3524,6 @@ function setModalMode(mode, campaign) {
     form.querySelector('#follower-range-input').value = selectedRanges.join(',');
     form.querySelector('[name="country"]').value = campaign.country || '';
     simblPopulateCities(campaign.city || '');
-    form.querySelector('[name="payment_min_days"]').value = campaign.payment_min_days || 7;
-    form.querySelector('[name="payment_max_days"]').value = campaign.payment_max_days || 30;
-    // الإقرار بالدفع: الحملة موجودة أصلاً ومتعهّدة، نعتبره موافقًا عليه
-    const pledgeEl = form.querySelector('[name="payment_pledge"]');
-    if (pledgeEl) pledgeEl.checked = true;
     // المنصة (chips)
     form.querySelectorAll('#platform-grid .platform-chip').forEach(c => {
       c.classList.toggle('active', c.dataset.value === campaign.platform);
@@ -3586,10 +3544,6 @@ function setModalMode(mode, campaign) {
 
     form.reset();
     window._vidFiles = []; renderPickedVideos();
-    form.querySelector('[name="payment_min_days"]').value = 7;
-    form.querySelector('[name="payment_max_days"]').value = 30;
-    const pledgeEl = form.querySelector('[name="payment_pledge"]');
-    if (pledgeEl) pledgeEl.checked = false;
     // صفّر المنصة وتاريخ النشر
     form.querySelectorAll('#platform-grid .platform-chip').forEach(c => c.classList.remove('active'));
     form.querySelector('#platform-input').value = '';
@@ -3760,13 +3714,6 @@ async function submitCampaign(event) {
       return;
     }
   }
-  // تحقق من موافقة الشركة على إقرار الدفع (إجباري قبل النشر)
-  const pledgeEl = form.querySelector('[name="payment_pledge"]');
-  if (!pledgeEl || !pledgeEl.checked) {
-    showToast('لازم توافق على إقرار الدفع قبل نشر الحملة.', 'error');
-    return;
-  }
-
   // تحقق الموقع: لو حُددت دولة، لازم مدينة (أو «كل المناطق»)
   const selCountry = fd.get('country') || '';
   const selCity = fd.get('city') || '';
@@ -3797,8 +3744,6 @@ async function submitCampaign(event) {
     visit_time_to: fd.get('visit_time_to') || null,
     country: selCountry || null,
     city: selCountry ? (selCity || null) : null,
-    payment_min_days: parseInt(fd.get('payment_min_days')) || 7,
-    payment_max_days: parseInt(fd.get('payment_max_days')) || 30,
     fulfillment_mode: ((fd.get('campaign_type') || 'home') !== 'home') ? 'shipping' : (fd.get('fulfillment_mode') || 'shipping'),
     product_url: (fd.get('product_url') || '').trim() || null,
     pickup_address: (fd.get('pickup_address') || '').trim() || null,
