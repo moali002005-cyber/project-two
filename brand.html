@@ -27,6 +27,8 @@
   --ink-muted: #8A93A6;
   --ink-faint: #AAB2C0;
   --accent: #E23B2E;
+  --accent-solid: #C0271C;   /* الأفعال الأساسية — نسبة 5.92 على الأبيض */
+  --accent-text: #A81E14;    /* النص الأحمر — نسبة 7.34 (المعيار 4.5) */
   --accent-soft: #F0A79E;
   --accent-ink: #7E2119;
   --line: rgba(15, 20, 32, 0.08);
@@ -133,18 +135,17 @@ body {
   padding: 10px 20px; border-radius: 100px;
   font-size: 14px; font-weight: 500;
   margin-bottom: 24px;
-  border: 1px solid rgba(226,59,46,0.30);
-  color: var(--accent-ink); background: #fff;
-  animation: sb-glow 2.6s ease-in-out infinite;
+  border: 1px solid rgba(15,20,32,0.10);
+  color: var(--ink-soft); background: #fff;
 }
-.hero-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--accent); animation: sb-pulse 1.6s ease-in-out infinite; flex-shrink: 0; }
+.hero-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--accent-solid); animation: sb-pulse 1.6s ease-in-out infinite; flex-shrink: 0; }
 .hero-title {
   font-family: var(--font-display);
   font-size: 36px; font-weight: 500;
   letter-spacing: -0.01em;
   margin: 0 0 10px; color: var(--ink);
 }
-.hero-title .nm { color: var(--accent); position: relative; display: inline-block; cursor: default; }
+.hero-title .nm { color: var(--accent-text); position: relative; display: inline-block; cursor: default; }
 .hero-title .nm::after {
   content: ''; position: absolute; bottom: -3px; right: 0; left: 0;
   height: 2px; background: var(--accent);
@@ -194,7 +195,7 @@ body {
   display: inline-flex; align-items: center; gap: 8px;
   padding: 8px 16px; border-radius: 100px;
   background: #fff; font-size: 13px; font-weight: 500;
-  border: 1px solid rgba(226,59,46,0.25); color: var(--accent-ink);
+  border: 1px solid rgba(15,20,32,0.10); color: var(--ink-soft);
   cursor: default;
   animation: sb-float 2.8s ease-in-out infinite;
 }
@@ -204,13 +205,13 @@ body {
 .hero-feat:hover {
   animation: none;
   transform: translateY(-8px);
-  border-color: rgba(226,59,46,0.55);
+  border-color: rgba(15,20,32,0.22);
   transition: transform .25s, border-color .25s;
 }
 .hero-feat-ic {
   width: 20px; height: 20px; border-radius: 50%;
   display: flex; align-items: center; justify-content: center;
-  color: #fff; background: var(--accent);
+  color: #fff; background: var(--ink);
   transition: transform .35s; font-size: 12px;
 }
 .hero-feat:hover .hero-feat-ic { transform: rotate(360deg); }
@@ -1584,7 +1585,7 @@ async function simblExitImpersonation(){
     <h1 class="hero-title">أهلًا <span class="nm" id="welcome-name">بكم</span></h1>
     <p class="hero-sub">أطلق حملتك، والوكيل يفاوض ويقفل لك.</p>
     <div style="display: flex; gap: 12px; flex-wrap: wrap; justify-content: center;">
-      <button class="hero-cta" onclick="goToCampaigns()" style="background:linear-gradient(135deg,#EE5A44,#C0231A);color:#fff;">📣 متابعة الحملات<span id="hero-camp-count" style="display:none;background:rgba(255,255,255,.28);border-radius:100px;padding:1px 8px;margin-inline-start:7px;font-size:12px"></span></button>
+      <button class="hero-cta" onclick="goToCampaigns()" style="background:var(--accent-solid);color:#fff;">📣 متابعة الحملات<span id="hero-camp-count" style="display:none;background:rgba(255,255,255,.28);border-radius:100px;padding:1px 8px;margin-inline-start:7px;font-size:12px"></span></button>
       <button class="hero-cta" onclick="openCampaignModal()">+ حملة جديدة</button>
       <button class="hero-cta" onclick="window.location.href='/company.html'">📊 الأداء</button>
       <button class="hero-cta" onclick="window.location.href='/dues.html'">📋 المستحقات</button>
@@ -1597,7 +1598,7 @@ async function simblExitImpersonation(){
       </div>
       <div id="teaser-avatars" style="display:flex"></div>
       <div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end;flex-shrink:0">
-        <span onclick="event.stopPropagation(); window.location.href='/top.html'" style="background:var(--accent);color:#fff;font-size:13px;font-weight:600;padding:9px 18px;border-radius:100px;white-space:nowrap;cursor:pointer">★ النخبة ←</span>
+        <span onclick="event.stopPropagation(); window.location.href='/top.html'" style="background:var(--accent-solid);color:#fff;font-size:13px;font-weight:600;padding:9px 18px;border-radius:100px;white-space:nowrap;cursor:pointer">★ النخبة ←</span>
         <span onclick="event.stopPropagation(); window.location.href='/creators.html'" style="background:#fff;color:var(--ink);border:1px solid var(--line-strong);font-size:13px;font-weight:500;padding:9px 18px;border-radius:100px;white-space:nowrap;cursor:pointer">تصفّح الكل</span>
       </div>
     </div>
