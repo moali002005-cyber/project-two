@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>متابعة الحملات والمستحقات - Flfluencer</title>
+<title>الحملات السابقة - Flfluencer</title>
 <link rel="icon" type="image/svg+xml" href="/brand/chili.svg?v=6">
 <link rel="manifest" href="/manifest.json">
 <meta name="theme-color" content="#ffffff">
@@ -181,8 +181,8 @@ table.xl td.xl-rowcopy.copied { background:#E23B2E; color:#fff; }
   <div class="page-head">
     <div class="ph-row">
       <div>
-        <h1 class="page-title">📋 متابعة الحملات والمستحقات</h1>
-        <p class="page-sub">كل صفقاتك المعتمدة في مكان واحد — اضغط أي خانة لنسخها، أو رقم الصف لنسخه كامل.</p>
+        <h1 class="page-title">📋 الحملات السابقة</h1>
+        <p class="page-sub">كل حملة أطلقتها ومين نشر فيها — اضغط أي خانة لنسخها، أو رقم الصف لنسخه كامل.</p>
       </div>
       <div style="display:flex;gap:10px;flex-wrap:wrap;">
       </div>
@@ -438,7 +438,6 @@ function duesRowFilled(a, camp, idx, totals) {
   const publishIso = stage7._at || a.completed_at || '';
   const acctLink = duesAccountLink(creator);
   const stg = a.stage || 1;
-  const ps = a.payment_status || 'unpaid';
   const fix = getDuesFixInfo(a);
 
   let statusHtml, statusPlain, dateDisp = '—', dateCopy = '', action = '';
@@ -527,13 +526,11 @@ function exportDuesCSV(onlyCampId) {
       let dateCsv = '';
       const d = publishIso ? new Date(publishIso) : null;
       if (d && !isNaN(d.getTime())) dateCsv = d.toLocaleDateString('en-GB');
-      const stg = a.stage || 1, ps = a.payment_status || 'unpaid';
+      const stg = a.stage || 1;
+      // الشركة سدّدت للمنصة عند اعتماد الأسماء، فالحالة إمّا قيد التنفيذ أو مدفوعة
       let statusPlain;
       if (stg < 9) statusPlain = 'قيد التنفيذ - ' + (DUES_STAGE_NAMES[stg] || ('مرحلة ' + stg));
-      else if (ps === 'confirmed') statusPlain = 'تم الدفع';
-      else if (ps === 'marked_paid') statusPlain = 'حوّلت - بانتظار التأكيد';
-      else if (ps === 'disputed') statusPlain = 'نزاع استلام';
-      else statusPlain = 'باقي' + (duesIsOverdue(a, c) ? ' - متأخر' : '');
+      else statusPlain = 'مدفوعة';
       const nameOut = cleanField(ov.name != null ? ov.name : (creator.name || 'معلن'));
       lines.push([cleanField(c.title || 'حملة'), launch, nameOut, cleanField(duesAccountLink(creator) || ''), dateCsv,
         cleanUrl(st7.publish_link || ''), cleanField(ov.promo != null ? ov.promo : (st7.promo_code || '')), amountNum, statusPlain]);
@@ -547,7 +544,7 @@ function exportDuesCSV(onlyCampId) {
   const link = document.createElement('a');
   const today = new Date().toLocaleDateString('en-GB').replace(/\//g, '-');
   const _fn = onlyCampId ? String((camps[0]&&camps[0].title)||'حملة').replace(/[\\/:*?"<>|]/g,'') : 'الكل';
-  link.href = url; link.download = 'مستحقات-' + _fn + '-' + today + '.csv';
+  link.href = url; link.download = 'الحملات-السابقة-' + _fn + '-' + today + '.csv';
   document.body.appendChild(link); link.click(); document.body.removeChild(link);
   setTimeout(() => URL.revokeObjectURL(url), 1000);
   showToast('تم تصدير ' + toArabic(count) + ' صف ✓');
@@ -565,11 +562,10 @@ function duesRowEmpty(idx) {
 function renderCampaignBlock(camp, deals) {
   const totals = { due: 0, paid: 0 };
 
-  // ترتيب: المتأخر/النزاع أولًا، ثم بانتظار التأكيد، ثم قيد التنفيذ، ثم المدفوع
+  // ترتيب: قيد التنفيذ أولًا، ثم المكتملة المدفوعة
   function groupRank(a) {
     const stg = a.stage || 1;
-    const ps = a.payment_status || 'unpaid';
-    if (stg >= 9) { if (ps === 'confirmed') return 4; if (ps === 'marked_paid') return 1; return 0; }
+    if (stg >= 9) return 4;
     return 2;
   }
   deals = deals.slice().sort((a, b) => {
@@ -1004,7 +1000,7 @@ async function init() {
     if (ws && ws.is_member && ws.owner_id) { WORKSPACE_ID = ws.owner_id; window.TEAM_WS = ws; }
   } catch (e) {}
   if (window.TEAM_WS && (window.TEAM_WS.permissions || []).indexOf('payments') < 0) {
-    alert('ما عندك صلاحية الاطلاع على المستحقات والدفع.');
+    alert('ما عندك صلاحية الاطلاع على الحملات السابقة والمبالغ.');
     window.location.href = '/company.html';
     return;
   }
