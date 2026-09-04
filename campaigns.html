@@ -496,6 +496,11 @@ body {
 }
 .pay-now-btn:hover { transform: translateY(-1px); }
 .pay-now-btn:disabled { opacity: .6; cursor: default; transform: none; }
+/* شاشات الجوال: العمودان يتراكمان بدل ما ينضغط نص الحساب لعمود ضيق */
+@media (max-width: 620px) {
+  .applications-summary { grid-template-columns: 1fr; }
+  .pay-now-btn { width: 100%; }
+}
 
 .btn-view {
   background: var(--ink); color: #fff;
