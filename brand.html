@@ -1268,6 +1268,7 @@ textarea { resize: vertical; min-height: 80px; }
 .dues-chip { font-size:12px; font-weight:500; border-radius:100px; padding:5px 12px; background:var(--cream-darker); color:var(--ink-soft); }
 .dues-chip.due { background:rgba(201,48,48,0.08); color:#b32d2d; }
 .dues-chip.paid { background:rgba(226,59,46,0.12); color:var(--accent-ink); }
+.dp-wait { background:rgba(154,75,6,0.10); color:#9A4B06; }
 .dues-hint { font-size:11.5px; color:var(--ink-faint); margin:0 0 12px; display:flex; align-items:center; gap:5px; }
 .dues-grid-wrap { overflow-x:auto; border:1px solid #c9ccc9; border-radius:6px; }
 table.xl { width:100%; border-collapse:collapse; font-size:12.5px; white-space:nowrap; background:#fff; }
@@ -2598,10 +2599,14 @@ function renderDues() {
         dateDisp = duesDateText(publishIso);
       }
     }
-    // الشركة تسدّد للمنصة عند اعتماد الأسماء عبر زر «ادفع مستحقات الحملة»، فما فيه حالة «بانتظار الدفع» هنا إطلاقًا
-    totalPaid += amountNum;
-    if (stg < 9) {
-      statusPlain = 'قيد التنفيذ - ' + (DUES_STAGE_NAMES[stg] || ('مرحلة ' + stg));
+    // الشركة تسدّد لفلفلونسر من زر «ادفع مستحقات الحملة»، وفلفلونسر تصرف للمعلن بعدها
+    const isPaid = (a.platform_paid === true);
+    if (isPaid) totalPaid += amountNum; else totalDue += amountNum;
+    if (!isPaid) {
+      statusPlain = 'بانتظار الدفع';
+      statusHtml = '<span class="dp dp-wait">⏳ بانتظار الدفع</span>';
+    } else if (stg < 9) {
+      statusPlain = 'مدفوعة - قيد التنفيذ - ' + (DUES_STAGE_NAMES[stg] || ('مرحلة ' + stg));
       statusHtml = '<span class="dp dp-prog">' + escHtml(statusPlain) + '</span>';
     } else {
       statusPlain = 'مدفوعة'; statusHtml = '<span class="dp dp-paid">💳 مدفوعة ✓</span>';
@@ -2631,7 +2636,8 @@ function renderDues() {
   }).join('');
 
   const sumChips =
-    '<span class="dues-chip paid">مدفوع للمنصة: ' + totalPaid.toLocaleString('en-US') + ' ر.س</span>';
+    '<span class="dues-chip paid">مدفوع لفلفلونسر: ' + totalPaid.toLocaleString('en-US') + ' ر.س</span>'
+    + (totalDue > 0 ? '<span class="dues-chip due">بانتظار الدفع: ' + totalDue.toLocaleString('en-US') + ' ر.س</span>' : '');
 
   const colLetters = ['A', 'B', 'C', 'D', 'E', 'F', 'G'].map(L => '<th class="xl-colh">' + L + '</th>').join('');
 
