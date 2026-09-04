@@ -1475,7 +1475,7 @@ function updateHeroStats() {
                  : (ps === 'batched')  ? { t:'🏦 في دفعة الاثنين',      c:'#8a5a00', bg:'rgba(200,150,20,.14)' }
                  : (ps === 'eligible') ? { t:'✅ جاهز للصرف',           c:'#0e6b66', bg:'rgba(226,59,46,.10)' }
                  : (ps === 'holding')  ? { t:'🔒 محفوظ لدى المنصة',     c:'#7a6a2a', bg:'rgba(160,140,40,.14)' }
-                 :                       { t:'⏳ بانتظار سداد الشركة',  c:'#7a6a2a', bg:'rgba(160,140,40,.10)' };
+                 :                       { t:'⏳ قيد التجهيز',          c:'#7a6a2a', bg:'rgba(160,140,40,.10)' };
         var when = payoutDateText(a);
         var actionBtn = when
           ? '<div style="margin-top:8px;font-size:11.5px;color:var(--ink-muted);">📅 موعد الصرف: <strong style="color:var(--ink);">'+when+'</strong></div>'
@@ -1648,7 +1648,7 @@ function renderOfferCard(c, a) {
   if (isNegotiating) {
     headRight = `<span class="ac-chatbtn" onclick="event.stopPropagation(); startNegotiation('${a.id}')">💬 المحادثة مع الوكيل</span>`;
   } else if (awaitingLaunch) {
-    headRight = `<span class="app-status stage-badge waiting">🚀 بانتظار إطلاق الحملة</span>`;
+    headRight = `<span class="app-status stage-badge waiting">🎉 معتمد — الحملة قيد التجهيز</span>`;
   } else if (isApproved) {
     const stg = a.stage || 1;
     const myTurn = isCreatorTurn(stg);
@@ -1673,7 +1673,7 @@ function renderOfferCard(c, a) {
         <div class="ag-info">
           <div class="ag-price">السعر النهائي: <span class="num">${(a.final_price || a.price).toLocaleString('en-US')} ر.س</span></div>
           ${feeLines(a)}
-          <div class="ag-desc">🎉 <strong>تم اعتمادك في الحملة.</strong> باقي الشركة تسدّد قيمة الصفقات لفلفلونسر وتطلق الحملة الإعلانية. أول ما تسدّد، تبدأ مراحل التنفيذ هنا مباشرة ويوصلك إشعار.</div>
+          <div class="ag-desc">🎉 <strong>مبروك، تم اعتمادك في الحملة.</strong> الحملة الآن قيد التجهيز للانطلاق، وأول ما تنطلق تبدأ مراحل التنفيذ هنا ويوصلك إشعار.</div>
         </div>
       </div>`;
   } else if (isApproved) {
@@ -2006,14 +2006,14 @@ function renderPaymentCard(app) {
     return `<div class="stage-action complete" onclick="event.stopPropagation()">
       <div class="sa-title">🔒 مبلغك محفوظ لدى المنصة</div>
       <div class="sa-desc">${fast
-        ? 'الشركة سدّدت قيمة صفقتك لفلفلونسر. أول ما يكتمل العمل يُصرف لك في نفس اليوم — ميزة Premium.'
-        : 'الشركة سدّدت قيمة صفقتك لفلفلونسر. كل صفقة تكتمل من الاثنين إلى الأحد ليلًا تُصرف يوم الاثنين.'}</div>
+        ? 'مبلغ صفقتك محفوظ لدى فلفلونسر. أول ما يكتمل العمل يُصرف لك في نفس اليوم — ميزة Premium.'
+        : 'مبلغ صفقتك محفوظ لدى فلفلونسر من قبل انطلاق الحملة. كل صفقة تكتمل من الاثنين إلى الأحد ليلًا تُصرف يوم الاثنين.'}</div>
       ${whenLine}${breakdown}
     </div>`;
   }
   return `<div class="stage-action complete" onclick="event.stopPropagation()">
     <div class="sa-title">🎉 صفقة مكتملة</div>
-    <div class="sa-desc">خلّصت كل المراحل. أول ما تسدّد الشركة لفلفلونسر يظهر لك مستحقك هنا وموعد صرفه.</div>
+    <div class="sa-desc">خلّصت كل المراحل. مستحقك وموعد صرفه بيظهر لك هنا قريبًا.</div>
   </div>`;
 }
 
