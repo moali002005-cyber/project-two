@@ -95,7 +95,7 @@ td.iban-bad{ background:#fff2f2 !important; color:#c0392b !important; box-shadow
 .dp-fixdone { background:rgba(29,158,117,0.16); color:#12805f; }
 .camp-exports { display:flex; gap:8px; margin-top:8px; flex-wrap:wrap; }
 .camp-exp-btn { cursor:pointer; border:1px solid #e0e7e5; background:#fff; border-radius:100px; padding:6px 12px; font-family:inherit; font-size:12px; font-weight:600; color:#0f1512; }
-.camp-exp-btn.pay { background:#1D9E75; color:#fff; border-color:#1D9E75; }
+.camp-exp-btn.pay { background:#0F1420; color:#fff; border-color:#0F1420; }
 .camp-exp-btn.edit { background:#0f1512; color:#fff; border-color:#0f1512; }
 .camp-exp-btn.links { background:#0B6BB8; color:#fff; border-color:#0B6BB8; }
 .camp-exp-btn:hover { filter:brightness(0.97); }
@@ -464,7 +464,7 @@ function duesRowFilled(a, camp, idx, totals) {
     } else {
       statusPlain = 'عُدّل - جاهز للمراجعة';
       statusHtml = '<span class="dp dp-fixdone">✅ عُدّل — جاهز للمراجعة</span>';
-      action = '<button class="dues-mark" style="background:#1D9E75" onclick="clearFix(\'' + a.id + '\',' + fix.stage + ')">✓ راجعت</button>' + (action || '');
+      action = '<button class="dues-mark" style="background:#0F1420" onclick="clearFix(\'' + a.id + '\',' + fix.stage + ')">✓ راجعت</button>' + (action || '');
     }
   }
 
