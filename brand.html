@@ -1260,7 +1260,7 @@ textarea { resize: vertical; min-height: 80px; }
 .rate-done-line { font-size: 13px; color: var(--ink-soft); display: flex; align-items: center; gap: 8px; }
 .rate-done-line .rd-stars { color: #E8B84B; letter-spacing: 2px; direction: ltr; }
 
-/* ============ متابعة الحملات والمستحقات — بشكل شيت إكسل ============ */
+/* ============ الحملات السابقة — بشكل شيت إكسل ============ */
 .dues-wrap { background:#fff; border:1px solid var(--line); border-radius:18px; padding:18px 20px; margin:0 0 22px; }
 .dues-head { display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap; margin-bottom:6px; }
 .dues-head h3 { font-size:16px; font-weight:600; display:flex; align-items:center; gap:8px; margin:0; }
@@ -1600,7 +1600,7 @@ async function simblExitImpersonation(){
       <button class="hero-cta primary" onclick="goToCampaigns()">📣 متابعة الحملات<span id="hero-camp-count" style="display:none;background:rgba(255,255,255,.28);border-radius:100px;padding:1px 8px;margin-inline-start:7px;font-size:12px"></span></button>
       <button class="hero-cta" onclick="openCampaignModal()">+ حملة جديدة</button>
       <button class="hero-cta" onclick="window.location.href='/company.html'">📊 الأداء</button>
-      <button class="hero-cta" onclick="window.location.href='/dues.html'">📋 المستحقات</button>
+      <button class="hero-cta" onclick="window.location.href='/dues.html'">📋 الحملات السابقة</button>
     </div>
 
     <a href="/plans.html" id="plan-strip" style="display:flex;align-items:center;gap:12px;max-width:520px;margin:20px auto 0;padding:13px 16px;border:1px solid var(--line);border-radius:14px;background:#fff;text-decoration:none;color:var(--ink);text-align:right;transition:border-color .2s ease,transform .15s ease;" onmouseover="this.style.borderColor='var(--line-strong)';this.style.transform='translateY(-1px)'" onmouseout="this.style.borderColor='var(--line)';this.style.transform='none'">
@@ -2431,7 +2431,7 @@ function showPendingScreen(status) {
       <div style="max-width:520px;margin:0 auto;text-align:center">
         <div style="width:84px;height:84px;border-radius:50%;background:rgba(210,59,59,0.1);display:flex;align-items:center;justify-content:center;margin:0 auto 24px;font-size:38px">⏸️</div>
         <h1 class="hero-title" style="font-size:30px">حسابكم موقوف مؤقتًا</h1>
-        <p class="hero-sub">تم إيقاف الحساب لوجود مستحقات دفع غير مُسوّاة لأحد المعلنين. بعد تسوية المبلغ وتأكيد المعلن استلامه، يعيد فريق Flfluencer تفعيل الحساب.</p>
+        <p class="hero-sub">تم إيقاف الحساب لوجود مبالغ غير مُسدّدة لفلفلونسر. بعد السداد يعيد فريق Flfluencer تفعيل الحساب.</p>
         <p style="font-size:13px;color:var(--ink-muted);margin-top:6px">للتواصل وتسوية الوضع: hello@flfluencer.com</p>
       </div>
     </section>`;
@@ -2547,7 +2547,7 @@ function renderDues() {
   if (!deals.length) {
     host.innerHTML =
       '<div class="dues-wrap">'
-      + '<div class="dues-head"><h3>📋 متابعة الحملات والمستحقات</h3></div>'
+      + '<div class="dues-head"><h3>📋 الحملات السابقة</h3></div>'
       + '<div class="dues-empty">ما فيه صفقات معتمدة بعد. أول ما تعتمد صفقة بتظهر هنا بكل تفاصيلها (الاسم، رابط الحساب، تاريخ النشر، رابط الفيديو، الآيبان، المبلغ، وحالة الدفع).</div>'
       + '</div>';
     return;
@@ -2637,7 +2637,7 @@ function renderDues() {
 
   host.innerHTML =
     '<div class="dues-wrap">'
-    + '<div class="dues-head"><h3>📋 متابعة الحملات والمستحقات</h3><div class="dues-sum">' + sumChips + '</div></div>'
+    + '<div class="dues-head"><h3>📋 الحملات السابقة</h3><div class="dues-sum">' + sumChips + '</div></div>'
     + '<p class="dues-hint">👆 اضغط أي خانة لنسخها · 🔗 اضغط «رابط الحساب» أو «رابط الفيديو» للفتح</p>'
     + '<div class="dues-grid-wrap"><table class="xl">'
     + '<thead>'
