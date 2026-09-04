@@ -1264,10 +1264,6 @@ async function simblExitImpersonation(){
   #group-modal .gm-join:hover{filter:brightness(.97)}
   #group-modal .gm-skip{display:inline-block;margin-top:14px;font-size:13px;color:#8a8a8a;cursor:pointer;text-decoration:underline}
   /* زر واتساب عائم دائم */
-  #wa-fab{position:fixed;bottom:18px;left:16px;z-index:9000;display:flex;align-items:center;gap:9px;background:#25D366;color:#fff;text-decoration:none;border-radius:100px;padding:11px 16px 11px 14px;box-shadow:0 8px 22px rgba(37,211,102,.38);font-family:inherit;font-size:13.5px;font-weight:700;max-width:240px;line-height:1.35}
-  #wa-fab:hover{filter:brightness(.97)}
-  #wa-fab .wa-ic{font-size:18px;line-height:1}
-  #wa-fab .wa-x{margin-inline-start:2px;width:18px;height:18px;border-radius:50%;background:rgba(255,255,255,.25);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700}
 
 .st-row{display:flex;gap:12px;max-width:520px;margin:20px auto 0;}
 .st{flex:1;background:var(--chip,#FBEDEC);border-radius:16px;padding:16px 12px;text-align:center;}
@@ -1287,12 +1283,6 @@ async function simblExitImpersonation(){
   </div>
 </div>
 
-<!-- زر واتساب عائم دائم (يظهر في كل الصفحة) -->
-<a id="wa-fab" href="https://chat.whatsapp.com/DRTU4vQD4vD0cmiJJeCmzE?mode=gi_t" target="_blank" rel="noopener">
-  <span class="wa-ic">💬</span>
-  <span class="wa-txt">انضم لمجتمعنا على واتساب</span>
-  <span class="wa-x" onclick="hideWaFab(event)">×</span>
-</a>
 
 <nav class="nav">
   <div class="container nav-inner">
@@ -1621,17 +1611,6 @@ function markGroupJoined(){
   try{ localStorage.setItem('simbl_group_joined','1'); }catch(e){}
   var m=document.getElementById('group-modal'); if(m) m.classList.remove('on');
 }
-// زر واتساب العائم الدائم
-function hideWaFab(e){
-  if(e){ e.preventDefault(); e.stopPropagation(); }
-  try{ sessionStorage.setItem('simbl_wafab_hide','1'); }catch(_){}
-  var f=document.getElementById('wa-fab'); if(f) f.style.display='none';
-}
-function initWaFab(){
-  try{ if(sessionStorage.getItem('simbl_wafab_hide')==='1'){ var f=document.getElementById('wa-fab'); if(f) f.style.display='none'; } }catch(_){}
-}
-if (document.readyState === 'loading') { document.addEventListener('DOMContentLoaded', initWaFab); } else { initWaFab(); }
-
 async function init() {
   await tryRestoreSession();
 
@@ -3309,6 +3288,12 @@ async function refreshMyAvatarFromDB() {
     if (row.name && row.name !== currentUser.name) { currentUser.name = row.name; changed = true; }
     if (changed) {
       if (typeof saveCurrentUser === 'function') saveCurrentUser(currentUser); // ثبّتها محليًا
+      var nm = String(currentUser.name || '').replace(/\s+/g, ' ').trim();
+      if (nm) {
+        var un = document.getElementById('user-name'); if (un) un.textContent = nm;
+        var wn = document.getElementById('welcome-name'); if (wn) wn.textContent = nm;
+        var ui = document.getElementById('user-initial'); if (ui) ui.textContent = nm.charAt(0);
+      }
       renderMyAvatar();
     }
   } catch (e) { /* تجاهل — نبقى على النسخة المحلية */ }
@@ -3324,8 +3309,7 @@ function renderMyAvatar() {
       ? '<img src="' + url + '" alt="" style="width:100%;height:100%;object-fit:cover;">'
       : '<span style="font-size:32px;font-weight:600;color:var(--accent-ink)">' + initial + '</span>';
   }
-  var nav = document.getElementById('user-initial');
-  if (nav && url) { nav.innerHTML = '<img src="' + url + '" alt="" style="width:100%;height:100%;border-radius:50%;object-fit:cover;">'; nav.style.background = 'transparent'; }
+  // الصورة تُعرض في الملف الشخصي فقط؛ الشريط العلوي هنا يكتفي بالحرف الأول.
 }
 
 // ===== صورة الحساب: اختيار -> محرّر قص دائري (تكبير/تصغير + تحريك) -> رفع =====
