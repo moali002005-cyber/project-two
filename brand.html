@@ -1590,6 +1590,15 @@ async function simblExitImpersonation(){
       <button class="hero-cta" onclick="window.location.href='/company.html'">📊 الأداء</button>
       <button class="hero-cta" onclick="window.location.href='/dues.html'">📋 المستحقات</button>
     </div>
+
+    <a href="/plans.html" id="plan-strip" style="display:flex;align-items:center;gap:12px;max-width:520px;margin:20px auto 0;padding:13px 16px;border:1px solid var(--line);border-radius:14px;background:#fff;text-decoration:none;color:var(--ink);text-align:right;transition:border-color .2s ease,transform .15s ease;" onmouseover="this.style.borderColor='var(--line-strong)';this.style.transform='translateY(-1px)'" onmouseout="this.style.borderColor='var(--line)';this.style.transform='none'">
+      <span style="width:40px;height:40px;border-radius:12px;background:#FDECEA;display:inline-flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;">🎫</span>
+      <span style="flex:1;min-width:0;display:flex;flex-direction:column;gap:2px;">
+        <b id="hub-plan-name" style="font-size:14.5px;font-weight:600;">باقتي</b>
+        <small id="hub-plan-sub" style="font-size:12px;color:var(--ink-muted);line-height:1.5;">جاري التحميل…</small>
+      </span>
+      <span style="color:var(--ink-faint);font-size:19px;line-height:1;flex-shrink:0;">‹</span>
+    </a>
     <style>@media (max-width:640px){#creators-teaser{flex-direction:column!important;align-items:center!important;text-align:center!important;gap:12px!important;}#creators-teaser #teaser-avatars{justify-content:center!important;}}</style>
     <div id="creators-teaser" onclick="window.location.href='/top.html'" style="max-width:640px;margin:22px auto 0;cursor:pointer;background:#fff;border:1px solid var(--line);border-radius:18px;padding:16px 20px;display:flex;align-items:center;gap:14px;text-align:right;transition:border-color .2s,transform .2s;" onmouseover="this.style.borderColor='rgba(226,59,46,0.45)';this.style.transform='translateY(-2px)'" onmouseout="this.style.borderColor='var(--line)';this.style.transform='none'">
       <div style="flex:1;min-width:0">
@@ -3891,6 +3900,48 @@ function logout() {
   window.location.href = '/';
 }
 
+
+/* ===== الاشتراك: نعرضه دائمًا، لا عند القفل فقط =====
+   المصدر my_plan_status عبر simblPlan (مخزَّن 60 ثانية).
+   الأرقام لاتينية عمدًا — الأرقام العربية-الهندية ممنوعة في المنصة. */
+const PLAN_MONTHS_AR = ['يناير','فبراير','مارس','أبريل','مايو','يونيو','يوليو','أغسطس','سبتمبر','أكتوبر','نوفمبر','ديسمبر'];
+function planDateAr(iso) {
+  const d = new Date(iso);
+  if (isNaN(d.getTime())) return '';
+  return d.getDate() + ' ' + PLAN_MONTHS_AR[d.getMonth()] + ' ' + d.getFullYear();
+}
+function planSummary(p) {
+  if (!p || p.__unknown || p.error) return null;
+  const free = (p.code === 'c_free' || p.code === 'trial' || p.code === 'trial_legacy');
+  const name = p.name_ar || p.code || 'باقتك';
+  const bits = [];
+  if (p.commission_pct != null) bits.push('عمولة ' + Number(p.commission_pct) + '٪');
+  let days = null;
+  if (p.expires_at) {
+    const ms = new Date(p.expires_at).getTime() - Date.now();
+    if (!isNaN(ms)) days = Math.ceil(ms / 86400000);
+  }
+  if (free) bits.push('رقِّ باقتك لمزايا أكثر');
+  else if (days != null && days <= 0) bits.push('انتهت — جدِّدها');
+  else if (days != null && days <= 30) bits.push('تنتهي بعد ' + days + ' يوم');
+  else if (p.expires_at) bits.push('تتجدد ' + planDateAr(p.expires_at));
+  if (!bits.length) bits.push(name);
+  return { text: bits.join(' · '), soon: (days != null && days <= 30), free: free, name: name };
+}
+async function loadMyPlan() {
+  const sub = document.getElementById('hub-plan-sub');
+  if (!sub) return;
+  let p = null;
+  try { p = await window.simblPlan(); } catch (e) { p = null; }
+  const s = planSummary(p);
+  if (!s) { sub.textContent = 'اعرض الباقات والأسعار'; return; }
+  sub.textContent = s.text;
+  if (s.soon || s.free) sub.style.color = 'var(--accent-ink, #7E2119)';
+  const nm = document.getElementById('hub-plan-name');
+  if (nm) nm.textContent = 'باقتي — ' + s.name;
+}
+
+loadMyPlan();
 init();
 </script>
 
