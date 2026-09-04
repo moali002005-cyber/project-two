@@ -228,15 +228,6 @@ function duesCampMap() {
   (myCampaigns || []).forEach(c => { m[c.id] = c; });
   return m;
 }
-function duesIsOverdue(a, camp) {
-  if (!a || (a.stage || 0) < 9) return false;
-  if (a.payment_status === 'confirmed') return false;
-  const days = camp ? parseInt(camp.payment_max_days, 10) : NaN;
-  if (!a.completed_at || isNaN(days) || days <= 0) return false;
-  const d = new Date(a.completed_at); if (isNaN(d.getTime())) return false;
-  d.setDate(d.getDate() + days);
-  return Date.now() > d.getTime();
-}
 function duesDateText(iso) {
   if (!iso) return '—';
   const d = new Date(iso); if (isNaN(d.getTime())) return '—';
