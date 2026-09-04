@@ -1077,7 +1077,7 @@ try { simblPlan(); } catch (e) {}
     try { plan = await window.simblPlan(); } catch (e) { plan = null; }
     var role = plan && plan.role;
 
-    if (p.indexOf('creator.html') >= 0 && role !== 'brand') {
+    if (p.indexOf('profile.html') >= 0 && role !== 'brand') {
       var host = document.getElementById('my-trust');
       if (host && !document.querySelector('.flf-bar')) {
         var b = bar([
