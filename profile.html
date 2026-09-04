@@ -1033,6 +1033,21 @@ input:focus, textarea:focus { outline: none; border-color: var(--accent); box-sh
   </div>
 </nav>
 
+<style>
+/* لوحة الثقة — انتقلت من لوحة المعلن إلى الملف الشخصي */
+.st-row{display:flex;gap:12px;max-width:520px;margin:0 auto;}
+.st{flex:1;background:var(--chip,#FBEDEC);border-radius:16px;padding:16px 12px;text-align:center;}
+.st-n{font-family:var(--font-display);font-size:24px;font-weight:800;color:var(--accent);line-height:1.1;}
+.st-n small{font-size:15px;}
+.st-n.st-new{font-size:18px;font-weight:700;}
+.st-l{font-size:12.5px;color:var(--ink-soft);margin-top:5px;}
+.kit-share{display:block;width:100%;max-width:520px;margin:10px auto 0;background:#E23B2E;color:#fff;border:none;border-radius:12px;padding:11px;font-family:inherit;font-size:13.5px;font-weight:700;cursor:pointer}
+.kit-lock{display:block;max-width:520px;margin:10px auto 0;text-align:center;background:#F4F5F7;color:#2C3548;border-radius:12px;padding:11px;font-size:12.5px;font-weight:600;text-decoration:none}
+#kit-toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(20px);background:#7E2119;color:#fff;padding:12px 18px;border-radius:12px;font-size:14px;font-weight:600;opacity:0;pointer-events:none;transition:all .25s;z-index:9999;box-shadow:0 8px 24px -8px rgba(0,0,0,0.4);max-width:90vw;text-align:center;}
+#kit-toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+#my-trust:not(:empty){margin:16px 0 4px;}
+</style>
+
 <main class="container">
 
   <!-- ============ HERO ============ -->
@@ -1061,6 +1076,8 @@ input:focus, textarea:focus { outline: none; border-color: var(--accent); box-sh
   </section>
 
   <!-- ============ PROFILE TABS (أرباحي / معلوماتي) ============ -->
+  <div id="my-trust"></div>
+
   <div id="profile-tabs" style="display:flex;border-top:1px solid var(--line);border-bottom:1px solid var(--line);margin:6px 0 18px;">
     <button type="button" class="ptab" data-tab="earnings" onclick="switchTab('earnings')" aria-label="أرباحي" style="flex:1;background:none;border:0;border-bottom:2px solid var(--accent);color:var(--accent-ink);padding:13px 0;cursor:pointer;display:flex;justify-content:center;">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" width="23" height="23" aria-hidden="true"><rect x="3" y="8" width="18" height="12" rx="2"/><path d="M3 8a2 2 0 0 1 2-2h11a2 2 0 0 1 2 2"/><path d="M16 13h.5"/></svg>
@@ -1259,6 +1276,48 @@ async function init() {
   renderBankBox();
 
   await loadData();
+  loadMyTrust();
+}
+
+/* ===== لوحة الثقة =====
+   «صفقات» موجودة أصلًا في ترويسة الملف، فلا نكرّرها هنا — نعرض التقييم فقط. */
+async function loadMyTrust(){
+  var box=document.getElementById('my-trust'); if(!box||!currentUser) return;
+  try{
+    var r=await supabaseClient.from('creator_trust')
+      .select('ratings_count, avg_rating').eq('creator_id', currentUser.id).maybeSingle();
+    var t=(r&&r.data)||{};
+    var rc=Number(t.ratings_count)||0; var avg=Number(t.avg_rating)||0;
+    // تقييم حقيقي فقط — بلا أرقام مصطنعة. المعلن الجديد يرى "جديد".
+    var ratingCell = rc>0
+      ? '<div class="st-n">'+avg.toFixed(1)+' <small>\u2605</small></div><div class="st-l">تقييمك · '+toArabic(rc)+' تقييم</div>'
+      : '<div class="st-n st-new">جديد</div><div class="st-l">لا توجد تقييمات بعد</div>';
+    box.innerHTML='<div class="st-row"><div class="st">'+ratingCell+'</div></div>';
+    var _pl = null;
+    try { var _pr = await supabaseClient.rpc('my_plan_status'); if (_pr && _pr.data && !_pr.data.error) _pl = _pr.data; } catch (e) {}
+    if (_pl && _pl.can_media_kit) {
+      box.innerHTML += '<button class="kit-share" onclick="shareMyKit()">🔗 شارك ملفي العام</button>';
+    } else {
+      box.innerHTML += '<a class="kit-lock" href="/plans-creator.html">🔒 ملفك العام القابل للمشاركة — متاح مع Pro</a>';
+    }
+  }catch(e){ box.innerHTML=''; }
+}
+
+function shareMyKit(){
+  if(!currentUser) return;
+  var h = currentUser.handle ? String(currentUser.handle).replace(/^@/,'') : '';
+  var q = h ? ('u='+encodeURIComponent(h)) : ('id='+encodeURIComponent(currentUser.id));
+  var url = location.origin + '/c.html?' + q;
+  if(navigator.share){ navigator.share({title:'ملفي على Flfluencer', text:'شوف ملفي وترتيبي على Flfluencer', url:url}).catch(function(){}); return; }
+  if(navigator.clipboard && navigator.clipboard.writeText){
+    navigator.clipboard.writeText(url).then(function(){ kitToast('✓ تم نسخ رابط ملفك'); }).catch(function(){ kitToast(url); });
+  } else { kitToast(url); }
+}
+function kitToast(msg){
+  var t=document.getElementById('kit-toast');
+  if(!t){ t=document.createElement('div'); t.id='kit-toast'; document.body.appendChild(t); }
+  t.textContent=msg; t.className='show';
+  clearTimeout(window._ktt); window._ktt=setTimeout(function(){ t.className=''; },2400);
 }
 
 // شاشة "قيد المراجعة" / "غير مفعّل" — تمنع المحتوى حتى تفعيل الأدمن
