@@ -21,7 +21,7 @@
 <style>
 :root {
   --cream: #ffffff;
-  --cream-darker: #F3EEE4;
+  --cream-darker: #F4F5F7;
   --ink: #0F1420;
   --ink-soft: #2C3548;
   --ink-muted: #8A93A6;
@@ -2214,7 +2214,7 @@ function renderPickedVideos() {
   box.innerHTML = window._vidFiles.map(function (f, i) {
     const isV = (f.type || '').indexOf('video/') === 0;
     const mb = (f.size / 1048576).toFixed(1);
-    return '<div style="display:flex;align-items:center;gap:8px;background:#fff;border:1px solid #EFE7E0;border-radius:10px;padding:7px 10px;font-size:12px;color:#374751;">'
+    return '<div style="display:flex;align-items:center;gap:8px;background:#fff;border:1px solid #E7E9EE;border-radius:10px;padding:7px 10px;font-size:12px;color:#374751;">'
       + '<span>' + (isV ? '🎬' : '🖼') + '</span>'
       + '<span style="flex:1;word-break:break-all;">' + esc(f.name) + ' <span style="color:#8A99A6;">(' + mb + ' م.ب)</span></span>'
       + '<button type="button" onclick="removePickedVideo(' + i + ')" style="border:1px solid #E3B3B3;background:#FDECEC;color:#B04141;border-radius:7px;font-family:inherit;font-size:11px;padding:3px 8px;cursor:pointer;">✕</button>'
