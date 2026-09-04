@@ -566,11 +566,8 @@ export default async function handler(req, res) {
     ? 'كل تفاصيل الزيارة (الموقع والموعد) بتظهر لك خطوة بخطوة داخل المنصة بعد الاتفاق، ما تحتاجين تسوين شي الحين.'
     : 'كل تفاصيل الشحن والتنفيذ بتظهر لك خطوة بخطوة داخل المنصة بعد الاتفاق، ما تحتاجين تسوين شي الحين.';
   const cityLabel = CITY_LABELS[campaign.city] || campaign.city || 'غير محدد';
-  const payMin = parseInt(campaign.payment_min_days) || null;
-  const payMax = parseInt(campaign.payment_max_days) || null;
-  const paymentLabel = (payMin && payMax)
-    ? `بعد إكمال العمل، خلال ${payMin} إلى ${payMax} يوم`
-    : (payMax ? `بعد إكمال العمل، خلال ${payMax} يوم` : 'بعد إكمال العمل حسب اتفاق الشركة');
+  // الشركة تسدّد لفلفلونسر قبل انطلاق الحملة، وفلفلونسر تصرف للمعلن بعد اكتمال الصفقة
+  const paymentLabel = 'من فلفلونسر بعد اكتمال الصفقة — دفعة كل اثنين، وفوري مع باقة Premium';
 
   if (creatorMessage) {
     try {
