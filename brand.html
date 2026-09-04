@@ -1671,7 +1671,7 @@ async function simblExitImpersonation(){
             <label><input type="radio" name="fulfillment_mode" value="code" onchange="toggleFulfillment()"><span>🎟️ كود خصم</span></label>
             <label><input type="radio" name="fulfillment_mode" value="pickup" onchange="toggleFulfillment()"><span>🏬 استلام من الفرع</span></label>
           </div>
-          <div class="hint" id="fulfillment-hint">كود الخصم: كل معلن معتمد يستلم كوداً خاصاً يطلب فيه المنتج من متجرك بـ0 ريال — بدون شحن يدوي منك.</div>
+          <div class="hint" id="fulfillment-hint">شحن للمعلن: بعد اعتماده يعطيك عنوانه، ترسل له المنتج، ويأكد استلامه في المنصة.</div>
         </div>
 
         <div class="field" id="pickup-field" style="display:none;">
@@ -2189,10 +2189,14 @@ function toggleFulfillment() {
   if (pa) pa.required = isPickup;
   const ph = document.querySelector('[name="pickup_hours"]');
   if (ph) ph.required = isPickup;
+  // لكل طريقة شرحها. كان الشرط ثنائيًا فيظهر شرح الكود على خيار الشحن أيضًا.
   const hint = document.getElementById('fulfillment-hint');
-  if (hint) hint.textContent = isPickup
-    ? 'استلام من الفرع: المعلن يجي فرعك ويستلم المنتج بنفسه — بدون شحن ولا كود.'
-    : 'كود الخصم: كل معلن معتمد يستلم كوداً خاصاً يطلب فيه المنتج من متجرك بـ0 ريال — بدون شحن يدوي منك.';
+  const HINTS = {
+    shipping: 'شحن للمعلن: بعد اعتماده يعطيك عنوانه، ترسل له المنتج، ويأكد استلامه في المنصة.',
+    code: 'كود الخصم: كل معلن معتمد يستلم كوداً خاصاً يطلب فيه المنتج من متجرك بـ0 ريال — بدون شحن يدوي منك.',
+    pickup: 'استلام من الفرع: المعلن يجي فرعك ويستلم المنتج بنفسه — بدون شحن ولا كود.'
+  };
+  if (hint) hint.textContent = HINTS[mode] || HINTS.shipping;
 }
 
 
