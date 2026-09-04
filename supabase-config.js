@@ -779,36 +779,8 @@ try { simblPlan(); } catch (e) {}
     return null;
   }
 
-  /* ---------- 1) إحصائيات السوق ---------- */
-  window.flfMarketStats = async function () {
-    if (!(await window.simblGate('can_stats', 'إحصائيات السوق',
-      'شوف موقعك مقابل السوق: متوسط المتابعين، وسيط الأسعار، ترتيبك المئوي، وعدد الحملات المفتوحة على منصتك.'))) return;
-    var m = modal('إحصائيات السوق');
-    var d = await rpc('my_market_stats');
-    if (!d || d.error) { failBody(m, d); return; }
-    var fp = Number(d.followers_percentile) || 0;
-    var pp = Number(d.price_percentile) || 0;
-    var html = '<div class="flf-grid">'
-      + kpi('متابعوك', num(d.my_followers), 'متوسط السوق ' + num(d.avg_followers))
-      + kpi('ترتيبك بالمتابعين', 'أعلى من ' + fp + '%', 'من ' + num(d.peers_platform) + ' معلن على منصتك', true)
-      + kpi('سعرك المعلن', money(d.my_price), 'وسيط السوق ' + money(d.median_price))
-      + kpi('ترتيبك بالسعر', 'أعلى من ' + pp + '%', 'من معلني منصتك')
-      + kpi('متوسط الصفقة', money(d.avg_deal_90d), 'آخر ٩٠ يوم على منصتك')
-      + kpi('الطلب الحالي', num(d.open_campaigns), 'حملة مفتوحة تناسب منصتك', true)
-      + kpi('منافسوك بنفس التصنيف', num(d.peers_category), 'على نفس المنصة')
-      + '</div>';
-    var tip = '';
-    if (pp - fp >= 25) {
-      tip = 'سعرك في الشريحة العليا بينما وصولك أقل منها — هذا يقلّل فرص قبولك. جرّب تنزيل السعر قليلاً أو أبرز نتائجك السابقة في ملفك.';
-    } else if (fp - pp >= 25) {
-      tip = 'وصولك أعلى بكثير من سعرك — عندك مساحة ترفع سعرك بدون ما تخسر فرص.';
-    } else {
-      tip = 'سعرك متوازن مع وصولك مقارنة بالسوق. ركّز على سرعة الرد وجودة التسليم لرفع درجة ثقتك.';
-    }
-    html += '<div class="flf-note">' + esc(tip) + '</div>';
-    m.body.innerHTML = html;
-  };
-
+  /* إحصائيات السوق: أُزيلت بقرار المالك — كانت تعرض للمعلن أسعار منافسيه
+     وتنصحه برفع سعره، وهذا تسعير متبادل بين متنافسين لا نريد تسهيله. */
   /* ---------- 2) أرشيف الأعمال ---------- */
   window.flfPostArchive = async function () {
     if (!(await window.simblGate('can_post_archive', 'أرشيف أعمالي',
@@ -1109,13 +1081,12 @@ try { simblPlan(); } catch (e) {}
       var host = document.getElementById('my-trust');
       if (host && !document.querySelector('.flf-bar')) {
         var b = bar([
-          ['📊 إحصائيات السوق', window.flfMarketStats],
           ['🗂️ أرشيف أعمالي', window.flfPostArchive],
           ['🏅 بطاقة إنجازي', window.flfAchievementCard],
           ['📈 تحليلات ترتيبي', window.flfRankAnalytics]
         ]);
         host.parentNode.insertBefore(b, host.nextSibling);
-        ['can_stats', 'can_post_archive', 'can_achievement_card', 'can_rank_analytics'].forEach(function (f, i) {
+        ['can_post_archive', 'can_achievement_card', 'can_rank_analytics'].forEach(function (f, i) {
           if (plan && plan[f] !== true && !plan.__unknown) {
             b.children[i].classList.add('locked');
           }
