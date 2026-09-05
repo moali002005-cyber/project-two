@@ -2656,17 +2656,9 @@ function payPaidCount(apps) {
 function payButtonHtml(campaignId, apps) {
   const unpaid = payUnpaidApps(apps);
   if (!unpaid.length) return '';
-  const total = unpaid.reduce((s2, a) => s2 + Number(a.final_price || a.price || 0), 0);
-  const pct = (window.__PLAN && window.__PLAN.commission_pct != null) ? Number(window.__PLAN.commission_pct) : null;
-  let line = '';
-  let gross = total;
-  if (pct != null) {
-    const comm = Math.round(total * pct) / 100;
-    gross = Math.round((total + comm) * 100) / 100;
-    line = `<div class="pay-breakdown">قيمة التعاونات ${total.toLocaleString('en-US')} ر.س + عمولة المنصة ${pct}٪ (${comm.toLocaleString('en-US')} ر.س) = <strong>${gross.toLocaleString('en-US')} ر.س</strong><br><span class="pay-note">الخدمة الإعلانية مقدَّمة من المعلنين المشاركين، وفلفلونسر تحصّل قيمتها نيابةً عنهم وتصرفها لهم بعد خصم عمولتها.</span></div>`;
-  }
+  // التفاصيل تظهر في الفاتورة عند الدفع — هنا زر واحد فقط
   const waitLine = `<div class="pay-wait">⏸️ الحملة ما انطلقت بعد — بانتظار سداد مستحقاتها.</div>`;
-  return `${waitLine}${line}<button class="pay-now-btn" id="pay-btn-${campaignId}" onclick="event.stopPropagation(); startCampaignPayment('${campaignId}')">💳 ادفع مستحقات الحملة — ${gross.toLocaleString('en-US')} ر.س (${unpaid.length} ${unpaid.length === 1 ? 'صفقة' : 'صفقات'})</button>`;
+  return `${waitLine}<button class="pay-now-btn" id="pay-btn-${campaignId}" onclick="event.stopPropagation(); startCampaignPayment('${campaignId}')">💳 ادفع الآن</button>`;
 }
 async function startCampaignPayment(campaignId) {
   const btn = document.getElementById('pay-btn-' + campaignId);
@@ -2686,7 +2678,7 @@ async function startCampaignPayment(campaignId) {
     const _n = Number(out.net || 0).toLocaleString('en-US');
     const _c = Number(out.commission || 0).toLocaleString('en-US');
     const _g = Number(out.amount || 0).toLocaleString('en-US');
-    const _ok = confirm('تأكيد الدفع\n\nقيمة التعاونات (مستحقة للمعلنين): ' + _n + ' ر.س\nعمولة المنصة (' + (out.commission_pct != null ? out.commission_pct : '-') + '٪): ' + _c + ' ر.س\n---------------\nالإجمالي المستحق: ' + _g + ' ر.س\n\nالخدمة الإعلانية مقدَّمة من المعلنين، وفلفلونسر تحصّل قيمتها نيابةً عنهم.\n\nنكمل إلى صفحة الدفع؟');
+    const _ok = confirm('فاتورة حملة\n\nالمجموع المطلوب سداده: ' + _g + ' ر.س\nمنها عمولة المنصة (' + (out.commission_pct != null ? out.commission_pct : '-') + '٪): ' + _c + ' ر.س\n\nنكمل إلى صفحة الدفع؟');
     if (!_ok) { if (btn) { btn.disabled = false; btn.textContent = orig2; } return; }
     window.location.href = out.url; // صفحة دفع ميسر (مدى / بطاقات / Apple Pay)
   } catch (err) {
@@ -3728,7 +3720,9 @@ function codesChipHtml(cid) {
 }
 const CODE_FLOW = [{s:1,n:'الكود والطلب'},{s:5,n:'المحتوى'},{s:6,n:'الموافقة'},{s:7,n:'النشر'},{s:8,n:'البنكية'},{s:9,n:'مكتمل'}];
 const PICKUP_FLOW = [{s:1,n:'الاستلام من الفرع'},{s:5,n:'المحتوى'},{s:6,n:'الموافقة'},{s:7,n:'النشر'},{s:8,n:'البنكية'},{s:9,n:'مكتمل'}];
-function flowFor(type, mode){ if (type === 'video') return VIDEO_FLOW; if (type !== 'visit' && mode === 'pickup') return PICKUP_FLOW; if (type !== 'visit' && mode === 'code') return CODE_FLOW; return type === 'visit' ? VISIT_FLOW : HOME_FLOW; }
+function flowForFull(type, mode){ if (type === 'video') return VIDEO_FLOW; if (type !== 'visit' && mode === 'pickup') return PICKUP_FLOW; if (type !== 'visit' && mode === 'code') return CODE_FLOW; return type === 'visit' ? VISIT_FLOW : HOME_FLOW; }
+// الشركة ما يعنيها مرحلة «البنكية» — هذي بين المعلن وفلفلونسر بعد ما تسدّد الشركة
+function flowFor(type, mode){ return flowForFull(type, mode).filter(st => st.s !== 8); }
 let expandedCellStage = null;
 
 function openCell(appId, stage) {
