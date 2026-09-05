@@ -748,7 +748,9 @@ function showLaunchMap(opts, onDone) {
       '<div class="lm-cap">نجهّز قائمة المعلنين المطابقين…</div>' +
     '</div>';
   document.body.appendChild(ov);
-  requestAnimationFrame(() => ov.classList.add('show'));
+  ov.classList.add('show');
+  ov.style.opacity = '0';
+  T(function(){ ov.style.opacity = ''; }, 20);
 
   const svg = ov.querySelector('svg'), cam = ov.querySelector('.lm-cam'),
         labels = ov.querySelector('.lm-labels'), stage = ov.querySelector('.lm-stage'),
@@ -782,25 +784,28 @@ function showLaunchMap(opts, onDone) {
     trail.style.strokeDasharray=L; trail.style.strokeDashoffset=L;
     T(function(){
       dot.setAttribute('opacity',1);
+      // الأثر بانتقال CSS، والنقطة تتحرك بـrAF كزينة فقط
+      trail.style.transition='stroke-dashoffset .62s cubic-bezier(.3,.8,.4,1)';
+      trail.style.strokeDashoffset=0;
       const t0=performance.now();
       (function step(now){
         const p=Math.min(1,(now-t0)/620), e=ease(p);
-        trail.style.strokeDashoffset=L*(1-e);
         const pt=trail.getPointAtLength(L*e);
         dot.setAttribute('cx',pt.x); dot.setAttribute('cy',pt.y);
         if(p<1) raf.push(requestAnimationFrame(step));
-        else{
-          dot.setAttribute('opacity',0);
-          trail.style.transition='opacity .5s'; trail.style.opacity=0;
-          const r=el('circle',{cx:to[0],cy:to[1],r:3,class:'lm-ripple',opacity:.75});
-          svg.appendChild(r);
-          const an=r.animate?r.animate([{r:3,opacity:.75},{r:16,opacity:0}],{duration:900,easing:'ease-out'}):null;
-          if(an) an.onfinish=function(){r.remove();}; else T(function(){r.remove();},900);
-          const cd=el('circle',{cx:to[0],cy:to[1],r:3.4,class:'lm-dot'});
-          svg.appendChild(cd);
-          requestAnimationFrame(function(){cd.classList.add('on');});
-        }
-      })(t0);
+      })(performance.now());
+      // الوصول مجدول بمؤقّت حتى لا يتوقف المشهد لو كان التبويب بالخلفية
+      T(function(){
+        dot.setAttribute('opacity',0);
+        trail.style.transition='opacity .5s'; trail.style.opacity=0;
+        const r=el('circle',{cx:to[0],cy:to[1],r:3,class:'lm-ripple',opacity:.75});
+        svg.appendChild(r);
+        const an=r.animate?r.animate([{r:3,opacity:.75},{r:16,opacity:0}],{duration:900,easing:'ease-out'}):null;
+        if(an) an.onfinish=function(){r.remove();}; else T(function(){r.remove();},900);
+        const cd=el('circle',{cx:to[0],cy:to[1],r:3.4,class:'lm-dot'});
+        svg.appendChild(cd);
+        T(function(){cd.classList.add('on');},20);
+      }, 620);
     }, delay);
   }
 
@@ -847,15 +852,21 @@ function showLaunchMap(opts, onDone) {
   const list = known.length ? known : Object.keys(LM_CITIES).slice(0,8);
   const single = opts.target && opts.target !== 'all' && LM_CITIES[opts.target] ? opts.target : null;
 
+  // الحد يُرسم بانتقال CSS، ونقطة الضوء تتبعه بـrAF كزينة.
+  // كل ما بعد الرسم مجدول بمؤقّتات حتى يكتمل المشهد ويُستدعى done() حتى لو كان التبويب بالخلفية.
+  T(function(){
+    line.style.transition='stroke-dashoffset 1.2s cubic-bezier(.35,.75,.3,1)';
+    line.style.strokeDashoffset=0;
+  },30);
   const t0=performance.now();
   (function step(now){
     const p=Math.min(1,(now-t0)/1200), e=ease(p);
-    line.style.strokeDashoffset=L*(1-e);
     const pt=line.getPointAtLength(L*e);
     comet.setAttribute('cx',pt.x); comet.setAttribute('cy',pt.y);
     halo.setAttribute('cx',pt.x);  halo.setAttribute('cy',pt.y);
     if(p<1) raf.push(requestAnimationFrame(step));
-    else{
+  })(performance.now());
+  T(function(){
       comet.style.opacity=0; halo.style.opacity=0;
       fill.classList.add('on');
       T(function(){ line.classList.add('calm'); },120);
@@ -895,6 +906,5 @@ function showLaunchMap(opts, onDone) {
         },end);
         settleThenGo(end+150);
       }
-    }
-  })(t0);
+  }, 1250);
 }
