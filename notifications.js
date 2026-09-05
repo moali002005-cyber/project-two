@@ -702,11 +702,11 @@ const LM_CSS = `
 #lm-ov .lm-dot.on{opacity:1}
 #lm-ov .lm-dot.breathe{animation:lmBreathe 2.4s ease-in-out infinite}
 @keyframes lmBreathe{0%,100%{transform:scale(1);opacity:1}50%{transform:scale(1.5);opacity:.72}}
-#lm-ov .lm-lab{position:absolute;transform:translate(-50%,-140%) scale(.8);white-space:nowrap;background:#fff;
+#lm-ov .lm-lab{position:absolute;transform:translate(var(--lx,-50%),var(--ly,-160%)) scale(calc(var(--ls,1)*.72));white-space:nowrap;background:#fff;
   border:1px solid #E8E4DC;border-radius:100px;padding:2px 9px;font-size:11px;font-weight:700;color:#0F1420;
   box-shadow:0 5px 14px rgba(15,20,32,.10);opacity:0;
   transition:opacity .4s, transform .45s cubic-bezier(.2,1.4,.35,1)}
-#lm-ov .lm-lab.on{opacity:1;transform:translate(-50%,-160%) scale(1)}
+#lm-ov .lm-lab.on{opacity:1;transform:translate(var(--lx,-50%),var(--ly,-160%)) scale(var(--ls,1))}
 #lm-ov .lm-cap{font-size:13.5px;color:#606A78;margin-top:12px;line-height:1.7;text-align:center;max-width:330px}
 #lm-ov .lm-cap b{color:#0F1420;font-weight:700}
 `;
@@ -724,7 +724,7 @@ function showLaunchMap(opts, onDone) {
 
   const NS = 'http://www.w3.org/2000/svg';
   const W = 300, H = 300, PAD = 18;
-  let timers = [], raf = [];
+  let timers = [], raf = [], MK = 1;   // MK: مقياس العلامات — يصغر عند تقريب الكاميرا
   const T = (fn, ms) => timers.push(setTimeout(fn, ms));
   const el = (t, a) => { const n = document.createElementNS(NS, t); for (const k in a) n.setAttribute(k, a[k]); return n; };
   const ease = t => t < .5 ? 4*t*t*t : 1 - Math.pow(-2*t+2,3)/2;
@@ -763,22 +763,66 @@ function showLaunchMap(opts, onDone) {
   const ss=Math.min((W-PAD*2)/ww,(H-PAD*2)/hh), ox=(W-ww*ss)/2, oy=(H-hh*ss)/2;
   const toXY = ([lon,lat]) => [ ox+(lon-a0)*kk*ss, oy+(d0-lat)*ss ];
 
-  function addLabel(x, y, text, delay) {
+  // مواضع اللصائق: نجرّب فوق ثم تحت ثم يمين ثم يسار… وأول موضع نظيف يفوز.
+  // وإن ما فيه مكان بلا تداخل نكتفي بالنقطة بلا لصيقة حتى تبقى الخريطة نظيفة.
+  const lmBoxes = [];
+  function boxSpace() { return [labels.clientWidth || W, labels.clientHeight || H]; }
+  function seedDots(pts) {
+    const sp = boxSpace();
+    pts.forEach(function(p){
+      lmBoxes.push({ x: p[0]/W*sp[0] - 5, y: p[1]/H*sp[1] - 5, w: 10, h: 10 });
+    });
+  }
+  function addLabel(x, y, text, delay, gap) {
     const l = document.createElement('div');
     l.className = 'lm-lab';
     l.style.left = (x/W*100)+'%'; l.style.top = (y/H*100)+'%';
     l.textContent = text;
     labels.appendChild(l);
+    const sp = boxSpace(), sw = sp[0], sh = sp[1];
+    const px = x/W*sw, py = y/H*sh, bw = l.offsetWidth, bh = l.offsetHeight;
+    const gaps = (gap && gap !== 9) ? [gap, 9] : [9];
+    let hit = null;
+    for (let g = 0; g < gaps.length && !hit; g++) {
+      const G = gaps[g], up = 'calc(-100% - ' + G + 'px)', gp = G + 'px';
+      const cands = [
+        ['-50%', up,     px-bw/2, py-bh-G],
+        ['-50%', gp,     px-bw/2, py+G],
+        [gp,     '-50%', px+G,    py-bh/2],
+        [up,     '-50%', px-bw-G, py-bh/2],
+        [gp,     up,     px+G,    py-bh-G],
+        [up,     up,     px-bw-G, py-bh-G],
+        [gp,     gp,     px+G,    py+G],
+        [up,     gp,     px-bw-G, py+G],
+        ['-50%', 'calc(-200% - ' + (G+6) + 'px)', px-bw/2, py-bh*2-G-6]
+      ];
+      for (let i = 0; i < cands.length && !hit; i++) {
+        const c = cands[i], r = { x: c[2], y: c[3], w: bw, h: bh };
+        if (r.x < 1 || r.y < 1 || r.x + r.w > sw - 1 || r.y + r.h > sh - 1) continue;
+        let bad = false;
+        for (let j = 0; j < lmBoxes.length; j++) {
+          const o = lmBoxes[j];
+          if (!(r.x+r.w < o.x-3 || o.x+o.w < r.x-3 || r.y+r.h < o.y-3 || o.y+o.h < r.y-3)) { bad = true; break; }
+        }
+        if (!bad) hit = c;
+      }
+    }
+    if (!hit) { l.remove(); return; }
+    l.style.setProperty('--lx', hit[0]);
+    l.style.setProperty('--ly', hit[1]);
+    lmBoxes.push({ x: hit[2], y: hit[3], w: bw, h: bh });
     T(() => l.classList.add('on'), delay);
   }
 
-  function fly(from, to, delay, side) {
+  function fly(from, to, delay, side, rs) {
+    rs = rs || 1;
     const mx=(from[0]+to[0])/2, my=(from[1]+to[1])/2;
     const dx=to[0]-from[0], dy=to[1]-from[1], len=Math.hypot(dx,dy)||1, k=len*0.28*side;
     const cx=mx-dy/len*k, cy=my+dx/len*k;
     const d='M'+from[0]+' '+from[1]+' Q'+cx+' '+cy+' '+to[0]+' '+to[1];
     const trail=el('path',{d,class:'lm-trail'});
-    const dot=el('circle',{r:2.8,class:'lm-flyer',cx:from[0],cy:from[1],opacity:0});
+    trail.style.strokeWidth=1.3*rs;
+    const dot=el('circle',{r:2.8*rs,class:'lm-flyer',cx:from[0],cy:from[1],opacity:0});
     svg.appendChild(trail); svg.appendChild(dot);
     const L=trail.getTotalLength();
     trail.style.strokeDasharray=L; trail.style.strokeDashoffset=L;
@@ -798,11 +842,12 @@ function showLaunchMap(opts, onDone) {
       T(function(){
         dot.setAttribute('opacity',0);
         trail.style.transition='opacity .5s'; trail.style.opacity=0;
-        const r=el('circle',{cx:to[0],cy:to[1],r:3,class:'lm-ripple',opacity:.75});
+        const r=el('circle',{cx:to[0],cy:to[1],r:3*rs,class:'lm-ripple',opacity:.75});
+        r.style.strokeWidth=1.6*rs;
         svg.appendChild(r);
-        const an=r.animate?r.animate([{r:3,opacity:.75},{r:16,opacity:0}],{duration:900,easing:'ease-out'}):null;
+        const an=r.animate?r.animate([{r:3*rs,opacity:.75},{r:16*rs,opacity:0}],{duration:900,easing:'ease-out'}):null;
         if(an) an.onfinish=function(){r.remove();}; else T(function(){r.remove();},900);
-        const cd=el('circle',{cx:to[0],cy:to[1],r:3.4,class:'lm-dot'});
+        const cd=el('circle',{cx:to[0],cy:to[1],r:3.4*rs,class:'lm-dot'});
         svg.appendChild(cd);
         T(function(){cd.classList.add('on');},20);
       }, 620);
@@ -819,9 +864,10 @@ function showLaunchMap(opts, onDone) {
         T(function(){
           svg.querySelectorAll('.lm-dot').forEach(function(d,i){
             T(function(){
-              const r=el('circle',{cx:d.getAttribute('cx'),cy:d.getAttribute('cy'),r:4,class:'lm-ripple',opacity:.5});
+              const r=el('circle',{cx:d.getAttribute('cx'),cy:d.getAttribute('cy'),r:4*MK,class:'lm-ripple',opacity:.5});
+              r.style.strokeWidth=1.6*MK;
               svg.appendChild(r);
-              const an=r.animate?r.animate([{r:4,opacity:.5},{r:20,opacity:0}],{duration:1000,easing:'ease-out'}):null;
+              const an=r.animate?r.animate([{r:4*MK,opacity:.5},{r:20*MK,opacity:0}],{duration:1000,easing:'ease-out'}):null;
               if(an) an.onfinish=function(){r.remove();}; else T(function(){r.remove();},1000);
             }, i*70);
           });
@@ -849,7 +895,8 @@ function showLaunchMap(opts, onDone) {
 
   const heart = toXY([45.0,24.2]);
   const known = (opts.cities||[]).filter(function(c){ return LM_CITIES[c]; });
-  const list = known.length ? known : Object.keys(LM_CITIES).slice(0,8);
+  // القائمة الافتراضية موزّعة على أطراف المملكة حتى تبان "كل المناطق" فعلاً
+  const list = known.length ? known : ['riyadh','jeddah','dammam','madinah','abha','tabuk','buraidah','jazan'];
   const single = opts.target && opts.target !== 'all' && LM_CITIES[opts.target] ? opts.target : null;
 
   // الحد يُرسم بانتقال CSS، ونقطة الضوء تتبعه بـrAF كزينة.
@@ -877,14 +924,16 @@ function showLaunchMap(opts, onDone) {
       if (single) {
         const to=toXY([LM_CITIES[single][1],LM_CITIES[single][2]]);
         const sx=(to[0]/W-0.5)*-100, sy=(to[1]/H-0.5)*-100;
+        const Z=1.6, rs=1/Z; MK=rs;            // تقريب أهدأ + تصغير العلامات حتى لا تتضخّم مع الكاميرا
         scene.classList.add('zoomed');   // تلاشٍ دائري عند التقريب حتى لا يظهر مربع الرسمة
-        cam.style.transform='translate('+sx+'%,'+sy+'%) scale(2.3)';
-        fly(heart,to,120,-1);
-        addLabel(to[0],to[1],LM_CITIES[single][0],820);
-        const k=14;
+        labels.style.setProperty('--ls', rs.toFixed(3));
+        cam.style.transform='translate('+sx+'%,'+sy+'%) scale('+Z+')';
+        fly(heart,to,120,-1,rs);
+        addLabel(to[0],to[1],LM_CITIES[single][0],820,42);   // نبعد اللصيقة عن حلقة النقاط
+        const k=12;
         for(let i=0;i<k;i++){
-          const ang=Math.random()*Math.PI*2, dd=4+Math.random()*11;
-          fly(to,[to[0]+Math.cos(ang)*dd,to[1]+Math.sin(ang)*dd],900+i*90,i%2?1:-1);
+          const ang=(i/k)*Math.PI*2+Math.random()*0.4, dd=11+Math.random()*17;
+          fly(to,[to[0]+Math.cos(ang)*dd,to[1]+Math.sin(ang)*dd],900+i*90,i%2?1:-1,rs);
         }
         const end=900+k*90+800;
         T(function(){
@@ -893,13 +942,20 @@ function showLaunchMap(opts, onDone) {
         },end);
         settleThenGo(end+150);
       } else {
-        list.forEach(function(slug,i){
+        // مدن المنطقة الواحدة (الدمام/الخبر/الظهران) تتراكب على الخريطة — نكتفي بواحدة منها
+        const pts=[];
+        list.forEach(function(slug){
           const c=LM_CITIES[slug]; if(!c) return;
           const to=toXY([c[1],c[2]]);
-          fly(heart,to,i*160,i%2?1:-1);
-          addLabel(to[0],to[1],c[0],i*160+640);
+          for(let q=0;q<pts.length;q++){ if(Math.hypot(pts[q].to[0]-to[0],pts[q].to[1]-to[1])<11) return; }
+          pts.push({to:to,name:c[0]});
         });
-        const end=list.length*160+900;
+        seedDots(pts.map(function(q){ return q.to; }));
+        pts.forEach(function(q,i){
+          fly(heart,q.to,i*160,i%2?1:-1);
+          addLabel(q.to[0],q.to[1],q.name,i*160+640);
+        });
+        const end=pts.length*160+900;
         T(function(){
           ttl.textContent='وصلت حملتك';
           cap.innerHTML='المعلنون المطابقون في <b>كل مناطق المملكة</b> استلموا إشعار حملتك';
