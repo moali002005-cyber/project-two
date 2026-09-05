@@ -1518,10 +1518,11 @@ table.xl td.cell.copied .dp, table.xl td.cell.copied .dues-link { color:#fff; }
   .mx-table { min-width: 0; width: 100%; table-layout: fixed; }
   .mx-table thead th { font-size: 8.5px; padding: 5px 1px; white-space: normal; line-height: 1.2; }
   .mx-idx { width: 6%; }
-  .mx-name { width: 22%; min-width: 0; padding: 6px 3px; }
-  .mx-name > div { gap: 3px !important; }
+  .mx-name { width: 32%; min-width: 0; padding: 6px 3px; overflow: hidden; }
+  .mx-name > div { gap: 3px !important; flex-wrap: wrap; }
   .mx-name > div > span[style*="flex"] { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 10px; }
-  .mx-cell { width: 8%; height: 40px; }
+  .mx-name .app-chat-btn, .mx-name .app-swap-btn { font-size: 9px; padding: 2px 6px; }
+  .mx-cell { width: 7.75%; height: 40px; }
   .mx-in { font-size: 12px; }
   .mx-av { width: 17px; height: 17px; font-size: 8px; }
   .app-del-btn { font-size: 12px; padding: 0; }
