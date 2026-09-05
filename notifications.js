@@ -532,6 +532,8 @@ async function notifyMatchedCreators(campaign, brandName) {
     if (matched.length === 0) return [];
 
     const ids = matched.map(c => c.id);
+    // مدن المعلنين المطابقين — تستخدمها شاشة خريطة الإطلاق (بلا أعداد)
+    try { ids.cities = [...new Set(matched.map(c => c.city).filter(Boolean))]; } catch (_) {}
     // دالة تتحقق أن المستدعي هو صاحب الحملة قبل أن ترسل لأي معلن
     const { error } = await supabaseClient.rpc('notify_campaign_matches', {
       p_campaign: campaign.id,
@@ -643,4 +645,254 @@ async function initNotifications(bellContainerId) {
       loadNotifications();
     });
   }
+}
+
+/* ============================================================
+   شاشة إطلاق الحملة — خريطة الوصول
+   ترسم حدود المملكة بنقطة ضوء، ثم تطير النقاط لمدن المعلنين
+   المطابقين، ثم تنبض لحظة وتنتقل تلقائيًا للخطوة التالية.
+   الاستدعاء: showLaunchMap({cities, target, country}, onDone)
+   ============================================================ */
+const LM_OUTLINE = [
+ [34.6,28.05],[34.9,29.35],[36.0,29.35],[37.0,30.0],[37.5,30.5],[38.0,30.5],[39.1,32.15],
+ [40.4,31.9],[42.1,31.1],[44.7,29.2],[46.4,29.1],[47.45,29.0],[47.7,28.5],[48.4,28.55],
+ [48.8,27.7],[49.6,27.35],[50.2,26.6],[50.1,25.9],[50.8,25.0],[51.3,24.6],[51.6,24.2],
+ [52.6,23.0],[55.2,22.7],[55.7,22.0],[55.0,20.0],[52.0,19.0],[49.0,18.6],[47.0,17.0],
+ [45.0,17.4],[43.4,17.4],[43.2,16.9],[42.8,16.4],[42.6,17.3],[41.8,18.6],[41.0,19.9],
+ [40.0,20.6],[39.1,21.5],[38.4,22.6],[38.0,23.8],[37.2,25.0],[36.5,25.7],[35.6,27.0],[34.9,27.8]
+];
+const LM_CITIES = {
+  riyadh:['الرياض',46.72,24.69], jeddah:['جدة',39.19,21.49], makkah:['مكة',39.83,21.39],
+  madinah:['المدينة',39.61,24.47], dammam:['الدمام',50.10,26.43], khobar:['الخبر',50.21,26.28],
+  dhahran:['الظهران',50.15,26.30], ahsa:['الأحساء',49.59,25.36], taif:['الطائف',40.42,21.27],
+  buraidah:['بريدة',43.97,26.36], tabuk:['تبوك',36.57,28.38], hail:['حائل',41.69,27.52],
+  abha:['أبها',42.51,18.22], khamis:['خميس مشيط',42.73,18.30], jazan:['جازان',42.55,16.89],
+  najran:['نجران',44.13,17.49], yanbu:['ينبع',38.06,24.09], jubail:['الجبيل',49.66,27.01]
+};
+const LM_CSS = `
+#lm-ov{position:fixed;inset:0;z-index:9999;background:#FAF8F5;display:none;opacity:0;
+  transition:opacity .35s ease;font-family:var(--font-body,system-ui)}
+#lm-ov.show{display:flex;opacity:1}
+#lm-ov .lm-stage{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;
+  justify-content:center;padding:26px 18px;transition:opacity .55s ease, transform .55s cubic-bezier(.4,0,.6,1)}
+#lm-ov .lm-stage.leave{opacity:0;transform:scale(1.08)}
+#lm-ov .lm-kick{font-size:13px;color:#606A78;opacity:0;transition:opacity .5s}
+#lm-ov .lm-kick.on{opacity:1}
+#lm-ov .lm-ttl{font-family:var(--font-display,inherit);font-size:21px;font-weight:800;color:#0F1420;margin-top:4px}
+#lm-ov .lm-scene{position:relative;width:min(340px,86vw);height:min(340px,86vw);margin-top:14px;overflow:hidden}
+#lm-ov .lm-scene.glowpulse::after{content:'';position:absolute;inset:0;pointer-events:none;
+  background:radial-gradient(circle at 50% 50%,rgba(226,59,46,.10),rgba(226,59,46,0) 62%);
+  animation:lmGlow 2.4s ease-in-out infinite}
+@keyframes lmGlow{0%,100%{opacity:.25}50%{opacity:.85}}
+#lm-ov .lm-cam{position:absolute;inset:0;transform-origin:50% 50%;transition:transform 1.5s cubic-bezier(.3,.85,.25,1)}
+#lm-ov svg{position:absolute;inset:0;width:100%;height:100%;overflow:visible}
+#lm-ov .lm-labels{position:absolute;inset:0;pointer-events:none}
+#lm-ov .lm-fill{fill:#FFFFFF;stroke:none;opacity:0;transition:opacity 1s ease;
+  filter:drop-shadow(0 6px 16px rgba(15,20,32,.07))}
+#lm-ov .lm-fill.on{opacity:1}
+#lm-ov .lm-line{fill:none;stroke:#E23B2E;stroke-width:2.4;stroke-linejoin:round;stroke-linecap:round}
+#lm-ov .lm-line.calm{stroke:#C9CFD8;stroke-width:1.4;transition:stroke 1s ease, stroke-width 1s ease}
+#lm-ov .lm-comet{fill:#fff;stroke:#E23B2E;stroke-width:2;opacity:0;transition:opacity .35s}
+#lm-ov .lm-halo{fill:#E23B2E;opacity:0;transition:opacity .35s}
+#lm-ov .lm-trail{fill:none;stroke:#E23B2E;stroke-width:1.3;stroke-linecap:round;opacity:.34}
+#lm-ov .lm-flyer{fill:#E23B2E}
+#lm-ov .lm-ripple{fill:none;stroke:#E23B2E;stroke-width:1.6}
+#lm-ov .lm-dot{fill:#E23B2E;opacity:0;transition:opacity .3s;transform-box:fill-box;transform-origin:center}
+#lm-ov .lm-dot.on{opacity:1}
+#lm-ov .lm-dot.breathe{animation:lmBreathe 2.4s ease-in-out infinite}
+@keyframes lmBreathe{0%,100%{transform:scale(1);opacity:1}50%{transform:scale(1.5);opacity:.72}}
+#lm-ov .lm-lab{position:absolute;transform:translate(-50%,-140%) scale(.8);white-space:nowrap;background:#fff;
+  border:1px solid #E8E4DC;border-radius:100px;padding:2px 9px;font-size:11px;font-weight:700;color:#0F1420;
+  box-shadow:0 5px 14px rgba(15,20,32,.10);opacity:0;
+  transition:opacity .4s, transform .45s cubic-bezier(.2,1.4,.35,1)}
+#lm-ov .lm-lab.on{opacity:1;transform:translate(-50%,-160%) scale(1)}
+#lm-ov .lm-cap{font-size:13.5px;color:#606A78;margin-top:12px;line-height:1.7;text-align:center;max-width:330px}
+#lm-ov .lm-cap b{color:#0F1420;font-weight:700}
+`;
+
+function showLaunchMap(opts, onDone) {
+  opts = opts || {};
+  if (typeof opts === 'function') { onDone = opts; opts = {}; }
+  const done = typeof onDone === 'function' ? onDone : function(){};
+
+  // خارج السعودية: ما عندنا حدود مرسومة، نرجع للرادار القديم
+  if ((opts.country || 'SA') !== 'SA') {
+    if (typeof showLaunchRadar === 'function') return showLaunchRadar(done);
+    return done();
+  }
+
+  const NS = 'http://www.w3.org/2000/svg';
+  const W = 300, H = 300, PAD = 18;
+  let timers = [], raf = [];
+  const T = (fn, ms) => timers.push(setTimeout(fn, ms));
+  const el = (t, a) => { const n = document.createElementNS(NS, t); for (const k in a) n.setAttribute(k, a[k]); return n; };
+  const ease = t => t < .5 ? 4*t*t*t : 1 - Math.pow(-2*t+2,3)/2;
+
+  if (!document.getElementById('lm-style')) {
+    const st = document.createElement('style'); st.id = 'lm-style'; st.textContent = LM_CSS;
+    document.head.appendChild(st);
+  }
+  let ov = document.getElementById('lm-ov');
+  if (ov) ov.remove();
+  ov = document.createElement('div');
+  ov.id = 'lm-ov';
+  ov.innerHTML =
+    '<div class="lm-stage">' +
+      '<div class="lm-kick">تم نشر حملتك</div>' +
+      '<div class="lm-ttl">جارٍ رسم نطاق حملتك…</div>' +
+      '<div class="lm-scene"><div class="lm-cam">' +
+        '<svg viewBox="0 0 300 300" preserveAspectRatio="xMidYMid meet"></svg>' +
+        '<div class="lm-labels"></div>' +
+      '</div></div>' +
+      '<div class="lm-cap">نجهّز قائمة المعلنين المطابقين…</div>' +
+    '</div>';
+  document.body.appendChild(ov);
+  requestAnimationFrame(() => ov.classList.add('show'));
+
+  const svg = ov.querySelector('svg'), cam = ov.querySelector('.lm-cam'),
+        labels = ov.querySelector('.lm-labels'), stage = ov.querySelector('.lm-stage'),
+        scene = ov.querySelector('.lm-scene'), ttl = ov.querySelector('.lm-ttl'),
+        kick = ov.querySelector('.lm-kick'), cap = ov.querySelector('.lm-cap');
+
+  const lons = LM_OUTLINE.map(p=>p[0]), lats = LM_OUTLINE.map(p=>p[1]);
+  const a0=Math.min(...lons), b0=Math.max(...lons), c0=Math.min(...lats), d0=Math.max(...lats);
+  const kk=Math.cos((c0+d0)/2*Math.PI/180), ww=(b0-a0)*kk, hh=(d0-c0);
+  const ss=Math.min((W-PAD*2)/ww,(H-PAD*2)/hh), ox=(W-ww*ss)/2, oy=(H-hh*ss)/2;
+  const toXY = ([lon,lat]) => [ ox+(b0-lon)*kk*ss, oy+(d0-lat)*ss ];
+
+  function addLabel(x, y, text, delay) {
+    const l = document.createElement('div');
+    l.className = 'lm-lab';
+    l.style.left = (x/W*100)+'%'; l.style.top = (y/H*100)+'%';
+    l.textContent = text;
+    labels.appendChild(l);
+    T(() => l.classList.add('on'), delay);
+  }
+
+  function fly(from, to, delay, side) {
+    const mx=(from[0]+to[0])/2, my=(from[1]+to[1])/2;
+    const dx=to[0]-from[0], dy=to[1]-from[1], len=Math.hypot(dx,dy)||1, k=len*0.28*side;
+    const cx=mx-dy/len*k, cy=my+dx/len*k;
+    const d='M'+from[0]+' '+from[1]+' Q'+cx+' '+cy+' '+to[0]+' '+to[1];
+    const trail=el('path',{d,class:'lm-trail'});
+    const dot=el('circle',{r:2.8,class:'lm-flyer',cx:from[0],cy:from[1],opacity:0});
+    svg.appendChild(trail); svg.appendChild(dot);
+    const L=trail.getTotalLength();
+    trail.style.strokeDasharray=L; trail.style.strokeDashoffset=L;
+    T(function(){
+      dot.setAttribute('opacity',1);
+      const t0=performance.now();
+      (function step(now){
+        const p=Math.min(1,(now-t0)/620), e=ease(p);
+        trail.style.strokeDashoffset=L*(1-e);
+        const pt=trail.getPointAtLength(L*e);
+        dot.setAttribute('cx',pt.x); dot.setAttribute('cy',pt.y);
+        if(p<1) raf.push(requestAnimationFrame(step));
+        else{
+          dot.setAttribute('opacity',0);
+          trail.style.transition='opacity .5s'; trail.style.opacity=0;
+          const r=el('circle',{cx:to[0],cy:to[1],r:3,class:'lm-ripple',opacity:.75});
+          svg.appendChild(r);
+          const an=r.animate?r.animate([{r:3,opacity:.75},{r:16,opacity:0}],{duration:900,easing:'ease-out'}):null;
+          if(an) an.onfinish=function(){r.remove();}; else T(function(){r.remove();},900);
+          const cd=el('circle',{cx:to[0],cy:to[1],r:3.4,class:'lm-dot'});
+          svg.appendChild(cd);
+          requestAnimationFrame(function(){cd.classList.add('on');});
+        }
+      })(t0);
+    }, delay);
+  }
+
+  function settleThenGo(at) {
+    T(function(){
+      scene.classList.add('glowpulse');
+      svg.querySelectorAll('.lm-dot').forEach(function(d,i){
+        d.style.animationDelay=(i*0.12)+'s'; d.classList.add('breathe');
+      });
+      [0,760].forEach(function(off){
+        T(function(){
+          svg.querySelectorAll('.lm-dot').forEach(function(d,i){
+            T(function(){
+              const r=el('circle',{cx:d.getAttribute('cx'),cy:d.getAttribute('cy'),r:4,class:'lm-ripple',opacity:.5});
+              svg.appendChild(r);
+              const an=r.animate?r.animate([{r:4,opacity:.5},{r:20,opacity:0}],{duration:1000,easing:'ease-out'}):null;
+              if(an) an.onfinish=function(){r.remove();}; else T(function(){r.remove();},1000);
+            }, i*70);
+          });
+        }, at+off);
+      });
+    }, at);
+    T(function(){ ttl.textContent='نأخذك لحملتك…'; }, at+1150);
+    T(function(){ stage.classList.add('leave'); }, at+1400);
+    T(function(){
+      raf.forEach(cancelAnimationFrame); timers.forEach(clearTimeout);
+      ov.classList.remove('show');
+      setTimeout(function(){ if(ov && ov.parentNode) ov.remove(); }, 400);
+      done();
+    }, at+1750);
+  }
+
+  // ---- الرسم ----
+  const d = LM_OUTLINE.map(toXY).map((p,i)=>(i?'L':'M')+p[0].toFixed(1)+' '+p[1].toFixed(1)).join(' ')+' Z';
+  const fill=el('path',{d,class:'lm-fill'}), line=el('path',{d,class:'lm-line'});
+  const halo=el('circle',{r:9,class:'lm-halo'}), comet=el('circle',{r:3.6,class:'lm-comet'});
+  svg.appendChild(fill); svg.appendChild(line); svg.appendChild(halo); svg.appendChild(comet);
+  const L=line.getTotalLength();
+  line.style.strokeDasharray=L; line.style.strokeDashoffset=L;
+  T(function(){ comet.style.opacity=1; halo.style.opacity=.28; },20);
+
+  const heart = toXY([45.0,24.2]);
+  const known = (opts.cities||[]).filter(function(c){ return LM_CITIES[c]; });
+  const list = known.length ? known : Object.keys(LM_CITIES).slice(0,8);
+  const single = opts.target && opts.target !== 'all' && LM_CITIES[opts.target] ? opts.target : null;
+
+  const t0=performance.now();
+  (function step(now){
+    const p=Math.min(1,(now-t0)/1200), e=ease(p);
+    line.style.strokeDashoffset=L*(1-e);
+    const pt=line.getPointAtLength(L*e);
+    comet.setAttribute('cx',pt.x); comet.setAttribute('cy',pt.y);
+    halo.setAttribute('cx',pt.x);  halo.setAttribute('cy',pt.y);
+    if(p<1) raf.push(requestAnimationFrame(step));
+    else{
+      comet.style.opacity=0; halo.style.opacity=0;
+      fill.classList.add('on');
+      T(function(){ line.classList.add('calm'); },120);
+      ttl.textContent='جارٍ إشعار المعلنين';
+      kick.classList.add('on');
+      cap.textContent='نرسل الإشعارات للمعلنين المطابقين لاستهدافك';
+
+      if (single) {
+        const to=toXY([LM_CITIES[single][1],LM_CITIES[single][2]]);
+        const sx=(to[0]/W-0.5)*-100, sy=(to[1]/H-0.5)*-100;
+        cam.style.transform='translate('+sx+'%,'+sy+'%) scale(2.3)';
+        fly(heart,to,120,-1);
+        addLabel(to[0],to[1],LM_CITIES[single][0],820);
+        const k=14;
+        for(let i=0;i<k;i++){
+          const ang=Math.random()*Math.PI*2, dd=4+Math.random()*11;
+          fly(to,[to[0]+Math.cos(ang)*dd,to[1]+Math.sin(ang)*dd],900+i*90,i%2?1:-1);
+        }
+        const end=900+k*90+800;
+        T(function(){
+          ttl.textContent='وصلت حملتك';
+          cap.innerHTML='المعلنون المطابقون في <b>'+LM_CITIES[single][0]+'</b> استلموا إشعار حملتك';
+        },end);
+        settleThenGo(end+150);
+      } else {
+        list.forEach(function(slug,i){
+          const c=LM_CITIES[slug]; if(!c) return;
+          const to=toXY([c[1],c[2]]);
+          fly(heart,to,i*160,i%2?1:-1);
+          addLabel(to[0],to[1],c[0],i*160+640);
+        });
+        const end=list.length*160+900;
+        T(function(){
+          ttl.textContent='وصلت حملتك';
+          cap.innerHTML='المعلنون المطابقون في <b>كل مناطق المملكة</b> استلموا إشعار حملتك';
+        },end);
+        settleThenGo(end+150);
+      }
+    }
+  })(t0);
 }
