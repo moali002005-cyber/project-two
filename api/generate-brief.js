@@ -52,8 +52,8 @@ export default async function handler(req, res) {
   if (quota && quota.ok === false) {
     const lim = Number(quota.limit || 0);
     const msg = lim === 0
-      ? 'البريف بالذكاء الاصطناعي متاح مع باقة Pro فأعلى. باقتك الحالية: ' + (quota.plan || 'Basic') + '.'
-      : 'استهلكت حصة هذا الشهر من البريف الذكي (' + lim + '). تتجدد أول الشهر القادم، أو ارتقِ لباقة Business للاستخدام بلا حد.';
+      ? 'البريف بالذكاء الاصطناعي متاح مع باقة Standard فأعلى. باقتك الحالية: ' + (quota.plan || 'Basic') + '.'
+      : 'استهلكت حصة هذا الشهر من البريف الذكي (' + lim + '). تتجدد أول الشهر القادم، أو ارتقِ لباقة Premium للاستخدام بلا حد.';
     return res.status(403).json({ error: msg, code: 'brief_quota', limit: lim, used: quota.used });
   }
 
