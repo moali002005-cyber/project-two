@@ -96,7 +96,7 @@ export default async function handler(req, res) {
       if (P && !P.error) {
         if (P.can_direct_invite !== true) {
           return res.status(403).json({
-            error: 'الدعوة المباشرة للمعلنين متاحة في باقة Business. ارتقِ لباقة أعلى، أو انشر حملة عامة يتقدّم لها المعلنون.',
+            error: 'الدعوة المباشرة للمعلنين متاحة في باقة Premium. ارتقِ لباقة أعلى، أو انشر حملة عامة يتقدّم لها المعلنون.',
             code: 'plan_direct_invite'
           });
         }
