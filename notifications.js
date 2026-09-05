@@ -759,7 +759,7 @@ function showLaunchMap(opts, onDone) {
   const a0=Math.min(...lons), b0=Math.max(...lons), c0=Math.min(...lats), d0=Math.max(...lats);
   const kk=Math.cos((c0+d0)/2*Math.PI/180), ww=(b0-a0)*kk, hh=(d0-c0);
   const ss=Math.min((W-PAD*2)/ww,(H-PAD*2)/hh), ox=(W-ww*ss)/2, oy=(H-hh*ss)/2;
-  const toXY = ([lon,lat]) => [ ox+(b0-lon)*kk*ss, oy+(d0-lat)*ss ];
+  const toXY = ([lon,lat]) => [ ox+(lon-a0)*kk*ss, oy+(d0-lat)*ss ];
 
   function addLabel(x, y, text, delay) {
     const l = document.createElement('div');
