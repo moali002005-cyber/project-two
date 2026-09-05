@@ -684,6 +684,7 @@ const LM_CSS = `
   background:radial-gradient(circle at 50% 50%,rgba(226,59,46,.10),rgba(226,59,46,0) 62%);
   animation:lmGlow 2.4s ease-in-out infinite}
 @keyframes lmGlow{0%,100%{opacity:.25}50%{opacity:.85}}
+#lm-ov .lm-scene.zoomed{-webkit-mask-image:radial-gradient(circle closest-side at 50% 50%,#000 56%,rgba(0,0,0,0) 100%);mask-image:radial-gradient(circle closest-side at 50% 50%,#000 56%,rgba(0,0,0,0) 100%)}
 #lm-ov .lm-cam{position:absolute;inset:0;transform-origin:50% 50%;transition:transform 1.5s cubic-bezier(.3,.85,.25,1)}
 #lm-ov svg{position:absolute;inset:0;width:100%;height:100%;overflow:visible}
 #lm-ov .lm-labels{position:absolute;inset:0;pointer-events:none}
@@ -865,6 +866,7 @@ function showLaunchMap(opts, onDone) {
       if (single) {
         const to=toXY([LM_CITIES[single][1],LM_CITIES[single][2]]);
         const sx=(to[0]/W-0.5)*-100, sy=(to[1]/H-0.5)*-100;
+        scene.classList.add('zoomed');   // تلاشٍ دائري عند التقريب حتى لا يظهر مربع الرسمة
         cam.style.transform='translate('+sx+'%,'+sy+'%) scale(2.3)';
         fly(heart,to,120,-1);
         addLabel(to[0],to[1],LM_CITIES[single][0],820);
