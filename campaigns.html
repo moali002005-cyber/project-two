@@ -1900,6 +1900,17 @@ SIMBL-02" style="width:100%;box-sizing:border-box;font-family:inherit;"></textar
         <div class="hint">اختر المنصة المطلوب النشر عليها</div>
       </div>
 
+      <div class="field" id="creator-tier-field" style="display:none;">
+        <label>تصنيف المؤثرين</label>
+        <div class="platform-grid" id="tier-grid">
+          <button type="button" class="platform-chip" data-value="micro" onclick="selectCreatorTier(this)"><span>Micro (UGC)</span></button>
+          <button type="button" class="platform-chip" data-value="medium" onclick="selectCreatorTier(this)"><span>Medium</span></button>
+          <button type="button" class="platform-chip" data-value="mega" onclick="selectCreatorTier(this)"><span>Mega</span></button>
+        </div>
+        <input type="hidden" name="creator_tiers" id="creator-tiers-input">
+        <div class="hint">اختر تصنيفاً واحداً (إجباري)</div>
+      </div>
+
       <div class="field">
         <label>متطلبات المؤثر — نطاق المتابعين</label>
         <div class="platform-grid" id="range-grid">
@@ -2436,6 +2447,38 @@ function selectPlatform(btn) {
   document.querySelectorAll('#platform-grid .platform-chip').forEach(c => c.classList.remove('active'));
   btn.classList.add('active');
   const input = document.getElementById('platform-input');
+  if (input) input.value = btn.dataset.value;
+  updateTierVisibility(btn.dataset.value);
+}
+// حدود السعر الإجبارية لكل تصنيف (ريال سعودي، للمعلن الواحد)
+const TIER_BUDGET = { micro: [800, 2000], medium: [2000, 7000], mega: [7000, 50000] };
+function tierBudgetBounds(tiers) {
+  if (!tiers || !tiers.length) return null;
+  let lo = Infinity, hi = 0;
+  tiers.forEach(function (t) {
+    const b = TIER_BUDGET[t];
+    if (!b) return;
+    if (b[0] < lo) lo = b[0];
+    if (b[1] > hi) hi = b[1];
+  });
+  return (lo === Infinity) ? null : [lo, hi];
+}
+// تصنيف المؤثرين يظهر فقط عند اختيار تيك توك (Micro (UGC) / Medium / Mega)
+function updateTierVisibility(platform) {
+  const field = document.getElementById('creator-tier-field');
+  if (!field) return;
+  const isTikTok = platform === 'tiktok';
+  field.style.display = isTikTok ? '' : 'none';
+  if (!isTikTok) {
+    document.querySelectorAll('#tier-grid .platform-chip').forEach(c => c.classList.remove('active'));
+    const ti = document.getElementById('creator-tiers-input');
+    if (ti) ti.value = '';
+  }
+}
+function selectCreatorTier(btn) {
+  document.querySelectorAll('#tier-grid .platform-chip').forEach(c => c.classList.remove('active'));
+  btn.classList.add('active');
+  const input = document.getElementById('creator-tiers-input');
   if (input) input.value = btn.dataset.value;
 }
 function selectFollowerRange(btn) {
@@ -4618,6 +4661,14 @@ function setModalMode(mode, campaign) {
       c.classList.toggle('active', c.dataset.value === campaign.platform);
     });
     form.querySelector('#platform-input').value = campaign.platform || '';
+    // تصنيف المؤثرين — أظهر الحقل حسب المنصة ثم عبّئ الاختيار
+    updateTierVisibility(campaign.platform || '');
+    const selectedTiers = (campaign.creator_tiers || '').split(',').map(s => s.trim()).filter(Boolean);
+    form.querySelectorAll('#tier-grid .platform-chip').forEach(c => {
+      c.classList.toggle('active', selectedTiers.includes(c.dataset.value));
+    });
+    const _ti = form.querySelector('#creator-tiers-input');
+    if (_ti) _ti.value = selectedTiers.join(',');
     // طريقة التسليم + رابط المنتج + حالة مخزون الأكواد
     const _fm = campaign.fulfillment_mode || 'shipping';
     const _fmR = form.querySelector('[name="fulfillment_mode"][value="' + _fm + '"]');
@@ -4772,6 +4823,32 @@ async function submitCampaign(event) {
     showToast('اختر نطاق متابعين واحد على الأقل.', 'error');
     return;
   }
+  // تيك توك: تصنيف المؤثرين إجباري (لأن حدود السعر تعتمد عليه)
+  const selectedTiers = (platform === 'tiktok')
+    ? String(fd.get('creator_tiers') || '').split(',').map(s => s.trim().toLowerCase()).filter(Boolean)
+    : [];
+  if (platform === 'tiktok' && selectedTiers.length === 0) {
+    showToast('اختر تصنيف المؤثرين (Micro / Medium / Mega).', 'error');
+    return;
+  }
+  // حدود السعر حسب التصنيف — حملات «الفيديو الجاهز» مستثناة (جهد أقل فالسعر حرّ)
+  const _isVideoBudget = (fd.get('campaign_type') || 'home') === 'video';
+  const _bnds = _isVideoBudget ? null : tierBudgetBounds(selectedTiers);
+  if (_bnds) {
+    const _budStr = String(fd.get('budget') || '')
+      .replace(/[٠-٩]/g, d => '٠١٢٣٤٥٦٧٨٩'.indexOf(d))
+      .replace(/[۰-۹]/g, d => '۰۱۲۳۴۵۶۷۸۹'.indexOf(d));
+    const _nums = (_budStr.match(/\d+(?:\.\d+)?/g) || []).map(Number);
+    if (!_nums.length) {
+      showToast('اكتب ميزانية صحيحة للمعلن الواحد.', 'error');
+      return;
+    }
+    const _lo = Math.min(..._nums), _hi = Math.max(..._nums);
+    if (_lo < _bnds[0] || _hi > _bnds[1]) {
+      showToast('لتصنيف المؤثرين المختار، السعر لازم يكون بين ' + _bnds[0].toLocaleString('en-US') + ' و ' + _bnds[1].toLocaleString('en-US') + ' ر.س.', 'error');
+      return;
+    }
+  }
   // تحقق الموقع: لو حُددت دولة، لازم مدينة (أو «كل المناطق»)
   const selCountry = fd.get('country') || '';
   const selCity = fd.get('city') || '';
@@ -4791,6 +4868,7 @@ async function submitCampaign(event) {
     publish_timing: fd.get('publish_timing'),
     publish_date: fd.get('publish_date') || null,
     platform: platform,
+    creator_tiers: (platform === 'tiktok' ? (fd.get('creator_tiers') || null) : null),
     follower_range: fd.get('follower_range') || null,
     campaign_size: parseInt(fd.get('campaign_size')) || null,
     campaign_type: fd.get('campaign_type') || 'home',
