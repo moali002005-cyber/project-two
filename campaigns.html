@@ -1506,6 +1506,7 @@ table.xl td.cell.copied .dp, table.xl td.cell.copied .dues-link { color:#fff; }
 .mx-in { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; font-size: 14px; }
 .mx-done { background: #EDEFF3; color: #B02A20; }
 .mx-final { background: #0F1420; color: #fff; }
+.mx-ord { font-style: normal; opacity: .7; }
 .mx-act { background: var(--accent); color: #fff; font-size: 13px; }
 .mx-wait { background: #FBF3E2; color: #854F0B; }
 .mx-future { color: #cfcfca; }
@@ -1516,13 +1517,14 @@ table.xl td.cell.copied .dp, table.xl td.cell.copied .dues-link { color:#fff; }
 @media (max-width: 640px) {
   .mx-wrap { overflow-x: hidden; }
   .mx-table { min-width: 0; width: 100%; table-layout: fixed; }
-  .mx-table thead th { font-size: 8.5px; padding: 5px 1px; white-space: normal; line-height: 1.2; }
+  .mx-table thead th { font-size: 9px; padding: 5px 2px; white-space: normal; line-height: 1.2; overflow: hidden; }
+  .mx-ord { display: none; }
   .mx-idx { width: 6%; }
   .mx-name { width: 32%; min-width: 0; padding: 6px 3px; overflow: hidden; }
   .mx-name > div { gap: 3px !important; flex-wrap: wrap; }
   .mx-name > div > span[style*="flex"] { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 10px; }
   .mx-name .app-chat-btn, .mx-name .app-swap-btn { font-size: 9px; padding: 2px 6px; }
-  .mx-cell { width: 7.75%; height: 40px; }
+  .mx-cell { width: 8.85%; height: 40px; }
   .mx-in { font-size: 12px; }
   .mx-av { width: 17px; height: 17px; font-size: 8px; }
   .app-del-btn { font-size: 12px; padding: 0; }
@@ -4018,7 +4020,7 @@ function renderSingleCampaign(c) {
           <div class="mx-wrap"><table class="mx-table" id="apps-${c.id}">
             <thead><tr>
               <th class="mx-idx">#</th><th class="mx-name" style="text-align:right;">المعلن</th>
-              ${flowFor(c.campaign_type, c.fulfillment_mode).map((st, i) => `<th>${toArabic(i + 1)}·${st.n}</th>`).join('')}
+              ${flowFor(c.campaign_type, c.fulfillment_mode).map((st, i) => `<th><i class="mx-ord">${toArabic(i + 1)}·</i>${st.n}</th>`).join('')}
             </tr></thead>
             <tbody>${sheetApps.map((a, idx) => renderDealRow(a, idx, c.campaign_type, c.fulfillment_mode)).join('')}</tbody>
           </table></div>
