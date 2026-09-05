@@ -508,7 +508,6 @@ pre.json{background:var(--bg);border:1px solid var(--line);border-radius:9px;pad
 <script>
 const SUPABASE_URL = 'https://chpzecgpylxqsutjydkb.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNocHplY2dweWx4cXN1dGp5ZGtiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQyODgxNzQsImV4cCI6MjA5OTg2NDE3NH0.q4wmWKtJ5IPx8AgzMkp3SuFLZL9F10qKc3qiX5LB7kI';
-const ADMIN_EMAIL = 'flfluencerai@gmail.com';
 
 const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
   auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: true }
@@ -552,9 +551,14 @@ let usersById={}, campsById={};
 
   if(!session){ return showGate('login'); }
   const email = (session.user?.email || '').toLowerCase();
-  if(email !== ADMIN_EMAIL){ return showGate('denied', email); }
+  // الصلاحية تُقرَّر في القاعدة (جدول platform_admins عبر is_platform_admin)
+  // لا في المتصفّح — هذي البوابة للعرض فقط، والدوال والـRLS هي الحارس الحقيقي.
+  let isAdmin = false;
+  try { const { data, error } = await sb.rpc('is_platform_admin'); isAdmin = !error && data === true; }
+  catch(e){ isAdmin = false; }
+  if(!isAdmin){ return showGate('denied', email); }
 
-  $('#admin-email').textContent = ADMIN_EMAIL;
+  $('#admin-email').textContent = email;
   await loadAll();
 })();
 
