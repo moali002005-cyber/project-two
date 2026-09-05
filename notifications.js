@@ -670,7 +670,7 @@ const LM_CITIES = {
   najran:['نجران',44.13,17.49], yanbu:['ينبع',38.06,24.09], jubail:['الجبيل',49.66,27.01]
 };
 const LM_CSS = `
-#lm-ov{position:fixed;inset:0;z-index:9999;background:#FAF8F5;display:none;opacity:0;
+#lm-ov{position:fixed;inset:0;z-index:9999;background:#FFFFFF;display:none;opacity:0;
   transition:opacity .35s ease;font-family:var(--font-body,system-ui)}
 #lm-ov.show{display:flex;opacity:1}
 #lm-ov .lm-stage{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;
@@ -687,7 +687,7 @@ const LM_CSS = `
 #lm-ov .lm-cam{position:absolute;inset:0;transform-origin:50% 50%;transition:transform 1.5s cubic-bezier(.3,.85,.25,1)}
 #lm-ov svg{position:absolute;inset:0;width:100%;height:100%;overflow:visible}
 #lm-ov .lm-labels{position:absolute;inset:0;pointer-events:none}
-#lm-ov .lm-fill{fill:#FFFFFF;stroke:none;opacity:0;transition:opacity 1s ease;
+#lm-ov .lm-fill{fill:#F3F5F7;stroke:none;opacity:0;transition:opacity 1s ease;
   filter:drop-shadow(0 6px 16px rgba(15,20,32,.07))}
 #lm-ov .lm-fill.on{opacity:1}
 #lm-ov .lm-line{fill:none;stroke:#E23B2E;stroke-width:2.4;stroke-linejoin:round;stroke-linecap:round}
