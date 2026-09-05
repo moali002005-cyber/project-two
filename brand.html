@@ -3827,7 +3827,7 @@ async function submitCampaign(event) {
     // المطابقة تُنشئ إشعارات الجرس وترجّع معرّفات المعلنين المطابقين (منصة + متابعين + دولة/مدينة)
     let matchedIds = [];
     try {
-      matchedIds = await notifyMatchedCreators(campaign, currentUser.company_name || 'الشركة') || [];
+      matchedIds = await notifyMatchedCreators({ ...campaign, id: createdCampaign?.id }, currentUser.company_name || 'الشركة') || [];
     } catch (err) {
       console.error(err);
     }
@@ -3853,7 +3853,7 @@ async function submitCampaign(event) {
     }
 
     // عرض رادار الإطلاق ثم الانتقال لصفحة الحملات لعرض الحملة الجديدة
-    showLaunchRadar(() => { window.location.href = '/campaigns.html'; });
+    showLaunchMap({ cities: matchedIds.cities || [], target: campaign.city, country: campaign.country }, () => { window.location.href = '/campaigns.html'; });
   } catch (err) {
     console.error(err);
     submitBtn.disabled = false;
