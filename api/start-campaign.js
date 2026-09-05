@@ -143,9 +143,8 @@ export default async function handler(req, res) {
         continue;
       }
 
-      // الميزانية المُدخلة = السقف. نعطي الوكيل مجالاً يفتح أقل (≈70٪) ويقفل تحت السقف.
-      const low = Math.max(50, Math.round(ceiling * 0.7));
-      const budgetRange = (low < ceiling) ? (low + ' - ' + ceiling) : String(ceiling);
+      // الميزانية المُدخلة هي السعر المعتمد بالضبط — الوكيل يعرضه كما هو بلا مساومة.
+      const budgetRange = String(ceiling);
 
       // حملة مباشرة (is_direct = مخفية من تصفّح المعلنين، يراها المدعو فقط عبر طلبه)
       const campRows = await sbInsert('campaigns', {
