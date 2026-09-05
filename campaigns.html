@@ -496,6 +496,7 @@ body {
 }
 .pay-now-btn:hover { transform: translateY(-1px); }
 .pay-now-btn:disabled { opacity: .6; cursor: default; transform: none; }
+.pay-wait { font-size:13px; font-weight:700; color:#9A4B06; background:rgba(154,75,6,0.09); border-radius:10px; padding:8px 12px; margin-bottom:10px; }
 /* شاشات الجوال: العمودان يتراكمان بدل ما ينضغط نص الحساب لعمود ضيق */
 @media (max-width: 620px) {
   .applications-summary { grid-template-columns: 1fr; }
@@ -2620,7 +2621,8 @@ function payButtonHtml(campaignId, apps) {
     gross = Math.round((total + comm) * 100) / 100;
     line = `<div class="pay-breakdown">قيمة التعاونات ${total.toLocaleString('en-US')} ر.س + عمولة المنصة ${pct}٪ (${comm.toLocaleString('en-US')} ر.س) = <strong>${gross.toLocaleString('en-US')} ر.س</strong><br><span class="pay-note">الخدمة الإعلانية مقدَّمة من المعلنين المشاركين، وفلفلونسر تحصّل قيمتها نيابةً عنهم وتصرفها لهم بعد خصم عمولتها.</span></div>`;
   }
-  return `${line}<button class="pay-now-btn" id="pay-btn-${campaignId}" onclick="event.stopPropagation(); startCampaignPayment('${campaignId}')">💳 ادفع مستحقات الحملة — ${gross.toLocaleString('en-US')} ر.س (${unpaid.length} ${unpaid.length === 1 ? 'صفقة' : 'صفقات'})</button>`;
+  const waitLine = `<div class="pay-wait">⏸️ الحملة ما انطلقت بعد — بانتظار سداد مستحقاتها.</div>`;
+  return `${waitLine}${line}<button class="pay-now-btn" id="pay-btn-${campaignId}" onclick="event.stopPropagation(); startCampaignPayment('${campaignId}')">💳 ادفع مستحقات الحملة — ${gross.toLocaleString('en-US')} ر.س (${unpaid.length} ${unpaid.length === 1 ? 'صفقة' : 'صفقات'})</button>`;
 }
 async function startCampaignPayment(campaignId) {
   const btn = document.getElementById('pay-btn-' + campaignId);
@@ -3726,6 +3728,7 @@ function renderCellDetail(a) {
   const isRejected = a.status === 'rejected';
   const isClosed = a.status === 'closed';
   const isApproved = isClosed && a.brand_approved === true;
+  const awaitingLaunch = isApproved && a.platform_paid !== true;
   const awaitingApproval = isClosed && !isApproved;
   const stageNow = a.stage || 1;
   const s = expandedCellStage;
@@ -3755,6 +3758,12 @@ function renderCellDetail(a) {
       </div>`;
   }
   if (!isApproved) return '';
+  if (awaitingLaunch) {
+    return `<div class="stage-action" style="background:rgba(154,75,6,0.05);border-color:rgba(154,75,6,0.28)">
+      <div class="sa-title" style="color:#9A4B06;">💳 بانتظار السداد لانطلاق الحملة</div>
+      <div class="sa-desc">اعتمدت هذا المعلن، وما بقي إلا سداد مستحقات الحملة. بمجرد إتمام السداد تنطلق الحملة وتبدأ المراحل مباشرةً.</div>
+    </div>`;
+  }
 
   if (s != null && s > 0 && s < stageNow) return renderStageDataView(a, s);
   if (s === stageNow && stageNow < 9 && isBrandTurn(stageNow)) {
@@ -3779,6 +3788,8 @@ function renderDealRow(a, idx, campaignType, fulfillmentMode) {
   const isRejected = a.status === 'rejected';
   const isClosed = a.status === 'closed';
   const isApproved = isClosed && a.brand_approved === true;
+  // اعتُمد المعلن لكن الحملة ما انطلقت (ما سُدّدت) — الوقوف على الشركة لا على المعلن
+  const awaitingLaunch = isApproved && a.platform_paid !== true;
   const awaitingApproval = isClosed && !isApproved;
   const isNegotiating = !isClosed && !isRejected;
   const stageNow = a.stage || 1;
@@ -3789,6 +3800,8 @@ function renderDealRow(a, idx, campaignType, fulfillmentMode) {
   let cells = '';
   if (isRejected) {
     cells = `<td class="mx-cell click" colspan="${NCOL}" onclick="openCell('${a.id}',0)"><div class="mx-in" style="background:rgba(201,48,48,0.08);color:#b32d2d;font-size:12px;font-weight:600;height:44px;">↔ تم الاستبدال — اضغط لعرض السبب</div></td>`;
+  } else if (awaitingLaunch) {
+    cells = `<td class="mx-cell" colspan="${NCOL}"><div class="mx-in" style="background:rgba(154,75,6,0.10);color:#9A4B06;font-size:12px;font-weight:600;height:44px;">💳 بانتظار السداد لانطلاق الحملة</div></td>`;
   } else if (isApproved) {
     flow.forEach((st) => {
       const s = st.s;
