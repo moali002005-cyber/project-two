@@ -69,8 +69,8 @@ async function settlePayment(payRow) {
           if (!a.creator_id) continue;
           await sbInsert('notifications', {
             user_id: a.creator_id, type: 'platform_paid',
-            title: '💳 دفعتك مضمونة',
-            message: ((a.campaigns && a.campaigns.title) || 'حملة') + ': الشركة سدّدت قيمة صفقتك للمنصة — مستحقك مضمون عند إكمال العمل.',
+            title: '🚀 الحملة انطلقت',
+            message: ((a.campaigns && a.campaigns.title) || 'حملة') + ': الحملة انطلقت — ابدأ التنفيذ من «صفقاتي»، ومستحقك محفوظ لدى فلفلونسر ويُصرف لك بعد اكتمال الصفقة.',
             link: '/creator.html'
           });
         }
