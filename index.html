@@ -640,8 +640,8 @@ document.addEventListener('DOMContentLoaded', async function () {
     c.setAttribute('fill','#D8CDB8');c.setAttribute('opacity',0);puffG.appendChild(c);return c;});
   var hop=$('hsHop'),sq=$('hsSq'),glow=$('hsGlow'),prog=$('hsProg'),sh=$('hsShadow');
   var sents=story.querySelectorAll('.hs-s');
-  var DROP=380,REST=880,CROUCH=130,FLIGHT=340,HOPW=CROUCH+FLIGHT,
-      BACKC=150,BACKF=640;
+  var DROP=420,REST=1700,CROUCH=150,FLIGHT=400,HOPW=CROUCH+FLIGHT,
+      BACKC=170,BACKF=720;
   var land=[DROP],i;
   for(i=1;i<4;i++) land.push(land[i-1]+REST+HOPW);
   var LAP=land[3]+REST, CYCLE=LAP+BACKC+BACKF;
@@ -726,8 +726,8 @@ document.addEventListener('DOMContentLoaded', async function () {
       var s0=land[j4]+110, s1=(j4<3?land[j4]+REST+60:LAP+60);
       var op=0,ty=10;
       if(t>=s0&&t<s1){
-        var dt2=t-s0; op=Math.min(1,dt2/220); ty=10*(1-Math.min(1,dt2/220));
-        var out=s1-t; if(out<200) op=Math.min(op,out/200);
+        var dt2=t-s0; op=Math.min(1,dt2/300); ty=10*(1-Math.min(1,dt2/300));
+        var out=s1-t; if(out<260) op=Math.min(op,out/260);
       }
       el.style.opacity=op;
       el.style.transform='translateY('+ty+'px)';
