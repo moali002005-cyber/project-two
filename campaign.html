@@ -633,7 +633,9 @@ function render() {
   const isFullyClosed = dealClosed && approvedClose;
 
   // الدفع يمر عبر المنصة: الشركة تسدّد لفلفلونسر، وفلفلونسر تصرف للمعلن
-  const pledgeBanner = `<div class="pay-pledge-banner"><span class="ppb-ic">💸</span><span><strong>الدفع عبر فلفلونسر:</strong> الشركة تسدّد للمنصة، والمنصة تصرف للمعلن بعد اكتمال الصفقة.</span></div>`;
+  const pledgeBanner = isCreator
+    ? `<div class="pay-pledge-banner"><span class="ppb-ic">💸</span><span><strong>السداد من فلفلونسر مباشرة:</strong> يُصرف لك بعد اكتمال الصفقة خلال أسبوع كحدٍّ أقصى — دفعة كل يوم اثنين، وفي نفس اليوم مع باقة Premium.</span></div>`
+    : `<div class="pay-pledge-banner"><span class="ppb-ic">💸</span><span><strong>الدفع عبر فلفلونسر:</strong> تسدّد للمنصة بعد اعتماد المشاركين، وفلفلونسر تصرف للمعلنين بعد اكتمال العمل.</span></div>`;
 
   let footer;
   if (isFullyClosed) {
