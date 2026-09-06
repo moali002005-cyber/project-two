@@ -4041,7 +4041,10 @@ async function shareCampaignSnapshot(cid) {
     const c = (typeof myCampaigns !== 'undefined' && myCampaigns ? myCampaigns : []).find(x => x.id === cid) || {};
     const table = document.getElementById('apps-' + cid);
     if (!table) { showToast('افتح تفاصيل الحملة أولًا ثم أعد المحاولة', 'error'); return; }
-    const stages = MX_LABELS.slice();
+    // مراحل هذه الحملة بالضبط — تختلف حسب النوع وطريقة التسليم (٤ إلى ٧ أعمدة)،
+    // فلا يصحّ استعمال قائمة المراحل التسع الكاملة هنا.
+    const flow = flowFor(c.campaign_type, c.fulfillment_mode);
+    const stages = flow.map(st => st.n);
     const rows = [];
     table.querySelectorAll('tbody tr').forEach(tr => {
       if (tr.classList.contains('mx-detail')) return;
@@ -4054,9 +4057,9 @@ async function shareCampaignSnapshot(cid) {
       name = name.replace(/[×↗\s]+$/g, '').trim();
       if (!name) return;
       const cells = Array.from(tr.querySelectorAll('td.mx-cell'));
-      const done = cells.length >= 9
-        ? cells.slice(0, 9).map(td => (td.textContent || '').includes('✓') ? '1' : '0').join('')
-        : '000000000';
+      // الشرط القديم كان cells.length >= 9 وهو لا يتحقّق أبداً، فكان التقدّم أصفاراً دائماً.
+      if (cells.length !== stages.length) return;
+      const done = cells.map(td => (td.textContent || '').includes('✓') ? '1' : '0').join('');
       rows.push({ n: name, d: done });
     });
     if (!rows.length) { showToast('ما فيه صفوف لعرضها في هذه الحملة', 'error'); return; }
