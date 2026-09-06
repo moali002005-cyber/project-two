@@ -98,7 +98,7 @@ body{background:var(--cream-darker);color:var(--ink);font-family:var(--font-body
 <div class="container" id="foot-c" style="display:none">
   <div class="foot">
     <button class="confirm-btn" id="confirm-btn" onclick="confirmCart()"><span>اعتماد وإرسال للوكيل</span> ←</button>
-    <div class="foot-note"><span>بعد الاعتماد يبدأ وكيل التفاوض بمراسلة كل مؤثر تلقائيًا</span></div>
+    <div class="foot-note"><span>بعد الاعتماد تُرسل الدعوة لكل مؤثر، ويبدأ الوكيل التفاوض أول ما يفتحها</span></div>
   </div>
 </div>
 
@@ -177,7 +177,7 @@ async function confirmCart(){
     var n=data.created||0;
     localStorage.removeItem('simbl_cart'); localStorage.removeItem('simbl_cart_cfg'); CFG={}; CREATORS=[];
     document.getElementById('foot-c').style.display='none';
-    document.getElementById('wrap').innerHTML='<div class="done"><div class="ic">✓</div><h2><span>تم إطلاق الحملة</span></h2><p><span>أرسلنا دعوات التفاوض لـ</span> '+n+' <span>من المؤثرين، وبيبدأ الوكيل بمراسلتهم. تابع المفاوضات من لوحة الشركة.</span></p><a href="/brand.html"><span>متابعة المفاوضات</span></a></div>';
+    document.getElementById('wrap').innerHTML='<div class="done"><div class="ic">✓</div><h2><span>تم إطلاق الحملة</span></h2><p><span>أرسلنا دعوات التفاوض لـ</span> '+n+' <span>من المؤثرين. أول ما يفتح المؤثر الدعوة يبدأ الوكيل التفاوض نيابةً عنك — تابع المفاوضات من لوحة الشركة.</span></p><a href="/brand.html"><span>متابعة المفاوضات</span></a></div>';
     if(window.simblI18n&&document.documentElement.lang==='en')simblI18n.apply();
     window.scrollTo({top:0,behavior:'smooth'});
   }catch(e){
