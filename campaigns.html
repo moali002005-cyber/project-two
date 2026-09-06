@@ -1745,6 +1745,7 @@ async function simblExitImpersonation(){
         .ctype-seg input{display:none;}
         .ctype-seg span{display:inline-block;padding:8px 20px;border-radius:9px;font-size:13.5px;font-weight:600;color:#5a6f68;transition:.15s;}
         .ctype-seg input:checked + span{background:#E23B2E;color:#fff;}
+        .ctype-seg input:disabled + span{opacity:.4;cursor:not-allowed;}
       </style>
       <div class="field">
         <label>نوع الحملة</label>
@@ -1753,6 +1754,7 @@ async function simblExitImpersonation(){
           <label><input type="radio" name="campaign_type" value="visit" onchange="toggleCampaignType()"><span>📍 زيارة</span></label>
           <label><input type="radio" name="campaign_type" value="video" onchange="toggleCampaignType()"><span>🎬 فيديو جاهز</span></label>
         </div>
+        <div class="hint" id="ctype-plan-note" style="display:none;color:#7E2119;"></div>
       </div>
 
       <div class="field" id="fulfillment-field">
@@ -4728,11 +4730,61 @@ function setModalMode(mode, campaign) {
   }
 }
 
+// ===== تقييد أنواع الحملات حسب الباقة (plans.campaign_types) =====
+// المنع الحقيقي في القاعدة (trg_enforce_campaign_type_plan) — هذا يقفل الخيار
+// في الواجهة عشان ما تعبّي الشركة نموذجًا ما راح يُقبل أصلاً. campaign_types = null يعني بلا تقييد.
+var TYPE_GATE_LABEL = { visit: 'حملة الزيارة', video: 'الفيديو الجاهز', code: 'كود الخصم' };
+var TYPE_GATE_PLAN  = { visit: 'باقة Standard فأعلى', video: 'باقة Premium', code: 'باقة Premium' };
+
+async function planCampaignTypes() {
+  if (window.__PLAN) return window.__PLAN.campaign_types;
+  try {
+    const r = await supabaseClient.rpc('brand_plan_status');
+    if (r && r.data && !r.data.error) { window.__PLAN = r.data; return r.data.campaign_types; }
+  } catch (e) { console.warn('type gate: plan fetch failed', e); }
+  return null; // تعذّر الجلب → ما نقفل شي، والقاعدة تمنع عند الحفظ
+}
+
+async function applyTypeGate() {
+  const allowed = await planCampaignTypes();
+  const locked = [];
+  const lock = function (input, key) {
+    if (!input) return;
+    const ok = !Array.isArray(allowed) || allowed.indexOf(key) !== -1;
+    // وضع التعديل: حملة قائمة أُنشئت على باقة أعلى تبقى قابلة للحفظ كما هي
+    if (editingCampaignId && input.checked) { input.disabled = false; return; }
+    input.disabled = !ok;
+    if (!ok) {
+      locked.push(key);
+      const span = input.nextElementSibling;
+      if (span) span.title = TYPE_GATE_LABEL[key] + ' — متاح مع ' + TYPE_GATE_PLAN[key];
+      if (input.checked) {
+        const back = document.querySelector('[name="' + input.name + '"][value="' +
+          (input.name === 'campaign_type' ? 'home' : 'shipping') + '"]');
+        if (back) back.checked = true;
+      }
+    }
+  };
+  lock(document.querySelector('[name="campaign_type"][value="visit"]'), 'visit');
+  lock(document.querySelector('[name="campaign_type"][value="video"]'), 'video');
+  lock(document.querySelector('[name="fulfillment_mode"][value="code"]'), 'code');
+
+  const note = document.getElementById('ctype-plan-note');
+  if (note) {
+    note.style.display = locked.length ? '' : 'none';
+    note.textContent = locked.length
+      ? ('مقفول في باقتك: ' + locked.map(k => TYPE_GATE_LABEL[k]).join('، ') + '. يفتح مع الترقية من صفحة الباقات.')
+      : '';
+  }
+  if (typeof toggleCampaignType === 'function') toggleCampaignType();
+}
+
 function openCampaignModal() {
   if(!hasPerm('campaigns')){ showToast('ما عندك صلاحية إدارة الحملات','error'); return; }
   editingCampaignId = null;
   setModalMode('create');
   document.getElementById('campaign-modal').classList.add('show');
+  applyTypeGate();
 }
 
 function openEditModal(campaignId) {
@@ -4743,6 +4795,7 @@ function openEditModal(campaignId) {
   editingCampaignId = campaignId;
   setModalMode('edit', campaign);
   document.getElementById('campaign-modal').classList.add('show');
+  applyTypeGate();
 }
 
 function closeModal() {
