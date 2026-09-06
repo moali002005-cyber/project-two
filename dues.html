@@ -685,50 +685,8 @@ function renderDues() {
     + '</div>';
 }
 
-// ============ تصدير شيت الدفع المختصر: رابط الفيديو + الاسم بالبنك + الآيبان ============
-// يُبنى لحظة الضغط من أحدث البيانات (يشمل أي تنظيف/تعديل سويته) — فهو محدّث تلقائيًا.
-async function exportPaySheetCSV(onlyCampId) {
-  // التحويل المباشر أُلغي — المنصة تستلم وتصرف للمعلنين، فما فيه شيت بيانات بنكية للشركة
-  showToast('التحويل المباشر أُلغي — فلفلونسر تستلم المبلغ وتصرف مستحقات المعلنين.', 'error', 5000);
-  return;
-  /* eslint-disable no-unreachable */
-  // قيد الباقة
-  if (typeof simblGate === 'function' && !await simblGate('can_pay_csv', 'شيت الدفع', 'ملف جاهز لتحويل مستحقات المعلنين دفعة واحدة إلى البنك — متاح مع باقة Premium.')) return;
-  let camps = (myCampaigns || []).slice().sort((a, b) => new Date(b.created_at || 0) - new Date(a.created_at || 0));
-  if (onlyCampId) camps = camps.filter(c => c.id === onlyCampId);
-  const header = ['#', 'رابط الفيديو', 'الاسم بالبنك', 'الآيبان', 'البنك', 'المبلغ'];
-  const lines = [header];
-  let count = 0;
-  camps.forEach(c => {
-    // شيت الدفع = الصفقات الجاهزة للدفع فقط (مكتملة: المرحلة ≥ 9 وبياناتها البنكية مُدخلة)،
-    // نستبعد الصفقات المعتمدة اللي لسّا قيد التنفيذ حتى ما تُدفع مبكرًا ببيانات ناقصة.
-    const deals = (campaignApps[c.id] || []).filter(a => a.status === 'closed' && a.brand_approved === true && (a.stage || 1) >= 9);
-    deals.forEach(a => {
-      const ov = duesOverrides[a.id] || {};
-      const sd = (typeof a.stage_data === 'object' && a.stage_data) ? a.stage_data : {};
-      const bank = sd[8] || sd['8'] || {};
-      const st7 = sd[7] || sd['7'] || {};
-      const video = cleanUrl(st7.publish_link || '');
-      const videoCell = video ? ('=HYPERLINK("' + video.replace(/"/g, '') + '","▶ فتح الفيديو")') : '';
-      const holder = cleanField(ov.holder != null ? ov.holder : (bank.account_holder || ''));
-      const iban = cleanIban(ov.iban != null ? ov.iban : (bank.iban || ''));
-      const amount = Number(a.final_price || a.price || 0);
-      count++;
-      lines.push([count, videoCell, holder, iban, bankFromIban(iban), amount]);
-    });
-  });
-  if (!count) { showToast('ما فيه صفقات معتمدة للتصدير', 'error'); return; }
-  const csv = '\uFEFF' + lines.map(r => r.map(csvCell).join(',')).join('\r\n');
-  const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-  const url = URL.createObjectURL(blob);
-  const link = document.createElement('a');
-  const today = new Date().toLocaleDateString('en-GB').replace(/\//g, '-');
-  const _fn = onlyCampId ? String((camps[0]&&camps[0].title)||'حملة').replace(/[\\/:*?"<>|]/g,'') : 'الكل';
-  link.href = url; link.download = 'شيت-الدفع-' + _fn + '-' + today + '.csv';
-  document.body.appendChild(link); link.click(); document.body.removeChild(link);
-  setTimeout(() => URL.revokeObjectURL(url), 1000);
-  showToast('تم تصدير شيت الدفع المختصر (' + toArabic(count) + ' صف) ✓');
-}
+// شيت الدفع المباشر أُلغي: فلفلونسر تستلم المبلغ وتصرف مستحقات المعلنين،
+// فما عاد للشركة شيت بيانات بنكية. حُذفت الدالة الميتة وعَلَمها can_pay_csv معها.
 
 function _lnkShort(u) {                    // نص الرابط المعروض (بدون البروتوكول)
   var s = String(u || '').replace(/^https?:\/\//i, '').replace(/^www\./i, '').replace(/\/+$/, '');
