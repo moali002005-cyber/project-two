@@ -1850,7 +1850,7 @@ SIMBL-02" style="width:100%;box-sizing:border-box;font-family:inherit;"></textar
         <div class="field">
           <label>سعر المعلن الواحد</label>
           <input type="text" name="budget" required placeholder="مثل: 1000" inputmode="numeric">
-          <div class="hint">هذا هو المبلغ اللي يعرضه الوكيل على كل معلن ويقفل عليه — لا يزيد فوقه ولا ينزل تحته.</div>
+          <div class="hint">هذا المبلغ يعرضه الوكيل على كل معلن ويقفل عليه.</div>
         </div>
       </div>
 
@@ -4865,7 +4865,7 @@ async function submitCampaign(event) {
       .replace(/[۰-۹]/g, d => '۰۱۲۳۴۵۶۷۸۹'.indexOf(d));
     const _bAll = (_bRaw.replace(/(\d)[,\.\s](?=\d{3}\b)/g, '$1').match(/\d+(?:\.\d+)?/g) || []);
     if (_bAll.length !== 1) {
-      showToast('اكتب سعراً واحداً للمعلن (مثال: 1000) — بلا نطاق. هذا المبلغ يعرضه الوكيل على كل معلن ويقفل عليه.', 'error', 6000);
+      showToast('اكتب سعراً واحداً للمعلن (مثال: 1000) — بلا نطاق.', 'error', 5000);
       return;
     }
   }
