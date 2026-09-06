@@ -328,7 +328,7 @@ body {
     </div>
     <div class="ps-grid" id="psGrid"><div class="ps-load">جارٍ تحميل الباقات…</div></div>
     <div class="ps-foot">
-      <a class="ps-all" id="psAll" href="/plans.html">شوف كل المزايا والمقارنة الكاملة ←</a>
+      <a class="ps-all" id="psAll" href="/plans.html">كل المزايا والمقارنة الكاملة ←</a>
       <p class="ps-fine">نقطة التعادل = المبلغ الشهري الذي يتساوى عنده الاشتراك مع ما توفّره من العمولة. فوقه تربح، وتحته الباقة المجانية أوفر لك.</p>
     </div>
   </div>
@@ -421,7 +421,7 @@ body {
   function render(){
     var g = document.getElementById('psGrid');
     var list = PS[aud] || [];
-    if (!list.length){ g.innerHTML = '<div class="ps-load">تعذّر تحميل الباقات — <a href="/plans.html" style="color:inherit">شوف صفحة الباقات</a></div>'; return; }
+    if (!list.length){ g.innerHTML = '<div class="ps-load">تعذّر تحميل الباقات — <a href="/plans.html" style="color:inherit">افتح صفحة الباقات</a></div>'; return; }
     var base = list.filter(function(p){ return !(Number(p.price_monthly) > 0); })[0] || null;
     var paid = list.filter(function(p){ return Number(p.price_monthly) > 0; });
     var top = paid.length ? paid[paid.length-1].code : null;
