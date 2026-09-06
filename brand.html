@@ -1829,9 +1829,9 @@ SIMBL-02" style="width:100%;box-sizing:border-box;font-family:inherit;"></textar
       </div>
 
       <div class="field" id="budget-field">
-        <label>الميزانية للمعلن الواحد (نطاق)</label>
-        <input type="text" name="budget" required placeholder="مثل: 800 - 2000" inputmode="numeric">
-        <div class="hint" id="budget-hint">المبلغ المخصّص لكل معلن، بالريال السعودي</div>
+        <label>سعر المعلن الواحد</label>
+        <input type="text" name="budget" required placeholder="مثل: 1000" inputmode="numeric">
+        <div class="hint" id="budget-hint">هذا هو المبلغ اللي يعرضه الوكيل على كل معلن ويقفل عليه — لا يزيد فوقه ولا ينزل تحته.</div>
       </div>
 
       <div class="field">
@@ -2303,8 +2303,8 @@ function updateBudgetBounds() {
   const inp = document.querySelector('[name="budget"]');
   const _sel = document.querySelector('[name="campaign_type"]:checked');
   if (_sel && _sel.value === 'video') {
-    if (hint) hint.textContent = 'السعر حرّ لحملات الفيديو الجاهز — حدد النطاق اللي يناسبك بدون حد أدنى.';
-    if (inp) inp.placeholder = 'مثل: 100 - 300';
+    if (hint) hint.textContent = 'السعر حرّ لحملات الفيديو الجاهز — بدون حد أدنى. ' + 'هذا هو المبلغ اللي يعرضه الوكيل على كل معلن ويقفل عليه — لا يزيد فوقه ولا ينزل تحته.';
+    if (inp) inp.placeholder = 'مثل: 200';
     return;
   }
   const tiers = currentSelectedTiers();
@@ -3004,7 +3004,7 @@ function renderSingleCampaign(c) {
                       <div class="nego-ring"></div>
                       <div>
                         <div class="nego-title">الوكيل يقوم بالمفاوضة الآن</div>
-                        <div class="nego-desc">يفاوض المعلن للوصول لأفضل سعر. لمّا يتم الاتفاق راح يطلب تعميدك للسعر النهائي قبل إقفال الصفقة.</div>
+                        <div class="nego-desc">يعرض سعرك المعتمد على المعلن ويقفل عليه. لمّا يتم الاتفاق راح يطلب تعميدك قبل إقفال الصفقة.</div>
                       </div>
                     </div>
                     <button class="btn-negotiation" onclick="event.stopPropagation(); startNegotiation('${a.id}')">💬 عرض المفاوضة</button>` : '')}</div>` : ''}
@@ -3694,6 +3694,17 @@ async function submitCampaign(event) {
   if (platform === 'tiktok' && selectedTiers.length === 0) {
     showToast('اختر تصنيف المؤثرين (Micro / Medium / Mega).', 'error');
     return;
+  }
+  // سعر واحد لا نطاق: الوكيل يعرض الرقم كما هو، فلو كُتب نطاق يصير أعلاه هو المدفوع للجميع.
+  {
+    const _bRaw = String(fd.get('budget') || '')
+      .replace(/[٠-٩]/g, d => '٠١٢٣٤٥٦٧٨٩'.indexOf(d))
+      .replace(/[۰-۹]/g, d => '۰۱۲۳۴۵۶۷۸۹'.indexOf(d));
+    const _bAll = (_bRaw.replace(/(\d)[,\.\s](?=\d{3}\b)/g, '$1').match(/\d+(?:\.\d+)?/g) || []);
+    if (_bAll.length !== 1) {
+      showToast('اكتب سعراً واحداً للمعلن (مثال: 1000) — بلا نطاق. هذا المبلغ يعرضه الوكيل على كل معلن ويقفل عليه.', 'error', 6000);
+      return;
+    }
   }
   // حدود السعر الإجبارية حسب التصنيف المختار
   // حملات «الفيديو الجاهز» مستثناة: جهد المعلن فيها أقل (مونتاج ونشر) فالسعر حرّ بدون حد أدنى
