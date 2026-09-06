@@ -1848,9 +1848,9 @@ SIMBL-02" style="width:100%;box-sizing:border-box;font-family:inherit;"></textar
           </select>
         </div>
         <div class="field">
-          <label>الميزانية للمعلن الواحد (نطاق)</label>
-          <input type="text" name="budget" required placeholder="مثل: 800 - 1500">
-          <div class="hint">المبلغ المخصّص لكل معلن، بالريال السعودي</div>
+          <label>سعر المعلن الواحد</label>
+          <input type="text" name="budget" required placeholder="مثل: 1000" inputmode="numeric">
+          <div class="hint">هذا هو المبلغ اللي يعرضه الوكيل على كل معلن ويقفل عليه — لا يزيد فوقه ولا ينزل تحته.</div>
         </div>
       </div>
 
@@ -2350,7 +2350,7 @@ function toggleCampaignType() {
   show('video-files-field', isVideo);
   // حملة الفيديو: السعر حرّ — نلمّح بنطاق منخفض
   const _bud = document.querySelector('[name="budget"]');
-  if (_bud) _bud.placeholder = isVideo ? 'مثل: 100 - 300' : 'مثل: 800 - 1500';
+  if (_bud) _bud.placeholder = isVideo ? 'مثل: 200' : 'مثل: 1000';
   toggleFulfillment();
 }
 
@@ -4857,6 +4857,17 @@ async function submitCampaign(event) {
   if (platform === 'tiktok' && selectedTiers.length === 0) {
     showToast('اختر تصنيف المؤثرين (Micro / Medium / Mega).', 'error');
     return;
+  }
+  // سعر واحد لا نطاق: الوكيل يعرض الرقم كما هو، فلو كُتب نطاق يصير أعلاه هو المدفوع للجميع.
+  {
+    const _bRaw = String(fd.get('budget') || '')
+      .replace(/[٠-٩]/g, d => '٠١٢٣٤٥٦٧٨٩'.indexOf(d))
+      .replace(/[۰-۹]/g, d => '۰۱۲۳۴۵۶۷۸۹'.indexOf(d));
+    const _bAll = (_bRaw.replace(/(\d)[,\.\s](?=\d{3}\b)/g, '$1').match(/\d+(?:\.\d+)?/g) || []);
+    if (_bAll.length !== 1) {
+      showToast('اكتب سعراً واحداً للمعلن (مثال: 1000) — بلا نطاق. هذا المبلغ يعرضه الوكيل على كل معلن ويقفل عليه.', 'error', 6000);
+      return;
+    }
   }
   // حدود السعر حسب التصنيف — حملات «الفيديو الجاهز» مستثناة (جهد أقل فالسعر حرّ)
   const _isVideoBudget = (fd.get('campaign_type') || 'home') === 'video';
