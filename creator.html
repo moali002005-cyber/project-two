@@ -3127,7 +3127,7 @@ function filterCampaigns(filter) {
   renderUnified();
 }
 
-// السعر المبدئي = أعلى رقم في نطاق ميزانية الشركة (سقف يفاوض الوكيل لتحته)
+// السعر = المبلغ اللي حدّدته الشركة (يعرضه الوكيل كما هو ويقفل عليه، بلا زيادة ولا نقص)
 function initialPriceFromBudget(campaign) {
   const nums = (String(campaign.budget || '').match(/\d[\d,]*/g) || [])
     .map(n => parseInt(n.replace(/,/g, ''), 10)).filter(n => !isNaN(n));
