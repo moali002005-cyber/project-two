@@ -218,25 +218,46 @@ function avatarInner(c, size, fs){
   return '<div style="width:'+size+'px;height:'+size+'px;border-radius:50%;background:rgba(226,59,46,0.14);color:#7E2119;display:flex;align-items:center;justify-content:center;font-weight:600;font-size:'+fs+'px;">'+escHtml(initial)+'</div>';
 }
 // ===== طبقة الثقة: نفس منطق صفحة النخبة =====
-var T_PRIOR_STRENGTH=4, T_REAL_RAMP=6;
-function tHashId(id){ var h=0,s=String(id||''); for(var i=0;i<s.length;i++){ h=(h*31+s.charCodeAt(i))>>>0; } return h; }
-function tSeedScore(id){ return 82 + (tHashId(id)%14); }
+// لا نولّد أي رقم من العدم. كل ما يُعرض هنا مشتقّ من بيانات حقيقية:
+// صفقات مكتملة (deals_count)، تقييمات فعلية من الشركات، وعدد المتابعين.
+var T_PRIOR_STRENGTH=4, T_PRIOR_MEAN=4.4;
 function tFollowerBonus(f){ f=parseInt(f)||0; if(f<=0) return 0; return Math.max(0,Math.min(5,Math.log10(f+1)-3)); }
-function tSeedRating(id){ return 4.3 + (tHashId(id+'r')%7)/10; }
-function tDisplayRating(c){ var ratings=Number(c.ratings_count)||0, avg=Number(c.avg_rating)||0, seed=tSeedRating(c.id); return (T_PRIOR_STRENGTH*seed+avg*ratings)/(T_PRIOR_STRENGTH+ratings); }
-function tTrustScore(c){ var seed=tSeedScore(c.id)+tFollowerBonus(c.followers); var ratings=Number(c.ratings_count)||0; var ratingScore=(tDisplayRating(c)/5)*100; var wReal=ratings/(ratings+T_REAL_RAMP); var dealsBoost=Math.min(Number(c.deals_count)||0,20)*0.4; return Math.max(0,Math.min(100,(1-wReal)*seed+wReal*ratingScore+dealsBoost)); }
+// بلا تقييمات حقيقية نرجّع null — ولا نخترع نجوماً
+function tDisplayRating(c){
+  var ratings=Number(c.ratings_count)||0, avg=Number(c.avg_rating)||0;
+  if(ratings<=0) return null;
+  return (T_PRIOR_STRENGTH*T_PRIOR_MEAN+avg*ratings)/(T_PRIOR_STRENGTH+ratings);
+}
+// درجة الثقة بطبقتين مثل صفحة النخبة: من أنجز صفقات فوق من لم ينجز دائماً
+function tTrustScore(c){
+  var deals=Number(c.deals_count)||0;
+  if(deals>=1){
+    var norm=Math.min(deals,10)/10;
+    var s=72+28*Math.pow(norm,0.6);
+    var dr=tDisplayRating(c);
+    if(dr!==null) s+=(dr-T_PRIOR_MEAN)*2;
+    return Math.max(70,Math.min(100,s));
+  }
+  return 40+tFollowerBonus(c.followers)*2.8;
+}
 function tStarsLine(c){
-  var ratings=Number(c.ratings_count)||0, dr=tDisplayRating(c), full=Math.round(dr);
+  var ratings=Number(c.ratings_count)||0, dr=tDisplayRating(c);
+  if(dr===null) return '<span class="cstar-c">لا توجد تقييمات بعد</span>';
+  var full=Math.round(dr);
   var s=''; for(var i=1;i<=5;i++) s+='<span class="cstar'+(i<=full?' on':'')+'">★</span>';
-  var tail=ratings>0?('<span class="cstar-c">('+ratings+' تقييم)</span>'):'';
-  return '<span class="cstars">'+s+'</span><span class="cstar-v">'+dr.toFixed(1)+'</span>'+tail;
+  return '<span class="cstars">'+s+'</span><span class="cstar-v">'+dr.toFixed(1)+'</span><span class="cstar-c">('+ratings+' تقييم)</span>';
 }
 function tBadge(c){ return (Number(c.deals_count)||0)>=1 ? '<span class="cbadge ver">موثّق ✓</span>' : '<span class="cbadge prom">واعد</span>'; }
-function tCritSeed(id, key){ return 4.2 + (tHashId(key + ':' + id) % 8) / 10; }
 function tCritBars(c){
   var ratings=Number(c.ratings_count)||0;
-  var crits=[['جودة المحتوى','content',c.avg_content],['الالتزام بالمواعيد','punct',c.avg_punctuality],['التواصل والاحترافية','comm',c.avg_communication],['النتائج والتفاعل','res',c.avg_results]];
-  return crits.map(function(it){ var seed=tCritSeed(c.id,it[1]); var real=Number(it[2])||0; var v=ratings>0?(T_PRIOR_STRENGTH*seed+real*ratings)/(T_PRIOR_STRENGTH+ratings):seed; var pct=Math.max(0,Math.min(100,(v/5)*100)); return '<div class="cbar-row"><span class="cbar-label">'+it[0]+'</span><span class="cbar-track"><span class="cbar-fill" style="width:'+pct+'%"></span></span><span class="cbar-val">'+v.toFixed(1)+'</span></div>'; }).join('');
+  // بلا تقييمات فعلية لا نرسم أشرطة — نقول الحقيقة بدل رسم أعمدة من العدم
+  if(ratings<=0) return '<div class="m-crit-note">تفاصيل التقييم تظهر بعد أول تقييم من شركة تعاملت معه.</div>';
+  var crits=[['جودة المحتوى',c.avg_content],['الالتزام بالمواعيد',c.avg_punctuality],['التواصل والاحترافية',c.avg_communication],['النتائج والتفاعل',c.avg_results]];
+  return crits.map(function(it){
+    var v=Number(it[1])||0;
+    var pct=Math.max(0,Math.min(100,(v/5)*100));
+    return '<div class="cbar-row"><span class="cbar-label">'+it[0]+'</span><span class="cbar-track"><span class="cbar-fill" style="width:'+pct+'%"></span></span><span class="cbar-val">'+v.toFixed(1)+'</span></div>';
+  }).join('');
 }
 async function loadReviews(creatorId){
   var box=document.getElementById('m-reviews'); if(!box) return;
