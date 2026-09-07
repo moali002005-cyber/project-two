@@ -1140,7 +1140,7 @@ try { simblPlan(); } catch (e) {}
         var lockCarts = function () {
           document.querySelectorAll('.cart-btn').forEach(function (el) {
             lockEl(el, 'الدعوة المباشرة',
-              'ادعُ المعلنين مباشرة لحملة خاصة بك بدون ما تنتظرهم يتقدّمون — متاحة في الباقات الأعلى.');
+              'ادعُ المعلنين مباشرة لحملة خاصة بك بدون ما تنتظرهم يتقدّمون — متاحة مع باقة Standard فأعلى.');
           });
         };
         lockCarts();
