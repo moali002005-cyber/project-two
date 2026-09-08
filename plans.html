@@ -274,7 +274,7 @@ init();
 
 <script>
 (function(){
-if(window.__felfelUI)return; window.__felfelUI=4;
+if(window.__felfelUI)return; window.__felfelUI=5;
 var HEAD='أنا فلفل، مدير حملاتك الذكي 🌶️';
 var meta={}, mode=(localStorage.getItem('felfel_billing')==='yearly')?'yearly':'monthly';
 function fmt(n){return Number(n).toLocaleString('en-US');}
@@ -285,7 +285,7 @@ s.textContent='.felfel-head{text-align:center;font-weight:800;font-size:20px;mar
 +'.felfel-tg button.on{background:#111;color:#fff;border-color:#111}'
 +'.felfel-save{background:#e8f7ee;color:#127a3e;border-radius:999px;padding:5px 11px;font-size:12px;font-weight:800}'
 +'.felfel-list{display:block;color:#d32f2f;font-weight:700;font-size:15px;margin-bottom:2px;text-decoration:line-through;text-decoration-color:#d32f2f;text-decoration-thickness:2px}'
-+'.felfel-comm{display:block;align-self:center;width:max-content;max-width:100%;background:#f4f4f5;color:#18181b;border:1px solid #e4e4e7;border-radius:999px;padding:5px 14px;font-size:13px;font-weight:800;margin:6px auto 10px}'
++'li.felfel-comm > span:last-child{font-weight:800}'
 +'.felfel-foot{font-size:12px;color:#6b6b6b;margin-top:10px;line-height:1.7}';
 document.head.appendChild(s);}
 function grid(){return document.getElementById('plans-grid');}
@@ -307,15 +307,17 @@ function apply(){var g=grid();if(!g)return;
 var h3=c.querySelector('h3');if(!h3)return;var tx=h3.textContent,m=null;
 for(var k in meta){if(tx.indexOf(k)>=0){m=meta[k];break;}}
 var oc=c.querySelector('.felfel-comm');if(oc)oc.parentNode.removeChild(oc);
-if(m&&m.comm!==null&&m.comm!==undefined){var cm=document.createElement('div');cm.className='felfel-comm';cm.textContent='\u0627\u0644\u0639\u0645\u0648\u0644\u0629 '+fmt(m.comm)+'\u066a';h3.parentNode.insertBefore(cm,h3.nextSibling);}
+var ul=c.querySelector('ul.feats');
+if(ul&&m&&m.comm!==null&&m.comm!==undefined){var li=document.createElement('li');li.className='felfel-comm';var tk=document.createElement('span');tk.className='tick';tk.textContent='\u2713';var tx2=document.createElement('span');tx2.textContent='\ud83d\udcbc \u0631\u0633\u0648\u0645 \u0625\u062f\u0627\u0631\u0629 \u0627\u0644\u062d\u0645\u0644\u0629 '+fmt(m.comm)+'\u066a';li.appendChild(tk);li.appendChild(tx2);ul.insertBefore(li,ul.firstChild);}
 var num=c.querySelector('.num'),cur2=c.querySelector('.cur2');
 if(num&&!num.dataset.mo)num.dataset.mo=num.textContent;
 if(cur2&&!cur2.dataset.mo)cur2.dataset.mo=cur2.textContent;
 var od=c.querySelector('.felfel-list');if(od)od.parentNode.removeChild(od);
-if(num&&m&&m.monthly>0){
+if(num&&m){
 var p=(mode==='yearly')?m.yearly:m.monthly, l=(mode==='yearly')?m.listY:m.listM;
 num.textContent=fmt(p);
-if(cur2)cur2.textContent=(mode==='yearly')?'ر.س / سنة':'ر.س / شهر';
+if(!cur2){cur2=document.createElement('span');cur2.className='cur2';num.parentNode.appendChild(cur2);}
+cur2.textContent=(mode==='yearly')?'ر.س / سنة':'ر.س / شهر';
 if(l&&l>p){var e=document.createElement('span');e.className='felfel-list';e.textContent=fmt(l)+' ر.س';num.parentNode.insertBefore(e,num.parentNode.firstChild);}}
 else{if(num&&num.dataset.mo)num.textContent=num.dataset.mo;if(cur2&&cur2.dataset.mo)cur2.textContent=cur2.dataset.mo;}
 var b=c.querySelector('button.cta');
