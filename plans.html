@@ -274,7 +274,7 @@ init();
 
 <script>
 (function(){
-if(window.__felfelUI)return; window.__felfelUI=1;
+if(window.__felfelUI)return; window.__felfelUI=2;
 var HEAD='أنا فلفل، مدير حملاتك الذكي 🌶️';
 var meta={}, mode=(localStorage.getItem('felfel_billing')==='yearly')?'yearly':'monthly';
 function fmt(n){return Number(n).toLocaleString('en-US');}
@@ -284,7 +284,7 @@ s.textContent='.felfel-head{text-align:center;font-weight:800;font-size:20px;mar
 +'.felfel-tg button{border:1px solid #ddd;background:#fff;border-radius:999px;padding:8px 18px;font:inherit;font-weight:700;cursor:pointer}'
 +'.felfel-tg button.on{background:#111;color:#fff;border-color:#111}'
 +'.felfel-save{background:#e8f7ee;color:#127a3e;border-radius:999px;padding:5px 11px;font-size:12px;font-weight:800}'
-+'.felfel-was{display:block;font-size:12px;color:#8a8a8a;text-decoration:line-through;margin-top:2px}'
++'.felfel-list{display:block;color:#d32f2f;font-weight:700;font-size:15px;margin-bottom:2px;text-decoration:line-through;text-decoration-color:#d32f2f;text-decoration-thickness:2px}'
 +'.felfel-foot{font-size:12px;color:#6b6b6b;margin-top:10px;line-height:1.7}';
 document.head.appendChild(s);}
 function grid(){return document.getElementById('plans-grid');}
@@ -296,10 +296,11 @@ var by=document.createElement('button');by.type='button';by.textContent='سنو�
 var sv=document.createElement('span');sv.className='felfel-save';sv.textContent='وفّر 20٪';
 t.appendChild(bm);t.appendChild(by);t.appendChild(sv);
 function set(m){mode=m;try{localStorage.setItem('felfel_billing',m)}catch(e){}
+try{window.PERIOD=m}catch(e){}
 bm.className=(m==='monthly')?'on':'';by.className=(m==='yearly')?'on':'';apply();}
 bm.onclick=function(){set('monthly')};by.onclick=function(){set('yearly')};
 g.parentNode.insertBefore(h,g);g.parentNode.insertBefore(t,g);
-bm.className=(mode==='monthly')?'on':'';by.className=(mode==='yearly')?'on':'';}
+set(mode);}
 function apply(){var g=grid();if(!g)return;
 [].slice.call(g.querySelectorAll('.plan')).forEach(function(c){
 var h3=c.querySelector('h3');if(!h3)return;var tx=h3.textContent,m=null;
@@ -307,19 +308,21 @@ for(var k in meta){if(tx.indexOf(k)>=0){m=meta[k];break;}}
 var num=c.querySelector('.num'),cur2=c.querySelector('.cur2');
 if(num&&!num.dataset.mo)num.dataset.mo=num.textContent;
 if(cur2&&!cur2.dataset.mo)cur2.dataset.mo=cur2.textContent;
-var was=c.querySelector('.felfel-was');if(was)was.parentNode.removeChild(was);
-var y=(m&&m.yearly)?m.yearly:0;
-if(mode==='yearly'&&y>0){if(num)num.textContent=fmt(y);
-if(cur2){cur2.textContent='ر.س / سنة';var w=document.createElement('span');w.className='felfel-was';w.textContent=fmt(m.monthly*12)+' ر.س';cur2.parentNode.appendChild(w);}}
+var od=c.querySelector('.felfel-list');if(od)od.parentNode.removeChild(od);
+if(num&&m&&m.monthly>0){
+var p=(mode==='yearly')?m.yearly:m.monthly, l=(mode==='yearly')?m.listY:m.listM;
+num.textContent=fmt(p);
+if(cur2)cur2.textContent=(mode==='yearly')?'ر.س / سنة':'ر.س / شهر';
+if(l&&l>p){var e=document.createElement('span');e.className='felfel-list';e.textContent=fmt(l)+' ر.س';num.parentNode.insertBefore(e,num.parentNode.firstChild);}}
 else{if(num&&num.dataset.mo)num.textContent=num.dataset.mo;if(cur2&&cur2.dataset.mo)cur2.textContent=cur2.dataset.mo;}
 var b=c.querySelector('button.cta');
 if(b&&m&&m.cta&&b.className.indexOf('cur')<0)b.textContent=m.cta;
-if(m&&m.foot&&!c.querySelector('.felfel-foot')){var p=document.createElement('div');p.className='felfel-foot';p.textContent=m.foot;c.appendChild(p);}
+if(m&&m.foot&&!c.querySelector('.felfel-foot')){var p2=document.createElement('div');p2.className='felfel-foot';p2.textContent=m.foot;c.appendChild(p2);}
 });}
 function load(){try{var sc=window.supabaseClient;if(!sc||!sc.from)return Promise.resolve();
-return sc.from('plans').select('name_ar,price_monthly,price_yearly,cta_ar,footnote_ar,audience,is_active').then(function(r){
+return sc.from('plans').select('name_ar,price_monthly,price_yearly,list_price_monthly,list_price_yearly,cta_ar,footnote_ar,audience,is_active').then(function(r){
 (r.data||[]).forEach(function(p){if(p.audience!=='brand'||!p.is_active)return;
-meta[p.name_ar]={cta:p.cta_ar,foot:p.footnote_ar,yearly:Number(p.price_yearly)||0,monthly:Number(p.price_monthly)||0};});});}
+meta[p.name_ar]={cta:p.cta_ar,foot:p.footnote_ar,yearly:Number(p.price_yearly)||0,monthly:Number(p.price_monthly)||0,listM:Number(p.list_price_monthly)||0,listY:Number(p.list_price_yearly)||0};});});}
 catch(e){return Promise.resolve();}}
 var tmr=null;function go(){clearTimeout(tmr);tmr=setTimeout(function(){css();mount();apply();},60);}
 function boot(){load().then(function(){go();
