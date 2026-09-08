@@ -271,3 +271,60 @@ init();
 
 </body>
 </html>
+
+<script>
+(function(){
+if(window.__felfelUI)return; window.__felfelUI=1;
+var HEAD='أنا فلفل، مدير حملاتك الذكي 🌶️';
+var meta={}, mode=(localStorage.getItem('felfel_billing')==='yearly')?'yearly':'monthly';
+function fmt(n){return Number(n).toLocaleString('en-US');}
+function css(){if(document.getElementById('felfel-css'))return;var s=document.createElement('style');s.id='felfel-css';
+s.textContent='.felfel-head{text-align:center;font-weight:800;font-size:20px;margin:16px 0 4px}'
++'.felfel-tg{display:flex;justify-content:center;align-items:center;gap:8px;margin:10px 0 18px;flex-wrap:wrap}'
++'.felfel-tg button{border:1px solid #ddd;background:#fff;border-radius:999px;padding:8px 18px;font:inherit;font-weight:700;cursor:pointer}'
++'.felfel-tg button.on{background:#111;color:#fff;border-color:#111}'
++'.felfel-save{background:#e8f7ee;color:#127a3e;border-radius:999px;padding:5px 11px;font-size:12px;font-weight:800}'
++'.felfel-was{display:block;font-size:12px;color:#8a8a8a;text-decoration:line-through;margin-top:2px}'
++'.felfel-foot{font-size:12px;color:#6b6b6b;margin-top:10px;line-height:1.7}';
+document.head.appendChild(s);}
+function grid(){return document.getElementById('plans-grid');}
+function mount(){var g=grid();if(!g||document.getElementById('felfel-head'))return;
+var h=document.createElement('div');h.id='felfel-head';h.className='felfel-head';h.textContent=HEAD;
+var t=document.createElement('div');t.className='felfel-tg';
+var bm=document.createElement('button');bm.type='button';bm.textContent='شهري';
+var by=document.createElement('button');by.type='button';by.textContent='سنوي';
+var sv=document.createElement('span');sv.className='felfel-save';sv.textContent='وفّر 20٪';
+t.appendChild(bm);t.appendChild(by);t.appendChild(sv);
+function set(m){mode=m;try{localStorage.setItem('felfel_billing',m)}catch(e){}
+bm.className=(m==='monthly')?'on':'';by.className=(m==='yearly')?'on':'';apply();}
+bm.onclick=function(){set('monthly')};by.onclick=function(){set('yearly')};
+g.parentNode.insertBefore(h,g);g.parentNode.insertBefore(t,g);
+bm.className=(mode==='monthly')?'on':'';by.className=(mode==='yearly')?'on':'';}
+function apply(){var g=grid();if(!g)return;
+[].slice.call(g.querySelectorAll('.plan')).forEach(function(c){
+var h3=c.querySelector('h3');if(!h3)return;var tx=h3.textContent,m=null;
+for(var k in meta){if(tx.indexOf(k)>=0){m=meta[k];break;}}
+var num=c.querySelector('.num'),cur2=c.querySelector('.cur2');
+if(num&&!num.dataset.mo)num.dataset.mo=num.textContent;
+if(cur2&&!cur2.dataset.mo)cur2.dataset.mo=cur2.textContent;
+var was=c.querySelector('.felfel-was');if(was)was.parentNode.removeChild(was);
+var y=(m&&m.yearly)?m.yearly:0;
+if(mode==='yearly'&&y>0){if(num)num.textContent=fmt(y);
+if(cur2){cur2.textContent='ر.س / سنة';var w=document.createElement('span');w.className='felfel-was';w.textContent=fmt(m.monthly*12)+' ر.س';cur2.parentNode.appendChild(w);}}
+else{if(num&&num.dataset.mo)num.textContent=num.dataset.mo;if(cur2&&cur2.dataset.mo)cur2.textContent=cur2.dataset.mo;}
+var b=c.querySelector('button.cta');
+if(b&&m&&m.cta&&b.className.indexOf('cur')<0)b.textContent=m.cta;
+if(m&&m.foot&&!c.querySelector('.felfel-foot')){var p=document.createElement('div');p.className='felfel-foot';p.textContent=m.foot;c.appendChild(p);}
+});}
+function load(){try{var sc=window.supabaseClient;if(!sc||!sc.from)return Promise.resolve();
+return sc.from('plans').select('name_ar,price_monthly,price_yearly,cta_ar,footnote_ar,audience,is_active').then(function(r){
+(r.data||[]).forEach(function(p){if(p.audience!=='brand'||!p.is_active)return;
+meta[p.name_ar]={cta:p.cta_ar,foot:p.footnote_ar,yearly:Number(p.price_yearly)||0,monthly:Number(p.price_monthly)||0};});});}
+catch(e){return Promise.resolve();}}
+var tmr=null;function go(){clearTimeout(tmr);tmr=setTimeout(function(){css();mount();apply();},60);}
+function boot(){load().then(function(){go();
+var g=grid();if(g)new MutationObserver(go).observe(g,{childList:true});
+new MutationObserver(function(){if(grid()&&!document.getElementById('felfel-head'))go();}).observe(document.body,{childList:true});});}
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot);else boot();
+})();
+</script>
