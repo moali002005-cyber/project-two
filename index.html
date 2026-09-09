@@ -757,5 +757,117 @@ document.addEventListener('DOMContentLoaded', async function () {
   </div>
   <div>مؤسسة فلفلونسر آي — سجل تجاري (الرقم الوطني الموحد): 7051501588 — المملكة العربية السعودية<br>© Flfluencer — جميع الحقوق محفوظة</div>
 </footer>
+<script>
+/* فلفلونسر — شريط تنقّل عربي بقوائم منسدلة */
+(function(){
+if(window.__flfNav)return; window.__flfNav=1;
+
+var MENU=[
+ {t:'المميزات', items:[
+   ['ابحث عن المؤثرين','بالمدينة والمنصة والسعر وعدد المتابعين','/signup.html'],
+   ['بريف بالذكاء الاصطناعي','فكرة واحدة تصير حملة كاملة','/signup.html'],
+   ['وكيل التفاوض','يفاوض بالعربي نيابةً عنك','/signup.html'],
+   ['الاعتماد والدفع','تعتمد المحتوى قبل صرف المستحق','/signup.html']]},
+ {t:'للشركات', items:[
+   ['المطاعم والكافيهات','حملات زيارات وتجربة','/signup.html?role=brand'],
+   ['المتاجر الإلكترونية','حملات منتجات ومحتوى مصوّر','/signup.html?role=brand'],
+   ['الوكالات','أدر حملات عملائك من لوحة واحدة','/signup.html?role=brand']]},
+ {t:'حالات الاستخدام', items:[
+   ['حملات المنتجات','ترسل منتجك، والمؤثر يجرّبه ويصوّره','/signup.html?role=brand'],
+   ['حملات الزيارات','زيارة موقعك وتغطيتها','/signup.html?role=brand'],
+   ['محتوى مصوّر (UGC)','محتوى جاهز لإعلاناتك المدفوعة','/signup.html?role=brand']]},
+ {t:'الأسعار', href:'/plans.html'},
+ {t:'لصنّاع المحتوى', href:'/signup.html?role=creator'}
+];
+
+function css(){
+ if(document.getElementById('flf-nav-css'))return;
+ var s=document.createElement('style'); s.id='flf-nav-css';
+ s.textContent=
+ '.nav-inner{justify-content:flex-start!important;gap:6px}'
++'.nav-links{margin-inline-start:auto}'
++'.flf-menu{display:flex;align-items:center;gap:2px;margin-inline-start:20px}'
++'.flf-menu>a,.flf-menu>.flf-dd>button{font:inherit;font-size:15.5px;font-weight:500;color:#16110F;background:none;border:0;padding:9px 13px;border-radius:10px;cursor:pointer;display:inline-flex;align-items:center;gap:6px;line-height:1.5;white-space:nowrap;text-decoration:none}'
++'.flf-menu>a:hover,.flf-menu>.flf-dd>button:hover{background:#F4F0EF}'
++'.flf-caret{width:8px;height:8px;border-inline-end:1.8px solid #8E8481;border-block-end:1.8px solid #8E8481;transform:rotate(45deg);margin-block-start:-4px;transition:transform .18s;flex-shrink:0}'
++'.flf-dd{position:relative}'
++'.flf-dd[data-open="true"]>button{background:#F4F0EF}'
++'.flf-dd[data-open="true"] .flf-caret{transform:rotate(-135deg);margin-block-start:2px}'
++'.flf-panel{position:absolute;inset-block-start:calc(100% + 12px);inset-inline-start:0;min-width:272px;background:#fff;border:1px solid #EAE3E1;border-radius:16px;padding:8px;box-shadow:0 14px 40px rgba(22,17,15,.12);display:none;z-index:200}'
++'.flf-dd[data-open="true"] .flf-panel{display:block}'
++'.flf-panel a{display:block;padding:10px 13px;border-radius:10px;text-decoration:none;color:#16110F}'
++'.flf-panel a:hover{background:#F7F3F2}'
++'.flf-panel strong{display:block;font-weight:700;font-size:14.5px;line-height:1.5}'
++'.flf-panel span{display:block;font-size:12.5px;color:#8E8481;line-height:1.6}'
++'.flf-burger{display:none;background:none;border:1px solid #DCD3D0;border-radius:10px;padding:9px 11px;cursor:pointer}'
++'.flf-burger i{display:block;width:18px;height:2px;background:#16110F;border-radius:2px}'
++'.flf-burger i+i{margin-top:4px}'
++'@media(max-width:1050px){'
++'.flf-menu{position:absolute;inset-block-start:100%;inset-inline:0;background:#fff;border-bottom:1px solid #EAE3E1;flex-direction:column;align-items:stretch;gap:0;padding:8px 16px 16px;margin:0;box-shadow:0 14px 30px rgba(22,17,15,.08);display:none}'
++'.flf-menu[data-open="true"]{display:flex}'
++'.flf-menu>a,.flf-menu>.flf-dd>button{width:100%;justify-content:space-between;padding:13px 10px;font-size:16px}'
++'.flf-panel{position:static;box-shadow:none;border:0;padding:0 0 8px;min-width:0}'
++'.flf-burger{display:block}'
++'.nav{position:relative}'
++'}';
+ document.head.appendChild(s);
+}
+
+function build(){
+ var inner=document.querySelector('.nav-inner'); if(!inner) return false;
+ if(inner.querySelector('.flf-menu')) return true;
+ var logo=inner.querySelector('.logo');
+ var links=inner.querySelector('.nav-links');
+
+ var m=document.createElement('div'); m.className='flf-menu'; m.setAttribute('data-open','false');
+ MENU.forEach(function(g){
+   if(g.href){ var a=document.createElement('a'); a.href=g.href; a.textContent=g.t; m.appendChild(a); return; }
+   var d=document.createElement('div'); d.className='flf-dd'; d.setAttribute('data-open','false');
+   var b=document.createElement('button'); b.type='button'; b.setAttribute('aria-expanded','false'); b.setAttribute('aria-haspopup','true');
+   b.appendChild(document.createTextNode(g.t+' '));
+   var i=document.createElement('i'); i.className='flf-caret'; b.appendChild(i);
+   var p=document.createElement('div'); p.className='flf-panel';
+   g.items.forEach(function(it){
+     var a=document.createElement('a'); a.href=it[2];
+     var st=document.createElement('strong'); st.textContent=it[0];
+     var sp=document.createElement('span'); sp.textContent=it[1];
+     a.appendChild(st); a.appendChild(sp); p.appendChild(a);
+   });
+   d.appendChild(b); d.appendChild(p); m.appendChild(d);
+ });
+
+ if(logo && logo.nextSibling) inner.insertBefore(m, logo.nextSibling);
+ else inner.insertBefore(m, inner.firstChild);
+
+ var burger=document.createElement('button');
+ burger.type='button'; burger.className='flf-burger';
+ burger.setAttribute('aria-label','القائمة'); burger.setAttribute('aria-expanded','false');
+ burger.innerHTML='<i></i><i></i><i></i>';
+ if(links) links.appendChild(burger);
+
+ var dds=[].slice.call(m.querySelectorAll('.flf-dd'));
+ function closeAll(x){dds.forEach(function(d){if(d===x)return;d.setAttribute('data-open','false');d.querySelector('button').setAttribute('aria-expanded','false');});}
+ var wide=function(){return window.matchMedia('(min-width:1051px)').matches;};
+ dds.forEach(function(d){
+   var b=d.querySelector('button');
+   b.addEventListener('click',function(e){e.stopPropagation();
+     var o=d.getAttribute('data-open')==='true'; closeAll(d);
+     d.setAttribute('data-open',o?'false':'true'); b.setAttribute('aria-expanded',o?'false':'true');});
+   d.addEventListener('mouseenter',function(){if(wide()){closeAll(d);d.setAttribute('data-open','true');b.setAttribute('aria-expanded','true');}});
+   d.addEventListener('mouseleave',function(){if(wide()){d.setAttribute('data-open','false');b.setAttribute('aria-expanded','false');}});
+ });
+ document.addEventListener('click',function(){closeAll(null);});
+ document.addEventListener('keydown',function(e){if(e.key==='Escape')closeAll(null);});
+ burger.addEventListener('click',function(e){e.stopPropagation();
+   var o=m.getAttribute('data-open')==='true';
+   m.setAttribute('data-open',o?'false':'true'); burger.setAttribute('aria-expanded',o?'false':'true');});
+ m.addEventListener('click',function(e){if(e.target.closest('a')){m.setAttribute('data-open','false');burger.setAttribute('aria-expanded','false');closeAll(null);}});
+ return true;
+}
+
+function go(){css(); if(!build()){ setTimeout(go,150); } }
+if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',go); else go();
+})();
+</script>
 </body>
 </html>
