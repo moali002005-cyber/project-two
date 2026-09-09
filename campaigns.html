@@ -1837,6 +1837,18 @@ PROMO-02" style="width:100%;box-sizing:border-box;font-family:inherit;"></textar
         <textarea name="description" required rows="4" placeholder="وضّح للمعلن: المنتج، الجمهور المستهدف، المحاور والنقاط المطلوبة، نوع المحتوى، والكلمات المفتاحية. يُرسل تلقائياً للمعلن في مرحلة البريف، أو اضغط «اكتب لي البريف» أعلاه ليجهّزه النظام من فكرتك."></textarea>
       </div>
 
+      <div class="field" id="reference-field">
+        <label>فيديو مرجعي <span style="font-weight:400;color:#8A807B;">(اختياري)</span></label>
+        <input type="url" name="reference_url" id="reference-url" dir="ltr" placeholder="https://www.tiktok.com/@user/video/...">
+        <div class="hint">رابط فيديو يستلهم منه المعلن أسلوب المحتوى — تيك توك أو إنستقرام أو يوتيوب.</div>
+        <div style="display:flex;align-items:center;gap:10px;margin-top:9px;flex-wrap:wrap;">
+          <button type="button" onclick="document.getElementById('ref-file').click()" style="display:inline-flex;align-items:center;gap:6px;border:1px solid #d7e0dd;background:#fff;color:#33413c;font-family:inherit;font-size:12.5px;font-weight:600;padding:8px 14px;border-radius:100px;cursor:pointer;">🎬 أو ارفع فيديو من جهازك</button>
+          <span id="ref-file-name" class="hint" style="margin:0;"></span>
+        </div>
+        <input type="file" id="ref-file" accept="video/mp4,video/quicktime,video/webm" style="display:none;" onchange="pickReferenceVideo(this)">
+        <input type="text" name="reference_note" id="reference-note" placeholder="ما الذي يعجبك في هذا الفيديو؟ (اختياري)" style="margin-top:9px;">
+      </div>
+
       <div class="field-row">
         <div class="field">
           <label>التصنيف</label>
@@ -2440,6 +2452,44 @@ async function uploadPickedVideos(campaignId, existingList, submitBtn) {
   window._vidFiles = [];
   renderPickedVideos();
   return files.length;
+}
+
+// ===== الفيديو المرجعي: ملف واحد اختياري يستلهم منه المعلن أسلوب المحتوى =====
+window._refFile = null;
+function pickReferenceVideo(input) {
+  const f = (input && input.files && input.files[0]) || null;
+  const box = document.getElementById('ref-file-name');
+  input.value = '';
+  if (!f) return;
+  const okTypes = ['video/mp4', 'video/quicktime', 'video/webm'];
+  if (okTypes.indexOf(f.type) < 0) {
+    showToast('الصيغة غير مدعومة — MP4 أو MOV أو WebM فقط.', 'error');
+    return;
+  }
+  if (f.size > 50 * 1024 * 1024) {
+    showToast('حجم الفيديو المرجعي أكبر من ٥٠ ميجابايت.', 'error');
+    return;
+  }
+  window._refFile = f;
+  if (box) {
+    box.innerHTML = '🎬 ' + (f.name || 'الفيديو المرجعي') +
+      ' <button type="button" onclick="clearReferenceVideo()" style="border:0;background:none;color:#B23B2E;cursor:pointer;font-family:inherit;font-size:12px;">إزالة</button>';
+  }
+}
+function clearReferenceVideo() {
+  window._refFile = null;
+  const box = document.getElementById('ref-file-name');
+  if (box) box.textContent = '';
+}
+// يُرفع بعد إنشاء الحملة لأن مسار التخزين يبدأ بمعرّف الحملة
+async function uploadReferenceVideo(campaignId) {
+  const f = window._refFile;
+  if (!f || !campaignId) return false;
+  const meta = await simblBriefUpload(campaignId, f, true);
+  await supabaseClient.from('campaigns')
+    .update({ reference_path: meta.path }).eq('id', campaignId);
+  clearReferenceVideo();
+  return true;
 }
 
 function populateVisitDates() {
@@ -4666,6 +4716,9 @@ function setModalMode(mode, campaign) {
     togglePublishDate();
     if (campaign.publish_date) form.querySelector('[name="publish_date"]').value = campaign.publish_date;
     form.querySelector('[name="campaign_size"]').value = campaign.campaign_size || '';
+    { const _ru = form.querySelector('[name="reference_url"]'); if (_ru) _ru.value = campaign.reference_url || ''; }
+    { const _rn = form.querySelector('[name="reference_note"]'); if (_rn) _rn.value = campaign.reference_note || ''; }
+    clearReferenceVideo();
     const _ct = campaign.campaign_type || 'home';
     const _ctR = form.querySelector('[name="campaign_type"][value="' + _ct + '"]');
     if (_ctR) _ctR.checked = true;
@@ -4988,6 +5041,8 @@ async function submitCampaign(event) {
     pickup_address: (fd.get('pickup_address') || '').trim() || null,
     pickup_hours: (fd.get('pickup_hours') || '').trim() || null,
     pickup_map_url: (fd.get('pickup_map_url') || '').trim() || null,
+    reference_url: (fd.get('reference_url') || '').trim() || null,
+    reference_note: (fd.get('reference_note') || '').trim() || null,
     tags: [industry]
   };
   const _codesRaw = fd.get('codes_list') || '';
@@ -5035,6 +5090,11 @@ async function submitCampaign(event) {
         .eq('id', editingCampaignId);
       if (error) throw error;
 
+      if (window._refFile) {
+        try { await uploadReferenceVideo(editingCampaignId); }
+        catch (refErr) { console.error('reference upload failed:', refErr); showToast('حُفظت التعديلات، لكن الفيديو المرجعي لم يُرفع: ' + (refErr.message || ''), 'error'); }
+      }
+
       let _added = 0;
       try { _added = await saveCampaignCodes(editingCampaignId, _codesRaw); }
       catch (codeErr) { showToast('حُفظت الحملة لكن الأكواد ما انضافت: ' + (codeErr.message || ''), 'error'); }
@@ -5060,6 +5120,10 @@ async function submitCampaign(event) {
     campaign.status = 'active';
     campaign.is_test = !!currentUser.is_test;
     const createdCampaign = await dbCreateCampaign(campaign);
+    if (createdCampaign?.id && window._refFile) {
+      try { if (await uploadReferenceVideo(createdCampaign.id)) showToast('تم رفع الفيديو المرجعي مع الحملة.', 'success'); }
+      catch (refErr) { console.error('reference upload failed:', refErr); showToast('انطلقت الحملة، لكن الفيديو المرجعي لم يُرفع: ' + (refErr.message || ''), 'error'); }
+    }
     if (createdCampaign?.id && campaign.campaign_type === 'video' && (window._vidFiles || []).length) {
       try {
         const _nv = await uploadPickedVideos(createdCampaign.id, [], submitBtn);

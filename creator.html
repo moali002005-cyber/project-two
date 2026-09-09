@@ -2593,10 +2593,32 @@ function openBriefModal(appId) {
   if (!a) return;
   const text = getBriefText(a);
   if (!text) { kitToast('البريف ما وصل بعد من الشركة'); return; }
-  const c = a.campaigns || {};
+  const c = campaignForApp(a) || a.campaigns || {};
   document.getElementById('briefModalTitle').textContent = c.title || a.title || 'بريف الحملة';
-  document.getElementById('briefModalBody').textContent = text;
+  const body = document.getElementById('briefModalBody');
+  body.textContent = text;
+  renderBriefReference(body, c);
   document.getElementById('briefModal').classList.add('show');
+}
+
+// فيديو مرجعي اختياري من الشركة — يستلهم منه المعلن أسلوب المحتوى
+async function renderBriefReference(body, c) {
+  if (!body || !c) return;
+  const note = (c.reference_note || '').trim();
+  let href = (c.reference_url || '').trim();
+  if (!href && c.reference_path) {
+    try { href = await simblBriefSignedUrl(c.reference_path, 3600); } catch (e) { href = ''; }
+  }
+  if (!href) return;
+  const box = document.createElement('div');
+  box.style.cssText = 'margin-top:14px;padding:12px;border:1px solid #E7E9EE;border-radius:12px;background:#FAFAFB;';
+  box.innerHTML = '<div style="font-weight:700;font-size:13px;margin-bottom:6px;">🎬 فيديو مرجعي</div>' +
+    '<div style="font-size:12.5px;color:#6B7B74;line-height:1.8;margin-bottom:8px;">استلهم منه أسلوب المحتوى — ليس للنسخ.</div>' +
+    (note ? '<div style="font-size:12.5px;line-height:1.8;margin-bottom:8px;">' + escAtt(note) + '</div>' : '') +
+    '<a href="' + escAtt(href) + '" target="_blank" rel="noopener" ' +
+    'style="display:inline-block;border:1px solid #d7e0dd;border-radius:100px;padding:8px 14px;' +
+    'font-size:12.5px;font-weight:700;color:#33413c;text-decoration:none;">فتح الفيديو المرجعي ↗</a>';
+  body.appendChild(box);
 }
 // ===== مرفقات الحملة (صور من الشركة) =====
 let _attachList = [];
