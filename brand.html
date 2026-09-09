@@ -4029,8 +4029,7 @@ init();
       '<div class="ctype-seg">' +
         '<label><input type="radio" name="compensation" value="cash" checked><span>💵 مبلغ نقدي</span></label>' +
         '<label><input type="radio" name="compensation" value="product"><span>🎁 مقابل منتج</span></label>' +
-      '</div>' +
-      '<div class="hint" id="comp-hint">مبلغ نقدي: الوكيل يفاوض ويقفل على سعر لكل معلن.</div>';
+      '</div>';
     anchor.parentNode.insertBefore(wrap, anchor.nextSibling);
 
     var sizeSel = document.querySelector('[name="campaign_size"]');
@@ -4066,7 +4065,6 @@ init();
     var sizeSel = document.querySelector('[name="campaign_size"]');
     var feeLine = el('barter-fee-line');
     var pvField = el('product-value-field');
-    var hint = el('comp-hint');
 
     if (bf) bf.style.display = barter ? 'none' : '';
     if (bin) {
@@ -4080,9 +4078,6 @@ init();
       }
     }
     if (pvField) pvField.style.display = barter ? '' : 'none';
-    if (hint) hint.textContent = barter
-      ? 'مقابل منتج: ما فيه أي تسعيرة — الوكيل يعرض المنتج ويقنع، والمعلن يقبل أو يعتذر.'
-      : 'مبلغ نقدي: الوكيل يفاوض ويقفل على سعر لكل معلن.';
 
     if (sizeSel) {
       var keep = sizeSel.value;
