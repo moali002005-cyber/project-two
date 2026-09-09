@@ -1506,11 +1506,23 @@ function updateHeroStats() {
     var row = function(label, val){ return val ? '<div style="display:flex;justify-content:space-between;padding:13px 4px;border-bottom:1px solid var(--line);"><span style="font-size:13px;color:var(--ink-muted);">'+label+'</span><span style="font-size:13px;color:var(--ink);font-weight:500;">'+val+'</span></div>' : ''; };
     ilist.innerHTML =
       row('المنصة', currentUser.platform ? (PL2[currentUser.platform]||currentUser.platform) : '') +
-      row('الفئة', currentUser.creator_tier ? (TIER2[currentUser.creator_tier]||currentUser.creator_tier) : '') +
+      (function(){
+        var t = currentUser.creator_tier || 'micro';
+        var lbl = TIER2[t] || t;
+        return '<div style="display:flex;justify-content:space-between;align-items:center;padding:13px 4px;border-bottom:1px solid var(--line);">'
+             +   '<span style="font-size:13px;color:var(--ink-muted);">الفئة</span>'
+             +   '<span style="display:flex;align-items:center;gap:9px;">'
+             +     '<span style="font-size:13px;color:var(--ink);font-weight:500;">' + lbl + '</span>'
+             +     '<button type="button" onclick="openTierRequest()" style="background:none;border:0;color:var(--accent);font-family:inherit;font-size:12.5px;font-weight:600;cursor:pointer;padding:0;">طلب تعديل</button>'
+             +   '</span>'
+             + '</div>'
+             + '<div id="tier-req-status" style="display:none;"></div>';
+      })() +
       row('التصنيف', currentUser.category ? (CL2[currentUser.category]||currentUser.category) : '') +
       row('المدينة', currentUser.city ? (CITY2[currentUser.city]||currentUser.city) : '') +
       row('المتابعين', fStr) +
       (currentUser.bio ? '<div style="padding:14px 4px;"><div style="font-size:12px;color:var(--ink-muted);margin-bottom:6px;">النبذة</div><div style="font-size:13px;color:var(--ink);line-height:1.7;">'+currentUser.bio+'</div></div>' : '');
+    if (typeof loadTierRequestStatus === 'function') loadTierRequestStatus();
   }
 }
 
@@ -2663,6 +2675,146 @@ function feeLines(a) {
        + '<b>صافيك</b><b>' + Number(f.net_amount).toLocaleString('en-US') + ' ر.س</b>'
        + '</div>';
 }
+</script>
+
+<script>
+/* ===== طلب تعديل فئة الحساب — المعلن يطلب والأدمن يعتمد ===== */
+(function () {
+  if (window.__flfTierReq) return; window.__flfTierReq = true;
+
+  var TIER_NAME = { micro: 'Micro (UGC)', medium: 'Medium', mega: 'Mega' };
+  var STATUS_UI = {
+    pending:  { t: 'طلبك قيد المراجعة', c: '#8A6D1F', bg: 'rgba(214,173,46,0.14)' },
+    approved: { t: 'تم اعتماد طلبك',    c: '#1F6B3A', bg: 'rgba(31,107,58,0.12)' },
+    rejected: { t: 'لم يُعتمد الطلب',    c: '#8C2F26', bg: 'rgba(226,59,46,0.12)' }
+  };
+  var lastReq = null;
+
+  function esc(v) {
+    return String(v == null ? '' : v).replace(/[&<>"']/g, function (m) {
+      return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[m];
+    });
+  }
+
+  window.loadTierRequestStatus = async function () {
+    var box = document.getElementById('tier-req-status');
+    if (!box || typeof supabaseClient === 'undefined') return;
+    try {
+      var r = await supabaseClient
+        .from('creator_tier_requests')
+        .select('id,requested_tier,status,admin_note,created_at')
+        .order('created_at', { ascending: false })
+        .limit(1);
+      var row = r && r.data && r.data[0];
+      lastReq = row || null;
+      if (!row) { box.style.display = 'none'; box.innerHTML = ''; return; }
+      var ui = STATUS_UI[row.status] || STATUS_UI.pending;
+      box.style.display = '';
+      box.innerHTML =
+        '<div style="padding:11px 12px;margin:10px 0;border-radius:10px;background:' + ui.bg + ';">'
+        + '<div style="font-size:12.5px;font-weight:600;color:' + ui.c + ';">' + ui.t
+        + ' — ' + esc(TIER_NAME[row.requested_tier] || row.requested_tier) + '</div>'
+        + (row.admin_note
+            ? '<div style="font-size:12px;color:var(--ink-muted);margin-top:5px;line-height:1.6;">' + esc(row.admin_note) + '</div>'
+            : (row.status === 'pending'
+                ? '<div style="font-size:12px;color:var(--ink-muted);margin-top:5px;line-height:1.6;">نراجع الحساب ونبلّغك بالنتيجة.</div>'
+                : ''))
+        + '</div>';
+    } catch (e) { box.style.display = 'none'; }
+  };
+
+  function buildModal() {
+    if (document.getElementById('tier-req-modal')) return;
+    var fld = 'width:100%;box-sizing:border-box;background:#fff;border:1px solid var(--line-strong);border-radius:10px;padding:11px 13px;font-family:inherit;font-size:14px;color:var(--ink);';
+    var lbl = 'font-size:12px;color:var(--ink-muted);margin:0 2px 6px;display:block;';
+    var html = ''
+      + '<div id="tier-req-modal" style="display:none;position:fixed;inset:0;z-index:9999;background:#fff;overflow-y:auto;">'
+      +   '<div style="max-width:480px;margin:0 auto;padding:16px;direction:rtl;font-family:inherit;">'
+      +     '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;">'
+      +       '<button type="button" id="tr-cancel" aria-label="رجوع" style="background:none;border:0;font-size:24px;color:var(--ink);cursor:pointer;line-height:1;padding:4px 8px;">&#8594;</button>'
+      +       '<div style="font-weight:600;font-size:16px;">طلب تعديل الفئة</div>'
+      +       '<button type="button" id="tr-send" style="background:var(--accent);border:0;color:#fff;font-family:inherit;font-size:13px;font-weight:600;padding:8px 20px;border-radius:100px;cursor:pointer;">إرسال</button>'
+      +     '</div>'
+      +     '<div style="background:var(--surface,#F7F4F2);border:1px solid var(--line);border-radius:12px;padding:13px;margin-bottom:18px;font-size:12.5px;color:var(--ink-muted);line-height:1.75;">'
+      +       'فئة الحساب تحدّدها المنصة بعد التحقق، ولا تُعدَّل من الملف الشخصي. أرسل طلبك مع ما يثبت بيانات حسابك، ويصلك القرار بعد المراجعة.'
+      +     '</div>'
+      +     '<label style="' + lbl + '">الفئة الحالية</label>'
+      +     '<div id="tr-current" style="' + fld + 'margin-bottom:14px;background:var(--surface,#F7F4F2);color:var(--ink-muted);"></div>'
+      +     '<label style="' + lbl + '">الفئة المطلوبة</label>'
+      +     '<select id="tr-tier" style="' + fld + 'margin-bottom:14px;"></select>'
+      +     '<label style="' + lbl + '">عدد المتابعين الحالي</label>'
+      +     '<input id="tr-followers" type="text" inputmode="numeric" placeholder="مثال: 320000" style="' + fld + 'margin-bottom:14px;text-align:right;">'
+      +     '<label style="' + lbl + '">رابط حسابك</label>'
+      +     '<input id="tr-url" type="text" inputmode="url" dir="ltr" placeholder="https://" style="' + fld + 'margin-bottom:14px;text-align:right;">'
+      +     '<label style="' + lbl + '">سبب الطلب</label>'
+      +     '<textarea id="tr-note" rows="3" maxlength="300" placeholder="اشرح باختصار سبب طلبك" style="' + fld + 'resize:vertical;margin-bottom:8px;"></textarea>'
+      +     '<div id="tr-err" style="display:none;font-size:12.5px;color:var(--accent-ink,#8C2F26);margin:0 2px 16px;line-height:1.6;"></div>'
+      +   '</div>'
+      + '</div>';
+    document.body.insertAdjacentHTML('beforeend', html);
+    document.getElementById('tr-cancel').addEventListener('click', closeTierRequest);
+    document.getElementById('tr-send').addEventListener('click', sendTierRequest);
+  }
+
+  window.openTierRequest = function () {
+    if (lastReq && lastReq.status === 'pending') {
+      alert('لديك طلب قيد المراجعة. ننتظر نتيجته قبل استقبال طلب جديد.');
+      return;
+    }
+    buildModal();
+    var cur = (typeof currentUser !== 'undefined' && currentUser && currentUser.creator_tier) || 'micro';
+    document.getElementById('tr-current').textContent = TIER_NAME[cur] || cur;
+    var sel = document.getElementById('tr-tier');
+    sel.innerHTML = '';
+    ['micro', 'medium', 'mega'].forEach(function (k) {
+      if (k === cur) return;
+      var o = document.createElement('option');
+      o.value = k; o.textContent = TIER_NAME[k];
+      sel.appendChild(o);
+    });
+    var f = document.getElementById('tr-followers');
+    if (f && !f.value && typeof currentUser !== 'undefined' && currentUser && currentUser.followers) f.value = currentUser.followers;
+    var u = document.getElementById('tr-url');
+    if (u && !u.value && typeof currentUser !== 'undefined' && currentUser && currentUser.website) u.value = currentUser.website;
+    document.getElementById('tr-err').style.display = 'none';
+    document.getElementById('tier-req-modal').style.display = 'block';
+  };
+
+  window.closeTierRequest = function () {
+    var m = document.getElementById('tier-req-modal');
+    if (m) m.style.display = 'none';
+  };
+
+  async function sendTierRequest() {
+    var err = document.getElementById('tr-err');
+    var btn = document.getElementById('tr-send');
+    var tier = document.getElementById('tr-tier').value;
+    var followers = parseInt(String(document.getElementById('tr-followers').value).replace(/[^\d]/g, ''), 10) || null;
+    var url = String(document.getElementById('tr-url').value || '').trim();
+    var note = String(document.getElementById('tr-note').value || '').trim();
+
+    function fail(msg) { err.textContent = msg; err.style.display = 'block'; btn.disabled = false; btn.textContent = 'إرسال'; }
+
+    err.style.display = 'none';
+    if (!tier) return fail('اختر الفئة المطلوبة.');
+    if (!url) return fail('أضف رابط حسابك ليتمكّن الفريق من التحقق.');
+    if (!/^https?:\/\//i.test(url)) url = 'https://' + url.replace(/^\/+/, '');
+
+    btn.disabled = true; btn.textContent = 'جارٍ الإرسال…';
+    try {
+      var res = await supabaseClient.rpc('request_tier_change', {
+        p_requested_tier: tier, p_followers: followers, p_evidence_url: url, p_note: note || null
+      });
+      if (res.error) return fail(res.error.message || 'تعذّر إرسال الطلب، حاول مرة أخرى.');
+      closeTierRequest();
+      await loadTierRequestStatus();
+      alert('وصلنا طلبك. نراجع الحساب ونبلّغك بالنتيجة.');
+    } catch (e) {
+      fail('تعذّر إرسال الطلب، حاول مرة أخرى.');
+    }
+    btn.disabled = false; btn.textContent = 'إرسال';
+  }
+})();
 </script>
 
 </body>

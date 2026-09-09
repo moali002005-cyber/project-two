@@ -161,6 +161,7 @@ tbody tr.clickable:hover{background:var(--panel2)}
 .btn-ok:hover{background:#15cdc5}
 .btn-no{background:transparent;border-color:var(--line2);color:var(--danger)}
 .btn-no:hover{border-color:var(--danger);background:rgba(210,59,59,.06)}
+#tier-req-count .pending-badge{background:#8A6D1F;color:#fff;font-size:11px;border-radius:100px;padding:1px 7px;margin-inline-start:6px;vertical-align:middle}
 #pending-count .pending-badge{background:var(--danger);color:#fff;font-size:11px;border-radius:100px;padding:1px 7px;margin-inline-start:6px;vertical-align:middle}
 #overdue-count .pending-badge{background:var(--danger);color:#fff;font-size:11px;border-radius:100px;padding:1px 7px;margin-inline-start:6px;vertical-align:middle}
 .b-overdue{background:rgba(210,59,59,.13);color:#b32d2d}
@@ -288,7 +289,7 @@ pre.json{background:var(--bg);border:1px solid var(--line);border-radius:9px;pad
 
   <div class="tabs">
     <button class="tab active" data-tab="overview">نظرة عامة</button>
-    <button class="tab" data-tab="approvals">طلبات التفعيل<span id="pending-count"></span></button>
+    <button class="tab" data-tab="approvals">طلبات التفعيل<span id="pending-count"></span><span id="tier-req-count"></span></button>
     <button class="tab" data-tab="overdue">متأخرات الدفع<span id="overdue-count"></span></button>
     <a class="tab" href="/payouts.html" style="text-decoration:none;display:inline-block">صرف المستحقات ↗</a>
     <button class="tab" data-tab="analytics">تحليلات</button>
@@ -422,6 +423,11 @@ pre.json{background:var(--bg);border:1px solid var(--line);border-radius:9px;pad
 
   <!-- approvals -->
   <div class="panel" id="panel-approvals">
+    <div class="section">
+      <h2><i class="ti ti-arrows-up-down"></i> طلبات تعديل الفئة</h2>
+      <p class="dim" style="font-size:13px;margin-bottom:14px;line-height:1.7">الفئة لا يعدّلها المعلن بنفسه. يصلك الطلب هنا مع رابط حسابه وعدد متابعيه — تحقّق ثم اعتمد أو اعتذر. الاعتماد وحده هو ما يغيّر الفئة.</p>
+      <div id="tier-req-list"></div>
+    </div>
     <div class="section">
       <h2><i class="ti ti-user-check"></i> طلبات التفعيل (معلنون قيد المراجعة)</h2>
       <div id="approvals-list"></div>
@@ -626,6 +632,7 @@ async function loadAll(silent){
     $('#gate').style.display='none'; $('#dash').style.display='block';
     $('#err-box').style.display='none';
     renderLeaderBar(); renderOverview(); renderAnalytics(); renderInsights(); renderApprovals(); renderOverdue(); renderUsers(); renderCampaigns(); renderDeals(); renderCompanies();
+    loadTierRequests();
     updateUpd();
   }catch(err){
     console.error(err);
@@ -929,6 +936,77 @@ function renderInsights(){
   $('#insights').innerHTML = ins.length?ins.map(([lvl,ic,txt])=>
     '<div class="ins '+lvl+'"><i class="ti '+ic+'"></i><div class="it">'+esc(txt)+'</div></div>').join('') :
     '<div class="empty">لسه ما فيه بيانات كافية للرؤى — كمّل تشغيل المنصة وبتظهر تلقائيًا</div>';
+}
+
+// ===== طلبات تعديل فئة الحساب =====
+let TIER_REQS = [];
+const TIER_NAME_ADM = { micro:'Micro (UGC)', medium:'Medium', mega:'Mega' };
+
+async function loadTierRequests(){
+  try{
+    const { data, error } = await sb
+      .from('creator_tier_requests')
+      .select('id,creator_id,current_tier,requested_tier,followers_claimed,evidence_url,note,status,created_at')
+      .eq('status','pending')
+      .order('created_at',{ascending:false});
+    if(error) throw error;
+    TIER_REQS = Array.isArray(data) ? data : [];
+  }catch(e){ console.error('tier requests', e); TIER_REQS = []; }
+  renderTierRequests();
+}
+
+function renderTierRequests(){
+  const badge=$('#tier-req-count');
+  if(badge) badge.innerHTML = TIER_REQS.length?('<span class="pending-badge">'+num(TIER_REQS.length)+'</span>'):'';
+  const el=$('#tier-req-list'); if(!el) return;
+  if(!TIER_REQS.length){ el.innerHTML='<div class="empty">ما فيه طلبات تعديل فئة حاليًا</div>'; return; }
+  el.innerHTML = TIER_REQS.map(r=>{
+    const u = usersById[r.creator_id] || {};
+    const url = (r.evidence_url && /^https?:\/\//i.test(r.evidence_url)) ? r.evidence_url : null;
+    const from = TIER_NAME_ADM[r.current_tier] || r.current_tier || 'بلا فئة';
+    const to   = TIER_NAME_ADM[r.requested_tier] || r.requested_tier;
+    return '<div class="appr-card">'+
+      '<div class="appr-head">'+
+        '<div class="appr-name"><span class="badge b-creator">معلن</span> '+esc(u.name||'—')+
+          (u.handle?' <span class="dim">@'+esc(u.handle)+'</span>':'')+'</div>'+
+        '<span class="dim" style="font-size:12px">'+fmtDate(r.created_at)+'</span>'+
+      '</div>'+
+      '<div class="appr-meta">'+
+        '<span><i class="ti ti-arrows-up-down"></i>'+esc(from)+' ← <b>'+esc(to)+'</b></span>'+
+        '<span><i class="ti ti-users"></i>'+(r.followers_claimed?num(r.followers_claimed):'—')+' متابع (حسب الطلب)</span>'+
+        '<span><i class="ti ti-device-mobile"></i>'+esc(PLATFORM[u.platform]||u.platform||'—')+'</span>'+
+        '<span><i class="ti ti-users-group"></i>'+(u.followers?num(u.followers):'—')+' متابع (المسجّل)</span>'+
+        '<span><i class="ti ti-mail"></i>'+esc(u.email||'—')+'</span>'+
+      '</div>'+
+      (url
+        ? '<div style="margin-bottom:12px;font-size:13px"><i class="ti ti-link"></i> <a class="appr-link" href="'+esc(url)+'" target="_blank" rel="noopener">فتح حساب المعلن</a></div>'
+        : '<div class="dim" style="margin-bottom:12px;font-size:13px">لا يوجد رابط للتحقق</div>')+
+      (r.note?'<div style="margin-bottom:12px;font-size:13px;line-height:1.7">«'+esc(r.note)+'»</div>':'')+
+      '<div class="appr-actions">'+
+        '<button class="btn-appr btn-ok" onclick="decideTierReq(\''+esc(String(r.id))+'\',true)"><i class="ti ti-check"></i> اعتماد الفئة</button>'+
+        '<button class="btn-appr btn-no" onclick="decideTierReq(\''+esc(String(r.id))+'\',false)"><i class="ti ti-x"></i> اعتذار</button>'+
+      '</div></div>';
+  }).join('');
+}
+
+async function decideTierReq(id, approve){
+  const r = TIER_REQS.find(x=>x.id===id); if(!r) return;
+  const to = TIER_NAME_ADM[r.requested_tier] || r.requested_tier;
+  let note = null;
+  if(approve){
+    if(!confirm('اعتماد نقل هذا الحساب إلى '+to+'؟')) return;
+    note = prompt('ملاحظة للمعلن (اختيارية):','') ;
+  }else{
+    note = prompt('سبب الاعتذار — يظهر للمعلن (اختياري):','');
+    if(note===null) return;
+  }
+  try{
+    const { error } = await sb.rpc('decide_tier_request',{
+      p_request_id:id, p_approve:!!approve, p_admin_note: (note && note.trim())? note.trim() : null
+    });
+    if(error) throw error;
+    await loadAll(true);
+  }catch(e){ alert('تعذّر تنفيذ القرار: '+(e.message||e)); }
 }
 
 // ===== approvals =====
