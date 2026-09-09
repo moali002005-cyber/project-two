@@ -584,17 +584,6 @@ textarea { resize: vertical; min-height: 80px; }
         </div>
       </div>
 
-      <div class="field" id="tier-field" style="display:none;">
-        <label>تصنيف حسابك</label>
-        <select name="creator_tier" id="creator-tier-select">
-          <option value="">اختر تصنيفك</option>
-          <option value="micro">Micro (UGC)</option>
-          <option value="medium">Medium</option>
-          <option value="mega">Mega</option>
-        </select>
-        <div class="hint">حدّد تصنيفك ليصلك ما يناسبك من حملات المعلنين على تيك توك.</div>
-      </div>
-
       <div class="field">
         <label>رابط حسابك في وسائل التواصل الاجتماعي</label>
         <input type="text" name="tiktok_url" required placeholder="رابط أو اسم حسابك (تيك توك، سناب شات، انستقرام...)" dir="ltr">
@@ -834,7 +823,7 @@ async function submitForm(event, role) {
     userData.email = email;
     userData.whatsapp = fd.get('whatsapp');
     userData.platform = fd.get('platform');
-    userData.creator_tier = (fd.get('platform') === 'tiktok') ? (fd.get('creator_tier') || null) : null;
+    userData.creator_tier = 'micro'; // التصنيف موحّد لجميع المعلنين — تحدّده المنصة لا المعلن
     userData.handle = fd.get('handle');
     userData.followers = parseInt(fd.get('followers')) || 0;
     userData.category = fd.get('category');
