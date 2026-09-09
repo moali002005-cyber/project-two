@@ -1195,3 +1195,17 @@ try { simblPlan(); } catch (e) {}
     document.addEventListener('DOMContentLoaded', boot);
   } else { boot(); }
 })();
+
+
+/* ===== حملة «مقابل منتج»: ما فيها أي تسعيرة ===== */
+window.flfIsBarter = function (c) {
+  return !!c && c.compensation === 'product';
+};
+window.flfBarterText = function (c) {
+  var v = c && c.product_value_sar;
+  return v ? ('\uD83C\uDF81 مقابل منتج \u00B7 قيمته ' + Number(v).toLocaleString('en-US') + ' ر.س')
+           : '\uD83C\uDF81 مقابل منتج';
+};
+window.flfIsBarterApp = function (a) {
+  return !!a && a.payment_status === 'barter';
+};

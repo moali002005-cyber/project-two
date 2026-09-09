@@ -1995,7 +1995,7 @@ function renderCreatorDealCard(c, a) {
     <div class="deal-card${(isCompleted || didntWin) ? ' completed' : ''}" id="ac-${a.id}">
       <div class="dc-head">
         <span class="dc-av">${escHtml(initial)}</span>
-        <div class="dc-main"><div class="dc-title">${escHtml(c.title || 'حملة')}</div><div class="dc-sub">${escHtml(brandName)}${(!isNegotiating) ? ' · ' + price.toLocaleString('en-US') + ' ر.س' : ''}</div>${briefBtnHtml}${attachBtnHtml}</div>
+        <div class="dc-main"><div class="dc-title">${escHtml(c.title || 'حملة')}</div><div class="dc-sub">${escHtml(brandName)}${(window.flfIsBarter && flfIsBarter(c)) ? ' · ' + flfBarterText(c) : ((!isNegotiating) ? ' · ' + price.toLocaleString('en-US') + ' ر.س' : '')}</div>${briefBtnHtml}${attachBtnHtml}</div>
         ${badge}
       </div>
       ${body}
@@ -2312,7 +2312,7 @@ function renderOfferCard(c, a) {
           ${briefBtnHtml}${attachBtnHtml}
         </div>
         <div class="ac-side">
-          ${isNegotiating ? '' : `<div class="ac-price"><span class="ac-price-lbl">${priceLabel}</span>${price.toLocaleString('en-US')} ر.س</div>`}
+          ${(window.flfIsBarterApp && flfIsBarterApp(a)) ? `<div class="ac-price"><span class="ac-price-lbl">مقابل</span>\uD83C\uDF81 منتج</div>` : (isNegotiating ? '' : `<div class="ac-price"><span class="ac-price-lbl">${priceLabel}</span>${price.toLocaleString('en-US')} ر.س</div>`)}
           ${headRight}
         </div>
         ${expandable ? '<span class="ac-chev">▾</span>' : ''}

@@ -2896,7 +2896,7 @@ function renderSingleCampaign(c) {
             <h3>${c.title}</h3>
             <p class="desc">${c.description}</p>
             <div class="campaign-meta">
-              <span><strong>الميزانية للمعلن الواحد:</strong> ${c.budget} ر.س</span>
+              <span>${(window.flfIsBarter && flfIsBarter(c)) ? '<strong>مقابل التعاون:</strong> ' + flfBarterText(c) : '<strong>الميزانية للمعلن الواحد:</strong> ' + c.budget + ' ر.س'}</span>
               ${c.publish_timing ? `<span><strong>موعد النشر:</strong> ${publishTimingText(c)}</span>` : ''}
               ${c.platform ? `<span><strong>المنصة:</strong> ${PLATFORM_LABELS[c.platform] || c.platform}</span>` : ''}
               ${c.follower_range ? `<span><strong>المتابعين:</strong> ${followerRangeText(c)}</span>` : ''}

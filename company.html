@@ -739,6 +739,7 @@ function renderCompare(){
 
 function payChip(a){
   const stg=a.stage||1;
+  if(a.payment_status==='barter') return '<span class="pay-chip paid">\uD83C\uDF81 مقابل منتج</span>';
   if(a.platform_paid!==true) return '<span class="pay-chip await">⏳ بانتظار الدفع</span>';
   if(stg>=9) return '<span class="pay-chip paid">✓ مدفوع — مكتمل</span>';
   return '<span class="pay-chip prog">مدفوع · قيد التنفيذ · مرحلة '+num(stg)+'/9</span>';
@@ -754,7 +755,7 @@ function renderDeals(){
     const handle=u.handle?('@'+String(u.handle).replace(/^@/,'')):'';
     const plat=u.platform?(' · '+esc(u.platform)):'';
     return '<div class="deal-row"><div class="dn"><b>'+esc(u.name||'مؤثر')+'</b><small>'+esc(handle)+plat+' · '+fmtDate(a.closed_at||a.created_at)+'</small></div>'
-      +payChip(a)+'<div class="damt">'+money(val(a))+'</div></div>';
+      +payChip(a)+'<div class="damt">'+(a.payment_status==='barter'?'\u2014':money(val(a)))+'</div></div>';
   }).join('');
   box.innerHTML='<div class="dsh-card"><h4>🤝 صفقاتي المعتمدة ('+num(deals.length)+')</h4><div class="hint">كل صفقة اعتمدتها — المؤثر والمبلغ وحالة الدفع. للتفاصيل الكاملة افتح «الحملات السابقة».</div>'+rows+'</div>';
 }
