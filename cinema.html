@@ -1,195 +1,120 @@
 <!DOCTYPE html>
-<html lang="ar" dir="rtl">
-<head>
-<meta charset="utf-8">
+<html lang="ar" dir="rtl"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>فلفلونسر — مشاهد الفلفلة</title>
+<title>فلفلونسر — فلفل يتحوّل</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700;800;900&display=swap">
 <style>
+:root{--r:#EC1C24;--ink:#16110F;--dim:#6B615D;--ln:#EDE7E4}
 *{box-sizing:border-box}
-body{margin:0;background:#0C0908;color:#F2ECE9;font-family:"Tajawal",system-ui,sans-serif;line-height:1.8}
-.w{max-width:1080px;margin:0 auto;padding:0 22px}
-.top{padding:46px 0 26px;border-bottom:1px solid #241C19}
-.top h1{margin:0;font-size:clamp(24px,3.6vw,34px);font-weight:900}
-.top p{color:#A99E99;margin:10px 0 0;max-width:60ch}
-.scene{border-bottom:1px solid #241C19;padding:34px 0 40px}
-.hd{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;margin-bottom:6px}
-.tag{background:#E5402B;color:#fff;font-weight:900;font-size:12.5px;border-radius:999px;padding:4px 13px}
-.hd h2{margin:0;font-size:22px;font-weight:800}
-.dsc{color:#A99E99;font-size:15px;margin:0 0 20px;max-width:62ch}
-.stage{position:relative;border:1px solid #241C19;border-radius:22px;overflow:hidden;
-  background:radial-gradient(700px 380px at 50% 30%,#1C1512 0%,#0E0A09 70%);
-  min-height:340px;display:flex;align-items:center;justify-content:center}
-.stage.lite{background:radial-gradient(700px 380px at 50% 30%,#FFF6F3 0%,#F6F1EF 72%);border-color:#E7DFDC}
-.holder{width:230px;height:330px;position:relative}
-.holder svg{width:100%;height:100%;overflow:visible}
-.replay{position:absolute;inset-block-end:14px;inset-inline-start:14px;background:rgba(255,255,255,.08);
-  color:#fff;border:1px solid rgba(255,255,255,.18);border-radius:999px;padding:8px 16px;
-  font:inherit;font-weight:700;font-size:13.5px;cursor:pointer}
-.stage.lite .replay{background:#fff;color:#16110F;border-color:#DCD3D0}
-.replay:hover{background:rgba(255,255,255,.16)}
-.glow{position:absolute;width:340px;height:340px;border-radius:50%;pointer-events:none;
-  background:radial-gradient(circle,rgba(229,64,43,.30),transparent 66%);filter:blur(12px)}
-.foot{padding:44px 0 70px;color:#A99E99}
-.foot b{color:#fff}
-@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
-</style>
-</head>
-<body>
-
-<header class="top"><div class="w">
-  <h1>مشاهد سينمائية للفلفلة</h1>
-  <p>أربعة مشاهد على الشعار الرسمي نفسه — تُقرأ خطوطه السبعة الحقيقية من <span dir="ltr">/brand/chili.svg</span> وتُحرَّك، فما فيه رسمة مقلّدة. اضغط «إعادة» تحت أي مشهد لتشوفه من البداية.</p>
+body{margin:0;background:#fff;color:var(--ink);font-family:"Tajawal",system-ui,sans-serif;line-height:1.85}
+.wrap{max-width:1000px;margin:0 auto;padding:0 22px}
+h1,h3{margin:0;font-weight:900;text-wrap:balance}
+.head{padding:44px 0 4px;text-align:center}
+.kick{font-size:13px;font-weight:800;color:var(--r)}
+.head h1{font-size:clamp(26px,4vw,38px);margin-top:10px}
+.head p{color:var(--dim);max-width:58ch;margin:12px auto 0;font-size:16.5px}
+.film{margin:24px 0 0;border:1px solid var(--ln);border-radius:26px;background:#fff;
+ padding:26px 20px 24px;box-shadow:0 18px 50px rgba(22,17,15,.06)}
+.canvas{display:flex;justify-content:center;align-items:center;min-height:320px}
+.canvas svg{width:290px;height:290px;overflow:visible}
+#line{fill:none;stroke:url(#brand);stroke-width:15;stroke-linecap:round;stroke-linejoin:round}
+.caps{position:relative;min-height:126px;margin-top:6px;text-align:center}
+.cap{position:absolute;inset:0;opacity:0;transform:translateY(9px);
+ transition:opacity .45s ease,transform .45s ease;pointer-events:none}
+.cap.on{opacity:1;transform:none}
+.cap h3{font-size:clamp(21px,3vw,28px)}
+.cap p{margin:8px auto 0;max-width:52ch;color:var(--dim);font-size:16px}
+.dots{display:flex;gap:8px;justify-content:center;margin-top:12px}
+.dot{width:7px;height:7px;border-radius:50%;background:#E2DAD6;transition:all .35s}
+.dot.on{background:var(--r);width:22px;border-radius:999px}
+.ctl{display:flex;gap:10px;justify-content:center;margin-top:18px}
+.ctl button{background:#fff;color:var(--ink);border:1px solid #DCD3D0;border-radius:999px;
+ padding:9px 20px;font:inherit;font-weight:700;font-size:14px;cursor:pointer}
+.ctl button:hover{border-color:var(--ink)}
+.foot{padding:30px 0 70px;color:var(--dim);text-align:center;font-size:15.5px}
+.foot b{color:var(--ink)}
+</style></head><body>
+<header class="head"><div class="wrap">
+<div class="kick">مشهد الهيرو</div>
+<h1>الفلفلة تتحوّل — وكل تحوّل ميزة.</h1>
+<p>الفلفلة هي ملف شعارك الرسمي نفسه: تتفرّق خطوطها، ويرسم الخط المزايا وحدة وحدة، ثم ترجع تتجمّع فلفلة كما هي بالضبط.</p>
 </div></header>
-
-<section class="scene"><div class="w">
-  <div class="hd"><span class="tag">مشهد ١</span><h2>الفلفلة ترسم نفسها</h2></div>
-  <p class="dsc">كل خط لوني يُرسم بالترتيب — الأصفر ثم الأحمر ثم البنفسجي ثم الأزرق، والورقة الخضراء آخر شي. كأن أحدًا يرسمها أمامك.</p>
-  <div class="stage" data-scene="draw"><div class="glow"></div><div class="holder"></div>
-    <button class="replay" type="button">إعادة ↻</button></div>
-</div></section>
-
-<section class="scene"><div class="w">
-  <div class="hd"><span class="tag">مشهد ٢</span><h2>الخطوط تتجمّع</h2></div>
-  <p class="dsc">الخطوط تجي من بعيد وهي تدور، وتتراكب وحدة فوق الثانية لين تقفل الشكل. مشهد تكوين.</p>
-  <div class="stage" data-scene="assemble"><div class="glow"></div><div class="holder"></div>
-    <button class="replay" type="button">إعادة ↻</button></div>
-</div></section>
-
-<section class="scene"><div class="w">
-  <div class="hd"><span class="tag">مشهد ٣</span><h2>الفلفلة الحيّة</h2></div>
-  <p class="dsc">الشكل مكتمل من أول لحظة، لكن الخطوط تتنفّس وتتموّج بلطف بلا توقف. مناسب لو تبيه خلف العنوان طول الوقت.</p>
-  <div class="stage lite" data-scene="alive"><div class="holder"></div>
-    <button class="replay" type="button">إعادة ↻</button></div>
-</div></section>
-
-<section class="scene"><div class="w">
-  <div class="hd"><span class="tag">مشهد ٤</span><h2>تتفكّك… وترجع</h2></div>
-  <p class="dsc">الخطوط تتناثر في الفضاء ثم تنجذب وترجع تتشكّل. أقوى مشهد استعراضي، ويصلح لفتح الصفحة.</p>
-  <div class="stage" data-scene="burst"><div class="glow"></div><div class="holder"></div>
-    <button class="replay" type="button">إعادة ↻</button></div>
-</div></section>
-
-<footer class="foot"><div class="w">
-  <p>قل لي رقم المشهد و<b>أنزّله على الصفحة الرئيسية</b> — نقدر نخليه في الهيرو فوق، أو كفاصل قبل قسم آلية العمل.</p>
-</div></footer>
-
+<div class="wrap"><div class="film">
+<div class="canvas"><svg id="stage" viewBox="0 0 300 300" aria-label="فلفل يتحوّل بين مزايا المنصة">
+<defs><linearGradient id="brand" x1="0.15" y1="0" x2="0.85" y2="1">
+<stop offset="0%" stop-color="#0DB04B"/><stop offset="22%" stop-color="#FCB813"/>
+<stop offset="52%" stop-color="#EC1C24"/><stop offset="78%" stop-color="#3777BB"/>
+<stop offset="100%" stop-color="#7C51A0"/></linearGradient></defs>
+<g id="logo"></g><path id="line" opacity="0"></path>
+</svg></div>
+<div class="caps"><div class="cap on"><h3>أنا فلفل</h3><p>مدير حملاتك الذكي.</p></div><div class="cap"><h3>أكتب البريف</h3><p>فكرة بجملة وحدة… وأطلعها حملة كاملة: الهدف، المخرجات، الميزانية، والمواعيد.</p></div><div class="cap"><h3>أفاوض عنك</h3><p>أكلّم المؤثر بالعربي، وأقفل السعر داخل ميزانيتك — ومن غير مكالمة منك.</p></div><div class="cap"><h3>أتابع الشحن</h3><p>أسجّل شركة الشحن ورقم التتبّع، وأتأكد إن منتجك وصل.</p></div><div class="cap"><h3>أستلم المحتوى</h3><p>الفيديو يوصلني قبل ما يُنشر — وتشوفه أنت أول واحد.</p></div><div class="cap"><h3>ما ينشر إلا بموافقتك</h3><p>تعتمد أو تطلب تعديل. القرار قرارك، دايم.</p></div><div class="cap"><h3>أصرف وأفوتر</h3><p>مستحق المؤثر يُصرف، وفاتورتك تطلع — بلا تحويلات يدوية.</p></div><div class="cap"><h3>وأرجع فلفلة</h3><p>جاهز للحملة الجاية.</p></div></div><div class="dots"><i class="dot on"></i><i class="dot"></i><i class="dot"></i><i class="dot"></i><i class="dot"></i><i class="dot"></i><i class="dot"></i><i class="dot"></i></div>
+<div class="ctl"><button type="button" id="again">من البداية ↻</button>
+<button type="button" id="hold">إيقاف مؤقّت</button></div>
+</div>
+<p class="foot">أول وآخر لقطة = <b>ملف الشعار نفسه</b>، ما رسمته من جديد.</p>
+</div>
 <script>
 (function(){
-var SRC='/brand/chili.svg';
-var cache=null;
+var ICONS={"doc":"M104 72C108 72 121 72 130 72C139 72 147 72 156 72C165 72 175 70 182 72C189 74 194 78 196 84C198 90 196 101 196 110C196 119 196 127 196 136C196 145 196 153 196 162C196 171 196 179 196 188C196 197 198 207 196 214C194 221 190 226 184 228C178 230 167 228 158 228C149 228 141 228 132 228C123 228 111 232 106 228C101 224 104 212 104 204C104 196 104 187 104 178C104 169 104 161 104 152C104 143 104 135 104 126C104 117 104 109 104 100C104 91 104 78 104 74","bubble":"M78 88C83 88 97 88 106 88C115 88 125 88 134 88C144 88 153 88 162 88C172 88 181 88 190 88C200 88 213 84 218 88C224 92 221 104 222 113C223 121 222 131 222 141C222 150 224 162 222 169C220 176 214 180 207 182C200 184 188 181 179 182C170 183 161 183 153 187C146 192 140 206 135 209C131 212 129 211 127 206C126 202 131 186 126 182C122 178 106 183 98 182C90 181 81 180 78 174C75 168 78 156 78 146C78 137 78 127 78 118C78 109 78 95 78 90","box":"M150 62C155 65 171 73 182 79C193 84 209 86 214 95C220 104 216 118 216 130C216 142 216 154 216 166C216 178 221 193 216 202C211 211 196 214 185 220C175 225 164 236 153 236C143 237 132 228 121 223C110 218 95 215 89 207C83 198 85 185 84 174C83 162 84 149 84 137C84 125 79 111 84 101C89 92 101 88 111 82C121 76 137 64 143 65C150 67 149 81 150 91C151 101 148 118 150 127C152 135 154 143 160 142C166 140 179 126 188 119C197 111 211 100 216 96","play":"M114 70C117 72 127 79 133 83C139 88 145 92 152 96C158 101 164 105 170 110C177 114 183 118 189 123C195 127 202 132 208 136C214 140 226 145 227 149C227 154 216 158 210 162C204 167 198 171 192 176C185 180 179 184 173 189C166 193 160 198 154 202C148 206 141 211 135 215C129 220 120 229 116 228C113 227 114 217 114 210C114 203 114 195 114 187C114 179 114 172 114 164C114 156 114 149 114 141C114 133 114 126 114 118C114 110 114 103 114 95C114 87 114 76 114 72","check":"M74 150C75 151 79 156 82 158C85 161 88 164 90 167C93 170 96 172 98 175C101 178 104 181 106 184C109 186 112 189 115 192C117 195 120 199 123 201C125 202 128 201 131 199C133 197 136 193 139 190C141 188 144 185 147 182C149 179 152 176 155 173C157 170 160 167 162 165C165 162 168 159 170 156C173 153 176 150 178 147C181 145 184 142 186 139C189 136 192 133 194 130C197 127 200 125 202 122C205 119 207 116 210 113C213 110 215 107 218 105C221 102 225 97 226 96","coin":"M150 70C154 71 168 72 176 74C184 77 192 82 199 87C206 92 212 99 217 106C222 114 225 122 227 130C229 139 230 148 229 157C229 165 227 174 223 182C220 190 215 198 209 204C203 210 196 216 188 220C180 224 172 227 163 229C155 230 145 230 137 229C128 227 120 224 112 220C104 216 97 210 91 204C85 198 80 190 77 182C73 174 71 165 71 157C70 148 71 139 73 130C75 122 78 114 83 106C88 99 94 92 101 87C108 82 116 77 124 74C132 72 146 71 150 70"};
+var SEQ=["doc", "doc", "doc", "bubble", "bubble", "box", "box", "play", "play", "check", "check", "coin", "coin", "coin"], TIMES="0.00000;0.16757;0.25135;0.29730;0.38108;0.42703;0.51081;0.55676;0.64054;0.68649;0.77027;0.81622;0.90000;1.00000", MARKS=[0.0, 3.1, 5.5, 7.9, 10.3, 12.7, 15.1, 17.5];
+var TOTAL=18.5, REST=2.2, OUT=0.9, LINE=14.4, BACK=1.0;
+var stage=document.getElementById('stage'), logoG=document.getElementById('logo'), line=document.getElementById('line');
+var caps=[].slice.call(document.querySelectorAll('.cap')), dots=[].slice.call(document.querySelectorAll('.dot'));
+var ribbons=[], t0=performance.now(), paused=false, pauseAt=0, cur=-1;
 
-function load(){
-  if(cache) return Promise.resolve(cache);
-  return fetch(SRC).then(function(r){return r.text();}).then(function(t){
-    cache=t; return t;
+var vals=SEQ.map(function(k){return ICONS[k]}).join(';');
+var an=document.createElementNS('http://www.w3.org/2000/svg','animate');
+an.setAttribute('attributeName','d'); an.setAttribute('dur',TOTAL+'s');
+an.setAttribute('repeatCount','indefinite'); an.setAttribute('calcMode','spline');
+an.setAttribute('keyTimes',TIMES);
+an.setAttribute('keySplines',SEQ.slice(1).map(function(){return '0.45 0 0.2 1'}).join(';'));
+an.setAttribute('values',vals);
+line.setAttribute('d',ICONS[SEQ[0]]); line.appendChild(an);
+
+fetch('/brand/chili.svg').then(function(r){return r.text()}).then(function(t){
+  var d=new DOMParser().parseFromString(t,'image/svg+xml'), src=d.documentElement;
+  var vb=(src.getAttribute('viewBox')||'0 0 300 300').split(/[\s,]+/).map(Number);
+  var s=Math.min(250/vb[2],250/vb[3]);
+  var g=document.createElementNS('http://www.w3.org/2000/svg','g');
+  g.setAttribute('transform','translate('+(150-(vb[0]+vb[2]/2)*s)+','+(150-(vb[1]+vb[3]/2)*s)+') scale('+s+')');
+  [].slice.call(src.querySelectorAll('path')).forEach(function(p){
+    var n=p.cloneNode(true); g.appendChild(n); ribbons.push(n);
+    n.style.transformBox='fill-box'; n.style.transformOrigin='center';
   });
-}
+  logoG.appendChild(g);
+}).catch(function(){});
 
-function mount(holder, txt){
-  holder.innerHTML=txt;
-  var svg=holder.querySelector('svg');
-  if(!svg) return null;
-  svg.removeAttribute('width'); svg.removeAttribute('height');
-  svg.setAttribute('preserveAspectRatio','xMidYMid meet');
-  return svg;
-}
-
-function shapes(svg){
-  return [].slice.call(svg.querySelectorAll('path,polygon,ellipse,circle,rect'));
-}
-
-/* ---- scene 1: self draw (per-shape wipe mask) ---- */
-function sceneDraw(svg){
-  var ps=shapes(svg);
-  var ns='http://www.w3.org/2000/svg';
-  var defs=document.createElementNS(ns,'defs');
-  svg.insertBefore(defs, svg.firstChild);
-  ps.forEach(function(p,i){
-    var bb; try{ bb=p.getBBox(); }catch(e){ return; }
-    var id='wipe'+i+'_'+Math.random().toString(36).slice(2,7);
-    var m=document.createElementNS(ns,'mask');
-    m.setAttribute('id',id);
-    m.setAttribute('maskUnits','userSpaceOnUse');
-    var r=document.createElementNS(ns,'rect');
-    r.setAttribute('x',bb.x-2); r.setAttribute('y',bb.y+bb.height+2);
-    r.setAttribute('width',bb.width+4); r.setAttribute('height',bb.height+4);
-    r.setAttribute('fill','#fff');
-    var an=document.createElementNS(ns,'animate');
-    an.setAttribute('attributeName','y');
-    an.setAttribute('from',bb.y+bb.height+2); an.setAttribute('to',bb.y-2);
-    an.setAttribute('dur','0.62s'); an.setAttribute('begin',(0.18*i)+'s');
-    an.setAttribute('fill','freeze'); an.setAttribute('calcMode','spline');
-    an.setAttribute('keySplines','.25 .1 .25 1'); an.setAttribute('keyTimes','0;1');
-    r.appendChild(an); m.appendChild(r); defs.appendChild(m);
-    p.setAttribute('mask','url(#'+id+')');
+function ease(x){return x<.5?4*x*x*x:1-Math.pow(-2*x+2,3)/2}
+function frame(el){
+  var out0=REST,out1=REST+OUT,back0=REST+OUT+LINE;
+  ribbons.forEach(function(p,i){
+    var ang=(i*51)%360,rad=ang*Math.PI/180,dist=210;
+    var dx=Math.cos(rad)*dist,dy=Math.sin(rad)*dist,k;
+    if(el<out0)k=0; else if(el<out1)k=ease((el-out0)/OUT);
+    else if(el<back0)k=1; else k=1-ease((el-back0)/BACK);
+    p.style.opacity=String(1-k);
+    p.style.transform='translate('+(dx*k)+'px,'+(dy*k)+'px) rotate('+(ang*k*.5)+'deg) scale('+(1-.45*k)+')';
   });
-  svg.style.filter='drop-shadow(0 14px 40px rgba(229,64,43,.35))';
+  var lo=0;
+  if(el>REST+OUT*.45 && el<back0+BACK*.55){
+    lo=Math.min(Math.min(1,(el-(REST+OUT*.45))/(OUT*.55)),
+                Math.min(1,Math.max(0,(back0+BACK*.55-el)/(BACK*.55))));
+  }
+  line.setAttribute('opacity',lo.toFixed(3));
+  var idx=0; for(var i=0;i<MARKS.length;i++){ if(el>=MARKS[i]-0.25) idx=i; }
+  if(idx!==cur){cur=idx;
+    caps.forEach(function(c,k){c.classList.toggle('on',k===idx)});
+    dots.forEach(function(d,k){d.classList.toggle('on',k===idx)});}
 }
-
-/* ---- scene 2: assemble ---- */
-function sceneAssemble(svg){
-  var ps=shapes(svg);
-  ps.forEach(function(p,i){
-    var ang=(i*47)%360, rad=ang*Math.PI/180, dist=190+i*26;
-    var dx=Math.cos(rad)*dist, dy=Math.sin(rad)*dist;
-    p.style.transformBox='fill-box'; p.style.transformOrigin='center';
-    p.animate([
-      {transform:'translate('+dx+'px,'+dy+'px) rotate('+(ang/2)+'deg) scale(.4)',opacity:0},
-      {transform:'none',opacity:1}
-    ],{duration:1150,delay:i*105,easing:'cubic-bezier(.16,.9,.3,1)',fill:'both'});
-  });
-  svg.style.filter='drop-shadow(0 14px 40px rgba(229,64,43,.35))';
-}
-
-/* ---- scene 3: alive ---- */
-function sceneAlive(svg){
-  var ps=shapes(svg);
-  ps.forEach(function(p,i){
-    p.style.transformBox='fill-box'; p.style.transformOrigin='center';
-    p.animate([
-      {transform:'translateY(0px) rotate(0deg)'},
-      {transform:'translateY('+(i%2?-4:4)+'px) rotate('+(i%2?.9:-.9)+'deg)'},
-      {transform:'translateY(0px) rotate(0deg)'}
-    ],{duration:3600+i*260,iterations:Infinity,easing:'ease-in-out',delay:i*120});
-  });
-}
-
-/* ---- scene 4: burst & reform ---- */
-function sceneBurst(svg){
-  var ps=shapes(svg);
-  ps.forEach(function(p,i){
-    var ang=(i*67)%360, rad=ang*Math.PI/180, dist=150+i*22;
-    var dx=Math.cos(rad)*dist, dy=Math.sin(rad)*dist;
-    p.style.transformBox='fill-box'; p.style.transformOrigin='center';
-    p.animate([
-      {transform:'none',opacity:1,offset:0},
-      {transform:'translate('+dx+'px,'+dy+'px) rotate('+ang+'deg) scale(.55)',opacity:.35,offset:.42},
-      {transform:'translate('+(dx*.25)+'px,'+(dy*.25)+'px) rotate('+(ang*.2)+'deg) scale(.9)',opacity:.8,offset:.68},
-      {transform:'none',opacity:1,offset:1}
-    ],{duration:4200,delay:i*70,iterations:Infinity,easing:'cubic-bezier(.4,0,.2,1)'});
-  });
-  svg.style.filter='drop-shadow(0 14px 44px rgba(229,64,43,.4))';
-}
-
-var RUN={draw:sceneDraw,assemble:sceneAssemble,alive:sceneAlive,burst:sceneBurst};
-
-function play(stage){
-  var kind=stage.getAttribute('data-scene');
-  var holder=stage.querySelector('.holder');
-  load().then(function(txt){
-    var svg=mount(holder,txt);
-    if(!svg){holder.textContent='تعذّر تحميل الشعار';return;}
-    requestAnimationFrame(function(){ (RUN[kind]||sceneAlive)(svg); });
-  }).catch(function(){ holder.textContent='تعذّر تحميل الشعار'; });
-}
-
-[].slice.call(document.querySelectorAll('.stage')).forEach(function(st){
-  play(st);
-  var b=st.querySelector('.replay');
-  if(b) b.addEventListener('click',function(){ play(st); });
-});
+function tick(now){ if(!paused) frame(((now-t0)/1000)%TOTAL); requestAnimationFrame(tick); }
+requestAnimationFrame(tick);
+document.getElementById('again').addEventListener('click',function(){
+  try{stage.setCurrentTime(0)}catch(e){} t0=performance.now(); cur=-1;
+  if(paused){paused=false;try{stage.unpauseAnimations()}catch(e){}
+    document.getElementById('hold').textContent='إيقاف مؤقّت';}});
+document.getElementById('hold').addEventListener('click',function(){
+  paused=!paused; try{paused?stage.pauseAnimations():stage.unpauseAnimations()}catch(e){}
+  if(!paused)t0=performance.now()-(pauseAt*1000); else pauseAt=(((performance.now()-t0)/1000)%TOTAL);
+  this.textContent=paused?'تشغيل ▶':'إيقاف مؤقّت';});
 })();
-</script>
-</body>
-</html>
+</script></body></html>
