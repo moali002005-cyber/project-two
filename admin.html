@@ -448,10 +448,12 @@ pre.json{background:var(--bg);border:1px solid var(--line);border-radius:9px;pad
     <div class="toolbar">
       <div class="search"><i class="ti ti-search"></i><input id="u-search" placeholder="ابحث بالاسم، الإيميل، الجوال…"></div>
       <select class="filter" id="u-role"><option value="">كل الأنواع</option><option value="brand">شركات</option><option value="creator">معلنون</option></select>
+      <select class="filter" id="u-tier"><option value="">كل التصنيفات</option><option value="micro">Micro</option><option value="medium">Medium</option><option value="mega">Mega</option><option value="__none">بلا تصنيف</option></select>
       <span class="count-tag" id="u-count"></span>
     </div>
+    <div id="u-tier-chips" style="display:flex;flex-wrap:wrap;gap:8px;margin:0 0 12px"></div>
     <div class="tbl-wrap">
-      <table><thead><tr><th>الاسم</th><th>النوع</th><th>المنصة/القطاع</th><th>متابعين/حجم</th><th>تواصل</th><th>تسجيل</th><th>إجراء</th></tr></thead>
+      <table><thead><tr><th>الاسم</th><th>النوع</th><th>التصنيف</th><th>المنصة/القطاع</th><th>متابعين/حجم</th><th>تواصل</th><th>تسجيل</th><th>إجراء</th></tr></thead>
       <tbody id="users-tbody"></tbody></table>
     </div>
   </div>
@@ -1316,11 +1318,37 @@ async function startImpersonation(userId){
   }catch(e){ hideImpOverlay(); alert('خطأ غير متوقع: '+(e && e.message ? e.message : e)); }
 }
 
+const TIER_LABEL={micro:'Micro',medium:'Medium',mega:'Mega'};
+function tierOf(u){ return (u && u.role==='creator') ? (u.creator_tier || '__none') : ''; }
+function renderTierChips(){
+  const box=$('#u-tier-chips'); if(!box) return;
+  const cur=$('#u-tier').value;
+  const counts={micro:0,medium:0,mega:0,__none:0};
+  let total=0;
+  USERS.forEach(u=>{ if(u.role!=='creator') return; total++; const t=tierOf(u); if(counts[t]!=null) counts[t]++; });
+  const items=[['','كل المعلنين',total],['micro','Micro',counts.micro],
+               ['medium','Medium',counts.medium],['mega','Mega',counts.mega],
+               ['__none','بلا تصنيف',counts.__none]];
+  box.innerHTML=items.map(function(it){
+    const on = cur===it[0];
+    return '<button type="button" onclick="pickTier(\''+it[0]+'\')" style="border:1px solid '+(on?'#16110F':'#e3e6ea')+
+      ';background:'+(on?'#16110F':'#fff')+';color:'+(on?'#fff':'#16110F')+
+      ';border-radius:999px;padding:6px 14px;font:inherit;font-size:12.5px;font-weight:700;cursor:pointer">'+
+      it[1]+' <span style="opacity:.65;font-weight:500">'+num(it[2])+'</span></button>';
+  }).join('');
+}
+function pickTier(t){
+  $('#u-tier').value=t;
+  if(t) $('#u-role').value='creator';
+  renderUsers();
+}
 function renderUsers(){
   const q=($('#u-search').value||'').trim().toLowerCase();
   const role=$('#u-role').value;
+  const tier=$('#u-tier').value;
   let rows=USERS.filter(u=>{
     if(role && u.role!==role) return false;
+    if(tier){ if(u.role!=='creator') return false; if(tierOf(u)!==tier) return false; }
     if(!q) return true;
     return [u.name,u.company_name,u.email,u.whatsapp,u.phone,u.handle].some(v=>String(v||'').toLowerCase().includes(q));
   });
@@ -1333,8 +1361,10 @@ function renderUsers(){
     const sizeF=isB?(SIZE[u.size]||u.size||'—'):(u.followers?num(u.followers):'—');
     const contact=esc(u.email||u.whatsapp||u.phone||'—');
     const badge=isB?'<span class="badge b-brand">شركة</span>':'<span class="badge b-creator">معلن</span>';
-    return '<tr class="u-imp-row" onclick="startImpersonation(\''+u.id+'\')" title="اضغط للدخول كهذا المستخدم ومعاينة شاشته"><td><span class="imp-eye">👁</span> '+esc(name)+(u.handle?' <span class="dim">@'+esc(u.handle)+'</span>':'')+'</td><td>'+badge+'</td><td class="dim">'+esc(seg)+'</td><td class="mono">'+sizeF+'</td><td class="dim">'+contact+'</td><td class="dim">'+fmtDate(u.created_at)+'</td><td><button onclick="event.stopPropagation(); adminDeleteUser(\''+u.id+'\')" style="padding:5px 10px;border:1px solid #e6bcbc;background:#fff;color:#c93030;border-radius:7px;font-size:12px;cursor:pointer">حذف</button></td></tr>';
-  }).join('') : '<tr><td colspan="7" class="empty">لا نتائج</td></tr>';
+    const tierCell=isB?'<span class="dim">—</span>':(u.creator_tier?('<span class="badge" style="background:#F1ECE9;color:#16110F">'+(TIER_LABEL[u.creator_tier]||esc(u.creator_tier))+'</span>'):'<span class="dim">بلا تصنيف</span>');
+    return '<tr class="u-imp-row" onclick="startImpersonation(\''+u.id+'\')" title="اضغط للدخول كهذا المستخدم ومعاينة شاشته"><td><span class="imp-eye">👁</span> '+esc(name)+(u.handle?' <span class="dim">@'+esc(u.handle)+'</span>':'')+'</td><td>'+badge+'</td><td>'+tierCell+'</td><td class="dim">'+esc(seg)+'</td><td class="mono">'+sizeF+'</td><td class="dim">'+contact+'</td><td class="dim">'+fmtDate(u.created_at)+'</td><td><button onclick="event.stopPropagation(); adminDeleteUser(\''+u.id+'\')" style="padding:5px 10px;border:1px solid #e6bcbc;background:#fff;color:#c93030;border-radius:7px;font-size:12px;cursor:pointer">حذف</button></td></tr>';
+  }).join('') : '<tr><td colspan="8" class="empty">لا نتائج</td></tr>';
+  renderTierChips();
 }
 
 // ===== campaigns =====
@@ -1531,6 +1561,7 @@ document.querySelectorAll('.tab').forEach(t=>t.addEventListener('click',()=>{
 }));
 // شريط القيادة الموحّد ثابت فوق كل التبويبات — ما يختفي ولا يتغيّر شكله
 $('#u-search').addEventListener('input',renderUsers);
+$('#u-tier').addEventListener('change',renderUsers);
 { const _cs=$('#co-search'); if(_cs) _cs.addEventListener('input',renderCompanies); }
 $('#u-role').addEventListener('change',renderUsers);
 $('#c-search').addEventListener('input',renderCampaigns);
