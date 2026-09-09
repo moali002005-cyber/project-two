@@ -1136,5 +1136,114 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
 setTimeout(killButtons,600);
 })();
 </script>
+<script>
+/* فلفلونسر — آلية العمل + المميزات الجديدة + مستقبل إدارة الحملات */
+(function(){
+if(window.__flfFlow)return; window.__flfFlow=2;
+
+var STAGES=[
+ ['الاتفاق','السعر والمخرجات والمواعيد تُقفل داخل المنصة — لا واتساب ولا اتفاق شفهي.'],
+ ['بيانات الاستلام','المؤثر يدخل عنوانه وجواله، وتوصلك جاهزة بدون ما تسأله.'],
+ ['الشحن','تسجّل شركة الشحن ورقم التتبّع، والطرفان يتابعون نفس الرقم.'],
+ ['تأكيد الاستلام','المؤثر يأكد وصول المنتج — والتاريخ يُسجَّل تلقائيًا.'],
+ ['التصوير','مهلة التنفيذ تبدأ، والمنصة تذكّر الطرفين بالموعد.'],
+ ['رفع المحتوى','الفيديو يُرفع للمنصة قبل النشر — تشوفه أنت أول واحد.'],
+ ['الاعتماد','تراجع المحتوى: تعتمده أو تطلب تعديل. ولا شيء يُنشر قبل موافقتك.'],
+ ['النشر والنتائج','رابط المنشور + الوصول والإعجابات والتعليقات وكود الترويج، محفوظة في الحملة.'],
+ ['الصرف','بيانات التحويل ثم صرف مستحق المؤثر — والفاتورة تطلع لك.']
+];
+
+var NEW=[
+ ['🌶️','بريف بالذكاء الاصطناعي','تكتب فكرة بجملة، وفلفل يبني الحملة كاملة: الهدف، المخرجات، الميزانية، والمواعيد.'],
+ ['🤝','وكيل تفاوض بالعربي','يفاوض المؤثر نيابةً عنك بحدود ميزانيتك، ويقفل الصفقة — بلهجتك ومن غير مكالمة.'],
+ ['👥','مساحة فريق بصلاحيات','تدعو فريقك برمز واحد، وكل عضو يشوف ما يخصّه. وعدد المقاعد يُطبَّق حسب باقتك.'],
+ ['🎯','دعوة مباشرة للمؤثر','تعرف مين تبي؟ ادعُه مباشرة للحملة بدل ما تنتظر التقديمات.'],
+ ['💼','رسوم إدارة تنزل مع نموّك','15٪ في المجاني، 10٪ في الاحترافي، و5٪ في باقة الأعمال — كل ما كبرت نزلت.'],
+ ['📄','سجلّ كامل لكل حملة','كل مرحلة بتاريخها، وكل اتفاق بنصّه — ترجع له وقت الخلاف.']
+];
+
+var SOON=[
+ ['سحب أرقام المنشور تلقائيًا','بدل ما يدخلها المؤثر يدويًا، المنصة تسحب المشاهدات والتفاعل من تيك توك كل يوم.'],
+ ['حجز المبلغ والإفراج عند الاعتماد','المبلغ يُحجز لحظة الاتفاق، وما يُفرج عنه إلا بعد ما تعتمد المحتوى.'],
+ ['تقييم المؤثر بعد كل حملة','تقييم يبني ثقة يعتمد عليها اللي بعدك، بدل ما تجرّب على حسابك.'],
+ ['قائمة «مبدعيّ»','مؤثروك المفضّلون في مكان واحد، بتاريخ تعاملك معهم وإعادة تعاقد بضغطة.']
+];
+
+function css(){
+ if(document.getElementById('flf-flow-css'))return;
+ var s=document.createElement('style'); s.id='flf-flow-css';
+ s.textContent=
+ '.fh .mkt{display:none!important}'
++'.fh .flow{display:grid;grid-template-columns:repeat(auto-fit,minmax(268px,1fr));gap:1px;background:var(--ln);border:1px solid var(--ln)}'
++'.fh .stg{background:#fff;padding:22px 20px 24px;position:relative}'
++'.fh .stg .no{display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:50%;background:var(--ink);color:#fff;font-size:13px;font-weight:800;margin-bottom:12px}'
++'.fh .stg.on .no{background:var(--r)}'
++'.fh .stg h3{font-size:17px;margin-bottom:6px}'
++'.fh .stg p{margin:0;font-size:14.5px;color:var(--i2);line-height:1.75}'
++'.fh .band{display:flex;flex-wrap:wrap;gap:10px 26px;align-items:center;margin-top:26px;padding:16px 20px;background:var(--bg2);border:1px solid var(--ln);border-radius:14px;font-size:14.5px;color:var(--i2)}'
++'.fh .band b{color:var(--ink);font-weight:800}'
++'.fh .feats{display:grid;grid-template-columns:repeat(auto-fit,minmax(292px,1fr));gap:18px}'
++'.fh .ft{border:1px solid var(--ln);border-radius:16px;padding:24px 22px;background:#fff}'
++'.fh .ft .ic{font-size:26px;line-height:1;margin-bottom:12px}'
++'.fh .ft h3{font-size:18px;margin-bottom:7px}'
++'.fh .ft p{margin:0;font-size:15px;color:var(--i2)}'
++'.fh .soon{background:#16110F;color:#fff}'
++'.fh .soon .eb{color:#FF9080}.fh .soon h2{color:#fff}'
++'.fh .soon > .w > .sh p{color:#C3B9B5}'
++'.fh .sl{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:1px;background:#2E2521;border:1px solid #2E2521}'
++'.fh .si{background:#1D1613;padding:22px 20px}'
++'.fh .si .tag{display:inline-block;font-size:11.5px;font-weight:800;color:#F5C26B;background:#332616;border-radius:999px;padding:4px 11px;margin-bottom:11px}'
++'.fh .si h3{font-size:17px;margin-bottom:6px;color:#fff}'
++'.fh .si p{margin:0;font-size:14.5px;color:#B9AEA9;line-height:1.75}';
+ document.head.appendChild(s);
+}
+
+function sect(cls,inner){
+ var s=document.createElement('sect');
+ if(cls)s.className=cls;
+ var w=document.createElement('div');w.className='w';w.innerHTML=inner;
+ s.appendChild(w);return s;
+}
+
+function head(eb,h2,p){
+ return '<div class="sh"><div class="eb">'+eb+'</div><h2>'+h2+'</h2>'+(p?'<p>'+p+'</p>':'')+'</div>';
+}
+
+function build(){
+ var host=document.querySelector('.fh'); if(!host)return false;
+ if(host.querySelector('.flow'))return true;
+
+ var flow='';
+ STAGES.forEach(function(s,i){
+   flow+='<div class="stg'+(i===6?' on':'')+'"><span class="no">'+(i+1)+'</span><h3>'+s[0]+'</h3><p>'+s[1]+'</p></div>';
+ });
+ var a=sect('', head('آلية العمل','كل حملة تمشي على تسع مراحل — كلها داخل المنصة.',
+   'ما فيه واتساب ولا إكسل ولا «وين وصل المنتج؟». كل مرحلة لها تاريخ ومسؤول ودليل، والطرفان يشوفون نفس الشاشة.')
+   +'<div class="flow">'+flow+'</div>'
+   +'<div class="band"><span>ولا شي ينشر قبل <b>اعتمادك</b></span><span>ولا مستحق يُصرف قبل <b>إغلاق الحملة</b></span><span>وكل مرحلة <b>مؤرّخة</b> في سجلّ الحملة</span></div>');
+
+ var fts='';
+ NEW.forEach(function(f){ fts+='<div class="ft"><div class="ic">'+f[0]+'</div><h3>'+f[1]+'</h3><p>'+f[2]+'</p></div>'; });
+ var b=sect('', head('جديد','المميزات اللي أضفناها.','')+'<div class="feats">'+fts+'</div>');
+
+ var sl='';
+ SOON.forEach(function(s){ sl+='<div class="si"><span class="tag">قيد التطوير</span><h3>'+s[0]+'</h3><p>'+s[1]+'</p></div>'; });
+ var c=sect('soon', head('مستقبل إدارة الحملات','الحملة تدير نفسها، وأنت تعتمد فقط.',
+   'اليوم فلفل يجهّز ويفاوض ويتابع. والقادم أن المنصة تسحب النتائج وتحجز المبالغ وتبني لك سجلّ مؤثريك — بدون تدخل منك.')
+   +'<div class="sl">'+sl+'</div>');
+
+ var how=document.getElementById('fh-how');
+ if(how&&how.parentNode){ how.parentNode.insertBefore(a,how); how.parentNode.insertBefore(b,how.nextSibling); }
+ else { host.insertBefore(a,host.firstChild); host.appendChild(b); }
+
+ var ng=host.querySelector('.ng');
+ if(ng&&ng.parentNode) ng.parentNode.insertBefore(c,ng.nextSibling); else host.appendChild(c);
+ return true;
+}
+
+function go(){css(); if(!build()) setTimeout(go,200);}
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',go);else go();
+})();
+</script>
 </body>
 </html>
