@@ -1675,6 +1675,7 @@ async function simblExitImpersonation(){
             <label><input type="radio" name="fulfillment_mode" value="pickup" onchange="toggleFulfillment()"><span>🏬 استلام من الفرع</span></label>
           </div>
           <div class="hint" id="fulfillment-hint">شحن للمعلن: بعد اعتماده يعطيك عنوانه، ترسل له المنتج، ويأكد استلامه في المنصة.</div>
+          <div class="hint" id="fulfill-plan-note" style="display:none;color:#7E2119;"></div>
         </div>
 
         <div class="field" id="pickup-field" style="display:none;">
@@ -3607,13 +3608,20 @@ async function applyTypeGate() {
   lock(document.querySelector('[name="campaign_type"][value="video"]'), 'video');
   lock(document.querySelector('[name="fulfillment_mode"][value="code"]'), 'code');
 
-  const note = document.getElementById('ctype-plan-note');
-  if (note) {
-    note.style.display = locked.length ? '' : 'none';
-    note.textContent = locked.length
-      ? ('مقفول في باقتك: ' + locked.map(k => TYPE_GATE_LABEL[k]).join('، ') + '. يفتح مع الترقية من صفحة الباقات.')
+  // كل ملاحظة تحت حقلها: أنواع الحملة فوق، وطريقة التسليم تحت — لا نخلط الموضوعين
+  const FULFILL_KEYS = ['code', 'pickup'];
+  const lockedTypes = locked.filter(k => FULFILL_KEYS.indexOf(k) === -1);
+  const lockedFulfill = locked.filter(k => FULFILL_KEYS.indexOf(k) !== -1);
+  const noteFor = function (id, keys) {
+    const n = document.getElementById(id);
+    if (!n) return;
+    n.style.display = keys.length ? '' : 'none';
+    n.textContent = keys.length
+      ? ('مقفول في باقتك: ' + keys.map(k => TYPE_GATE_LABEL[k]).join('، ') + '. يفتح مع الترقية من صفحة الباقات.')
       : '';
-  }
+  };
+  noteFor('ctype-plan-note', lockedTypes);
+  noteFor('fulfill-plan-note', lockedFulfill);
   if (typeof toggleCampaignType === 'function') toggleCampaignType();
 }
 
