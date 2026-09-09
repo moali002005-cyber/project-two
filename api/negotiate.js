@@ -215,7 +215,7 @@ async function supabaseGetCampaignSrv(campaignId) {
   if (!campaignId) return null;
   try {
     const res = await fetch(
-      `${SUPABASE_URL}/rest/v1/campaigns?id=eq.${campaignId}&select=id,budget,country,city,platform,follower_range,campaign_size,creator_tiers`,
+      `${SUPABASE_URL}/rest/v1/campaigns?id=eq.${campaignId}&select=id,budget,country,city,platform,follower_range,campaign_size,creator_tiers,compensation,product_value_sar`,
       { headers: { 'apikey': SUPABASE_SERVICE_KEY, 'Authorization': `Bearer ${SUPABASE_SERVICE_KEY}` } }
     );
     if (!res.ok) { console.error('Get campaign error:', await res.text()); return null; }
@@ -467,6 +467,8 @@ export default async function handler(req, res) {
   campaign.follower_range = realCampaign.follower_range;
   campaign.campaign_size = realCampaign.campaign_size;
   campaign.creator_tiers = realCampaign.creator_tiers;
+  campaign.compensation = realCampaign.compensation || 'cash';
+  campaign.product_value_sar = realCampaign.product_value_sar || null;
   application.price = realApp.price;
   application.campaign_id = realApp.campaign_id;
   if (realCreator) {
@@ -544,6 +546,9 @@ export default async function handler(req, res) {
   const budgetHigh = budgetNums.length ? Math.max(...budgetNums) : 0;
   const finalCap = budgetHigh;                        // السقف المطلق = أعلى رقم في النطاق
   const openingOffer = finalCap;                      // سعر الشركة بالضبط — الوكيل يعرضه كما هو
+  // ============ حملة «مقابل منتج»: ما فيه تسعيرة إطلاقاً ============
+  const isBarter = (campaign.compensation === 'product');
+  const productValue = parseInt(campaign.product_value_sar, 10) || 0;
 
   // ============ حجم الحملة (عدد المعلنين المطلوب) ============
   const campaignId = campaign.id || application.campaign_id;
@@ -697,12 +702,65 @@ ${voiceInstructions}
 - "موافق" على مبلغ مطروح = اتفاق صريح → اقفل فوراً.
 - لا تخمّن موافقتها، ولا تكتب [DEAL_CLOSED] لو ما اتفقتو فعلاً على رقم.`;
 
+  // ============ برومبت «مقابل منتج» — بلا أي رقم ============
+  const barterValueLine = productValue
+    ? `- قيمة المنتج التقديرية: ${productValue} ر.س (اذكرها لو سألت عن قيمته، ولا تعرض أي مبلغ نقدي).`
+    : `- ما فيه قيمة معلنة للمنتج. لو سألت عن قيمته، قل إن الشركة ما حدّدت قيمة معلنة، وركّز على المنتج نفسه.`;
+  const barterPrompt = `أنت "وكيل Flfluencer" — وكيل يمثّل شركة "${campaign.brand_name || 'الشركة'}" في حملة **مقابل منتج**: المعلن يأخذ المنتج نظير المحتوى، وما فيه أي مبلغ نقدي إطلاقاً.
+${voiceInstructions}
+## تفاصيل الإعلان:
+- العنوان: ${campaign.title}
+- الوصف: ${campaign.description}
+- المنصة: ${platformLabel} · ${timingDesc} · المتابعين: ${followerLabel} · المدينة: ${cityLabel}${visitLocLine}
+${barterValueLine}
+
+## عرض المعلن:
+- الاسم: ${application.creator_name} · المنصة: ${application.platform || 'غير محدد'} · المتابعين: ${application.followers ? application.followers.toLocaleString('en-US') : 'غير محدد'}
+- ملاحظته: ${application.note || 'لا يوجد'}
+
+## القاعدة الحديدية (أهم شي):
+هذي الحملة **بلا تسعيرة**. ممنوع منعاً باتاً:
+- ❌ لا تذكر أي مبلغ نقدي، ولا رقم بالريال، ولا "ميزانية"، ولا "سعر"، ولا "أجر"، ولا "مقابل مادي".
+- ❌ لا تفاوض على مال، ولا توعد بمبلغ، ولا تقول "نشوف الإدارة" في موضوع مبلغ.
+- ❌ لا تعرض أكواد خصم ولا مزايا شخصية غير المنتج نفسه.
+- ✅ الوحيد المسموح ذكره كرقم هو قيمة المنتج التقديرية إن وُجدت أعلاه — كوصف لقيمة المنتج، لا كعرض مالي.
+
+## مهمتك:
+تعرض التعاون وتقنع بقيمته، والمعلن **يقبل أو يعتذر**. لا شي بينهما.
+1. اشرح المنتج والمطلوب باختصار وبحماس صادق.
+2. أبرز قيمة التعاون له: منتج حقيقي يجرّبه ويقدّمه لجمهوره، وتعاون مع علامة معروفة، ومحتوى يضيف لملفه.
+3. لو تردّد، اعترف بتردّده مرة وحدة وأعد عرض القيمة بصيغة ثانية.
+4. لو طلب مبلغاً أو زيادة: اعتذر بوضوح وبلطف — "هذي الحملة مقابل المنتج فقط وما فيها مقابل مادي" — ثم اسأله لو يناسبه كذا. لا ترفع ولا تلمّح لأي مبلغ.
+5. لو رفض بعد محاولتين إقناع، أنهِ بأدب بدون [DEAL_CLOSED]: "أقدّر وقتك تماماً، وإذا جاك تعاون ثاني يناسبك بنكون سعداء 🌿".
+
+## مهمتك محصورة بالعرض فقط:
+الشحن والتواصل وتسليم المحتوى وكل التنفيذ يتم داخل المنصة تلقائياً بعد القبول.
+- ❌ لا تسأل عن طريقة التواصل ولا عن العنوان ولا تفاصيل الشحن.
+- ✅ لو سأل عن التنفيذ، طمئنه باختصار: "${executionReassure}"
+
+## الأسلوب:
+- شخص محترف ودود: متعاطف، واضح، بلا تذلّل ولا مبالغة.
+- **الاختصار إلزامي**: سطر أو سطرين، وما يتجاوز 30 كلمة. لهجة خليجية بسيطة مهذّبة. بدون قوائم ولا نقاط ولا إيموجي.
+- استعمل اسمه، و"شرايك" (مو "شو/ايش").
+
+## الرسالة الأولى فقط:
+سطران كحد أقصى: تحية باسمه، المطلوب باختصار على ${platformLabel}، ${isVisit ? `موعد الزيارة (${visitWhen})` : `موعد النشر (${timingLabel})`}، وأن التعاون **مقابل المنتج**، ثم دعوة قصيرة. مثال: "أهلاً ${application.creator_name || 'يا هلا'}، معك وكيل ${campaign.brand_name || 'الشركة'}. عندنا تعاون مقابل المنتج: فيديو على ${platformLabel} والنشر ${timingLabel}. شرايك؟" لا تزيد على هذا ولا تذكر أي رقم.
+
+## القبول:
+أول ما يوافق صراحةً (مثل "موافق"، "تمام"، "أوكي"، "ماشي") **اقفل فوراً في نفس الرد**: اشكره بسطر، وأكّد أن التعاون مقابل المنتج، ثم اكتب في آخر ردّك حرفياً:
+[DEAL_CLOSED] التعاون مقابل المنتج — بلا مقابل مادي، على ${platformLabel}
+- لا تخمّن موافقته، ولا تكتب [DEAL_CLOSED] إلا لو وافق فعلاً.`;
+
+  const activeSystemPrompt = isBarter ? barterPrompt : systemPrompt;
+
   const messages = [];
 
   if (!history || history.length === 0) {
     messages.push({
       role: 'user',
-      content: 'ابدأ التفاوض. هذي أول رسالة: تحية باسمها، ثم المطلوب وموعد النشر والمبلغ في جملة واحدة، ثم دعوة قصيرة. سطران كحد أقصى، بدون قوائم ولا نقاط ولا إيموجي، ولا تذكر موعد صرف المستحقات.'
+      content: isBarter
+        ? 'ابدأ التعاون. هذي أول رسالة: تحية باسمه، ثم المطلوب وموعد النشر وأن التعاون مقابل المنتج، ثم دعوة قصيرة. سطران كحد أقصى، بدون قوائم ولا نقاط ولا إيموجي، وبدون أي رقم أو مبلغ.'
+        : 'ابدأ التفاوض. هذي أول رسالة: تحية باسمها، ثم المطلوب وموعد النشر والمبلغ في جملة واحدة، ثم دعوة قصيرة. سطران كحد أقصى، بدون قوائم ولا نقاط ولا إيموجي، ولا تذكر موعد صرف المستحقات.'
     });
   } else {
     for (const msg of history) {
@@ -742,7 +800,7 @@ ${voiceInstructions}
         model: chosenModel,
         max_tokens: voiceMode ? 160 : (isFirstMessage ? 220 : 150),
         system: [
-          { type: 'text', text: systemPrompt, cache_control: { type: 'ephemeral' } }
+          { type: 'text', text: activeSystemPrompt, cache_control: { type: 'ephemeral' } }
         ],
         messages: messages
       })
@@ -782,7 +840,12 @@ ${voiceInstructions}
     // لو المعلن وافق صراحةً والوكيل *نسي* وسم [DEAL_CLOSED]، نقفل تلقائيًا
     // بآخر سعر عرضه الوكيل. تمر بعدها بحماية السقف وحجم الحملة زي الإقفال العادي.
     let closedBySafetyNet = false;
-    if (!dealClosed && creatorMessage && creatorAcceptedExplicit(creatorMessage)) {
+    if (!dealClosed && creatorMessage && creatorAcceptedExplicit(creatorMessage) && isBarter) {
+      dealClosed = true;
+      closedBySafetyNet = true;
+      dealDetails = 'التعاون مقابل المنتج — بلا مقابل مادي (إقفال تلقائي بعد تأكيد موافقة المعلن).';
+      console.warn(`Safety-net barter close for app ${application.id}.`);
+    } else if (!dealClosed && creatorMessage && creatorAcceptedExplicit(creatorMessage)) {
       const offered = lastAgentOfferedPrice(history, cleanReply || agentReply);
       if (offered && (!finalCap || offered <= finalCap)) {
         dealClosed = true;
@@ -798,7 +861,7 @@ ${voiceInstructions}
     let safeDealClosed = dealClosed;
     let safeDealDetails = dealDetails;
     let closeBlockedReason = null; // سبب حجب الإقفال (لعرض رسالة مناسبة بدل "اتفقنا")
-    if (dealClosed && dealDetails) {
+    if (dealClosed && dealDetails && !isBarter) {
       const finalPrice = extractFinalPrice(dealDetails);
       if (finalPrice && finalCap && finalPrice > finalCap) {
         console.warn(`Agent attempted to close above cap: ${finalPrice} > ${finalCap}. Blocking.`);
@@ -832,7 +895,11 @@ ${voiceInstructions}
     const priceMatches = replyForCheck.match(/(\d{2,5})\s*(?:ر\.?\s*س|ريال)/g) || [];
     priceMatches.forEach(m => {
       const num = parseInt(m.match(/\d+/)[0]);
-      if (num > finalCap) {
+      if (isBarter) {
+        if (num !== productValue) {
+          console.warn(`⚠️ Barter campaign: agent mentioned an amount (${num}). App: ${application.id}`);
+        }
+      } else if (num > finalCap) {
         console.warn(`⚠️ Agent mentioned price ${num} which is ABOVE cap ${finalCap}. App: ${application.id}`);
       }
     });
@@ -845,11 +912,18 @@ ${voiceInstructions}
     if (dealClosed && !safeDealClosed) {
       replyToSend = (closeBlockedReason === 'reserve_full')
         ? 'نعتذر منك، اكتمل العدد المطلوب لهذي الحملة قبل قليل، فما نقدر نعتمد الاتفاق. نتمنى نشوفك في حملة قادمة تناسبك 🌿'
-        : 'أعتذر، ما نقدر نعتمد هذا المبلغ لأنه يتجاوز حدود ميزانية الحملة. إذا يناسبك نكمل ضمن حدود الميزانية يشرّفنا، وإلا نشكر لك وقتك 🌿';
+        : (isBarter
+            ? 'أعتذر، ما نقدر نعتمد الاتفاق بهذي الصيغة. هذي الحملة مقابل المنتج فقط، وإذا يناسبك كذا يشرّفنا نكمل 🌿'
+            : 'أعتذر، ما نقدر نعتمد هذا المبلغ لأنه يتجاوز حدود ميزانية الحملة. إذا يناسبك نكمل ضمن حدود الميزانية يشرّفنا، وإلا نشكر لك وقتك 🌿');
     }
 
     // عند الإقفال: أضف تأكيد المبلغ + إعلام مناسب (صفقة عادية أو احتياط) بشكل حتمي.
-    if (safeDealClosed && safeDealDetails) {
+    if (safeDealClosed && safeDealDetails && isBarter) {
+      const approvalNote = closeAsReserve
+        ? 'تم قبول التعاون مقابل المنتج 🎉 أنت الآن ضمن قائمة الاحتياط الجاهزة لهذي الحملة — لو انفتح مكان بنرقّيك فورًا بلا أي خطوات إضافية. نشكر تعاونك 🌿'
+        : 'تم قبول التعاون مقابل المنتج 🎉 صفقتك الآن بانتظار تعميد الشركة، وبنخبرك أول ما تُعتمد ونكمل باقي الخطوات معك 🌿';
+      replyToSend = closedBySafetyNet ? approvalNote : `${replyToSend}\n\n${approvalNote}`;
+    } else if (safeDealClosed && safeDealDetails) {
       const closedPrice = extractFinalPrice(safeDealDetails) || application.price;
       const approvalNote = closeAsReserve
         ? `تم الاتفاق على ${closedPrice} ريال 🎉 أنت الآن ضمن قائمة الاحتياط الجاهزة لهذي الحملة — لو انفتح مكان بنرقّيك فورًا للتعميد بلا أي خطوات إضافية. نشكر تعاونك 🌿`
@@ -869,7 +943,7 @@ ${voiceInstructions}
     }
 
     if (safeDealClosed && safeDealDetails) {
-      const finalPrice = extractFinalPrice(safeDealDetails) || application.price;
+      const finalPrice = isBarter ? null : (extractFinalPrice(safeDealDetails) || application.price);
       try {
         await supabaseUpdate('applications', application.id, {
           status: 'closed',
