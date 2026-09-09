@@ -1319,6 +1319,27 @@ async function startImpersonation(userId){
 }
 
 const TIER_LABEL={micro:'Micro',medium:'Medium',mega:'Mega'};
+// المعرّفات مكتوبة بأشكال كثيرة: مع @، أو @ في آخرها، أو رابط كامل، أو فيها مسافات وعلامات اتجاه.
+const SOCIAL_BASE={tiktok:'https://www.tiktok.com/@',instagram:'https://www.instagram.com/',
+  snapchat:'https://www.snapchat.com/add/',youtube:'https://www.youtube.com/@',
+  x:'https://x.com/',twitter:'https://x.com/'};
+function socialUrl(u){
+  if(!u||u.role!=='creator') return '';
+  let h=String(u.handle||'').replace(/[\u200e\u200f\u202a-\u202e]/g,'').trim();
+  if(!h) return '';
+  const m=h.match(/(?:tiktok\.com|instagram\.com|snapchat\.com\/add|youtube\.com|x\.com|twitter\.com)\/@?([A-Za-z0-9._-]+)/i);
+  if(m) h=m[1];
+  h=h.replace(/^@+/,'').replace(/@+$/,'').replace(/\s+/g,'');
+  if(!/^[A-Za-z0-9._-]{2,40}$/.test(h)) return '';
+  const base=SOCIAL_BASE[(u.platform||'tiktok').toLowerCase()]||SOCIAL_BASE.tiktok;
+  return base+h;
+}
+function openSocial(id,ev){
+  if(ev){ ev.stopPropagation(); ev.preventDefault(); }
+  const u=usersById[id]; const url=socialUrl(u);
+  if(!url){ alert('المعرّف المحفوظ لهذا الحساب غير صالح: «'+((u&&u.handle)||'فارغ')+'»'); return; }
+  window.open(url,'_blank','noopener');
+}
 function tierOf(u){ return (u && u.role==='creator') ? (u.creator_tier || '__none') : ''; }
 function renderTierChips(){
   const box=$('#u-tier-chips'); if(!box) return;
@@ -1362,7 +1383,10 @@ function renderUsers(){
     const contact=esc(u.email||u.whatsapp||u.phone||'—');
     const badge=isB?'<span class="badge b-brand">شركة</span>':'<span class="badge b-creator">معلن</span>';
     const tierCell=isB?'<span class="dim">—</span>':(u.creator_tier?('<span class="badge" style="background:#F1ECE9;color:#16110F">'+(TIER_LABEL[u.creator_tier]||esc(u.creator_tier))+'</span>'):'<span class="dim">بلا تصنيف</span>');
-    return '<tr class="u-imp-row" onclick="startImpersonation(\''+u.id+'\')" title="اضغط للدخول كهذا المستخدم ومعاينة شاشته"><td><span class="imp-eye">👁</span> '+esc(name)+(u.handle?' <span class="dim">@'+esc(u.handle)+'</span>':'')+'</td><td>'+badge+'</td><td>'+tierCell+'</td><td class="dim">'+esc(seg)+'</td><td class="mono">'+sizeF+'</td><td class="dim">'+contact+'</td><td class="dim">'+fmtDate(u.created_at)+'</td><td><button onclick="event.stopPropagation(); adminDeleteUser(\''+u.id+'\')" style="padding:5px 10px;border:1px solid #e6bcbc;background:#fff;color:#c93030;border-radius:7px;font-size:12px;cursor:pointer">حذف</button></td></tr>';
+    const socialBtn = (!isB && socialUrl(u))
+      ? '<button onclick="openSocial(\''+u.id+'\',event)" title="فتح حساب المعلن في تبويب جديد" style="padding:5px 10px;border:1px solid #d7dde3;background:#fff;color:#16110F;border-radius:7px;font-size:12px;font-weight:700;cursor:pointer;margin-inline-end:6px">حساب المعلن</button>'
+      : (!isB ? '<span class="dim" style="font-size:11.5px;margin-inline-end:6px">معرّف غير صالح</span>' : '');
+    return '<tr class="u-imp-row" onclick="startImpersonation(\''+u.id+'\')" title="اضغط للدخول كهذا المستخدم ومعاينة شاشته"><td><span class="imp-eye">👁</span> '+esc(name)+'</td><td>'+badge+'</td><td>'+tierCell+'</td><td class="dim">'+esc(seg)+'</td><td class="mono">'+sizeF+'</td><td class="dim">'+contact+'</td><td class="dim">'+fmtDate(u.created_at)+'</td><td style="white-space:nowrap">'+socialBtn+'<button onclick="event.stopPropagation(); adminDeleteUser(\''+u.id+'\')" style="padding:5px 10px;border:1px solid #e6bcbc;background:#fff;color:#c93030;border-radius:7px;font-size:12px;cursor:pointer">حذف</button></td></tr>';
   }).join('') : '<tr><td colspan="8" class="empty">لا نتائج</td></tr>';
   renderTierChips();
 }
