@@ -3999,5 +3999,221 @@ init();
 })();
 </script>
 
+
+<!-- ===== حملة «مقابل منتج» — ميزة مفعّلة لحسابات محددة فقط ===== -->
+<script>
+(function () {
+  if (window.__flfBarter) return; window.__flfBarter = true;
+
+  var ENABLED = false, PKGS = [], origSizeHTML = null, origBudgetVal = '';
+
+  function el(id) { return document.getElementById(id); }
+  function fmt(n) { return Number(n || 0).toLocaleString('en-US'); }
+  function compMode() {
+    var r = document.querySelector('[name="compensation"]:checked');
+    return r ? r.value : 'cash';
+  }
+  function isBarter() { return ENABLED && compMode() === 'product'; }
+  window.flfIsBarterMode = isBarter;
+
+  /* ---------- بناء الواجهة ---------- */
+  function buildUI() {
+    var ff = el('fulfillment-field');
+    var anchor = ff || el('budget-field');
+    if (!anchor || el('comp-field')) return;
+
+    var wrap = document.createElement('div');
+    wrap.className = 'field'; wrap.id = 'comp-field';
+    wrap.innerHTML =
+      '<label>مقابل التعاون</label>' +
+      '<div class="ctype-seg">' +
+        '<label><input type="radio" name="compensation" value="cash" checked><span>💵 مبلغ نقدي</span></label>' +
+        '<label><input type="radio" name="compensation" value="product"><span>🎁 مقابل منتج</span></label>' +
+      '</div>' +
+      '<div class="hint" id="comp-hint">مبلغ نقدي: الوكيل يفاوض ويقفل على سعر لكل معلن.</div>';
+    anchor.parentNode.insertBefore(wrap, anchor.nextSibling);
+
+    var sizeSel = document.querySelector('[name="campaign_size"]');
+    if (sizeSel) {
+      origSizeHTML = sizeSel.innerHTML;
+      var fee = document.createElement('div');
+      fee.className = 'hint'; fee.id = 'barter-fee-line';
+      fee.style.cssText = 'display:none;margin-top:8px;padding:10px 12px;border:1px solid #e7edeb;' +
+        'border-radius:10px;background:#fbf8f6;color:#33413c;font-weight:600;';
+      (sizeSel.closest('.field') || sizeSel.parentNode).appendChild(fee);
+
+      var pv = document.createElement('div');
+      pv.className = 'field'; pv.id = 'product-value-field'; pv.style.display = 'none';
+      pv.innerHTML =
+        '<label>قيمة المنتج التقديرية <span style="font-weight:400;color:#8A807B">(اختياري)</span></label>' +
+        '<input type="text" id="product-value-input" name="product_value_sar" inputmode="numeric" placeholder="مثل: 450">' +
+        '<div class="hint">تظهر للمعلن عشان يقدّر العرض. اتركها فاضية لو ما تبي تذكرها.</div>';
+      var sf = sizeSel.closest('.field');
+      if (sf && sf.parentNode) sf.parentNode.insertBefore(pv, sf.nextSibling);
+    }
+
+    document.querySelectorAll('[name="compensation"]').forEach(function (r) {
+      r.addEventListener('change', applyMode);
+    });
+    applyMode();
+  }
+
+  /* ---------- تبديل الوضع ---------- */
+  function applyMode() {
+    var barter = isBarter();
+    var bf = el('budget-field');
+    var bin = document.querySelector('[name="budget"]');
+    var sizeSel = document.querySelector('[name="campaign_size"]');
+    var feeLine = el('barter-fee-line');
+    var pvField = el('product-value-field');
+    var hint = el('comp-hint');
+
+    if (bf) bf.style.display = barter ? 'none' : '';
+    if (bin) {
+      if (barter) {
+        if (bin.value && bin.value !== '0') origBudgetVal = bin.value;
+        bin.required = false;
+        bin.value = '0';                       // يمرّ على تحقق الواجهة، والقاعدة تستبدله بـ«مقابل منتج»
+      } else {
+        bin.required = true;
+        if (bin.value === '0') bin.value = origBudgetVal || '';
+      }
+    }
+    if (pvField) pvField.style.display = barter ? '' : 'none';
+    if (hint) hint.textContent = barter
+      ? 'مقابل منتج: ما فيه أي تسعيرة — الوكيل يعرض المنتج ويقنع، والمعلن يقبل أو يعتذر.'
+      : 'مبلغ نقدي: الوكيل يفاوض ويقفل على سعر لكل معلن.';
+
+    if (sizeSel) {
+      var keep = sizeSel.value;
+      if (barter && PKGS.length) {
+        sizeSel.innerHTML = '<option value="">اختر باقة الحملة</option>' + PKGS.map(function (p) {
+          return '<option value="' + p.size + '">' + p.label_ar + ' — ' + fmt(p.fee_sar) + ' ر.س</option>';
+        }).join('');
+        var match = PKGS.filter(function (p) { return String(p.size) === String(keep); })[0];
+        sizeSel.value = match ? String(match.size) : '';
+      } else if (!barter && origSizeHTML != null) {
+        sizeSel.innerHTML = origSizeHTML;
+        sizeSel.value = keep || '';
+      }
+      sizeSel.onchange = paintFee;
+    }
+    paintFee();
+  }
+
+  function paintFee() {
+    var feeLine = el('barter-fee-line');
+    if (!feeLine) return;
+    if (!isBarter()) { feeLine.style.display = 'none'; return; }
+    var sizeSel = document.querySelector('[name="campaign_size"]');
+    var p = PKGS.filter(function (x) { return String(x.size) === String(sizeSel && sizeSel.value); })[0];
+    feeLine.style.display = '';
+    feeLine.innerHTML = p
+      ? 'رسوم المنصة لهذي الحملة: <b>' + fmt(p.fee_sar) + ' ر.س</b> مقطوعة — والمعلن يأخذ المنتج بدل المبلغ.'
+      : 'اختر باقة الحملة عشان تشوف الرسوم المقطوعة.';
+  }
+
+  /* ---------- تعطيل تحققات السعر في وضع المقايضة ---------- */
+  var origBounds = window.tierBudgetBounds;
+  if (typeof origBounds === 'function') {
+    window.tierBudgetBounds = function () {
+      if (isBarter()) return null;              // ما فيه حدود سعر أصلاً
+      return origBounds.apply(this, arguments);
+    };
+  }
+
+  /* ---------- حد المعلنين لكل حملة لا ينطبق على المقايضة (مطابق لقاعدة البيانات) ---------- */
+  function patchRpc(sb) {
+    if (!sb || !sb.rpc || sb.__flfBarterRpc) return;
+    var orig = sb.rpc.bind(sb);
+    sb.rpc = function (name, args, opts) {
+      var p = orig(name, args, opts);
+      if (name !== 'brand_plan_status' || !p || !p.then) return p;
+      return p.then(function (res) {
+        if (isBarter() && res && res.data && !res.data.error) {
+          res.data.max_creators_per_campaign = null;
+        }
+        return res;
+      });
+    };
+    sb.__flfBarterRpc = true;
+  }
+
+  /* ---------- إضافة حقول المقايضة إلى الحفظ ---------- */
+  function decorate(row) {
+    if (!row || typeof row !== 'object') return row;
+    if (!('title' in row) || !('budget' in row)) return row;   // ليست حمولة نموذج الحملة
+    if (isBarter()) {
+      row.compensation = 'product';
+      row.barter_package_size = parseInt(row.campaign_size, 10) || null;
+      var pv = el('product-value-input');
+      var raw = pv ? String(pv.value || '').replace(/[^\d]/g, '') : '';
+      row.product_value_sar = raw ? parseInt(raw, 10) : null;
+      row.budget = 'مقابل منتج';
+      row.max_budget = null;
+    } else if (ENABLED) {
+      row.compensation = 'cash';
+    }
+    return row;
+  }
+  function patchFrom(sb) {
+    if (!sb || !sb.from || sb.__flfBarterFrom) return;
+    var orig = sb.from.bind(sb);
+    sb.from = function (table) {
+      var b = orig(table);
+      if (table === 'campaigns' && b && b.insert && b.update) {
+        var oi = b.insert.bind(b), ou = b.update.bind(b);
+        b.insert = function (p, o) { return oi(Array.isArray(p) ? p.map(decorate) : decorate(p), o); };
+        b.update = function (p, o) { return ou(Array.isArray(p) ? p.map(decorate) : decorate(p), o); };
+      }
+      return b;
+    };
+    sb.__flfBarterFrom = true;
+  }
+
+  /* ---------- عند فتح النموذج لتعديل حملة قائمة ---------- */
+  var origSetModal = window.setModalMode;
+  if (typeof origSetModal === 'function') {
+    window.setModalMode = function (mode, campaign) {
+      var out = origSetModal.apply(this, arguments);
+      try {
+        if (!ENABLED) return out;
+        var want = (campaign && campaign.compensation === 'product') ? 'product' : 'cash';
+        var r = document.querySelector('[name="compensation"][value="' + want + '"]');
+        if (r) { r.checked = true; }
+        var pv = el('product-value-input');
+        if (pv) pv.value = (campaign && campaign.product_value_sar) ? campaign.product_value_sar : '';
+        applyMode();
+        if (want === 'product' && campaign && campaign.campaign_size) {
+          var s = document.querySelector('[name="campaign_size"]');
+          if (s) { s.value = String(campaign.campaign_size); paintFee(); }
+        }
+      } catch (e) { console.warn('barter setModalMode', e); }
+      return out;
+    };
+  }
+
+  /* ---------- إقلاع ---------- */
+  async function boot() {
+    var sb = window.supabaseClient;
+    if (!sb) return setTimeout(boot, 400);
+    patchRpc(sb); patchFrom(sb);
+    try {
+      var f = await sb.from('brand_features').select('feature,enabled')
+        .eq('feature', 'barter').eq('enabled', true).limit(1);
+      ENABLED = !!(f && f.data && f.data.length);
+      if (!ENABLED) return;
+      var p = await sb.from('barter_packages').select('size,fee_sar,label_ar')
+        .eq('active', true).order('sort', { ascending: true });
+      PKGS = (p && p.data) || [];
+      if (!PKGS.length) { ENABLED = false; return; }
+      buildUI();
+    } catch (e) { console.warn('barter boot', e); }
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot);
+  else boot();
+})();
+</script>
+
 </body>
 </html>
