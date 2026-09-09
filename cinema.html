@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>فلفلونسر — مشاهد الفلفلة</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700;800;900&display=swap">
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#0C0908;color:#F2ECE9;font-family:"Tajawal",system-ui,sans-serif;line-height:1.8}
+.w{max-width:1080px;margin:0 auto;padding:0 22px}
+.top{padding:46px 0 26px;border-bottom:1px solid #241C19}
+.top h1{margin:0;font-size:clamp(24px,3.6vw,34px);font-weight:900}
+.top p{color:#A99E99;margin:10px 0 0;max-width:60ch}
+.scene{border-bottom:1px solid #241C19;padding:34px 0 40px}
+.hd{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;margin-bottom:6px}
+.tag{background:#E5402B;color:#fff;font-weight:900;font-size:12.5px;border-radius:999px;padding:4px 13px}
+.hd h2{margin:0;font-size:22px;font-weight:800}
+.dsc{color:#A99E99;font-size:15px;margin:0 0 20px;max-width:62ch}
+.stage{position:relative;border:1px solid #241C19;border-radius:22px;overflow:hidden;
+  background:radial-gradient(700px 380px at 50% 30%,#1C1512 0%,#0E0A09 70%);
+  min-height:340px;display:flex;align-items:center;justify-content:center}
+.stage.lite{background:radial-gradient(700px 380px at 50% 30%,#FFF6F3 0%,#F6F1EF 72%);border-color:#E7DFDC}
+.holder{width:230px;height:330px;position:relative}
+.holder svg{width:100%;height:100%;overflow:visible}
+.replay{position:absolute;inset-block-end:14px;inset-inline-start:14px;background:rgba(255,255,255,.08);
+  color:#fff;border:1px solid rgba(255,255,255,.18);border-radius:999px;padding:8px 16px;
+  font:inherit;font-weight:700;font-size:13.5px;cursor:pointer}
+.stage.lite .replay{background:#fff;color:#16110F;border-color:#DCD3D0}
+.replay:hover{background:rgba(255,255,255,.16)}
+.glow{position:absolute;width:340px;height:340px;border-radius:50%;pointer-events:none;
+  background:radial-gradient(circle,rgba(229,64,43,.30),transparent 66%);filter:blur(12px)}
+.foot{padding:44px 0 70px;color:#A99E99}
+.foot b{color:#fff}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+
+<header class="top"><div class="w">
+  <h1>مشاهد سينمائية للفلفلة</h1>
+  <p>أربعة مشاهد على الشعار الرسمي نفسه — تُقرأ خطوطه السبعة الحقيقية من <span dir="ltr">/brand/chili.svg</span> وتُحرَّك، فما فيه رسمة مقلّدة. اضغط «إعادة» تحت أي مشهد لتشوفه من البداية.</p>
+</div></header>
+
+<section class="scene"><div class="w">
+  <div class="hd"><span class="tag">مشهد ١</span><h2>الفلفلة ترسم نفسها</h2></div>
+  <p class="dsc">كل خط لوني يُرسم بالترتيب — الأصفر ثم الأحمر ثم البنفسجي ثم الأزرق، والورقة الخضراء آخر شي. كأن أحدًا يرسمها أمامك.</p>
+  <div class="stage" data-scene="draw"><div class="glow"></div><div class="holder"></div>
+    <button class="replay" type="button">إعادة ↻</button></div>
+</div></section>
+
+<section class="scene"><div class="w">
+  <div class="hd"><span class="tag">مشهد ٢</span><h2>الخطوط تتجمّع</h2></div>
+  <p class="dsc">الخطوط تجي من بعيد وهي تدور، وتتراكب وحدة فوق الثانية لين تقفل الشكل. مشهد تكوين.</p>
+  <div class="stage" data-scene="assemble"><div class="glow"></div><div class="holder"></div>
+    <button class="replay" type="button">إعادة ↻</button></div>
+</div></section>
+
+<section class="scene"><div class="w">
+  <div class="hd"><span class="tag">مشهد ٣</span><h2>الفلفلة الحيّة</h2></div>
+  <p class="dsc">الشكل مكتمل من أول لحظة، لكن الخطوط تتنفّس وتتموّج بلطف بلا توقف. مناسب لو تبيه خلف العنوان طول الوقت.</p>
+  <div class="stage lite" data-scene="alive"><div class="holder"></div>
+    <button class="replay" type="button">إعادة ↻</button></div>
+</div></section>
+
+<section class="scene"><div class="w">
+  <div class="hd"><span class="tag">مشهد ٤</span><h2>تتفكّك… وترجع</h2></div>
+  <p class="dsc">الخطوط تتناثر في الفضاء ثم تنجذب وترجع تتشكّل. أقوى مشهد استعراضي، ويصلح لفتح الصفحة.</p>
+  <div class="stage" data-scene="burst"><div class="glow"></div><div class="holder"></div>
+    <button class="replay" type="button">إعادة ↻</button></div>
+</div></section>
+
+<footer class="foot"><div class="w">
+  <p>قل لي رقم المشهد و<b>أنزّله على الصفحة الرئيسية</b> — نقدر نخليه في الهيرو فوق، أو كفاصل قبل قسم آلية العمل.</p>
+</div></footer>
+
+<script>
+(function(){
+var SRC='/brand/chili.svg';
+var cache=null;
+
+function load(){
+  if(cache) return Promise.resolve(cache);
+  return fetch(SRC).then(function(r){return r.text();}).then(function(t){
+    cache=t; return t;
+  });
+}
+
+function mount(holder, txt){
+  holder.innerHTML=txt;
+  var svg=holder.querySelector('svg');
+  if(!svg) return null;
+  svg.removeAttribute('width'); svg.removeAttribute('height');
+  svg.setAttribute('preserveAspectRatio','xMidYMid meet');
+  return svg;
+}
+
+function shapes(svg){
+  return [].slice.call(svg.querySelectorAll('path,polygon,ellipse,circle,rect'));
+}
+
+/* ---- scene 1: self draw (per-shape wipe mask) ---- */
+function sceneDraw(svg){
+  var ps=shapes(svg);
+  var ns='http://www.w3.org/2000/svg';
+  var defs=document.createElementNS(ns,'defs');
+  svg.insertBefore(defs, svg.firstChild);
+  ps.forEach(function(p,i){
+    var bb; try{ bb=p.getBBox(); }catch(e){ return; }
+    var id='wipe'+i+'_'+Math.random().toString(36).slice(2,7);
+    var m=document.createElementNS(ns,'mask');
+    m.setAttribute('id',id);
+    m.setAttribute('maskUnits','userSpaceOnUse');
+    var r=document.createElementNS(ns,'rect');
+    r.setAttribute('x',bb.x-2); r.setAttribute('y',bb.y+bb.height+2);
+    r.setAttribute('width',bb.width+4); r.setAttribute('height',bb.height+4);
+    r.setAttribute('fill','#fff');
+    var an=document.createElementNS(ns,'animate');
+    an.setAttribute('attributeName','y');
+    an.setAttribute('from',bb.y+bb.height+2); an.setAttribute('to',bb.y-2);
+    an.setAttribute('dur','0.62s'); an.setAttribute('begin',(0.18*i)+'s');
+    an.setAttribute('fill','freeze'); an.setAttribute('calcMode','spline');
+    an.setAttribute('keySplines','.25 .1 .25 1'); an.setAttribute('keyTimes','0;1');
+    r.appendChild(an); m.appendChild(r); defs.appendChild(m);
+    p.setAttribute('mask','url(#'+id+')');
+  });
+  svg.style.filter='drop-shadow(0 14px 40px rgba(229,64,43,.35))';
+}
+
+/* ---- scene 2: assemble ---- */
+function sceneAssemble(svg){
+  var ps=shapes(svg);
+  ps.forEach(function(p,i){
+    var ang=(i*47)%360, rad=ang*Math.PI/180, dist=190+i*26;
+    var dx=Math.cos(rad)*dist, dy=Math.sin(rad)*dist;
+    p.style.transformBox='fill-box'; p.style.transformOrigin='center';
+    p.animate([
+      {transform:'translate('+dx+'px,'+dy+'px) rotate('+(ang/2)+'deg) scale(.4)',opacity:0},
+      {transform:'none',opacity:1}
+    ],{duration:1150,delay:i*105,easing:'cubic-bezier(.16,.9,.3,1)',fill:'both'});
+  });
+  svg.style.filter='drop-shadow(0 14px 40px rgba(229,64,43,.35))';
+}
+
+/* ---- scene 3: alive ---- */
+function sceneAlive(svg){
+  var ps=shapes(svg);
+  ps.forEach(function(p,i){
+    p.style.transformBox='fill-box'; p.style.transformOrigin='center';
+    p.animate([
+      {transform:'translateY(0px) rotate(0deg)'},
+      {transform:'translateY('+(i%2?-4:4)+'px) rotate('+(i%2?.9:-.9)+'deg)'},
+      {transform:'translateY(0px) rotate(0deg)'}
+    ],{duration:3600+i*260,iterations:Infinity,easing:'ease-in-out',delay:i*120});
+  });
+}
+
+/* ---- scene 4: burst & reform ---- */
+function sceneBurst(svg){
+  var ps=shapes(svg);
+  ps.forEach(function(p,i){
+    var ang=(i*67)%360, rad=ang*Math.PI/180, dist=150+i*22;
+    var dx=Math.cos(rad)*dist, dy=Math.sin(rad)*dist;
+    p.style.transformBox='fill-box'; p.style.transformOrigin='center';
+    p.animate([
+      {transform:'none',opacity:1,offset:0},
+      {transform:'translate('+dx+'px,'+dy+'px) rotate('+ang+'deg) scale(.55)',opacity:.35,offset:.42},
+      {transform:'translate('+(dx*.25)+'px,'+(dy*.25)+'px) rotate('+(ang*.2)+'deg) scale(.9)',opacity:.8,offset:.68},
+      {transform:'none',opacity:1,offset:1}
+    ],{duration:4200,delay:i*70,iterations:Infinity,easing:'cubic-bezier(.4,0,.2,1)'});
+  });
+  svg.style.filter='drop-shadow(0 14px 44px rgba(229,64,43,.4))';
+}
+
+var RUN={draw:sceneDraw,assemble:sceneAssemble,alive:sceneAlive,burst:sceneBurst};
+
+function play(stage){
+  var kind=stage.getAttribute('data-scene');
+  var holder=stage.querySelector('.holder');
+  load().then(function(txt){
+    var svg=mount(holder,txt);
+    if(!svg){holder.textContent='تعذّر تحميل الشعار';return;}
+    requestAnimationFrame(function(){ (RUN[kind]||sceneAlive)(svg); });
+  }).catch(function(){ holder.textContent='تعذّر تحميل الشعار'; });
+}
+
+[].slice.call(document.querySelectorAll('.stage')).forEach(function(st){
+  play(st);
+  var b=st.querySelector('.replay');
+  if(b) b.addEventListener('click',function(){ play(st); });
+});
+})();
+</script>
+</body>
+</html>
