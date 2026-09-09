@@ -123,7 +123,7 @@ F.forEach(function(f){
  var fg=document.createElement("figure");
  fg.innerHTML='<div class="bar"><div class="tl"><i></i><i></i><i></i></div>'+
   '<div class="url">'+f.u+'</div></div><div class="view">'+
-  '<img alt="" src="'+f.img+'"><div class="ph"><b>'+f.h+'</b><span>اللقطة قيد الالتقاط من المنصة</span></div></div>';
+  '<img alt="" src="'+f.img+'?v=1"><div class="ph"><b>'+f.h+'</b><span>اللقطة قيد الالتقاط من المنصة</span></div></div>';
  var im=fg.querySelector("img");
  im.addEventListener("error",function(){fg.classList.add("pending");});
  cardsEl.appendChild(fg); figs.push(fg); imgs.push(im);
