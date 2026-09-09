@@ -274,16 +274,17 @@ init();
 
 <script>
 (function(){
-if(window.__felfelUI)return; window.__felfelUI=5;
+if(window.__felfelUI)return; window.__felfelUI=6;
 var HEAD='أنا فلفل، مدير حملاتك الذكي 🌶️';
 var meta={}, mode=(localStorage.getItem('felfel_billing')==='yearly')?'yearly':'monthly';
 function fmt(n){return Number(n).toLocaleString('en-US');}
 function css(){if(document.getElementById('felfel-css'))return;var s=document.createElement('style');s.id='felfel-css';
 s.textContent='.felfel-head{text-align:center;font-weight:800;font-size:20px;margin:16px 0 4px}'
-+'.felfel-tg{display:flex;justify-content:center;align-items:center;gap:8px;margin:10px 0 18px;flex-wrap:wrap}'
-+'.felfel-tg button{border:1px solid #ddd;background:#fff;border-radius:999px;padding:8px 18px;font:inherit;font-weight:700;cursor:pointer}'
-+'.felfel-tg button.on{background:#111;color:#fff;border-color:#111}'
-+'.felfel-save{background:#e8f7ee;color:#127a3e;border-radius:999px;padding:5px 11px;font-size:12px;font-weight:800}'
++'.felfel-tg{display:flex;justify-content:center;margin:12px 0 24px}'
++'.felfel-seg{display:inline-flex;align-items:center;background:#EFEDEC;border:1px solid #E4E0DE;border-radius:999px;padding:4px}'
++'.felfel-seg button{border:0;background:transparent;border-radius:999px;padding:10px 20px;font:inherit;font-weight:700;font-size:15px;color:#6B625F;cursor:pointer;display:inline-flex;align-items:center;gap:8px;white-space:nowrap;transition:background .15s,color .15s,box-shadow .15s}'
++'.felfel-seg button.on{background:#fff;color:#16110F;box-shadow:0 1px 3px rgba(0,0,0,.14)}'
++'.felfel-save{background:#DCFCE7;color:#166534;border-radius:999px;padding:3px 9px;font-size:12px;font-weight:800;line-height:1.6}'
 +'.felfel-list{display:block;color:#d32f2f;font-weight:700;font-size:15px;margin-bottom:2px;text-decoration:line-through;text-decoration-color:#d32f2f;text-decoration-thickness:2px}'
 +'li.felfel-comm > span:last-child{font-weight:800}'
 +'.felfel-foot{font-size:12px;color:#6b6b6b;margin-top:10px;line-height:1.7}';
@@ -292,10 +293,13 @@ function grid(){return document.getElementById('plans-grid');}
 function mount(){var g=grid();if(!g||document.getElementById('felfel-head'))return;
 var h=document.createElement('div');h.id='felfel-head';h.className='felfel-head';h.textContent=HEAD;
 var t=document.createElement('div');t.className='felfel-tg';
-var bm=document.createElement('button');bm.type='button';bm.textContent='شهري';
-var by=document.createElement('button');by.type='button';by.textContent='سنوي';
+var seg=document.createElement('div');seg.className='felfel-seg';
+var by=document.createElement('button');by.type='button';
+by.appendChild(document.createTextNode('اشتراك سنوي'));
 var sv=document.createElement('span');sv.className='felfel-save';sv.textContent='وفّر 20٪';
-t.appendChild(bm);t.appendChild(by);t.appendChild(sv);
+by.appendChild(sv);
+var bm=document.createElement('button');bm.type='button';bm.textContent='اشتراك شهري';
+seg.appendChild(by);seg.appendChild(bm);t.appendChild(seg);
 function set(m){mode=m;try{localStorage.setItem('felfel_billing',m)}catch(e){}
 try{window.PERIOD=m}catch(e){}
 bm.className=(m==='monthly')?'on':'';by.className=(m==='yearly')?'on':'';apply();}
