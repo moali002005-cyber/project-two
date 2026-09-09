@@ -1203,7 +1203,7 @@ window.flfIsBarter = function (c) {
 };
 window.flfBarterText = function (c) {
   var v = c && c.product_value_sar;
-  return v ? ('\uD83C\uDF81 مقابل منتج \u00B7 قيمته ' + Number(v).toLocaleString('en-US') + ' ر.س')
+  return v ? ('\uD83C\uDF81 مقابل منتج \u00B7 قيمة المنتج ' + Number(v).toLocaleString('en-US') + ' ر.س')
            : '\uD83C\uDF81 مقابل منتج';
 };
 window.flfIsBarterApp = function (a) {

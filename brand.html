@@ -4058,8 +4058,8 @@ init();
       pv.className = 'field'; pv.id = 'product-value-field'; pv.style.display = 'none';
       pv.innerHTML =
         '<label>قيمة المنتج التقديرية <span style="font-weight:400;color:#8A807B">(اختياري)</span></label>' +
-        '<input type="text" id="product-value-input" name="product_value_sar" inputmode="numeric" placeholder="مثل: 450">' +
-        '<div class="hint">تظهر للمعلن عشان يقدّر العرض. اتركها فاضية لو ما تبي تذكرها.</div>';
+        '<input type="text" id="product-value-input" name="product_value_sar" inputmode="numeric" placeholder="مثال: 450">' +
+        '<div class="hint">تُعرض للمعلن ضمن تفاصيل التعاون.</div>';
       var sf = sizeSel.closest('.field');
       if (sf && sf.parentNode) sf.parentNode.insertBefore(pv, sf.nextSibling);
     }
@@ -4095,7 +4095,7 @@ init();
     if (sizeSel) {
       var keep = sizeSel.value;
       if (barter && PKGS.length) {
-        sizeSel.innerHTML = '<option value="">اختر باقة الحملة</option>' + PKGS.map(function (p) {
+        sizeSel.innerHTML = '<option value="">اختر حجم الحملة</option>' + PKGS.map(function (p) {
           return '<option value="' + p.size + '">' + p.label_ar + ' — ' + fmt(p.fee_sar) + ' ر.س</option>';
         }).join('');
         var match = PKGS.filter(function (p) { return String(p.size) === String(keep); })[0];
@@ -4117,8 +4117,8 @@ init();
     var p = PKGS.filter(function (x) { return String(x.size) === String(sizeSel && sizeSel.value); })[0];
     feeLine.style.display = '';
     feeLine.innerHTML = p
-      ? 'رسوم المنصة لهذي الحملة: <b>' + fmt(p.fee_sar) + ' ر.س</b> مقطوعة — والمعلن يأخذ المنتج بدل المبلغ.'
-      : 'اختر باقة الحملة عشان تشوف الرسوم المقطوعة.';
+      ? 'رسوم الحملة: <b>' + fmt(p.fee_sar) + ' ر.س</b> — رسوم ثابتة لا تتغيّر بعدد الصفقات.'
+      : 'حدّد حجم الحملة لعرض رسوم الحملة.';
   }
 
   /* ---------- تعطيل تحققات السعر في وضع المقايضة ---------- */
