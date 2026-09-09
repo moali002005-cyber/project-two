@@ -1607,8 +1607,8 @@ async function simblExitImpersonation(){
     <a href="/plans.html" id="plan-strip" style="display:flex;align-items:center;gap:12px;max-width:520px;margin:20px auto 0;padding:13px 16px;border:1px solid var(--line);border-radius:14px;background:#fff;text-decoration:none;color:var(--ink);text-align:right;transition:border-color .2s ease,transform .15s ease;" onmouseover="this.style.borderColor='var(--line-strong)';this.style.transform='translateY(-1px)'" onmouseout="this.style.borderColor='var(--line)';this.style.transform='none'">
       <span style="width:40px;height:40px;border-radius:12px;background:#FDECEA;display:inline-flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;">🎫</span>
       <span style="flex:1;min-width:0;display:flex;flex-direction:column;gap:2px;">
-        <b id="hub-plan-name" style="font-size:14.5px;font-weight:600;">باقتي</b>
-        <small id="hub-plan-sub" style="font-size:12px;color:var(--ink-muted);line-height:1.5;">جاري التحميل…</small>
+        <b id="hub-plan-name" style="font-size:14.5px;font-weight:600;">الاشتراك الحالي</b>
+        <small id="hub-plan-sub" style="font-size:12px;color:var(--ink-muted);line-height:1.5;">جارٍ التحميل…</small>
       </span>
       <span style="color:var(--ink-faint);font-size:19px;line-height:1;flex-shrink:0;">‹</span>
     </a>
@@ -4019,21 +4019,28 @@ function planDateAr(iso) {
   if (isNaN(d.getTime())) return '';
   return d.getDate() + ' ' + PLAN_MONTHS_AR[d.getMonth()] + ' ' + d.getFullYear();
 }
+function planDaysAr(n) {
+  if (n === 1) return 'يوم واحد';
+  if (n === 2) return 'يومين';
+  if (n <= 10) return n + ' أيام';
+  return n + ' يومًا';
+}
 function planSummary(p) {
   if (!p || p.__unknown || p.error) return null;
   const free = (p.code === 'c_free' || p.code === 'trial' || p.code === 'trial_legacy');
   const name = p.name_ar || p.code || 'باقتك';
   const bits = [];
-  if (p.commission_pct != null) bits.push('عمولة ' + Number(p.commission_pct) + '٪');
+  if (p.commission_pct != null) bits.push('عمولة ' + Number(p.commission_pct) + '٪ على كل صفقة');
   let days = null;
   if (p.expires_at) {
     const ms = new Date(p.expires_at).getTime() - Date.now();
     if (!isNaN(ms)) days = Math.ceil(ms / 86400000);
   }
-  if (free) bits.push('رقِّ باقتك لمزايا أكثر');
-  else if (days != null && days <= 0) bits.push('انتهت — جدِّدها');
-  else if (days != null && days <= 30) bits.push('تنتهي بعد ' + days + ' يوم');
-  else if (p.expires_at) bits.push('سارية حتى ' + planDateAr(p.expires_at));
+  if (days != null && days <= 0) bits.push('انتهت صلاحية الاشتراك — يلزم التجديد');
+  else if (days != null && days <= 30) bits.push('تنتهي الصلاحية بعد ' + planDaysAr(days));
+  else if (p.expires_at) bits.push('الصلاحية حتى ' + planDateAr(p.expires_at));
+  else if (p.code === 'trial_legacy') bits.push('باقة مثبّتة على حسابك');
+  else if (free) bits.push('تنخفض نسبة العمولة في الباقات الأعلى');
   if (!bits.length) bits.push(name);
   return { text: bits.join(' · '), soon: (days != null && days <= 30), free: free, name: name };
 }
@@ -4047,7 +4054,7 @@ async function loadMyPlan() {
   sub.textContent = s.text;
   if (s.soon || s.free) sub.style.color = 'var(--accent-ink, #7E2119)';
   const nm = document.getElementById('hub-plan-name');
-  if (nm) nm.textContent = 'باقتي — ' + s.name;
+  if (nm) nm.textContent = 'الاشتراك الحالي: ' + s.name;
 }
 
 loadMyPlan();
