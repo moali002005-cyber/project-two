@@ -4199,8 +4199,12 @@ init();
     if (!sb) return setTimeout(boot, 400);
     patchRpc(sb); patchFrom(sb);
     try {
+      // لازم نقصر الفحص على حساب الشركة الحالي: حساب الأدمن يرى كل الصفوف بحكم صلاحياته
+      var me = null;
+      try { me = (typeof getCurrentUser === 'function') ? await getCurrentUser() : null; } catch (e) {}
+      if (!me || !me.id || me.role !== 'brand') return;
       var f = await sb.from('brand_features').select('feature,enabled')
-        .eq('feature', 'barter').eq('enabled', true).limit(1);
+        .eq('brand_id', me.id).eq('feature', 'barter').eq('enabled', true).limit(1);
       ENABLED = !!(f && f.data && f.data.length);
       if (!ENABLED) return;
       var p = await sb.from('barter_packages').select('size,fee_sar,label_ar')
