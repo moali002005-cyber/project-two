@@ -869,5 +869,272 @@ function go(){css(); if(!build()){ setTimeout(go,150); } }
 if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',go); else go();
 })();
 </script>
+<script>
+/* فلفلونسر — واجهة الصفحة الرئيسية: سوق المؤثرين + شرح المنصة */
+(function(){
+if(window.__flfHome)return; window.__flfHome=1;
+
+var C=[
+ {n:"صالحه الحربي",h:"b.d.f",p:"instagram",f:2000000,pr:1000,c:"jeddah",a:"https://chpzecgpylxqsutjydkb.supabase.co/storage/v1/object/public/avatars/60a260d1-3705-40d9-8706-4ee2f54cf023-1786139905832.jpeg"},
+ {n:"الهنوف ناصر",h:"@ksa.in",p:"tiktok",f:500000,pr:800,c:"riyadh",a:"https://chpzecgpylxqsutjydkb.supabase.co/storage/v1/object/public/avatars/63abb1b0-8052-4ca6-850e-f8e19b4f2662-1786176260271.png"},
+ {n:"الماس الابراهيم",h:"msa90mm",p:"tiktok",f:500000,pr:1000,c:"riyadh",a:"https://chpzecgpylxqsutjydkb.supabase.co/storage/v1/object/public/avatars/ab4509c7-12a3-4fb3-a1d1-a0bdea66df7b_1786280771403.jpg"},
+ {n:"فلوه محمد",h:"@felwah.mf",p:"snapchat",f:500000,pr:3000,c:"riyadh",a:"https://chpzecgpylxqsutjydkb.supabase.co/storage/v1/object/public/avatars/d33f7931-e3dd-499f-ab31-02227b9c2c42-1786141859557.jpeg"},
+ {n:"حصه عايض",h:"hsa777n",p:"tiktok",f:300000,pr:600,c:"riyadh",a:"https://chpzecgpylxqsutjydkb.supabase.co/storage/v1/object/public/avatars/99ab46c5-8b49-4793-b196-8b24af97c160-1787828966096.png"},
+ {n:"اماكن الرياض",h:"v_887",p:"tiktok",f:300000,pr:600,c:"riyadh",a:"https://chpzecgpylxqsutjydkb.supabase.co/storage/v1/object/public/avatars/a9e29d8f-c287-4284-a8c6-de04e63628d9-1786233380886.png"},
+ {n:"نوف الانصاري",h:"Mn_makkah",p:"tiktok",f:300000,pr:700,c:"makkah",a:"https://chpzecgpylxqsutjydkb.supabase.co/storage/v1/object/public/avatars/496eb966-0864-4533-8be4-9aa5e6c5d82e_1786191821584.jpg"},
+ {n:"السّنـا",h:"al_sna0",p:"tiktok",f:300000,pr:700,c:"riyadh",a:"https://chpzecgpylxqsutjydkb.supabase.co/storage/v1/object/public/avatars/c5c9a190-9e99-436e-a735-4fa21a586a27-1786193528606.png"},
+ {n:"جويل الفيصل",h:"joel22123",p:"tiktok",f:300000,pr:800,c:"riyadh",a:"https://chpzecgpylxqsutjydkb.supabase.co/storage/v1/object/public/avatars/7ada231c-99e7-4547-a67c-4907b1f9aff2-1786137989766.png"},
+ {n:"هدى الحربي",h:"blogger.71",p:"tiktok",f:300000,pr:800,c:"riyadh",a:"https://chpzecgpylxqsutjydkb.supabase.co/storage/v1/object/public/avatars/e1e8ec3c-a24a-4043-8818-787d4de8dca6-1786135639742.png"},
+ {n:"عبير سالم",h:"@ab.saudi1",p:"tiktok",f:500000,pr:2500,c:"riyadh",a:"https://chpzecgpylxqsutjydkb.supabase.co/storage/v1/object/public/avatars/4421ccc1-93ce-4922-ade1-4f6cf265fc30-1786138972976.png"}
+];
+var CITY={riyadh:"الرياض",jeddah:"جدة",makkah:"مكة",dammam:"الدمام",khobar:"الخبر",jazan:"جازان",khamis:"خميس مشيط",other:"السعودية"};
+var PLAT={tiktok:"تيك توك",instagram:"إنستغرام",snapchat:"سناب شات",youtube:"يوتيوب"};
+
+function css(){
+ if(document.getElementById('flf-home-css'))return;
+ var s=document.createElement('style'); s.id='flf-home-css';
+ s.textContent=
+ '.fh{--r:#E5402B;--rd:#C4331F;--ink:#16110F;--i2:#5A514E;--i3:#8E8481;--ln:#EAE3E1;--l2:#DCD3D0;--bg2:#FAF7F6;font-size:16px;line-height:1.8;color:var(--ink)}'
++'.fh *{box-sizing:border-box}'
++'.fh .w{max-width:1120px;margin:0 auto;padding:0 22px}'
++'.fh h2{font-size:clamp(25px,3.2vw,34px);font-weight:800;line-height:1.35;margin:0;text-wrap:balance}'
++'.fh h3{margin:0;font-weight:800}'
++'.fh .eb{font-size:13px;font-weight:800;color:var(--r);margin-bottom:10px}'
++'.fh .sh{max-width:60ch;margin-bottom:34px}'
++'.fh .sh p{font-size:17px;color:var(--i2);margin:12px 0 0}'
++'.fh sect{display:block;padding:66px 0}'
++'.fh .fbtn{display:inline-flex;align-items:center;justify-content:center;gap:8px;font-weight:700;font-size:15px;padding:11px 24px;border-radius:999px;border:1px solid transparent;cursor:pointer;text-decoration:none}'
++'.fh .fp{background:var(--r);color:#fff}.fh .fp:hover{background:var(--rd)}'
++'.fh .fg{background:#fff;color:var(--ink);border-color:var(--l2)}.fh .fg:hover{border-color:var(--ink)}'
+/* market */
++'.fh .mkt{padding:8px 0 0}'
++'.fh .srch{display:flex;gap:8px;padding:8px;background:#fff;border:1px solid var(--l2);border-radius:999px;max-width:620px;margin:0 auto;box-shadow:0 4px 18px rgba(22,17,15,.06)}'
++'.fh .srch select,.fh .srch input{font:inherit;font-size:15.5px;color:var(--ink);border:0;background:transparent;padding:9px 14px;min-width:0}'
++'.fh .srch select{border-inline-end:1px solid var(--ln);font-weight:700;cursor:pointer}'
++'.fh .srch input{flex:1}'
++'.fh .chips{display:flex;flex-wrap:wrap;gap:8px;margin:16px 0 0;justify-content:center}'
++'.fh .chip{font-size:13.5px;font-weight:700;padding:7px 15px;border-radius:999px;border:1px solid var(--l2);background:#fff;color:var(--i2);cursor:pointer}'
++'.fh .chip:hover{border-color:var(--i3)}'
++'.fh .chip[aria-pressed="true"]{background:var(--ink);border-color:var(--ink);color:#fff}'
++'.fh .cnt{margin:22px 0 12px;font-size:14px;color:var(--i3);font-weight:600;text-align:center}'
++'.fh .cnt b{color:var(--ink)}'
++'.fh .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:16px}'
++'.fh .card{border:1px solid var(--ln);border-radius:16px;overflow:hidden;background:#fff;transition:border-color .15s,transform .15s}'
++'.fh .card:hover{border-color:var(--l2);transform:translateY(-2px)}'
++'.fh .ph{aspect-ratio:1/1;background:var(--bg2);position:relative}'
++'.fh .ph img{width:100%;height:100%;object-fit:cover;display:block}'
++'.fh .fb{width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:52px;font-weight:800;color:#fff;background:linear-gradient(150deg,#E5402B,#C4331F)}'
++'.fh .pl{position:absolute;inset-block-start:9px;inset-inline-start:9px;background:rgba(255,255,255,.94);border-radius:999px;font-size:11px;font-weight:800;padding:4px 10px}'
++'.fh .mt{padding:13px 14px 15px}'
++'.fh .mt h3{font-size:15.5px;line-height:1.4}'
++'.fh .hd{font-size:12.5px;color:var(--i3);margin-top:1px}'
++'.fh .rw{display:flex;justify-content:space-between;align-items:baseline;margin-top:11px;padding-top:11px;border-top:1px solid var(--ln)}'
++'.fh .fo{font-size:13px;color:var(--i2)}'
++'.fh .pr{font-weight:800;font-size:16px}'
++'.fh .pr small{font-weight:500;font-size:11.5px;color:var(--i3)}'
++'.fh .emp{grid-column:1/-1;text-align:center;padding:40px 0;color:var(--i3)}'
++'.fh .more{text-align:center;margin:26px 0 0}'
++'.fh .hint{display:inline-flex;align-items:center;gap:7px;margin-top:14px;font-size:13.5px;color:var(--i3)}'
++'.fh .hint::before{content:"";width:6px;height:6px;border-radius:50%;background:#177A5B}'
+/* steps */
++'.fh .steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(255px,1fr));gap:0}'
++'.fh .st{padding:26px 26px 0 0;border-top:2px solid var(--ink)}'
++'.fh .sn{font-size:13px;font-weight:800;color:var(--r);margin-bottom:8px}'
++'.fh .st h3{font-size:19px;margin-bottom:8px}'
++'.fh .st p{margin:0;color:var(--i2);font-size:15.5px}'
+/* nego */
++'.fh .ng{background:var(--ink);color:#fff}'
++'.fh .ng .eb{color:#FF9080}.fh .ng h2{color:#fff}'
++'.fh .ngg{display:grid;grid-template-columns:1.05fr .95fr;gap:44px;align-items:center}'
++'.fh .ngg > div > p{color:#C3B9B5;font-size:17px;margin:12px 0 0}'
++'.fh .chat{background:#221A17;border:1px solid #3A2F2B;border-radius:20px;padding:20px;display:flex;flex-direction:column;gap:12px}'
++'.fh .msg{max-width:82%;padding:11px 15px;border-radius:16px;font-size:14.5px;line-height:1.7}'
++'.fh .them{background:#332824;color:#EFE7E4;border-end-start-radius:5px}'
++'.fh .us{background:var(--r);color:#fff;align-self:flex-end;border-end-end-radius:5px}'
++'.fh .who{display:block;font-size:11.5px;font-weight:800;opacity:.72;margin-bottom:3px}'
++'.fh .deal{background:#1B2E26;border:1px solid #2C5244;color:#9FE3C6;border-radius:12px;padding:11px 15px;font-size:14px;font-weight:700}'
++'.fh .ng ul{list-style:none;padding:0;margin:22px 0 0;display:grid;gap:13px}'
++'.fh .ng li{padding-inline-start:26px;position:relative;color:#D6CDC9;font-size:15.5px}'
++'.fh .ng li::before{content:"\\2713";position:absolute;inset-inline-start:0;color:#7FD9B4;font-weight:700}'
+/* nums + plans + doors */
++'.fh .nums{display:grid;grid-template-columns:repeat(auto-fit,minmax(185px,1fr));gap:1px;background:var(--ln);border:1px solid var(--ln)}'
++'.fh .nums div{background:#fff;padding:24px 22px}'
++'.fh .nums dt{font-size:14px;color:var(--i3);margin-bottom:6px}'
++'.fh .nums dd{margin:0;font-size:32px;font-weight:800;line-height:1.15}'
++'.fh .nums dd small{font-size:14px;font-weight:600;color:var(--i2)}'
++'.fh .tz{display:grid;grid-template-columns:repeat(auto-fit,minmax(238px,1fr));gap:16px}'
++'.fh .pc{border:1px solid var(--ln);border-radius:16px;padding:24px 22px;background:#fff;text-decoration:none;color:inherit;display:block}'
++'.fh .pc.hot{border-color:var(--r);background:#FDECE9}'
++'.fh .pc .ico{font-size:24px;margin-bottom:10px}'
++'.fh .pc h3{font-size:19px}'
++'.fh .pc .fee{display:inline-block;margin:10px 0 12px;font-weight:800;font-size:13px;background:#F1EDEC;border-radius:999px;padding:5px 13px}'
++'.fh .pc.hot .fee{background:#fff}'
++'.fh .pc .amt{font-size:26px;font-weight:800}'
++'.fh .pc .amt small{font-size:13px;font-weight:500;color:var(--i3)}'
++'.fh .pc p{margin:8px 0 0;font-size:14.5px;color:var(--i2)}'
++'.fh .doors{display:grid;grid-template-columns:1fr 1fr;gap:18px}'
++'.fh .dr{border:1px solid var(--ln);border-radius:20px;padding:30px 28px;background:var(--bg2);display:flex;flex-direction:column}'
++'.fh .dr h3{font-size:21px;margin-bottom:10px}'
++'.fh .dr p{color:var(--i2);font-size:15.5px;margin:0 0 18px}'
++'.fh .dr ul{list-style:none;padding:0;margin:0 0 22px;display:grid;gap:9px}'
++'.fh .dr li{font-size:14.5px;color:var(--i2);padding-inline-start:20px;position:relative}'
++'.fh .dr li::before{content:"\\00B7";position:absolute;inset-inline-start:5px;color:var(--r);font-weight:900;font-size:20px}'
++'.fh .dr .fbtn{align-self:flex-start;margin-top:auto}'
++'@media(max-width:820px){.fh .ngg{grid-template-columns:1fr;gap:28px}.fh .doors{grid-template-columns:1fr}.fh .st{padding-inline-end:0}}'
++'@media(max-width:560px){.fh .srch{flex-wrap:wrap;border-radius:20px}.fh .srch input,.fh .srch .fbtn{width:100%}}';
+ document.head.appendChild(s);
+}
+
+function killButtons(){
+ var kill=['التسجيل كمعلن','التسجيل كشركة'];
+ [].slice.call(document.querySelectorAll('a,button')).forEach(function(e){
+   if(e.closest('.flf-menu')||e.closest('.nav'))return;
+   var t=(e.textContent||'').replace(/[←→\s]/g,'');
+   kill.forEach(function(k){
+     if(t===k.replace(/\s/g,'')){
+       var box=e.parentElement;
+       e.parentNode.removeChild(e);
+       if(box&&box.children.length===0&&box!==document.body) box.style.display='none';
+     }
+   });
+ });
+}
+
+function esc(s){var d=document.createElement('div');d.textContent=s;return d.innerHTML;}
+
+function markup(){
+ return ''
+ +'<sect class="mkt"><div class="w">'
+ +'<div class="srch"><select id="fh-plat" aria-label="المنصة"><option value="">كل المنصات</option><option value="tiktok">تيك توك</option><option value="instagram">إنستغرام</option><option value="snapchat">سناب شات</option></select>'
+ +'<input id="fh-q" type="search" placeholder="ابحث باسم المؤثر أو المدينة…" autocomplete="off">'
+ +'<button class="fbtn fp" id="fh-go" type="button">ابحث</button></div>'
+ +'<div class="chips" id="fh-chips">'
+ +'<button class="chip" type="button" data-k="city" data-v="riyadh" aria-pressed="false">الرياض</button>'
+ +'<button class="chip" type="button" data-k="city" data-v="jeddah" aria-pressed="false">جدة</button>'
+ +'<button class="chip" type="button" data-k="city" data-v="makkah" aria-pressed="false">مكة</button>'
+ +'<button class="chip" type="button" data-k="max" data-v="800" aria-pressed="false">أقل من 800 ريال</button>'
+ +'<button class="chip" type="button" data-k="minf" data-v="500000" aria-pressed="false">أكثر من 500 ألف متابع</button>'
+ +'</div><p class="cnt" id="fh-cnt"></p><div class="grid" id="fh-grid"></div>'
+ +'<div class="more"><a class="fbtn fg" href="/signup.html">شوف كل المؤثرين ←</a>'
+ +'<div><span class="hint">البحث مجاني · بدون حساب · الأسعار معلنة من المؤثر نفسه</span></div></div>'
+ +'</div></sect>'
+
+ +'<sect id="fh-how"><div class="w"><div class="sh"><div class="eb">كيف يشتغل</div>'
+ +'<h2>ثلاث خطوات، ومن غير ولا مكالمة.</h2>'
+ +'<p>فلفل هو مدير حملاتك: يفهم هدفك، يرشّح لك الأنسب، ويفاوض بالعربي نيابةً عنك.</p></div>'
+ +'<div class="steps">'
+ +'<div class="st"><div class="sn">الخطوة ١</div><h3>اكتب فكرتك بجملة</h3><p>«أبي 5 مؤثرات في الرياض يجرّبون مطعمي». فلفل يبني البريف كامل: الهدف، المخرجات، الميزانية، والمواعيد.</p></div>'
+ +'<div class="st"><div class="sn">الخطوة ٢</div><h3>فلفل يرشّح ويفاوض</h3><p>يختار الأنسب من قاعدة المؤثرين، يتواصل معهم، ويتفاوض على السعر والمخرجات — وأنت تشوف كل شي مباشر.</p></div>'
+ +'<div class="st"><div class="sn">الخطوة ٣</div><h3>تعتمد وتدفع</h3><p>تراجع المحتوى قبل النشر، تعتمده، ويصرف المستحق للمؤثر. والمتابعة كلها من مكان واحد.</p></div>'
+ +'</div></div></sect>'
+
+ +'<sect class="ng"><div class="w"><div class="ngg"><div>'
+ +'<div class="eb">الميزة اللي ما تلقاها في مكان ثاني</div>'
+ +'<h2>وكيل تفاوض يتكلّم عربي سعودي.</h2>'
+ +'<p>المنصات العالمية تعطيك صندوق رسائل وتقول لك «تفاوض بنفسك». فلفل يتفاوض عنك — بلهجتك، وبحدود ميزانيتك، وعلى مدار الساعة.</p>'
+ +'<ul><li>يحدد سقف ميزانيتك ولا يتجاوزه أبدًا</li><li>يتفق على المخرجات والمواعيد قبل أي مبلغ</li>'
+ +'<li>كل محادثة محفوظة كسجلّ ترجع له وقت الخلاف</li><li>يشتغل مع عشرة مؤثرين في نفس الوقت</li></ul></div>'
+ +'<div class="chat"><div class="msg them"><span class="who">فلفل ← المؤثرة</span>هلا نوف! عندنا حملة مطعم بالرياض، فيديو تيك توك واحد + ستوري. سعرك المعلن 700 ريال — يناسبك؟</div>'
+ +'<div class="msg us"><span class="who">المؤثرة</span>أهلين، الفيديو والستوري مع بعض بـ900 ريال.</div>'
+ +'<div class="msg them"><span class="who">فلفل</span>ميزانية العميل 750 للحملة الوحدة. نخليها 750 مع أولوية لك في حملتين جايات هالشهر؟</div>'
+ +'<div class="msg us"><span class="who">المؤثرة</span>تمام، اتفقنا 👌</div>'
+ +'<div class="deal">✓ أُقفلت الصفقة على 750 ريال — وفّرنا 150 ريال</div></div>'
+ +'</div></div></sect>'
+
+ +'<sect><div class="w"><div class="sh"><div class="eb">أرقامنا</div><h2>أرقام حقيقية، بلا تجميل.</h2></div>'
+ +'<dl class="nums"><div><dt>مؤثر معتمد على المنصة</dt><dd>447</dd></div>'
+ +'<div><dt>متوسط سعر الحملة الواحدة</dt><dd>976 <small>ريال</small></dd></div>'
+ +'<div><dt>الأسعار تبدأ من</dt><dd>100 <small>ريال</small></dd></div>'
+ +'<div><dt>رسوم إدارة الحملة تنزل إلى</dt><dd>5<small>٪</small></dd></div></dl></div></sect>'
+
+ +'<sect style="background:#FAF7F6;border-block:1px solid #EAE3E1"><div class="w">'
+ +'<div class="sh"><div class="eb">الأسعار</div><h2>ابدأ مجانًا. وادفع لما تكبر.</h2>'
+ +'<p>ما نطلب اشتراك عشان تجرّب. أنشئ حملتك الأولى وأنت على الباقة المجانية.</p></div>'
+ +'<div class="tz">'
+ +'<a class="pc" href="/plans.html"><div class="ico">🌱</div><h3>جرّب فلفل</h3><div class="fee">العمولة 15٪</div><div class="amt">0 <small>ر.س / شهر</small></div><p>أول حملة لك؟ خلّها عليّ.</p></a>'
+ +'<a class="pc hot" href="/plans.html"><div class="ico">🚀</div><h3>فلفل الاحترافي</h3><div class="fee">العمولة 10٪</div><div class="amt">499 <small>ر.س / شهر</small></div><p>حملاتك كثرت؟ أنا لها.</p></a>'
+ +'<a class="pc" href="/plans.html"><div class="ico">👑</div><h3>فلفل للأعمال</h3><div class="fee">العمولة 5٪</div><div class="amt">1,499 <small>ر.س / شهر</small></div><p>عندك حملات كثيرة؟ فلفل يشيلها عنك.</p></a>'
+ +'</div></div></sect>'
+
+ +'<sect><div class="w"><div class="doors">'
+ +'<div class="dr"><h3>أنت شركة أو وكالة؟</h3><p>أطلق حملتك بالذكاء الاصطناعي، وخلّ فلفل يدير المؤثرين نيابةً عنك.</p>'
+ +'<ul><li>بريف يُبنى تلقائيًا من فكرة واحدة</li><li>ترشيح المؤثر الأنسب لهدفك وميزانيتك</li>'
+ +'<li>تفاوض واعتماد ودفع من لوحة واحدة</li><li>حسابات لفريقك بصلاحيات</li></ul>'
+ +'<a class="fbtn fp" href="/signup.html?role=brand">سجّل شركتك ←</a></div>'
+ +'<div class="dr"><h3>أنت صانع محتوى؟</h3><p>حدّد سعرك مرة وحدة، وخلّ الحملات تجيك — بدل ما تدوّر عليها.</p>'
+ +'<ul><li>ملفك يظهر للشركات الباحثة عن تصنيفك</li><li>سعرك المعلن، وتقدر تتفاوض على كل حملة</li>'
+ +'<li>مستحقاتك تُصرف على حسابك البنكي</li><li>التسجيل مجاني بالكامل</li></ul>'
+ +'<a class="fbtn fg" href="/signup.html?role=creator">سجّل كصانع محتوى ←</a></div>'
+ +'</div></div></sect>';
+}
+
+function fmt(n){return Number(n).toLocaleString('en-US');}
+function fol(n){if(n>=1000000)return (n/1000000).toFixed(n%1000000===0?0:1)+'M متابع';if(n>=1000)return Math.round(n/1000)+'K متابع';return fmt(n)+' متابع';}
+
+function wire(root){
+ var grid=root.querySelector('#fh-grid'),cnt=root.querySelector('#fh-cnt');
+ var q=root.querySelector('#fh-q'),pl=root.querySelector('#fh-plat'),act={};
+ function ok(c){
+   var v=(q.value||'').trim();
+   if(v){var hay=c.n+' '+c.h+' '+(CITY[c.c]||c.c)+' '+(PLAT[c.p]||c.p);if(hay.indexOf(v)<0)return false;}
+   if(pl.value&&c.p!==pl.value)return false;
+   if(act.city&&c.c!==act.city)return false;
+   if(act.max&&c.pr>Number(act.max))return false;
+   if(act.minf&&c.f<Number(act.minf))return false;
+   return true;
+ }
+ function draw(){
+   var l=C.filter(ok);grid.textContent='';
+   if(!l.length){var e=document.createElement('div');e.className='emp';e.textContent='ما فيه مؤثر يطابق بحثك — جرّب تشيل أحد الفلاتر.';grid.appendChild(e);}
+   else l.forEach(function(c){
+     var card=document.createElement('article');card.className='card';
+     var ph=document.createElement('div');ph.className='ph';
+     var img=document.createElement('img');img.src=c.a;img.alt=c.n;img.loading='lazy';
+     img.onerror=function(){var f=document.createElement('div');f.className='fb';f.textContent=c.n.trim().charAt(0);img.replaceWith(f);};
+     var b=document.createElement('span');b.className='pl';b.textContent=PLAT[c.p]||c.p;
+     ph.appendChild(img);ph.appendChild(b);
+     var mt=document.createElement('div');mt.className='mt';
+     var h=document.createElement('h3');h.textContent=c.n;
+     var hd=document.createElement('div');hd.className='hd';
+     hd.textContent=(c.h.charAt(0)==='@'?c.h:'@'+c.h)+' · '+(CITY[c.c]||c.c);
+     var rw=document.createElement('div');rw.className='rw';
+     var fo=document.createElement('span');fo.className='fo';fo.textContent=fol(c.f);
+     var pr=document.createElement('span');pr.className='pr';pr.textContent=fmt(c.pr)+' ';
+     var sm=document.createElement('small');sm.textContent='ر.س';pr.appendChild(sm);
+     rw.appendChild(fo);rw.appendChild(pr);
+     mt.appendChild(h);mt.appendChild(hd);mt.appendChild(rw);
+     card.appendChild(ph);card.appendChild(mt);grid.appendChild(card);
+   });
+   cnt.innerHTML='نعرض <b>'+l.length+'</b> من أصل <b>447</b> مؤثرًا معتمدًا';
+ }
+ root.querySelector('#fh-chips').addEventListener('click',function(ev){
+   var b=ev.target.closest('.chip');if(!b)return;
+   var k=b.dataset.k,on=b.getAttribute('aria-pressed')==='true';
+   root.querySelectorAll('.chip[data-k="'+k+'"]').forEach(function(o){o.setAttribute('aria-pressed','false');});
+   if(on){delete act[k];}else{b.setAttribute('aria-pressed','true');act[k]=b.dataset.v;}
+   draw();
+ });
+ q.addEventListener('input',draw);pl.addEventListener('change',draw);
+ root.querySelector('#fh-go').addEventListener('click',draw);
+ q.addEventListener('keydown',function(e){if(e.key==='Enter')draw();});
+ draw();
+}
+
+function build(){
+ if(document.querySelector('.fh'))return true;
+ var foot=document.querySelector('footer');
+ var host=document.createElement('div');host.className='fh';
+ host.innerHTML=markup();
+ if(foot&&foot.parentNode) foot.parentNode.insertBefore(host,foot);
+ else document.body.appendChild(host);
+ wire(host);
+ return true;
+}
+
+function go(){css();killButtons();build();}
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',go);else go();
+setTimeout(killButtons,600);
+})();
+</script>
 </body>
 </html>
