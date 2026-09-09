@@ -1674,14 +1674,14 @@ async function simblExitImpersonation(){
             <label><input type="radio" name="fulfillment_mode" value="code" onchange="toggleFulfillment()"><span>🎟️ كود خصم</span></label>
             <label><input type="radio" name="fulfillment_mode" value="pickup" onchange="toggleFulfillment()"><span>🏬 استلام من الفرع</span></label>
           </div>
-          <div class="hint" id="fulfillment-hint">شحن للمعلن: بعد اعتماده يعطيك عنوانه، ترسل له المنتج، ويأكد استلامه في المنصة.</div>
+          <div class="hint" id="fulfillment-hint">شحن للمعلن: بعد اعتماده يزوّدك بعنوانه، ثم ترسل المنتج ويؤكّد استلامه داخل المنصة.</div>
           <div class="hint" id="fulfill-plan-note" style="display:none;color:#7E2119;"></div>
         </div>
 
         <div class="field" id="pickup-field" style="display:none;">
           <label>عنوان الفرع</label>
           <input type="text" name="pickup_address" placeholder="مثال: الرياض — حي الملقا، شارع أنس بن مالك، فرع رقم ٣">
-          <div class="hint">اكتب العنوان بوضوح عشان المعلن يوصل بسهولة.</div>
+          <div class="hint">اكتب العنوان بوضوح ليسهل على المعلن الوصول.</div>
           <label style="margin-top:12px;display:block;">أوقات الاستلام</label>
           <input type="text" name="pickup_hours" placeholder="مثال: السبت – الخميس، ١٠ صباحاً – ١٠ مساءً">
           <label style="margin-top:12px;display:block;">رابط الموقع على الخريطة (اختياري)</label>
@@ -1691,15 +1691,15 @@ async function simblExitImpersonation(){
         <div class="field" id="product-url-field" style="display:none;">
         <label>رابط المنتج</label>
         <input type="url" name="product_url" placeholder="https://yourstore.com/product" dir="ltr">
-        <div class="hint">الرابط اللي يفتح صفحة المنتج ليضيفه المعلن للسلة ويطبّق كوده.</div>
+        <div class="hint">رابط صفحة المنتج ليضيفه المعلن إلى السلة ويطبّق كود الخصم.</div>
       </div>
 
       <div class="field" id="codes-field" style="display:none;">
         <label>أكواد الخصم</label>
-        <textarea name="codes_list" rows="4" dir="ltr" placeholder="كل كود بسطر مستقل — مثال:
+        <textarea name="codes_list" rows="4" dir="ltr" placeholder="اكتب كل كود في سطر مستقل — مثال:
 PROMO-01
 PROMO-02" style="width:100%;box-sizing:border-box;font-family:inherit;"></textarea>
-        <div class="hint">كل كود يُصرف تلقائياً لمعلن واحد فقط عند اعتماده. تقدر تضيف أكواداً جديدة من «تعديل الحملة» بأي وقت.</div>
+        <div class="hint">يُصرف كل كود تلقائياً لمعلن واحد عند اعتماده، ويمكن إضافة أكواد جديدة لاحقاً من «تعديل الحملة».</div>
       </div>
 
       <div class="field" id="video-note-field" style="display:none;">
@@ -1716,19 +1716,19 @@ PROMO-02" style="width:100%;box-sizing:border-box;font-family:inherit;"></textar
           <input type="file" id="video-files-input" accept="image/jpeg,image/png,image/webp,video/mp4,video/quicktime,video/webm" multiple style="display:none;" onchange="pickVideoFiles(this)">
         </label>
         <div id="video-files-list" style="margin-top:9px;display:flex;flex-direction:column;gap:6px;"></div>
-        <div class="hint">MP4 / MOV / WebM حتى ٥٠ ميجا للملف، حتى ١٥ ملفاً للحملة (وتقدر تضيف صوراً حتى ١٠ ميجا) — تُرفع تلقائياً مع نشر الحملة وتظهر للمعلن المعتمد فقط.</div>
+        <div class="hint">MP4 / MOV / WebM بحجم أقصى ٥٠ ميجابايت للملف، وحتى ١٥ ملفاً للحملة، مع إمكانية إضافة صور حتى ١٠ ميجابايت. تُرفع مع نشر الحملة وتظهر للمعلن المعتمد فقط.</div>
       </div>
 
 
       <div class="field">
         <label>عنوان الحملة</label>
-        <input type="text" name="title" required placeholder="مثل: إطلاق عطر العيد الجديد">
+        <input type="text" name="title" required placeholder="مثال: إطلاق عطر العيد الجديد">
       </div>
 
       <div class="field" id="visit-location-field" style="display:none;">
         <label>موقع الزيارة</label>
-        <input type="text" name="visit_location" placeholder="ألصق رابط الموقع (خرائط قوقل)">
-        <div class="hint">رابط موقع الزيارة اللي يروح له المعلن.</div>
+        <input type="text" name="visit_location" placeholder="الصق رابط الموقع من خرائط قوقل">
+        <div class="hint">رابط موقع الزيارة الذي يقصده المعلن.</div>
       </div>
 
       <div class="field">
@@ -1737,14 +1737,14 @@ PROMO-02" style="width:100%;box-sizing:border-box;font-family:inherit;"></textar
           <button type="button" id="brief-ai-btn" onclick="toggleBriefAI(this)" style="display:inline-flex;align-items:center;gap:6px;border:1px solid #E23B2E;background:#FDF0EE;color:#7E2119;font-family:inherit;font-size:12px;font-weight:700;padding:6px 12px;border-radius:100px;cursor:pointer;transition:.15s;">✨ اكتب لي البريف</button>
         </div>
         <div id="brief-ai-panel" style="display:none;background:#FDF6F4;border:1px solid #F0C4BD;border-radius:12px;padding:13px;margin-bottom:11px;">
-          <label style="font-size:12.5px;color:#7E2119;margin-bottom:6px;">اكتب باختصار وش تبي من الإعلان + المعلومات الأساسية، والنظام يوسّعها لبريف احترافي:</label>
-          <textarea id="brief-ai-note" rows="3" placeholder="مثال: عطر رجالي فخم جديد — أبي المؤثر يركّز على ثبات الرائحة والفخامة، يصوّره بإضاءة راقية، يذكر إنه مناسب للمناسبات والهدايا، ويحط رابط المتجر" style="width:100%;box-sizing:border-box;border:1px solid #F0C4BD;border-radius:9px;padding:10px;font-family:inherit;font-size:13.5px;resize:vertical;"></textarea>
+          <label style="font-size:12.5px;color:#7E2119;margin-bottom:6px;">اكتب باختصار المطلوب من الإعلان والمعلومات الأساسية، ويوسّعها النظام إلى بريف احترافي:</label>
+          <textarea id="brief-ai-note" rows="3" placeholder="مثال: عطر رجالي فاخر جديد — التركيز على ثبات الرائحة والفخامة، تصوير بإضاءة راقية، الإشارة إلى مناسبته للمناسبات والهدايا، وإرفاق رابط المتجر" style="width:100%;box-sizing:border-box;border:1px solid #F0C4BD;border-radius:9px;padding:10px;font-family:inherit;font-size:13.5px;resize:vertical;"></textarea>
           <div style="display:flex;gap:8px;margin-top:9px;">
             <button type="button" id="brief-ai-go" onclick="suggestBrief(this)" style="border:0;background:var(--accent-solid);color:#fff;font-family:inherit;font-size:13px;font-weight:700;padding:9px 16px;border-radius:100px;cursor:pointer;">✨ جهّز البريف</button>
             <button type="button" onclick="toggleBriefAI(document.getElementById('brief-ai-btn'))" style="border:1px solid #d7e0dd;background:#fff;color:#5f6b66;font-family:inherit;font-size:13px;font-weight:600;padding:9px 16px;border-radius:100px;cursor:pointer;">إلغاء</button>
           </div>
         </div>
-        <textarea name="description" required rows="4" placeholder="وضّح للمعلن: المنتج، الجمهور المستهدف، المحاور والنقاط المطلوبة، نوع المحتوى، الكلمات المفتاحية... (يُرسل للمعلن تلقائيًا في مرحلة البريف) — أو اضغط «اكتب لي البريف» فوق واكتب فكرتك ويجهّزه لك النظام."></textarea>
+        <textarea name="description" required rows="4" placeholder="وضّح للمعلن: المنتج، الجمهور المستهدف، المحاور والنقاط المطلوبة، نوع المحتوى، والكلمات المفتاحية. يُرسل تلقائياً للمعلن في مرحلة البريف، أو اضغط «اكتب لي البريف» أعلاه ليجهّزه النظام من فكرتك."></textarea>
       </div>
 
       <div class="field">
@@ -1775,7 +1775,7 @@ PROMO-02" style="width:100%;box-sizing:border-box;font-family:inherit;"></textar
         <div class="field" id="publish-date-field" style="display:none;">
           <label>تاريخ النشر</label>
           <input type="date" name="publish_date" id="publish-date">
-          <div class="hint">التاريخ اللي تبي المحتوى يُنشر فيه</div>
+          <div class="hint">التاريخ المطلوب لنشر المحتوى</div>
         </div>
       </div>
 
@@ -1788,7 +1788,7 @@ PROMO-02" style="width:100%;box-sizing:border-box;font-family:inherit;"></textar
           <div class="field"><label>من الساعة</label><select name="visit_time_from"><option value="">اختر الوقت</option></select></div>
           <div class="field"><label>إلى الساعة</label><select name="visit_time_to"><option value="">اختر الوقت</option></select></div>
         </div>
-        <div class="hint">اختر يومًا واحدًا أو أكثر (اليوم، غدًا، وحتى شهر قدام) والوقت من–إلى.</div>
+        <div class="hint">اختر يوماً واحداً أو أكثر خلال الشهر القادم، وحدّد الوقت من وإلى.</div>
       </div>
 
       <div class="field">
@@ -1804,7 +1804,7 @@ PROMO-02" style="width:100%;box-sizing:border-box;font-family:inherit;"></textar
           <option value="100">100 معلن</option>
           <option value="200">200 معلن</option>
         </select>
-        <div class="hint">عدد المعلنين اللي تبي توصل لهم — الوكيل يوقف التفاوض لمّا يكمل العدد</div>
+        <div class="hint">عدد المعلنين المطلوب للحملة — يتوقّف التفاوض تلقائياً عند اكتمال العدد</div>
       </div>
 
       <div class="field">
@@ -1828,13 +1828,13 @@ PROMO-02" style="width:100%;box-sizing:border-box;font-family:inherit;"></textar
           <button type="button" class="platform-chip" data-value="mega" onclick="selectCreatorTier(this)"><span>Mega</span></button>
         </div>
         <input type="hidden" name="creator_tiers" id="creator-tiers-input">
-        <div class="hint">اختر تصنيفاً واحداً (إجباري)</div>
+        <div class="hint">اختر تصنيفاً واحداً (إلزامي)</div>
       </div>
 
       <div class="field" id="budget-field">
         <label>سعر المعلن الواحد</label>
-        <input type="text" name="budget" required placeholder="مثل: 1000" inputmode="numeric">
-        <div class="hint" id="budget-hint">هذا المبلغ يعرضه الوكيل على كل معلن ويقفل عليه.</div>
+        <input type="text" name="budget" required placeholder="مثال: 1000" inputmode="numeric">
+        <div class="hint" id="budget-hint">يعرض الوكيل هذا المبلغ على كل معلن ويقفل الاتفاق عليه.</div>
       </div>
 
       <div class="field">
@@ -1854,7 +1854,7 @@ PROMO-02" style="width:100%;box-sizing:border-box;font-family:inherit;"></textar
           <button type="button" class="platform-chip" data-value="4000000" onclick="selectFollowerRange(this)"><span>فوق 4 مليون</span></button>
         </div>
         <input type="hidden" name="follower_range" id="follower-range-input">
-        <div class="hint">تقدر تختار أكثر من نطاق</div>
+        <div class="hint">يمكن اختيار أكثر من نطاق</div>
       </div>
 
       <div class="field">
@@ -1867,7 +1867,7 @@ PROMO-02" style="width:100%;box-sizing:border-box;font-family:inherit;"></textar
           <option value="KW">الكويت</option>
           <option value="BH">البحرين</option>
         </select>
-        <div class="hint">لو ما حددت دولة، توصل الحملة لكل المعلنين</div>
+        <div class="hint">إذا لم تحدّد دولة، تصل الحملة إلى جميع المعلنين</div>
       </div>
 
       <div class="field">
@@ -1875,7 +1875,7 @@ PROMO-02" style="width:100%;box-sizing:border-box;font-family:inherit;"></textar
         <select name="city" id="campaign-form-city" disabled>
           <option value="">اختر الدولة أولاً</option>
         </select>
-        <div class="hint">اختر «كل المناطق» لتشمل كل مدن الدولة المختارة</div>
+        <div class="hint">اختر «كل المناطق» لتشمل جميع مدن الدولة المحدّدة</div>
       </div>
 
       <div class="field" style="grid-column: span 2;">
@@ -1932,12 +1932,12 @@ async function suggestBrief(btn) {
   const g = n => { const el = form.querySelector('[name="'+n+'"]'); return el ? (el.value||'').trim() : ''; };
   const typeEl = form.querySelector('[name="campaign_type"]:checked');
   const title = g('title');
-  if (!title) { showToast('اكتب عنوان الحملة أول عشان أقترح لك البريف', 'error'); return; }
+  if (!title) { showToast('اكتب عنوان الحملة أولاً ليتم اقتراح البريف', 'error'); return; }
   const noteEl = document.getElementById('brief-ai-note');
   const note = noteEl ? (noteEl.value || '').trim() : '';
-  if (!note) { showToast('اكتب باختصار وش تبي من البريف عشان يطلع قريب لتصوّرك', 'error'); if (noteEl) noteEl.focus(); return; }
+  if (!note) { showToast('اكتب باختصار المطلوب من البريف ليأتي مطابقاً لتصوّرك', 'error'); if (noteEl) noteEl.focus(); return; }
   const ta = form.querySelector('[name="description"]');
-  if (ta && ta.value.trim() && !confirm('فيه بريف مكتوب — تبي أستبدله بواحد جديد؟')) return;
+  if (ta && ta.value.trim() && !confirm('يوجد بريف مكتوب — هل تريد استبداله ببريف جديد؟')) return;
   const orig = btn.innerHTML;
   btn.disabled = true; btn.style.opacity = '.6'; btn.style.cursor = 'default'; btn.innerHTML = '⏳ يكتب البريف…';
   try {
@@ -2180,9 +2180,9 @@ function toggleFulfillment() {
   // لكل طريقة شرحها. كان الشرط ثنائيًا فيظهر شرح الكود على خيار الشحن أيضًا.
   const hint = document.getElementById('fulfillment-hint');
   const HINTS = {
-    shipping: 'شحن للمعلن: بعد اعتماده يعطيك عنوانه، ترسل له المنتج، ويأكد استلامه في المنصة.',
-    code: 'كود الخصم: كل معلن معتمد يستلم كوداً خاصاً يطلب فيه المنتج من متجرك بـ0 ريال — بدون شحن يدوي منك.',
-    pickup: 'استلام من الفرع: المعلن يجي فرعك ويستلم المنتج بنفسه — بدون شحن ولا كود.'
+    shipping: 'شحن للمعلن: بعد اعتماده يزوّدك بعنوانه، ثم ترسل المنتج ويؤكّد استلامه داخل المنصة.',
+    code: 'كود الخصم: يستلم كل معلن معتمد كوداً خاصاً يطلب به المنتج من متجرك بقيمة صفر، دون شحن يدوي.',
+    pickup: 'استلام من الفرع: يحضر المعلن إلى فرعك ويستلم المنتج بنفسه، دون شحن أو كود.'
   };
   if (hint) hint.textContent = HINTS[mode] || HINTS.shipping;
 }
@@ -2306,7 +2306,7 @@ function updateBudgetBounds() {
   const inp = document.querySelector('[name="budget"]');
   const _sel = document.querySelector('[name="campaign_type"]:checked');
   if (_sel && _sel.value === 'video') {
-    if (hint) hint.textContent = 'السعر حرّ لحملات الفيديو الجاهز — بدون حد أدنى. ' + 'هذا المبلغ يعرضه الوكيل على كل معلن ويقفل عليه.';
+    if (hint) hint.textContent = 'السعر حرّ لحملات الفيديو الجاهز — بدون حد أدنى. ' + 'يعرض الوكيل هذا المبلغ على كل معلن ويقفل الاتفاق عليه.';
     if (inp) inp.placeholder = 'مثل: 200';
     return;
   }
@@ -2315,11 +2315,11 @@ function updateBudgetBounds() {
   if (b) {
     const names = tiers.map(t => TIER_LABEL[t] || t).join('، ');
     // سعر واحد لا نطاق — الحدّان هنا مجال مسموح، مو دعوة لكتابة نطاق
-    if (hint) hint.textContent = 'لتصنيف ' + names + ': السعر لازم بين ' + b[0].toLocaleString('en-US') + ' و ' + b[1].toLocaleString('en-US') + ' ر.س. ' + 'هذا المبلغ يعرضه الوكيل على كل معلن ويقفل عليه.';
+    if (hint) hint.textContent = 'لتصنيف ' + names + ': السعر لازم بين ' + b[0].toLocaleString('en-US') + ' و ' + b[1].toLocaleString('en-US') + ' ر.س. ' + 'يعرض الوكيل هذا المبلغ على كل معلن ويقفل الاتفاق عليه.';
     if (inp) inp.placeholder = 'مثل: ' + b[0];
   } else {
-    if (hint) hint.textContent = 'هذا المبلغ يعرضه الوكيل على كل معلن ويقفل عليه.';
-    if (inp) inp.placeholder = 'مثل: 1000';
+    if (hint) hint.textContent = 'يعرض الوكيل هذا المبلغ على كل معلن ويقفل الاتفاق عليه.';
+    if (inp) inp.placeholder = 'مثال: 1000';
   }
 }
 // تصنيف المؤثرين يظهر فقط عند اختيار تيك توك (Micro (UGC) / Medium / Mega)
@@ -3008,7 +3008,7 @@ function renderSingleCampaign(c) {
                       <div class="nego-ring"></div>
                       <div>
                         <div class="nego-title">الوكيل يقوم بالمفاوضة الآن</div>
-                        <div class="nego-desc">يعرض سعرك المعتمد على المعلن ويقفل عليه. لمّا يتم الاتفاق راح يطلب تعميدك قبل إقفال الصفقة.</div>
+                        <div class="nego-desc">يعرض الوكيل سعرك المعتمد على المعلن ويقفل الاتفاق عليه، وعند الاتفاق يطلب تعميدك قبل إقفال الصفقة.</div>
                       </div>
                     </div>
                     <button class="btn-negotiation" onclick="event.stopPropagation(); startNegotiation('${a.id}')">💬 عرض المفاوضة</button>` : '')}</div>` : ''}
@@ -3067,7 +3067,7 @@ const STAGE_ACTIONS = {
   },
   4: {
     responsible: 'brand',
-    brand:   { label: '✓ إرسال البريف', desc: 'اكتب نص البريف الإعلاني (وضّح كيف تبي يكون الإعلان ومحتواه)، على أساسه المعلن يجهّز المحتوى.' },
+    brand:   { label: '✓ إرسال البريف', desc: 'اكتب نص البريف الإعلاني موضّحاً شكل الإعلان ومحتواه، فعلى أساسه يجهّز المعلن المحتوى.' },
     creator: { desc: 'الشركة تجهّز البريف الإعلاني (نص يوضّح متطلبات الإعلان).' }
   },
   5: {
@@ -3105,7 +3105,7 @@ const STAGE_FIELDS = {
     { name: 'note', label: 'ملاحظة (اختياري)', placeholder: 'مثلًا: وصل بحالة ممتازة', type: 'text', required: false }
   ],
   4: [
-    { name: 'brief', label: 'نص البريف الإعلاني', placeholder: 'وضّح للمعلن: المحاور الرئيسية، النقاط اللي تركّز عليها، نوع المحتوى المطلوب، الكلمات المفتاحية، أي مراجع أو أمثلة...', type: 'textarea', required: true }
+    { name: 'brief', label: 'نص البريف الإعلاني', placeholder: 'وضّح للمعلن: المحاور الرئيسية، النقاط المطلوب التركيز عليها، نوع المحتوى، الكلمات المفتاحية، وأي مراجع أو أمثلة.', type: 'textarea', required: true }
   ],
   5: [
     { name: 'content_link', label: 'رابط المحتوى للمراجعة', placeholder: 'رابط Google Drive، WeTransfer، أو نسخة للمراجعة', type: 'url', required: true },
