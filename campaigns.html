@@ -4774,13 +4774,18 @@ async function applyTypeGate() {
   const FULFILL_KEYS = ['code', 'pickup'];
   const lockedTypes = locked.filter(k => FULFILL_KEYS.indexOf(k) === -1);
   const lockedFulfill = locked.filter(k => FULFILL_KEYS.indexOf(k) !== -1);
+  const GENDER = { visit: 'متاحة', video: 'متاح', code: 'متاح', pickup: 'متاح' };
   const noteFor = function (id, keys) {
     const n = document.getElementById(id);
     if (!n) return;
     n.style.display = keys.length ? '' : 'none';
-    n.textContent = keys.length
-      ? ('مقفول في باقتك: ' + keys.map(k => TYPE_GATE_LABEL[k]).join('، ') + '. يفتح مع الترقية من صفحة الباقات.')
-      : '';
+    if (!keys.length) { n.textContent = ''; return; }
+    const names = keys.map(k => TYPE_GATE_LABEL[k]);
+    const list = names.length > 1
+      ? names.slice(0, -1).join('، ') + ' و' + names[names.length - 1]
+      : names[0];
+    const agree = names.length > 1 ? 'متاحة' : (GENDER[keys[0]] || 'متاح');
+    n.textContent = list + ' غير ' + agree + ' في باقتك الحالية.';
   };
   noteFor('ctype-plan-note', lockedTypes);
   noteFor('fulfill-plan-note', lockedFulfill);
