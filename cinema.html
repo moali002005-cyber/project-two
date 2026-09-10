@@ -625,8 +625,99 @@ function S9(root){
  };
 }
 
-var BUILD=[S2,S7,S9,S8,S4,S5,S6,S1];
+/* ---------- S0: الصفحة الرئيسية للشركة — ومنها ينطلق كل شيء ---------- */
+function S0(root){
+ E("rect",{x:0,y:0,width:600,height:344,fill:"#fff"},root);
+ var pill=E("g",{opacity:"0"},root);
+ E("rect",{x:252,y:18,width:96,height:22,rx:11,fill:"#F1FAF4",stroke:"#D7EEE0"},pill);
+ E("circle",{cx:336,cy:29,r:3.4,fill:G},pill);
+ E("text",{x:326,y:33,"text-anchor":"end","font-size":"11","font-weight":"700",fill:"#1C7A46"},pill)
+  .textContent="منصتك جاهزة";
+ var ttl=E("text",{x:300,y:70,"text-anchor":"middle","font-size":"23","font-weight":"900",fill:INK,opacity:"0"},root);
+ ttl.textContent="أهلًا بك";
+ var sub=E("text",{x:300,y:94,"text-anchor":"middle","font-size":"12.5","font-weight":"700",fill:DIM,opacity:"0"},root);
+ sub.textContent="أطلق حملتك، والوكيل يفاوض ويقفل لك.";
+
+ /* صف الأزرار — الترتيب من اليمين */
+ var BT=[{t:"متابعة الحملات",w:118,p:1},{t:"حملة جديدة",w:110,p:0,plus:1},
+         {t:"الأداء",w:64,p:0},{t:"الحملات السابقة",w:120,p:0}];
+ var total=0; BT.forEach(function(b){total+=b.w;}); total+=10*(BT.length-1);
+ var x0=300+total/2, btns=[];
+ BT.forEach(function(b){
+  var x=x0-b.w;
+  var g=E("g",{opacity:"0"},root);
+  var r=E("rect",{x:x,y:112,width:b.w,height:33,rx:16.5,
+   fill:b.p?R:"#fff",stroke:b.p?R:"#E4DDDA"},g);
+  var tx=E("text",{x:x+b.w/2,y:133.5,"text-anchor":"middle","font-size":"12","font-weight":"900",
+   fill:b.p?"#fff":INK},g);
+  tx.textContent=b.t;
+  if(b.plus){
+   tx.setAttribute("x",x+b.w/2+7);
+   var px=x+14;
+   E("rect",{x:px-6,y:127,width:12,height:2.4,rx:1.2,fill:INK,opacity:"0.75"},g);
+   E("rect",{x:px-1.2,y:122.2,width:2.4,height:12,rx:1.2,fill:INK,opacity:"0.75"},g);
+  }
+  btns.push({g:g,r:r,t:tx,cx:x+b.w/2,cy:128.5,w:b.w,x:x});
+  x0=x-10;
+ });
+
+ /* شريط الاشتراك */
+ var strip=E("g",{opacity:"0"},root);
+ E("rect",{x:130,y:164,width:340,height:50,rx:14,fill:"#fff",stroke:LN},strip);
+ E("rect",{x:426,y:176,width:28,height:26,rx:9,fill:"#FDECEA"},strip);
+ E("rect",{x:431,y:183,width:18,height:12,rx:3,fill:"none",stroke:R,"stroke-width":"1.6"},strip);
+ E("rect",{x:431,y:187,width:18,height:1.6,fill:R,opacity:"0.55"},strip);
+ E("text",{x:414,y:188,"text-anchor":"end","font-size":"12","font-weight":"900",fill:INK},strip)
+  .textContent="الاشتراك الحالي: جرّب فلفل";
+ E("text",{x:414,y:203,"text-anchor":"end","font-size":"10.5","font-weight":"700",fill:DIM},strip)
+  .textContent="عمولة 15٪ على كل صفقة";
+
+ /* بطاقة نخبة المؤثرين */
+ var elite=E("g",{opacity:"0"},root);
+ E("rect",{x:96,y:230,width:408,height:66,rx:16,fill:"#fff",stroke:LN},elite);
+ E("text",{x:484,y:256,"text-anchor":"end","font-size":"13","font-weight":"900",fill:INK},elite)
+  .textContent="نخبة المؤثرين";
+ E("text",{x:484,y:274,"text-anchor":"end","font-size":"10.5","font-weight":"700",fill:DIM},elite)
+  .textContent="أفضل 500 مؤثر بدرجة الثقة";
+ for(var a=0;a<4;a++){
+  E("circle",{cx:330-a*15,cy:263,r:11,fill:"#fff"},elite);
+  E("circle",{cx:330-a*15,cy:263,r:9.5,fill:[G,Y,B,P][a],opacity:"0.85"},elite);
+ }
+ E("rect",{x:116,y:250,width:84,height:26,rx:13,fill:R},elite);
+ E("text",{x:158,y:267,"text-anchor":"middle","font-size":"11","font-weight":"900",fill:"#fff"},elite)
+  .textContent="النخبة ←";
+
+ var cur=cursor(root);
+ return function(t){
+  pill.setAttribute("opacity",out3(seg(t,0.05,0.4)).toFixed(2));
+  ttl.setAttribute("opacity",out3(seg(t,0.18,0.55)).toFixed(2));
+  sub.setAttribute("opacity",out3(seg(t,0.30,0.68)).toFixed(2));
+  btns.forEach(function(b,i){
+   var k=out5(seg(t,0.45+i*0.09,1.0+i*0.09));
+   b.g.setAttribute("opacity",k.toFixed(2));
+   b.g.setAttribute("transform","translate(0,"+((1-k)*10).toFixed(1)+")");
+  });
+  strip.setAttribute("opacity",out3(seg(t,0.95,1.4)).toFixed(2));
+  elite.setAttribute("opacity",out3(seg(t,1.15,1.6)).toFixed(2));
+
+  /* المؤشّر يتّجه إلى «حملة جديدة» ويضغطها */
+  var nb=btns[1];
+  var hov=seg(t,2.15,2.35);
+  var press=seg(t,2.55,2.68);
+  nb.r.setAttribute("fill", press>0&&press<1 ? "#C4331F" : (hov>0? "#FDECEA" : "#fff"));
+  nb.r.setAttribute("stroke", hov>0 ? R : "#E4DDDA");
+  nb.t.setAttribute("fill", press>0&&press<1 ? "#fff" : (hov>0 ? R : INK));
+  nb.g.setAttribute("transform", (press>0&&press<1) ? "translate(0,1)" : "translate(0,0)");
+  var pos=along(t,[[0,520,310],[1.6,430,220],[2.3,nb.cx+6,nb.cy+6],[3.2,nb.cx+6,nb.cy+6]]);
+  cur.at(pos[0],pos[1],cl(seg(t,0.9,1.3))*(1-seg(t,3.0,3.4)*0.9));
+  cur.click(seg(t,2.55,3.0));
+ };
+}
+
+var BUILD=[S0,S2,S7,S9,S8,S4,S5,S6,S1];
 var F=[
+ {k:"doc",tag:"لوحتك",h:"كل شي يبدأ من لوحتك",
+  p:"تفتح المنصة وتضغط «حملة جديدة» — وهذا كل ما يلزمك لتبدأ."},
  {k:"coin",tag:"حملة جديدة",h:"تطلق حملتك خلال ٦٠ ثانية",
   p:"تحدّد النوع والعنوان والميزانية — والبريف يكتبه لك النظام."},
  {k:"box",tag:"مواصفات الحملة",h:"تحدّد مين تبي بالضبط",
@@ -645,7 +736,7 @@ var F=[
   p:"وكل حملة تطلقها تنضاف هنا — لوحة واحدة بدل ملفات وجروبات متفرّقة."}
 ];
 
-var INTRO=1.6,UNFURL=0.85,SEG=4.8,GATHER=1.1,ENDHOLD=1.2,XOVER=0.36;
+var INTRO=1.5,UNFURL=0.8,SEG=4.5,GATHER=1.0,ENDHOLD=1.1,XOVER=0.36;
 var F0=INTRO+UNFURL, FEND=F0+F.length*SEG, TOTAL=FEND+GATHER+ENDHOLD;
 var CARD_S=-0.22,CARD_E=0.50,COUT_S=SEG-0.26,XOUT=0.26;
 var CX=360,CY=210,RX=318,RY=202,BADGE_X=583,BADGE_Y=54,NEXP=3.4;
