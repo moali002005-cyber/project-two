@@ -74,10 +74,12 @@ figure{position:absolute;left:50%;top:50%;margin:0;width:80%;aspect-ratio:600/38
      <stop offset="100%" stop-color="#7C51A0"/></linearGradient>
     <filter id="wash" x="-40%" y="-40%" width="180%" height="180%">
      <feGaussianBlur stdDeviation="34"/></filter>
+    <clipPath id="lwclip"><rect id="lwrect" x="215" y="345" width="290" height="0"/></clipPath>
    </defs>
    <g id="sparks"></g>
    <circle id="pulse" cx="360" cy="210" r="40" fill="none" stroke="url(#brand)" stroke-width="2" opacity="0"/>
    <g id="logo"></g>
+   <g id="whole" clip-path="url(#lwclip)"></g>
    <g id="lineG"><path id="line" opacity="0"></path>
     <g id="spark" opacity="0"><circle r="10" fill="#fff" opacity=".45"/><circle r="4.6" fill="#fff"/></g></g>
   </svg>
@@ -731,7 +733,8 @@ for(var k in ICONS){NUM[k]=ICONS[k].match(/-?\d+(?:\.\d+)?/g).map(Number);
 function pathAt(a,b,t){var A=NUM[a],B=NUM[b],i=0;
  return TPL.replace(/#/g,function(){var v=A[i]+(B[i]-A[i])*t;i++;return v.toFixed(1);});}
 
-var logoG=document.getElementById("logo"),lineG=document.getElementById("lineG"),
+var logoG=document.getElementById("logo"),wholeG=document.getElementById("whole"),
+    lwrect=document.getElementById("lwrect"),lineG=document.getElementById("lineG"),
     line=document.getElementById("line"),spark=document.getElementById("spark"),
     halo=document.getElementById("halo"),pulse=document.getElementById("pulse"),
     sparksG=document.getElementById("sparks"),
@@ -751,7 +754,7 @@ F.forEach(function(f,i){
 
 var CAPS=[{h:"أنا فلفل",p:"مدير حملاتك الذكي. من إطلاق الحملة إلى النتايج — خلّني أوريك."}]
  .concat(F.map(function(f){return {h:f.h,p:f.p};}))
- .concat([{h:"وأرجع فلفلة",p:"حملة كاملة، من غير مكالمة وحدة."}]);
+ .concat([{h:"وحملتك خلصت",p:"حملة كاملة، من غير مكالمة وحدة."}]);
 var capEls=CAPS.map(function(c,i){var d=document.createElement("div");
  d.className="cap"+(i===0?" on":"");d.innerHTML="<h3>"+c.h+"</h3><p>"+c.p+"</p>";
  capsEl.appendChild(d);return d;});
@@ -777,6 +780,10 @@ fetch("/brand/chili.svg").then(function(r){return r.text();}).then(function(txt)
  var s=Math.min(250/vb[2],250/vb[3]);
  var tx=CX-(vb[0]+vb[2]/2)*s, ty=CY-(vb[1]+vb[3]/2)*s;
  var ht="translate("+tx+","+ty+") scale("+s+")";
+ /* نسخة مجمّعة تُكشف من الأسفل ثم تذوب — بلا تفكّك */
+ var wg=document.createElementNS(NS,"g"); wg.setAttribute("transform",ht);
+ [].slice.call(src.querySelectorAll("path")).forEach(function(pp){wg.appendChild(pp.cloneNode(true));});
+ wholeG.appendChild(wg);
  [].slice.call(src.querySelectorAll("path")).forEach(function(p,i){
   var wrap=document.createElementNS(NS,"g"), inner=document.createElementNS(NS,"g");
   inner.setAttribute("transform",ht);
@@ -812,14 +819,23 @@ function frame(el){
   m.el.setAttribute("cx",x.toFixed(1)); m.el.setAttribute("cy",y.toFixed(1));
   m.el.setAttribute("opacity",(P*(0.07+0.15*(0.5+0.5*Math.sin(el*1.3+m.ph)))).toFixed(3));
  });
+ /* الشعار المجمّع: يُكشف من الأسفل، يثبت، ثم يتّسع ويذوب — بلا تفكّك */
+ var rev=out3(cl(el/1.05));
+ lwrect.setAttribute("height",(300*rev).toFixed(1));
+ lwrect.setAttribute("y",(345-300*rev).toFixed(1));
+ var gone=ease(P);
+ wholeG.setAttribute("opacity",((1-gone)*(0.25+0.75*cl(el/0.35))).toFixed(3));
+ wholeG.setAttribute("transform","translate("+CX+","+CY+") scale("+(1+0.30*gone).toFixed(3)+
+  ") translate("+(-CX)+","+(-CY)+")");
+
+ /* اللمسات الملوّنة لا تسافر — تظهر في مدارها وتخفت */
  ribbons.forEach(function(rb){
   var th=rb.a0+el*rb.sp, o=orb(th);
   var px=CX+RX*rb.rj*o[0], py=CY+RY*rb.rj*o[1]+Math.sin(el*0.8+rb.a0)*rb.bo;
-  var dx=(px-rb.cx)*P, dy=(py-rb.cy)*P;
-  var kk=(1+(0.34-1)*P)*breathe, ang=(th*57.3*0.14)*P;
-  rb.g.setAttribute("transform","translate("+(rb.cx+dx).toFixed(1)+","+(rb.cy+dy).toFixed(1)+
+  var kk=0.34*breathe, ang=th*57.3*0.14;
+  rb.g.setAttribute("transform","translate("+(px).toFixed(1)+","+(py).toFixed(1)+
    ") rotate("+ang.toFixed(1)+") scale("+kk.toFixed(3)+") translate("+(-rb.cx).toFixed(1)+","+(-rb.cy).toFixed(1)+")");
-  rb.g.setAttribute("opacity",(1-0.58*P).toFixed(2));
+  rb.g.setAttribute("opacity",(0.42*gone).toFixed(3));
  });
 
  var idx=-1,u=0;
