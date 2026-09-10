@@ -633,6 +633,7 @@ document.addEventListener('DOMContentLoaded', async function () {
     const heroCtas = document.getElementById('ctaFlow') || document.getElementById('hero-ctas');
     if (heroCtas) {
       heroCtas.innerHTML = `<a href="${dashboardUrl}" class="btn btn-primary hero-cta-lg" data-i18n="${dashKey}">${dashLabel}</a>`;
+      heroCtas.style.display = '';
     }
     // أعد تطبيق اللغة على الأزرار الجديدة
     if (window.simblI18n) simblI18n.apply();
@@ -1007,7 +1008,7 @@ function css(){
 function killButtons(){
  var kill=['التسجيل كمعلن','التسجيل كشركة'];
  [].slice.call(document.querySelectorAll('a,button')).forEach(function(e){
-   if(e.closest('.flf-menu')||e.closest('.nav'))return;
+   if(e.closest('.flf-menu')||e.closest('.nav')||e.closest('#ctaFlow'))return;
    var t=(e.textContent||'').replace(/[←→\s]/g,'');
    kill.forEach(function(k){
      if(t===k.replace(/\s/g,'')){
