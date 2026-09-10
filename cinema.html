@@ -99,6 +99,8 @@ var G="#0DB04B",Y="#FCB813",R="#EC1C24",B="#3777BB",P="#7C51A0",
 
 function E(t,a,p){var e=document.createElementNS(NS,t);for(var k in a)e.setAttribute(k,a[k]);
  if(p)p.appendChild(e);return e;}
+var CHILI=null,chiliWait=[];
+function onChili(cb){ if(CHILI)cb(CHILI); else chiliWait.push(cb); }
 function cl(x){return x<0?0:(x>1?1:x)}
 function ease(x){return x<.5?4*x*x*x:1-Math.pow(-2*x+2,3)/2}
 function out5(x){return 1-Math.pow(1-x,5)}
@@ -188,7 +190,7 @@ function S1(root){
 /* ---------- 2 · launch in 60 seconds ---------- */
 function S2(root){
  E("rect",{x:0,y:0,width:600,height:344,fill:"#fff"},root);
- var chips=[],CH=["فيديو جاهز","زيارة","متجر"];
+ var chips=[],CH=["فيديو جاهز","زيارة","منزلي"];
  E("text",{x:560,y:40,"text-anchor":"end","font-size":"13","font-weight":"700",fill:DIM},root)
   .textContent="نوع الحملة";
  for(var i=0;i<3;i++){
@@ -367,14 +369,24 @@ function S5(root){
   nodes.push({c:c,ck:ck,t:tx,x:x});
  }
  var head=E("g",{opacity:"0"},root);
- E("circle",{r:17,fill:"none",stroke:R,"stroke-width":"2",opacity:".35"},head);
- E("circle",{r:7,fill:R},head);
+ E("circle",{r:20,fill:"#fff",opacity:".92"},head);
+ E("circle",{r:20,fill:"none",stroke:R,"stroke-width":"1.6",opacity:".28"},head);
+ var chiliG=E("g",{},head);
+ onChili(function(C){
+  var sc=30/Math.max(C.vb[2],C.vb[3]);
+  var g2=E("g",{transform:"translate("+(-(C.vb[0]+C.vb[2]/2)*sc)+","+(-(C.vb[1]+C.vb[3]/2)*sc)+
+   ") scale("+sc+")"},chiliG);
+  [].slice.call(C.src.querySelectorAll("path")).forEach(function(pp){
+   g2.appendChild(pp.cloneNode(true));});
+ });
  return function(t){
   var p=cl(seg(t,0.3,3.4));
   var xx=lerp(x0,x1,p);
   prog.setAttribute("x2",xx.toFixed(1));
   head.setAttribute("opacity",(p>0&&p<1?1:0).toString());
-  head.setAttribute("transform","translate("+xx.toFixed(1)+","+y+")");
+   var bob=Math.sin(t*7)*2.2, tilt=Math.sin(t*7)*6;
+  head.setAttribute("transform","translate("+xx.toFixed(1)+","+(y+bob).toFixed(1)+
+   ") rotate("+tilt.toFixed(1)+")");
   var doneN=0;
   nodes.forEach(function(nd,i){
    var on=xx<=nd.x+1; if(on)doneN++;
@@ -629,13 +641,13 @@ function S9(root){
 function S0(root){
  E("rect",{x:0,y:0,width:600,height:344,fill:"#fff"},root);
  var pill=E("g",{opacity:"0"},root);
- E("rect",{x:252,y:18,width:96,height:22,rx:11,fill:"#F1FAF4",stroke:"#D7EEE0"},pill);
- E("circle",{cx:336,cy:29,r:3.4,fill:G},pill);
- E("text",{x:326,y:33,"text-anchor":"end","font-size":"11","font-weight":"700",fill:"#1C7A46"},pill)
+ E("rect",{x:252,y:66,width:96,height:22,rx:11,fill:"#F1FAF4",stroke:"#D7EEE0"},pill);
+ E("circle",{cx:336,cy:77,r:3.4,fill:G},pill);
+ E("text",{x:326,y:81,"text-anchor":"end","font-size":"11","font-weight":"700",fill:"#1C7A46"},pill)
   .textContent="منصتك جاهزة";
- var ttl=E("text",{x:300,y:70,"text-anchor":"middle","font-size":"23","font-weight":"900",fill:INK,opacity:"0"},root);
+ var ttl=E("text",{x:300,y:130,"text-anchor":"middle","font-size":"27","font-weight":"900",fill:INK,opacity:"0"},root);
  ttl.textContent="أهلًا بك";
- var sub=E("text",{x:300,y:94,"text-anchor":"middle","font-size":"12.5","font-weight":"700",fill:DIM,opacity:"0"},root);
+ var sub=E("text",{x:300,y:160,"text-anchor":"middle","font-size":"12.5","font-weight":"700",fill:DIM,opacity:"0"},root);
  sub.textContent="أطلق حملتك، والوكيل يفاوض ويقفل لك.";
 
  /* صف الأزرار — الترتيب من اليمين */
@@ -646,46 +658,20 @@ function S0(root){
  BT.forEach(function(b){
   var x=x0-b.w;
   var g=E("g",{opacity:"0"},root);
-  var r=E("rect",{x:x,y:112,width:b.w,height:33,rx:16.5,
+  var r=E("rect",{x:x,y:196,width:b.w,height:33,rx:16.5,
    fill:b.p?R:"#fff",stroke:b.p?R:"#E4DDDA"},g);
-  var tx=E("text",{x:x+b.w/2,y:133.5,"text-anchor":"middle","font-size":"12","font-weight":"900",
+  var tx=E("text",{x:x+b.w/2,y:217.5,"text-anchor":"middle","font-size":"12","font-weight":"900",
    fill:b.p?"#fff":INK},g);
   tx.textContent=b.t;
   if(b.plus){
    tx.setAttribute("x",x+b.w/2+7);
    var px=x+14;
-   E("rect",{x:px-6,y:127,width:12,height:2.4,rx:1.2,fill:INK,opacity:"0.75"},g);
-   E("rect",{x:px-1.2,y:122.2,width:2.4,height:12,rx:1.2,fill:INK,opacity:"0.75"},g);
+   E("rect",{x:px-6,y:211,width:12,height:2.4,rx:1.2,fill:INK,opacity:"0.75"},g);
+   E("rect",{x:px-1.2,y:206.2,width:2.4,height:12,rx:1.2,fill:INK,opacity:"0.75"},g);
   }
-  btns.push({g:g,r:r,t:tx,cx:x+b.w/2,cy:128.5,w:b.w,x:x});
+  btns.push({g:g,r:r,t:tx,cx:x+b.w/2,cy:212.5,w:b.w,x:x});
   x0=x-10;
  });
-
- /* شريط الاشتراك */
- var strip=E("g",{opacity:"0"},root);
- E("rect",{x:130,y:164,width:340,height:50,rx:14,fill:"#fff",stroke:LN},strip);
- E("rect",{x:426,y:176,width:28,height:26,rx:9,fill:"#FDECEA"},strip);
- E("rect",{x:431,y:183,width:18,height:12,rx:3,fill:"none",stroke:R,"stroke-width":"1.6"},strip);
- E("rect",{x:431,y:187,width:18,height:1.6,fill:R,opacity:"0.55"},strip);
- E("text",{x:414,y:188,"text-anchor":"end","font-size":"12","font-weight":"900",fill:INK},strip)
-  .textContent="الاشتراك الحالي: جرّب فلفل";
- E("text",{x:414,y:203,"text-anchor":"end","font-size":"10.5","font-weight":"700",fill:DIM},strip)
-  .textContent="عمولة 15٪ على كل صفقة";
-
- /* بطاقة نخبة المؤثرين */
- var elite=E("g",{opacity:"0"},root);
- E("rect",{x:96,y:230,width:408,height:66,rx:16,fill:"#fff",stroke:LN},elite);
- E("text",{x:484,y:256,"text-anchor":"end","font-size":"13","font-weight":"900",fill:INK},elite)
-  .textContent="نخبة المؤثرين";
- E("text",{x:484,y:274,"text-anchor":"end","font-size":"10.5","font-weight":"700",fill:DIM},elite)
-  .textContent="أفضل 500 مؤثر بدرجة الثقة";
- for(var a=0;a<4;a++){
-  E("circle",{cx:330-a*15,cy:263,r:11,fill:"#fff"},elite);
-  E("circle",{cx:330-a*15,cy:263,r:9.5,fill:[G,Y,B,P][a],opacity:"0.85"},elite);
- }
- E("rect",{x:116,y:250,width:84,height:26,rx:13,fill:R},elite);
- E("text",{x:158,y:267,"text-anchor":"middle","font-size":"11","font-weight":"900",fill:"#fff"},elite)
-  .textContent="النخبة ←";
 
  var cur=cursor(root);
  return function(t){
@@ -697,8 +683,6 @@ function S0(root){
    b.g.setAttribute("opacity",k.toFixed(2));
    b.g.setAttribute("transform","translate(0,"+((1-k)*10).toFixed(1)+")");
   });
-  strip.setAttribute("opacity",out3(seg(t,0.95,1.4)).toFixed(2));
-  elite.setAttribute("opacity",out3(seg(t,1.15,1.6)).toFixed(2));
 
   /* المؤشّر يتّجه إلى «حملة جديدة» ويضغطها */
   var nb=btns[1];
@@ -802,6 +786,8 @@ fetch("/brand/chili.svg").then(function(r){return r.text();}).then(function(txt)
    rj:0.96+((i*37)%23)/100,bo:((i*53)%17)-8,sp:0.34+((i*29)%11)/70});
  });
  ribbons.forEach(function(rb,i){rb.a0=(i*(360/Math.max(1,ribbons.length))+14)*Math.PI/180;});
+ CHILI={src:src,vb:vb};
+ chiliWait.forEach(function(cb){try{cb(CHILI);}catch(e){}}); chiliWait=[];
 }).catch(function(){});
 
 function orb(th){var c=Math.cos(th),s=Math.sin(th);
