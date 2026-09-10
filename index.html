@@ -350,6 +350,80 @@ body {
 })();
 </script>
 
+<!-- ===== لوحة عرض: تصفّح المؤثرين ===== -->
+<section class="scsec">
+  <div class="container">
+    <div class="sc-panel">
+      <div class="sc-copy">
+        <h2 class="sc-h2">تعرّف على المؤثر قبل أن تعتمده</h2>
+        <p class="sc-p">تصفّح المؤثرين المسجّلين في المنصة، وفلترهم بالمنصة والتصنيف ونطاق المتابعين والدولة. تطّلع على ملف كل مؤثر وسعره المعلن ودرجة ثقته، وتضيف من يناسب حملتك إلى سلّتك قبل الإطلاق.</p>
+        <div class="sc-chips">
+          <span class="sc-chip">459 مؤثراً معتمداً</span>
+          <span class="sc-chip">فلترة بالتصنيف ونطاق المتابعين</span>
+          <span class="sc-chip">درجة ثقة لكل مؤثر</span>
+        </div>
+      </div>
+      <div class="sc-art" aria-hidden="true">
+        <div class="sc-win">
+          <div class="sc-search"><span class="sc-mag"></span><span class="sc-q">مؤثرو الجمال · 50–100 ألف متابع · الرياض</span></div>
+          <div class="sc-grid">
+            <i class="sc-t t1"><b>س</b><em>@sara.creates</em><u>320K</u></i>
+            <i class="sc-t t2"><b>خ</b><em>@khaled.vlog</em><u>180K</u></i>
+            <i class="sc-t t3"><b>ر</b><em>@reem.daily</em><u>240K</u></i>
+            <i class="sc-t t4"><b>ف</b><em>@fahad.food</em><u>95K</u></i>
+            <i class="sc-t t5"><b>ن</b><em>@noura.style</em><u>410K</u></i>
+            <i class="sc-t t6"><b>م</b><em>@mona.travel</em><u>130K</u></i>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+<style>
+.scsec{padding:10px 0 56px;background:#fff}
+.sc-panel{max-width:1120px;margin:0 auto;border-radius:30px;padding:clamp(28px,4vw,54px);
+ background:linear-gradient(152deg,#FDF3F0 0%,#FBE7E1 58%,#F7DDD6 100%);
+ display:grid;grid-template-columns:1fr 1.05fr;gap:clamp(24px,4vw,54px);align-items:center}
+.sc-copy{min-width:0}
+.sc-h2{font-family:var(--font-display);font-size:clamp(25px,3.4vw,40px);font-weight:700;line-height:1.32;
+ color:#16110F;margin:0 0 16px;letter-spacing:-.01em;text-wrap:balance}
+.sc-p{font-size:clamp(14.5px,1.5vw,16.5px);line-height:1.95;color:#5A514E;margin:0 0 24px;max-width:46ch}
+.sc-chips{display:flex;flex-wrap:wrap;gap:10px}
+.sc-chip{display:inline-flex;align-items:center;gap:8px;background:rgba(255,255,255,.86);
+ border:1px solid rgba(226,59,46,.14);border-radius:999px;padding:9px 16px;
+ font-size:13.5px;font-weight:600;color:#16110F}
+.sc-chip::before{content:"";width:7px;height:7px;border-radius:50%;background:var(--accent);flex:none}
+.sc-art{min-width:0}
+.sc-win{background:#fff;border-radius:20px;padding:14px;
+ box-shadow:0 34px 60px -34px rgba(22,17,15,.34),0 2px 6px rgba(22,17,15,.05)}
+.sc-search{display:flex;align-items:center;gap:9px;background:#F6F2F0;border-radius:12px;
+ padding:11px 14px;margin-bottom:12px}
+.sc-mag{width:14px;height:14px;flex:none;border:1.8px solid #B3A9A4;border-radius:50%;position:relative}
+.sc-mag::after{content:"";position:absolute;inset-inline-start:10px;top:10px;width:6px;height:1.8px;
+ background:#B3A9A4;transform:rotate(45deg);border-radius:2px}
+.sc-q{font-size:12.5px;color:#8A807B;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sc-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.sc-t{position:relative;display:block;aspect-ratio:3/4;border-radius:14px;overflow:hidden}
+.sc-t b{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+ font-size:clamp(30px,4vw,46px);font-weight:800;color:rgba(255,255,255,.72);font-style:normal}
+.sc-t em{position:absolute;inset-inline-start:8px;bottom:8px;background:rgba(22,17,15,.5);
+ color:#fff;font-style:normal;font-size:10px;font-weight:600;border-radius:999px;padding:3px 8px;
+ direction:ltr;backdrop-filter:blur(4px)}
+.sc-t u{position:absolute;inset-inline-end:8px;top:8px;background:rgba(255,255,255,.9);
+ color:#16110F;text-decoration:none;font-size:10px;font-weight:800;border-radius:999px;padding:3px 8px}
+.sc-t.t1{background:linear-gradient(150deg,#F0725F,#E23B2E)}
+.sc-t.t2{background:linear-gradient(150deg,#5B94D6,#3777BB)}
+.sc-t.t3{background:linear-gradient(150deg,#F6C864,#E9A21B)}
+.sc-t.t4{background:linear-gradient(150deg,#4FC486,#0DB04B)}
+.sc-t.t5{background:linear-gradient(150deg,#A279C4,#7C51A0)}
+.sc-t.t6{background:linear-gradient(150deg,#F09A8C,#D9604F)}
+@media(max-width:880px){
+ .sc-panel{grid-template-columns:1fr;gap:26px;border-radius:24px}
+ .sc-art{order:2}
+ .sc-p{max-width:none}
+}
+</style>
+
 <section class="plansec" id="plans" style="display:none">
   <div class="container">
     <div class="ps-head">
