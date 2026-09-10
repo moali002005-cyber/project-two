@@ -347,7 +347,7 @@ function S5(root){
 /* ---------- 6 · the results ---------- */
 function S6(root){
  E("rect",{x:0,y:0,width:600,height:344,fill:"#fff"},root);
- var KPI=[{l:"إجمالي الإنفاق",v:2600,c:G},{l:"صفقات معتمدة",v:3,c:R},{l:"عروض مستلمة",v:7,c:B}];
+ var KPI=[{l:"إجمالي الإنفاق",v:50000,c:G},{l:"صفقات معتمدة",v:50,c:R},{l:"عروض مستلمة",v:118,c:B}];
  var vals=KPI.map(function(k,i){
   var g=E("g",{transform:"translate("+(500-i*186)+",30)"},root);
   E("rect",{x:-84,y:0,width:168,height:64,rx:14,fill:SOFT,stroke:LN},g);
@@ -360,6 +360,10 @@ function S6(root){
   var x=520-i*72;
   bars.push(E("rect",{x:x-22,y:300,width:44,height:0,rx:8,fill:"#EFE8E4"},root));
  }
+ var exG=E("g",{transform:"translate(40,106)"},root);
+ E("rect",{x:0,y:0,width:52,height:22,rx:11,fill:"#FDECEC"},exG);
+ E("text",{x:26,y:15,"text-anchor":"middle","font-size":"11","font-weight":"900",fill:R},exG)
+  .textContent="مثال";
  var pathD="M"+(520)+" "+(300-46);
  for(var i=1;i<7;i++) pathD+="L"+(520-i*72)+" "+(300-H[i]);
  var ln=E("path",{d:pathD,fill:"none",stroke:"url(#brand)","stroke-width":"4",
@@ -376,14 +380,117 @@ function S6(root){
  };
 }
 
-var BUILD=[S1,S2,S3,S4,S5,S6];
+/* ---------- S7: تحدّد من تبي بالضبط ---------- */
+function S7(root){
+ E("rect",{x:0,y:0,width:600,height:344,fill:"#fff"},root);
+ function lab(y,txt){E("text",{x:560,y:y,"text-anchor":"end","font-size":"12","font-weight":"700",fill:DIM},root)
+  .textContent=txt;}
+ function row(y,items,w,gap){
+  var out=[],n=items.length;
+  for(var i=0;i<n;i++){
+   var x=560-w-i*(w+gap);
+   var g=E("g",{transform:"translate("+x+","+y+")"},root);
+   var r=E("rect",{x:0,y:0,width:w,height:29,rx:14.5,fill:SOFT,stroke:LN},g);
+   var t=E("text",{x:w/2,y:19,"text-anchor":"middle","font-size":"12","font-weight":"700",fill:DIM},g);
+   t.textContent=items[i];
+   out.push({r:r,t:t,cx:x+w/2,cy:y+15});
+  }
+  return out;
+ }
+ lab(30,"عدد المعلنين");
+ var sizes=row(38,["5","10","15","20","30","50","100","200"],58,8);
+ lab(100,"المنصة");
+ var plats=row(108,["تيك توك","سناب شات","انستقرام","يوتيوب"],118,16);
+ lab(170,"نطاق المتابعين  ·  تقدر تختار أكثر من نطاق");
+ var folls=row(178,["10–20 ألف","20–50 ألف","50–100 ألف","100–200 ألف"],118,16);
+ lab(240,"مدينة المعلن");
+ var cities=row(248,["الرياض","جدة","الدمام","كل المدن"],118,16);
+ var note=E("text",{x:560,y:318,"text-anchor":"end","font-size":"12","font-weight":"700",fill:G,opacity:"0"},root);
+ note.textContent="يتوقّف التفاوض تلقائياً عند اكتمال العدد.";
+ var cur=cursor(root);
+ function on(c,k,col){var a=k>0;
+  c.r.setAttribute("fill",a?(col||R):SOFT); c.r.setAttribute("stroke",a?(col||R):LN);
+  c.t.setAttribute("fill",a?"#fff":DIM);}
+ return function(t){
+  sizes.forEach(function(c,i){on(c,i===5?seg(t,0.45,0.55):0);});
+  plats.forEach(function(c,i){on(c,i===0?seg(t,1.05,1.15):0);});
+  folls.forEach(function(c,i){on(c,(i===1?seg(t,1.65,1.75):(i===2?seg(t,2.05,2.15):0)));});
+  cities.forEach(function(c,i){on(c,i===0?seg(t,2.65,2.75):0);});
+  note.setAttribute("opacity",out3(seg(t,2.95,3.45)).toFixed(2));
+  var pos=along(t,[[0,520,300],[0.4,sizes[5].cx,sizes[5].cy],[1.0,plats[0].cx,plats[0].cy],
+   [1.6,folls[1].cx,folls[1].cy],[2.0,folls[2].cx,folls[2].cy],[2.6,cities[0].cx,cities[0].cy],
+   [3.3,cities[0].cx-30,cities[0].cy+46]]);
+  cur.at(pos[0],pos[1],cl(seg(t,0.05,0.28))*(1-seg(t,3.5,3.9)*0.9));
+  var ck=[[0.45,0.85],[1.05,1.45],[1.65,2.05],[2.05,2.45],[2.65,3.05]];
+  for(var i=0;i<ck.length;i++){ if(t>=ck[i][0]&&t<ck[i][1]){cur.click(seg(t,ck[i][0],ck[i][1]));break;} if(i===ck.length-1)cur.click(0); }
+ };
+}
+
+/* ---------- S8: مئة مفاوضة في نفس اللحظة ---------- */
+function S8(root){
+ E("rect",{x:0,y:0,width:600,height:344,fill:"#fff"},root);
+ var live=E("text",{x:560,y:30,"text-anchor":"end","font-size":"13","font-weight":"900",fill:INK},root);
+ var dotL=E("circle",{cx:566,cy:25,r:4,fill:G},root);
+ var done=E("text",{x:40,y:30,"text-anchor":"start","font-size":"13","font-weight":"900",fill:DIM},root);
+ var COLS=[G,Y,R,B,P],rows=[];
+ var W=170,H=52,GX=6,GY=8;
+ for(var i=0;i<12;i++){
+  var c=i%3, r=Math.floor(i/3);
+  var x=560-W-c*(W+GX), y=44+r*(H+GY);
+  var g=E("g",{transform:"translate("+x+","+y+")"},root);
+  E("rect",{x:0,y:0,width:W,height:H,rx:12,fill:SOFT,stroke:LN},g);
+  E("circle",{cx:W-19,cy:19,r:9,fill:COLS[i%5],opacity:"0.85"},g);
+  E("rect",{x:W-64,y:13,width:36,height:6,rx:3,fill:"#D9D1CD"},g);
+  E("rect",{x:W-84,y:25,width:56,height:5,rx:2.5,fill:"#E6DFDB"},g);
+  var pr=E("text",{x:W-16,y:45,"text-anchor":"end","font-size":"11.5","font-weight":"900",fill:DIM},g);
+  var pill=E("g",{transform:"translate(10,11)"},g);
+  var pb=E("rect",{x:0,y:0,width:52,height:19,rx:9.5,fill:"#FDF4E3",stroke:"#F2E0BC"},pill);
+  var pt=E("text",{x:26,y:13.5,"text-anchor":"middle","font-size":"10.5","font-weight":"900",fill:"#9A7414"},pill);
+  var tick=E("path",{d:"M0 4.4L3.2 7.6L9 1.4",fill:"none",stroke:"#fff","stroke-width":"2",
+   "stroke-linecap":"round","stroke-linejoin":"round",transform:"translate(9,17)",opacity:"0"},g);
+  rows.push({pr:pr,pb:pb,pt:pt,tick:tick,
+   ask:1150+((i*67)%5)*50, at:0.75+i*0.22, dur:0.55});
+ }
+ var note=E("text",{x:300,y:324,"text-anchor":"middle","font-size":"11.5","font-weight":"700",fill:DIM,opacity:"0"},root);
+ note.textContent="حملة ٥٠ معلناً: الوكيل يفتح ١٠٠ مفاوضة معاً — وأول ٥٠ يتفقون تُعتمد، والباقي احتياط.";
+ return function(t){
+  var n=Math.round(lerp(6,100,out3(cl(t/1.5))));
+  live.textContent="يفاوض "+n+" معلناً الآن";
+  dotL.setAttribute("opacity",(0.45+0.55*(0.5+0.5*Math.sin(t*7))).toFixed(2));
+  var agreed=0;
+  rows.forEach(function(rw){
+   var k=seg(t,rw.at,rw.at+rw.dur);
+   var price=Math.round(lerp(rw.ask,1000,out3(k)));
+   rw.pr.textContent=fmt(price)+" ر.س";
+   if(k>=1){
+    agreed++;
+    rw.pb.setAttribute("fill","#E9F7EF"); rw.pb.setAttribute("stroke","#BFE6CE");
+    rw.pt.setAttribute("fill","#1C7A46"); rw.pt.textContent="اتفق";
+    rw.pr.setAttribute("fill",INK);
+    rw.tick.setAttribute("opacity","0");
+   }else{
+    rw.pb.setAttribute("fill","#FDF4E3"); rw.pb.setAttribute("stroke","#F2E0BC");
+    rw.pt.setAttribute("fill","#9A7414");
+    rw.pt.textContent=(Math.floor(t*3)%3===0)?"يفاوض .":(Math.floor(t*3)%3===1?"يفاوض ..":"يفاوض ...");
+    rw.pr.setAttribute("fill",DIM);
+   }
+  });
+  var total=Math.round(agreed*(50/12));
+  done.textContent="اتفق "+total+" من 50";
+  note.setAttribute("opacity",out3(seg(t,1.5,2.1)).toFixed(2));
+ };
+}
+
+var BUILD=[S1,S2,S7,S8,S4,S5,S6];
 var F=[
  {k:"doc",tag:"لوحة الحملات",h:"حملاتك الإعلانية بمكان واحد",
   p:"لوحة واحدة تجمع كل حملاتك وصفقاتك — بدل ملفات وجروبات متفرّقة."},
  {k:"coin",tag:"حملة جديدة",h:"تطلق حملتك خلال ٦٠ ثانية",
   p:"تحدّد النوع والعنوان والميزانية — والبريف يكتبه لك النظام."},
- {k:"bubble",tag:"مفاوضة الوكيل",h:"وكيل التفاوض يتواصل ويفاوض",
-  p:"يكلّم كل معلن بالعربي ويقفل السعر داخل ميزانيتك — من غير مكالمة واحدة منك."},
+ {k:"box",tag:"مواصفات الحملة",h:"تحدّد مين تبي بالضبط",
+  p:"عدد المعلنين من ٥ إلى ٢٠٠، والمنصة، ونطاق المتابعين، والمدينة."},
+ {k:"bubble",tag:"مفاوضة الوكيل",h:"ويفاوضهم كلهم في نفس اللحظة",
+  p:"مئة مفاوضة مفتوحة معاً بالعربي — كل واحدة لحالها، وتقف تلقائياً عند اكتمال العدد."},
  {k:"check",tag:"العروض المستلمة",h:"يعطيك القائمة وتعتمد المناسب",
   p:"كل معلن وسعره أمامك — تختار اللي يناسبك وبس."},
  {k:"steps",tag:"متابعة الحملة",h:"تتابع كل خطوة بصفحة وحدة",
