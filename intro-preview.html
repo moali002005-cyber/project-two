@@ -45,10 +45,10 @@ function seg(t,a,b){return cl((t-a)/(b-a))}
 function lerp(a,b,t){return a+(b-a)*t}
 
 var DEFS=[
+ {n:"خطوط الفلفلة تصير الواجهة",d:"كل خط من خطوط الشعار ينفصل، يرتفع، ثم ينساب ويستقيم حتى يستقرّ عنصراً في واجهة المنصة — العنوان، السطور، الزر."},
  {n:"الكاميرا تعبر الشعار",d:"الكاميرا تتقدّم حتى تملأ الفلفلة الشاشة، فتنفرج شرائطها كالستائر وتمرّ من حولك — وخلفها البطاقة كانت تنتظر."},
  {n:"الحبر يرسم ثم ينتشر",d:"الفلفلة تُرسم بضربة حبر واحدة، ثم ينساب الحبر وينتشر على البياض حتى يصير سطح البطاقة."},
- {n:"شعاع يكشف المشهد",d:"شعاع ضوء مائل يمرّ، وكل ما يلمسه يظهر — تُكشف الفلفلة ثم يتّسع الشعاع حتى يصير البطاقة."},
- {n:"الفلفلة تدخل ماشية",d:"تدخل من طرف الشاشة، تقف، تقفز قفزة صغيرة، فترتفع البطاقة من خلفها وتتنحّى هي إلى الزاوية."}
+ {n:"شعاع يكشف المشهد",d:"شعاع ضوء مائل يمرّ، وكل ما يلمسه يظهر — تُكشف الفلفلة ثم يتّسع الشعاع حتى يصير البطاقة."}
 ];
 
 var CH=null, waiters=[];
@@ -195,7 +195,72 @@ function V4(root){
  };
 }
 
-var V=[V1,V2,V3,V4], TT=3.6;
+
+/* ============ 5 · خطوط الفلفلة تصير الواجهة ============ */
+function V5(root){
+ var bg=E("g",{opacity:"0"},root);
+ E("rect",{x:66,y:40,width:288,height:196,rx:16,fill:"#fff",stroke:"#EDE7E4"},bg);
+ /* المقاصد: كل خط من الشعار يستقيم ويصير عنصراً في الواجهة */
+ var T=[
+  {x:80,y:54,w:260,h:18,r:9,  c:"#FBF8F6"},
+  {x:250,y:88,w:90, h:9, r:4.5,c:"#E6DFDB"},
+  {x:190,y:106,w:150,h:7, r:3.5,c:"#EFE9E6"},
+  {x:86,y:150,w:76, h:8, r:4,  c:"#E6DFDB"},
+  {x:174,y:150,w:76,h:8, r:4,  c:"#E6DFDB"},
+  {x:262,y:150,w:76,h:8, r:4,  c:"#E6DFDB"},
+  {x:86,y:196,w:88, h:22,r:11, c:"#EC1C24"}
+ ];
+ var slots=T.map(function(o){
+  return E("rect",{x:o.x,y:o.y,width:o.w,height:o.h,rx:o.r,fill:o.c,opacity:"0"},root);
+ });
+ var tiles=E("g",{opacity:"0"},root);
+ for(var i=0;i<3;i++){
+  E("rect",{x:86+i*88,y:128,width:76,height:44,rx:10,fill:"none",stroke:"#F1ECE9"},tiles);
+  E("circle",{cx:146+i*88,cy:140,r:5,fill:["#0DB04B","#FCB813","#3777BB"][i]},tiles);
+ }
+ var holder=E("g",{transform:"translate("+CX+","+CY+")"},root);
+ var parts=[],meta=[];
+ onCH(function(C){
+  var sc=150/Math.max(C.vb[2],C.vb[3]);
+  var ox=-(C.vb[0]+C.vb[2]/2)*sc, oy=-(C.vb[1]+C.vb[3]/2)*sc;
+  [].slice.call(C.src.querySelectorAll("path")).forEach(function(pp,i){
+   var wrap=E("g",{},holder);
+   var inner=E("g",{transform:"translate("+ox+","+oy+") scale("+sc+")"},wrap);
+   var n=pp.cloneNode(true); inner.appendChild(n);
+   var bb=n.getBBox();
+   var cx=ox+(bb.x+bb.width/2)*sc, cy=oy+(bb.y+bb.height/2)*sc;
+   parts.push(wrap);
+   var tg=T[i%T.length];
+   meta.push({cx:cx,cy:cy,
+    tx:(tg.x+tg.w/2)-CX, ty:(tg.y+tg.h/2)-CY,
+    ang:-40+((i*53)%80), lift:-58-((i*31)%40)});
+  });
+ });
+ return function(t){
+  var cb=seg(t,0.95,1.6);
+  bg.setAttribute("opacity",out3(cb).toFixed(3));
+  parts.forEach(function(g,i){
+   var m=meta[i], a=0.72+i*0.075;
+   var k=ease(cl((t-a)/0.95));
+   /* مسار منحنٍ: يرتفع الخط قليلاً ثم ينساب إلى مكانه في الواجهة */
+   var mx=(m.cx+m.tx)/2, my=(m.cy+m.ty)/2+m.lift;
+   var u=1-k;
+   var x=u*u*m.cx+2*u*k*mx+k*k*m.tx;
+   var y=u*u*m.cy+2*u*k*my+k*k*m.ty;
+   var sx=1-0.62*k, sy=1-0.9*k, rot=m.ang*k*(1-k)*4;
+   g.setAttribute("transform","translate("+(x-m.cx).toFixed(1)+","+(y-m.cy).toFixed(1)+
+    ") translate("+m.cx.toFixed(1)+","+m.cy.toFixed(1)+") rotate("+rot.toFixed(1)+
+    ") scale("+sx.toFixed(3)+","+Math.max(0.04,sy).toFixed(3)+
+    ") translate("+(-m.cx).toFixed(1)+","+(-m.cy).toFixed(1)+")");
+   g.setAttribute("opacity",(1-cl((k-0.72)/0.28)).toFixed(3));
+   var sl=slots[i%slots.length];
+   sl.setAttribute("opacity",cl((k-0.74)/0.24).toFixed(3));
+  });
+  tiles.setAttribute("opacity",out3(seg(t,1.95,2.45)).toFixed(3));
+ };
+}
+
+var V=[V5,V1,V2,V3], TT=3.6;
 var grid=document.getElementById("grid");
 DEFS.forEach(function(D,i){
  var it=document.createElement("div"); it.className="item";
