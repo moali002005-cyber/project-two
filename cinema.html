@@ -534,7 +534,98 @@ function S8(root){
  };
 }
 
-var BUILD=[S1,S2,S7,S8,S4,S5,S6];
+/* ---------- S9: لحظة الإطلاق — خريطة انتشار الحملة (نفس رسم المنصة) ---------- */
+var LM_OUT=[[34.6,28.05],[34.9,29.35],[36.0,29.35],[37.0,30.0],[37.5,30.5],[38.0,30.5],[39.1,32.15],
+[40.4,31.9],[42.1,31.1],[44.7,29.2],[46.4,29.1],[47.45,29.0],[47.7,28.5],[48.4,28.55],
+[48.8,27.7],[49.6,27.35],[50.2,26.6],[50.1,25.9],[50.8,25.0],[51.3,24.6],[51.6,24.2],
+[52.6,23.0],[55.2,22.7],[55.7,22.0],[55.0,20.0],[52.0,19.0],[49.0,18.6],[47.0,17.0],
+[45.0,17.4],[43.4,17.4],[43.2,16.9],[42.8,16.4],[42.6,17.3],[41.8,18.6],[41.0,19.9],
+[40.0,20.6],[39.1,21.5],[38.4,22.6],[38.0,23.8],[37.2,25.0],[36.5,25.7],[35.6,27.0],[34.9,27.8]];
+var LM_CT=[["الرياض",46.72,24.69],["جدة",39.19,21.49],["الدمام",50.10,26.43],["المدينة",39.61,24.47],
+["أبها",42.51,18.22],["تبوك",36.57,28.38],["بريدة",43.97,26.36],["جازان",42.55,16.89]];
+
+function S9(root){
+ E("rect",{x:0,y:0,width:600,height:344,fill:"#fff"},root);
+ var MW=300,MH=300,PAD=16,MX=28,MY=22;
+ var lons=LM_OUT.map(function(p){return p[0];}), lats=LM_OUT.map(function(p){return p[1];});
+ var a0=Math.min.apply(null,lons),b0=Math.max.apply(null,lons),
+     c0=Math.min.apply(null,lats),d0=Math.max.apply(null,lats);
+ var kk=Math.cos((c0+d0)/2*Math.PI/180), ww=(b0-a0)*kk, hh=(d0-c0);
+ var ss=Math.min((MW-PAD*2)/ww,(MH-PAD*2)/hh), ox=(MW-ww*ss)/2, oy=(MH-hh*ss)/2;
+ function XY(lon,lat){return [MX+ox+(lon-a0)*kk*ss, MY+oy+(d0-lat)*ss];}
+
+ var d="M"; LM_OUT.forEach(function(p,i){var q=XY(p[0],p[1]);
+  d+=(i?"L":"")+q[0].toFixed(1)+" "+q[1].toFixed(1);}); d+="Z";
+
+ var fill=E("path",{d:d,fill:"#F4F6F8",stroke:"none",opacity:"0"},root);
+ var line=E("path",{d:d,fill:"none",stroke:R,"stroke-width":"2.4","stroke-linejoin":"round",
+  "stroke-linecap":"round"},root);
+ var LEN=0; try{LEN=line.getTotalLength();}catch(e){LEN=1400;}
+ line.setAttribute("stroke-dasharray",LEN);
+ line.setAttribute("stroke-dashoffset",LEN);
+ var comet=E("circle",{r:"4.5",fill:"#fff",stroke:R,"stroke-width":"2",opacity:"0"},root);
+
+ var pts=LM_CT.map(function(c){var q=XY(c[1],c[2]);
+  var g=E("g",{opacity:"0"},root);
+  var rip=E("circle",{cx:q[0],cy:q[1],r:"4",fill:"none",stroke:R,"stroke-width":"1.6",opacity:"0"},g);
+  E("circle",{cx:q[0],cy:q[1],r:"3.6",fill:R},g);
+  var lab=E("g",{opacity:"0"},root);
+  var lw=c[0].length*7.4+14;
+  E("rect",{x:q[0]-lw/2,y:q[1]-26,width:lw,height:17,rx:8.5,fill:"#fff",stroke:"#EDE7E4"},lab);
+  E("text",{x:q[0],y:q[1]-14,"text-anchor":"middle","font-size":"10.5","font-weight":"900",fill:INK},lab)
+   .textContent=c[0];
+  return {g:g,lab:lab,rip:rip,x:q[0],y:q[1]};
+ });
+
+ /* عمود النص على اليمين — اتجاه القراءة العربي */
+ E("text",{x:560,y:96,"text-anchor":"end","font-size":"11.5","font-weight":"700",fill:DIM},root)
+  .textContent="تم نشر حملتك";
+ var ttl=E("text",{x:560,y:126,"text-anchor":"end","font-size":"17","font-weight":"900",fill:INK},root);
+ var sub=E("text",{x:560,y:152,"text-anchor":"end","font-size":"11.5","font-weight":"700",fill:DIM,opacity:"0"},root);
+ sub.textContent="نجهّز قائمة المعلنين المطابقين…";
+ var divi=E("rect",{x:392,y:172,width:168,height:1,fill:LN,opacity:"0"},root);
+ var big=E("text",{x:560,y:222,"text-anchor":"end","font-size":"34","font-weight":"900",fill:R,opacity:"0"},root);
+ var bigL=E("text",{x:560,y:246,"text-anchor":"end","font-size":"12","font-weight":"700",fill:DIM,opacity:"0"},root);
+ bigL.textContent="معلناً مطابقاً لمواصفاتك";
+ var foot=E("text",{x:560,y:284,"text-anchor":"end","font-size":"11.5","font-weight":"700",fill:G,opacity:"0"},root);
+ foot.textContent="يبدأ الوكيل بالتفاوض معهم الآن";
+
+ return function(t){
+  var dr=out3(cl(t/1.45));
+  line.setAttribute("stroke-dashoffset",(LEN*(1-dr)).toFixed(1));
+  if(dr>0&&dr<1){
+   try{var p=line.getPointAtLength(LEN*dr);
+    comet.setAttribute("cx",p.x.toFixed(1)); comet.setAttribute("cy",p.y.toFixed(1));
+    comet.setAttribute("opacity","1");}catch(e){}
+  } else comet.setAttribute("opacity","0");
+
+  var fk=seg(t,1.30,1.95);
+  fill.setAttribute("opacity",(fk*0.95).toFixed(2));
+  line.setAttribute("stroke", fk>0.6?"#CBD2DA":R);
+  line.setAttribute("stroke-width",(2.4-1.0*fk).toFixed(2));
+
+  ttl.textContent = t<1.6 ? "جارٍ رسم نطاق حملتك…" : "وصلت حملتك إلى 8 مدن";
+  sub.setAttribute("opacity",(t>1.6?0:out3(seg(t,0.4,0.9))).toFixed(2));
+
+  pts.forEach(function(pt,i){
+   var a=1.55+i*0.16, k=out5(seg(t,a,a+0.40));
+   pt.g.setAttribute("opacity",k.toFixed(2));
+   var rk=seg(t,a,a+0.75);
+   if(rk>0&&rk<1){ pt.rip.setAttribute("r",(4+30*out3(rk)).toFixed(1));
+    pt.rip.setAttribute("opacity",(0.5*(1-rk)).toFixed(2)); }
+   else pt.rip.setAttribute("opacity","0");
+   pt.lab.setAttribute("opacity",out3(seg(t,a+0.22,a+0.62)).toFixed(2));
+  });
+  var bk=seg(t,2.15,2.6);
+  divi.setAttribute("opacity",bk.toFixed(2));
+  big.setAttribute("opacity",bk.toFixed(2));
+  bigL.setAttribute("opacity",bk.toFixed(2));
+  big.textContent=fmt(lerp(0,118,ease(seg(t,2.2,3.3))));
+  foot.setAttribute("opacity",out3(seg(t,3.3,3.7)).toFixed(2));
+ };
+}
+
+var BUILD=[S1,S2,S7,S9,S8,S4,S5,S6];
 var F=[
  {k:"doc",tag:"لوحة الحملات",h:"حملاتك الإعلانية بمكان واحد",
   p:"لوحة واحدة تجمع كل حملاتك وصفقاتك — بدل ملفات وجروبات متفرّقة."},
@@ -542,6 +633,8 @@ var F=[
   p:"تحدّد النوع والعنوان والميزانية — والبريف يكتبه لك النظام."},
  {k:"box",tag:"مواصفات الحملة",h:"تحدّد مين تبي بالضبط",
   p:"عدد المعلنين من ٥ إلى ٢٠٠، والمنصة، ونطاق المتابعين، والمدينة."},
+ {k:"play",tag:"انطلاق الحملة",h:"وتنطلق حملتك على الخريطة",
+  p:"نرسم نطاق حملتك، وتضيء المدن التي وصلها إعلانك — نفس الشاشة التي تراها داخل المنصة."},
  {k:"bubble",tag:"مفاوضة الوكيل",h:"ويفاوضهم كلهم في نفس اللحظة",
   p:"مئة مفاوضة مفتوحة معاً بالعربي — كل واحدة لحالها، وتقف تلقائياً عند اكتمال العدد."},
  {k:"check",tag:"العروض المستلمة",h:"يعطيك القائمة وتعتمد المناسب",
@@ -552,7 +645,7 @@ var F=[
   p:"إجمالي الإنفاق، الصفقات المعتمدة، والعروض — لحظة بلحظة."}
 ];
 
-var INTRO=1.7,UNFURL=0.9,SEG=5.1,GATHER=1.2,ENDHOLD=1.3,XOVER=0.36;
+var INTRO=1.6,UNFURL=0.85,SEG=4.8,GATHER=1.1,ENDHOLD=1.2,XOVER=0.36;
 var F0=INTRO+UNFURL, FEND=F0+F.length*SEG, TOTAL=FEND+GATHER+ENDHOLD;
 var CARD_S=-0.22,CARD_E=0.50,COUT_S=SEG-0.26,XOUT=0.26;
 var CX=360,CY=210,RX=318,RY=202,BADGE_X=583,BADGE_Y=54,NEXP=3.4;
