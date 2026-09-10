@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>فلفلونسر — اختر الافتتاحية</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;900&display=swap">
+<style>
+:root{--r:#EC1C24;--ink:#1A1512;--dim:#8A807B;--ln:#F1ECE9}
+*{box-sizing:border-box}
+body{margin:0;background:#fff;color:var(--ink);font-family:"Tajawal",system-ui,sans-serif;line-height:1.9}
+.wrap{max-width:1100px;margin:0 auto;padding:44px 22px 80px}
+h1{font-size:clamp(22px,3vw,30px);font-weight:900;margin:0 0 6px;text-align:center}
+.lead{text-align:center;color:var(--dim);font-size:14.5px;margin:0 auto 34px;max-width:56ch}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:26px}
+@media(max-width:820px){.grid{grid-template-columns:1fr}}
+.item{border:1px solid var(--ln);border-radius:20px;padding:16px 16px 18px;background:#fff}
+.item.pick{border-color:var(--r);box-shadow:0 10px 30px -18px rgba(236,28,36,.5)}
+.hd{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:10px}
+.nm{font-weight:900;font-size:15.5px}
+.nm i{font-style:normal;color:var(--r);margin-inline-end:6px}
+.dsc{color:var(--dim);font-size:12.5px;margin:0 0 12px;line-height:1.75}
+.stage{width:100%;aspect-ratio:420/300;background:#FCFAF9;border-radius:14px;overflow:hidden}
+.stage svg{width:100%;height:100%;display:block}
+.again{background:#fff;border:1px solid var(--ln);border-radius:999px;padding:5px 14px;font:inherit;
+ font-size:12px;font-weight:700;color:var(--dim);cursor:pointer}
+.again:hover{color:var(--ink);border-color:#DCD3D0}
+.foot{margin-top:34px;text-align:center;color:var(--dim);font-size:14px}
+.foot b{color:var(--ink)}
+</style></head><body>
+<div class="wrap">
+<h1>أربع افتتاحيات — شوفها واختر</h1>
+<p class="lead">كل مربّع يعيد نفسه تلقائياً. اضغط «أعِد» لتشوفها من جديد. قل لي الرقم وأركّبها على الفيديو.</p>
+<div class="grid" id="grid"></div>
+<p class="foot">قل لي: <b>١</b> أو <b>٢</b> أو <b>٣</b> أو <b>٤</b>.</p>
+</div>
+<script>
+(function(){
+var NS="http://www.w3.org/2000/svg", W=420,H=300, CX=210, CY=136;
+var R="#EC1C24", LN="#F1ECE9", DIM="#CFC7C3";
+function E(t,a,p){var e=document.createElementNS(NS,t);for(var k in a)e.setAttribute(k,a[k]);if(p)p.appendChild(e);return e;}
+function cl(x){return x<0?0:(x>1?1:x)}
+function ease(x){return x<.5?4*x*x*x:1-Math.pow(-2*x+2,3)/2}
+function out3(x){return 1-Math.pow(1-x,3)}
+function out5(x){return 1-Math.pow(1-x,5)}
+function seg(t,a,b){return cl((t-a)/(b-a))}
+function lerp(a,b,t){return a+(b-a)*t}
+
+var DEFS=[
+ {n:"الكاميرا تعبر الشعار",d:"الكاميرا تتقدّم حتى تملأ الفلفلة الشاشة، فتنفرج شرائطها كالستائر وتمرّ من حولك — وخلفها البطاقة كانت تنتظر."},
+ {n:"الحبر يرسم ثم ينتشر",d:"الفلفلة تُرسم بضربة حبر واحدة، ثم ينساب الحبر وينتشر على البياض حتى يصير سطح البطاقة."},
+ {n:"شعاع يكشف المشهد",d:"شعاع ضوء مائل يمرّ، وكل ما يلمسه يظهر — تُكشف الفلفلة ثم يتّسع الشعاع حتى يصير البطاقة."},
+ {n:"الفلفلة تدخل ماشية",d:"تدخل من طرف الشاشة، تقف، تقفز قفزة صغيرة، فترتفع البطاقة من خلفها وتتنحّى هي إلى الزاوية."}
+];
+
+var CH=null, waiters=[];
+fetch("/brand/chili.svg").then(function(r){return r.text();}).then(function(txt){
+ var d=new DOMParser().parseFromString(txt,"image/svg+xml"), src=d.documentElement;
+ var vb=(src.getAttribute("viewBox")||"0 0 300 300").split(/[\s,]+/).map(Number);
+ CH={src:src,vb:vb};
+ waiters.forEach(function(f){f(CH);}); waiters=[];
+}).catch(function(){});
+function onCH(f){ if(CH)f(CH); else waiters.push(f); }
+
+/* بطاقة مصغّرة تمثّل واجهة المنصة */
+function card(root,id){
+ var g=E("g",{opacity:"0"},root);
+ E("rect",{x:66,y:40,width:288,height:196,rx:16,fill:"#fff",stroke:"#EDE7E4"},g);
+ E("rect",{x:80,y:54,width:260,height:18,rx:9,fill:"#FBF8F6"},g);
+ E("rect",{x:250,y:88,width:90,height:9,rx:4.5,fill:"#E6DFDB"},g);
+ E("rect",{x:190,y:106,width:150,height:7,rx:3.5,fill:"#EFE9E6"},g);
+ for(var i=0;i<3;i++){
+  E("rect",{x:86+i*88,y:130,width:76,height:52,rx:10,fill:"#FBF8F6",stroke:"#F1ECE9"},g);
+  E("circle",{cx:146+i*88,cy:144,r:5,fill:["#0DB04B","#FCB813","#3777BB"][i]},g);
+  E("rect",{x:96+i*88,y:156,width:44,height:6,rx:3,fill:"#E6DFDB"},g);
+ }
+ E("rect",{x:86,y:196,width:88,height:22,rx:11,fill:R},g);
+ return g;
+}
+function chili(root,scale){
+ var g=E("g",{},root);
+ onCH(function(C){
+  var s=(scale||150)/Math.max(C.vb[2],C.vb[3]);
+  var inner=E("g",{transform:"translate("+(-(C.vb[0]+C.vb[2]/2)*s)+","+(-(C.vb[1]+C.vb[3]/2)*s)+") scale("+s+")"},g);
+  [].slice.call(C.src.querySelectorAll("path")).forEach(function(p){inner.appendChild(p.cloneNode(true));});
+ });
+ return g;
+}
+function chiliParts(root,scale,cb){
+ onCH(function(C){
+  var s=(scale||150)/Math.max(C.vb[2],C.vb[3]);
+  var out=[];
+  [].slice.call(C.src.querySelectorAll("path")).forEach(function(p,i){
+   var wrap=E("g",{},root);
+   var inner=E("g",{transform:"translate("+(-(C.vb[0]+C.vb[2]/2)*s)+","+(-(C.vb[1]+C.vb[3]/2)*s)+") scale("+s+")"},wrap);
+   inner.appendChild(p.cloneNode(true));
+   out.push(wrap);
+  });
+  cb(out);
+ });
+}
+
+/* ============ 1 · الكاميرا تعبر الشعار ============ */
+function V1(root){
+ var cd=card(root);
+ var holder=E("g",{transform:"translate("+CX+","+CY+")"},root);
+ var parts=[];
+ chiliParts(holder,150,function(o){parts=o;});
+ return function(t){
+  var k=seg(t,0.85,1.95), e=ease(k);
+  parts.forEach(function(g,i){
+   var a=(i*(360/7)+22)*Math.PI/180, dep=0.55+((i*29)%9)/10;
+   var dist=560*dep*e, sc=1+6.5*dep*e;
+   g.setAttribute("transform","translate("+(Math.cos(a)*dist).toFixed(1)+","+(Math.sin(a)*dist).toFixed(1)+
+    ") scale("+sc.toFixed(2)+")");
+   g.setAttribute("opacity",(1-cl(k/0.72)).toFixed(3));
+  });
+  var c=seg(t,1.35,2.15);
+  cd.setAttribute("opacity",out3(c).toFixed(3));
+  cd.setAttribute("transform","translate("+CX+","+CY+") scale("+lerp(1.32,1,out5(c)).toFixed(3)+
+   ") translate("+(-CX)+","+(-CY)+")");
+ };
+}
+
+/* ============ 2 · الحبر ============ */
+function V2(root){
+ var cp=E("clipPath",{id:"inkclip"},root);
+ var pool=E("ellipse",{cx:CX,cy:214,rx:"4",ry:"2"},cp);
+ var cd=card(root,"ink"); cd.setAttribute("clip-path","url(#inkclip)"); cd.setAttribute("opacity","1");
+ var cp2=E("clipPath",{id:"drawclip"},root);
+ var dr=E("rect",{x:110,y:220,width:200,height:0},cp2);
+ var ch=chili(root,150); ch.setAttribute("transform","translate("+CX+","+CY+")");
+ ch.setAttribute("clip-path","url(#drawclip)");
+ var blob=E("ellipse",{cx:CX,cy:214,rx:"0",ry:"0",fill:R,opacity:"0"},root);
+ var drop=E("circle",{cx:CX-4,cy:198,r:0,fill:R,opacity:"0"},root);
+ return function(t){
+  var d=out3(seg(t,0.1,1.0));
+  dr.setAttribute("height",(160*d).toFixed(1)); dr.setAttribute("y",(220-160*d).toFixed(1));
+  var dp=seg(t,1.02,1.30);
+  drop.setAttribute("r",(dp>0&&dp<1?4.4:0));
+  drop.setAttribute("cy",(196+22*dp).toFixed(1));
+  drop.setAttribute("opacity",(dp>0&&dp<1?0.95:0));
+  var g=out5(seg(t,1.28,2.30));
+  var bx=6+440*g, by=3+310*g;
+  blob.setAttribute("rx",bx.toFixed(1)); blob.setAttribute("ry",by.toFixed(1));
+  blob.setAttribute("opacity",(0.16*(1-cl(seg(t,1.7,2.35)))).toFixed(3));
+  var gp=out5(seg(t,1.44,2.42));
+  pool.setAttribute("rx",(4+440*gp).toFixed(1));
+  pool.setAttribute("ry",(2+310*gp).toFixed(1));
+  ch.setAttribute("opacity",(1-cl(seg(t,1.55,2.05))).toFixed(3));
+ };
+}
+
+/* ============ 3 · الشعاع ============ */
+function V3(root){
+ var cp=E("clipPath",{id:"beamclip"},root);
+ var rc=E("rect",{x:420,y:0,width:0,height:300},cp);
+ var ch=chili(root,150); ch.setAttribute("transform","translate("+CX+","+CY+")");
+ ch.setAttribute("clip-path","url(#beamclip)");
+ var lg=E("linearGradient",{id:"bg1",x1:"0",y1:"0",x2:"1",y2:"0"},root);
+ E("stop",{offset:"0%","stop-color":"#fff","stop-opacity":"0"},lg);
+ E("stop",{offset:"50%","stop-color":"#FFE9A8","stop-opacity":"0.95"},lg);
+ E("stop",{offset:"100%","stop-color":"#fff","stop-opacity":"0"},lg);
+ var beam=E("rect",{x:0,y:-90,width:56,height:480,fill:"url(#bg1)",transform:"rotate(-16 210 150)",opacity:"0"},root);
+ var cp2=E("clipPath",{id:"cardclip"},root);
+ var crc=E("rect",{x:66,y:138,width:288,height:0},cp2);
+ var cd=card(root); cd.setAttribute("clip-path","url(#cardclip)"); cd.setAttribute("opacity","1");
+ return function(t){
+  var k=seg(t,0.15,1.15);
+  rc.setAttribute("x",(420-420*k).toFixed(1)); rc.setAttribute("width",(420*k).toFixed(1));
+  beam.setAttribute("opacity",(k>0&&k<1?0.95:0));
+  beam.setAttribute("x",(420-420*k-28).toFixed(1));
+  var o=seg(t,1.25,2.15), oo=out5(o);
+  crc.setAttribute("y",(138-99*oo).toFixed(1)); crc.setAttribute("height",(198*oo).toFixed(1));
+  ch.setAttribute("opacity",(1-cl(seg(t,1.2,1.6))).toFixed(3));
+ };
+}
+
+/* ============ 4 · الفلفلة تدخل ماشية ============ */
+function V4(root){
+ var cd=card(root);
+ var ch=chili(root,120);
+ return function(t){
+  var walk=seg(t,0.05,0.95), e=ease(walk);
+  var x=lerp(470,CX,e), y=CY+18;
+  var bob=(walk>0&&walk<1)?Math.sin(t*15)*4.5:0;
+  var tilt=(walk>0&&walk<1)?Math.sin(t*15)*7:0;
+  var hop=seg(t,1.05,1.35);
+  var hy=(hop>0&&hop<1)?-34*Math.sin(Math.PI*hop):0;
+  var park=out5(seg(t,1.45,2.25));
+  var px=lerp(x,104,park), py=lerp(y+bob+hy,236,park), ps=lerp(1,0.42,park);
+  ch.setAttribute("transform","translate("+px.toFixed(1)+","+py.toFixed(1)+") rotate("+
+   ((1-park)*tilt).toFixed(1)+") scale("+ps.toFixed(3)+")");
+  var c=seg(t,1.5,2.35), cc=out5(c);
+  cd.setAttribute("opacity",out3(c).toFixed(3));
+  cd.setAttribute("transform","translate(0,"+(46*(1-cc)).toFixed(1)+") scale(1)");
+ };
+}
+
+var V=[V1,V2,V3,V4], TT=3.6;
+var grid=document.getElementById("grid");
+DEFS.forEach(function(D,i){
+ var it=document.createElement("div"); it.className="item";
+ it.innerHTML='<div class="hd"><div class="nm"><i>'+(i+1)+'.</i>'+D.n+'</div>'+
+  '<button class="again" type="button">أعِد</button></div>'+
+  '<p class="dsc">'+D.d+'</p><div class="stage"></div>';
+ grid.appendChild(it);
+ var st=it.querySelector(".stage");
+ var svg=E("svg",{viewBox:"0 0 "+W+" "+H},st);
+ var upd=V[i](svg);
+ var t0=performance.now();
+ it.querySelector(".again").addEventListener("click",function(){t0=performance.now();});
+ (function loop(now){ upd(((now-t0)/1000)%TT); requestAnimationFrame(loop); })(performance.now());
+});
+})();
+</script></body></html>
