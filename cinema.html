@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>فلفلونسر — الفلفلة تتحوّل</title>
+<title>فلفلونسر — كيف تعمل المنصة</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;900&display=swap">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap">
 <style>
@@ -59,7 +59,7 @@ body.embed .ctl{margin-top:12px}
 </style></head><body>
 <header class="head"><div class="wrap">
 <div class="kick">آلية العمل</div>
-<h1>حملاتك الإعلانية <em>بمكان واحد</em> — والفلفلة توريك كيف.</h1>
+<h1>حملاتك الإعلانية <em>بمكان واحد</em> — إليك كيف تعمل المنصة.</h1>
 </div></header>
 <div class="wrap">
 <div class="stage" id="stage">
@@ -73,7 +73,7 @@ body.embed .ctl{margin-top:12px}
    <ellipse id="halo" cx="360" cy="210" rx="208" ry="124" fill="url(#brand2)" opacity="0" filter="url(#wash2)"/>
   </svg>
   <div class="cards" id="cards"></div>
-  <svg id="art" viewBox="0 0 720 420" aria-label="الفلفلة تتحوّل بين خطوات العمل">
+  <svg id="art" viewBox="0 0 720 420" aria-label="رسم متحرّك يشرح خطوات العمل">
    <defs>
     <linearGradient id="brand" x1="0.15" y1="0" x2="0.85" y2="1">
      <stop offset="0%" stop-color="#0DB04B"/><stop offset="22%" stop-color="#FCB813"/>
@@ -99,7 +99,7 @@ body.embed .ctl{margin-top:12px}
  <button type="button" id="again">من البداية</button>
  <button type="button" id="hold">إيقاف</button>
 </div>
-<p class="foot">رسم متحرّك بالكامل — الفلفلة من ملف الهوية نفسه.</p>
+<p class="foot">رسم متحرّك بالكامل — الشعار من ملف الهوية نفسه.</p>
 </div>
 <script>
 if(/[?&]embed=1/.test(location.search)) document.body.classList.add("embed");
@@ -471,7 +471,7 @@ function S7(root){
  var sizes=row(38,["5","10","15","20","30","50","100","200"],58,8);
  lab(100,"المنصة");
  var plats=row(108,["تيك توك","سناب شات","انستقرام","يوتيوب"],118,16);
- lab(170,"نطاق المتابعين  ·  تقدر تختار أكثر من نطاق");
+ lab(170,"نطاق المتابعين  ·  يمكن اختيار أكثر من نطاق");
  var folls=row(178,["10–20 ألف","20–50 ألف","50–100 ألف","100–200 ألف"],118,16);
  lab(240,"مدينة المعلن");
  var cities=row(248,["الرياض","جدة","الدمام","كل المدن"],118,16);
@@ -532,7 +532,7 @@ function S8(root){
    ask:1150+((i*67)%5)*50, at:0.75+i*0.22, dur:0.55});
  }
  var note=E("text",{x:300,y:324,"text-anchor":"middle","font-size":"11.5","font-weight":"700",fill:DIM,opacity:"0"},root);
- note.textContent="حملة ٥٠ معلناً: الوكيل يفتح ١٠٠ مفاوضة معاً — وأول ٥٠ يتفقون تُعتمد، والباقي احتياط.";
+ note.textContent="في حملة من ٥٠ معلناً يفتح الوكيل ١٠٠ مفاوضة في آنٍ واحد؛ تُعتمد صفقات أول ٥٠ يتفقون، والبقيّة احتياط.";
  return function(t){
   var n=Math.round(lerp(6,100,out3(cl(t/1.5))));
   live.textContent="يفاوض "+n+" معلناً الآن";
@@ -615,7 +615,7 @@ function S9(root){
  var bigL=E("text",{x:560,y:246,"text-anchor":"end","font-size":"12","font-weight":"700",fill:DIM,opacity:"0"},root);
  bigL.textContent="معلناً مطابقاً لمواصفاتك";
  var foot=E("text",{x:560,y:284,"text-anchor":"end","font-size":"11.5","font-weight":"700",fill:G,opacity:"0"},root);
- foot.textContent="يبدأ الوكيل بالتفاوض معهم الآن";
+ foot.textContent="يبدأ الوكيل التفاوض معهم الآن";
 
  return function(t){
   var dr=out3(cl(t/1.45));
@@ -663,7 +663,7 @@ function S0(root){
  var ttl=E("text",{x:300,y:130,"text-anchor":"middle","font-size":"27","font-weight":"900",fill:INK,opacity:"0"},root);
  ttl.textContent="أهلًا بك";
  var sub=E("text",{x:300,y:160,"text-anchor":"middle","font-size":"12.5","font-weight":"700",fill:DIM,opacity:"0"},root);
- sub.textContent="أطلق حملتك، والوكيل يفاوض ويقفل لك.";
+ sub.textContent="أطلق حملتك، ويتولّى الوكيل التفاوض وإغلاق الاتفاق.";
 
  /* صف الأزرار — الترتيب من اليمين */
  var BT=[{t:"متابعة الحملات",w:118,p:1},{t:"حملة جديدة",w:110,p:0,plus:1},
@@ -715,24 +715,24 @@ function S0(root){
 
 var BUILD=[S0,S2,S7,S9,S8,S4,S5,S6,S1];
 var F=[
- {k:"doc",tag:"لوحتك",h:"كل شي يبدأ من لوحتك",
-  p:"تفتح المنصة وتضغط «حملة جديدة» — وهذا كل ما يلزمك لتبدأ."},
- {k:"coin",tag:"حملة جديدة",h:"تطلق حملتك خلال ٦٠ ثانية",
-  p:"تحدّد النوع والعنوان والميزانية — والبريف يكتبه لك النظام."},
- {k:"box",tag:"مواصفات الحملة",h:"تحدّد مين تبي بالضبط",
-  p:"عدد المعلنين من ٥ إلى ٢٠٠، والمنصة، ونطاق المتابعين، والمدينة."},
- {k:"play",tag:"انطلاق الحملة",h:"وتنطلق حملتك على الخريطة",
-  p:"نرسم نطاق حملتك، وتضيء المدن التي وصلها إعلانك — نفس الشاشة التي تراها داخل المنصة."},
- {k:"bubble",tag:"مفاوضة الوكيل",h:"ويفاوضهم كلهم في نفس اللحظة",
-  p:"مئة مفاوضة مفتوحة معاً بالعربي — كل واحدة لحالها، وتقف تلقائياً عند اكتمال العدد."},
- {k:"check",tag:"العروض المستلمة",h:"يعطيك القائمة وتعتمد المناسب",
-  p:"كل معلن وسعره أمامك — تختار اللي يناسبك وبس."},
- {k:"steps",tag:"متابعة الحملة",h:"تتابع كل خطوة بصفحة وحدة",
-  p:"العنوان، الشحن، الاستلام، المحتوى، الموافقة، النشر — سبع مراحل في سطر واحد."},
- {k:"chart",tag:"الأداء",h:"وتشوف النتايج",
-  p:"إجمالي الإنفاق، الصفقات المعتمدة، والعروض — لحظة بلحظة."},
+ {k:"doc",tag:"لوحتك",h:"كل شيء يبدأ من لوحة التحكّم",
+  p:"تفتح المنصة وتضغط «حملة جديدة»، وهذا كل ما يلزم للبدء."},
+ {k:"coin",tag:"حملة جديدة",h:"إطلاق الحملة خلال ٦٠ ثانية",
+  p:"تحدّد نوع الحملة وعنوانها وميزانيتها، ويتولّى النظام صياغة البريف الإعلاني."},
+ {k:"box",tag:"مواصفات الحملة",h:"تحديد المواصفات بدقّة",
+  p:"عدد المعلنين من ٥ إلى ٢٠٠، والمنصة، ونطاق المتابعين، والمدينة المستهدفة."},
+ {k:"play",tag:"انطلاق الحملة",h:"انطلاق الحملة على الخريطة",
+  p:"يُرسم نطاق الحملة، وتضيء المدن التي وصلها إعلانك — وهي الشاشة ذاتها داخل المنصة."},
+ {k:"bubble",tag:"مفاوضة الوكيل",h:"التفاوض مع الجميع في وقت واحد",
+  p:"مئة مفاوضة مفتوحة في آنٍ واحد بالعربية، كلٌّ منها مستقلّة، وتتوقّف تلقائياً عند اكتمال العدد."},
+ {k:"check",tag:"العروض المستلمة",h:"مراجعة العروض واعتماد المناسب",
+  p:"يُعرض كل معلن وسعره أمامك، فتعتمد من يناسب حملتك."},
+ {k:"steps",tag:"متابعة الحملة",h:"متابعة كل مرحلة في صفحة واحدة",
+  p:"العنوان، الشحن، الاستلام، المحتوى، الموافقة، النشر — سبع مراحل في مسار واحد."},
+ {k:"chart",tag:"الأداء",h:"قراءة النتائج",
+  p:"إجمالي الإنفاق، والصفقات المعتمدة، والعروض المستلمة — محدّثة أولاً بأول."},
  {k:"doc",tag:"لوحة الحملات",h:"حملاتك الإعلانية بمكان واحد",
-  p:"وكل حملة تطلقها تنضاف هنا — لوحة واحدة بدل ملفات وجروبات متفرّقة."}
+  p:"كل حملة تُطلقها تُضاف هنا — لوحة واحدة بدل الملفات والمجموعات المتفرّقة."}
 ];
 
 var INTRO=1.35,UNFURL=1.45,SEG=4.5,GATHER=1.35,ENDHOLD=1.1,XOVER=0.36;
@@ -768,9 +768,9 @@ F.forEach(function(f,i){
  draws.push(BUILD[i](svg)); figs.push(fg); shines.push(fg.querySelector(".shine"));
 });
 
-var CAPS=[{h:"أنا فلفل",p:"مدير حملاتك الذكي. من إطلاق الحملة إلى النتايج — خلّني أوريك."}]
+var CAPS=[{h:"فلفلونسر",p:"منصّة إدارة حملات المؤثرين — من إطلاق الحملة إلى قراءة النتائج."}]
  .concat(F.map(function(f){return {h:f.h,p:f.p};}))
- .concat([{h:"وحملتك خلصت",p:"حملة كاملة، من غير مكالمة وحدة."}]);
+ .concat([{h:"واكتملت الحملة",p:"حملة كاملة، دون مكالمة واحدة."}]);
 var capEls=CAPS.map(function(c,i){var d=document.createElement("div");
  d.className="cap"+(i===0?" on":"");d.innerHTML="<h3>"+c.h+"</h3><p>"+c.p+"</p>";
  capsEl.appendChild(d);return d;});
