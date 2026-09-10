@@ -48,6 +48,9 @@ figure{position:absolute;left:50%;top:50%;margin:0;width:80%;aspect-ratio:600/38
  padding:7px 16px;font:inherit;font-weight:500;font-size:13px;cursor:pointer;transition:.2s}
 .ctl button:hover{color:var(--ink);border-color:#DCD3D0}
 .foot{padding:26px 0 72px;color:#B3A9A4;text-align:center;font-size:14px}
+body.embed .foot{display:none}
+body.embed .head{padding:18px 0 0}
+body.embed .ctl{margin-top:14px}
 @media(max-width:640px){.caps{min-height:152px}figure{width:94%}}
 </style></head><body>
 <header class="head"><div class="wrap">
@@ -94,6 +97,9 @@ figure{position:absolute;left:50%;top:50%;margin:0;width:80%;aspect-ratio:600/38
 </div>
 <p class="foot">رسم متحرّك بالكامل — الفلفلة من ملف الهوية نفسه.</p>
 </div>
+<script>
+if(/[?&]embed=1/.test(location.search)) document.body.classList.add("embed");
+</script>
 <script>
 (function(){
 var ICONS={"doc": "M104 72C108 72 121 72 130 72C139 72 147 72 156 72C165 72 175 70 182 72C189 74 194 78 196 84C198 90 196 101 196 110C196 119 196 127 196 136C196 145 196 153 196 162C196 171 196 179 196 188C196 197 198 207 196 214C194 221 190 226 184 228C178 230 167 228 158 228C149 228 141 228 132 228C123 228 111 232 106 228C101 224 104 212 104 204C104 196 104 187 104 178C104 169 104 161 104 152C104 143 104 135 104 126C104 117 104 109 104 100C104 91 104 78 104 74", "bubble": "M78 88C83 88 97 88 106 88C115 88 125 88 134 88C144 88 153 88 162 88C172 88 181 88 190 88C200 88 213 84 218 88C224 92 221 104 222 113C223 121 222 131 222 141C222 150 224 162 222 169C220 176 214 180 207 182C200 184 188 181 179 182C170 183 161 183 153 187C146 192 140 206 135 209C131 212 129 211 127 206C126 202 131 186 126 182C122 178 106 183 98 182C90 181 81 180 78 174C75 168 78 156 78 146C78 137 78 127 78 118C78 109 78 95 78 90", "box": "M150 62C155 65 171 73 182 79C193 84 209 86 214 95C220 104 216 118 216 130C216 142 216 154 216 166C216 178 221 193 216 202C211 211 196 214 185 220C175 225 164 236 153 236C143 237 132 228 121 223C110 218 95 215 89 207C83 198 85 185 84 174C83 162 84 149 84 137C84 125 79 111 84 101C89 92 101 88 111 82C121 76 137 64 143 65C150 67 149 81 150 91C151 101 148 118 150 127C152 135 154 143 160 142C166 140 179 126 188 119C197 111 211 100 216 96", "play": "M114 70C117 72 127 79 133 83C139 88 145 92 152 96C158 101 164 105 170 110C177 114 183 118 189 123C195 127 202 132 208 136C214 140 226 145 227 149C227 154 216 158 210 162C204 167 198 171 192 176C185 180 179 184 173 189C166 193 160 198 154 202C148 206 141 211 135 215C129 220 120 229 116 228C113 227 114 217 114 210C114 203 114 195 114 187C114 179 114 172 114 164C114 156 114 149 114 141C114 133 114 126 114 118C114 110 114 103 114 95C114 87 114 76 114 72", "check": "M74 150C75 151 79 156 82 158C85 161 88 164 90 167C93 170 96 172 98 175C101 178 104 181 106 184C109 186 112 189 115 192C117 195 120 199 123 201C125 202 128 201 131 199C133 197 136 193 139 190C141 188 144 185 147 182C149 179 152 176 155 173C157 170 160 167 162 165C165 162 168 159 170 156C173 153 176 150 178 147C181 145 184 142 186 139C189 136 192 133 194 130C197 127 200 125 202 122C205 119 207 116 210 113C213 110 215 107 218 105C221 102 225 97 226 96", "coin": "M150 70C154 71 168 72 176 74C184 77 192 82 199 87C206 92 212 99 217 106C222 114 225 122 227 130C229 139 230 148 229 157C229 165 227 174 223 182C220 190 215 198 209 204C203 210 196 216 188 220C180 224 172 227 163 229C155 230 145 230 137 229C128 227 120 224 112 220C104 216 97 210 91 204C85 198 80 190 77 182C73 174 71 165 71 157C70 148 71 139 73 130C75 122 78 114 83 106C88 99 94 92 101 87C108 82 116 77 124 74C132 72 146 71 150 70", "steps": "M74 222C76 222 84 222 89 222C94 222 100 223 103 222C107 221 109 218 110 214C111 210 110 204 110 199C110 195 108 188 110 185C112 182 116 181 120 180C124 179 130 180 134 180C139 180 146 182 149 180C152 178 150 171 150 166C150 162 150 156 150 152C150 147 148 140 151 138C154 136 161 138 166 138C170 138 176 139 180 138C184 137 188 136 190 133C192 130 190 123 190 119C190 114 189 108 190 104C191 100 193 97 197 96C200 95 206 96 211 96C216 96 224 96 226 96", "chart": "M74 206C75 204 80 199 82 195C85 192 88 188 91 185C94 181 96 176 99 174C102 172 105 170 109 171C113 172 117 176 121 178C125 180 129 185 132 185C135 185 137 179 139 176C141 172 143 167 145 163C147 159 149 155 151 151C153 147 155 143 157 139C159 135 161 128 164 127C166 126 171 131 174 133C178 135 182 139 186 140C189 142 193 144 196 143C198 141 200 135 202 131C204 127 206 122 208 118C210 114 212 110 214 106C216 102 218 98 220 94C222 90 225 84 226 82"};
@@ -724,7 +730,7 @@ var F=[
   p:"وكل حملة تطلقها تنضاف هنا — لوحة واحدة بدل ملفات وجروبات متفرّقة."}
 ];
 
-var INTRO=1.45,UNFURL=1.0,SEG=4.5,GATHER=1.0,ENDHOLD=1.1,XOVER=0.36;
+var INTRO=1.35,UNFURL=1.45,SEG=4.5,GATHER=1.35,ENDHOLD=1.1,XOVER=0.36;
 var F0=INTRO+UNFURL, FEND=F0+F.length*SEG, TOTAL=FEND+GATHER+ENDHOLD;
 var CARD_S=-0.22,CARD_E=0.50,COUT_S=SEG-0.26,XOUT=0.26;
 var CX=360,CY=210,RX=318,RY=202,BADGE_X=583,BADGE_Y=54,NEXP=3.4;
@@ -793,7 +799,10 @@ fetch("/brand/chili.svg").then(function(r){return r.text();}).then(function(txt)
   inner.setAttribute("transform",ht);
   var n=p.cloneNode(true); inner.appendChild(n); wrap.appendChild(inner); logoG.appendChild(wrap);
   var bb=n.getBBox();
+  var TG=[[360,138],[360,181],[360,213],[515,268],[396,268],[303,268],[205,268]];
+  var tgt=TG[i%TG.length];
   ribbons.push({g:wrap,cx:tx+(bb.x+bb.width/2)*s,cy:ty+(bb.y+bb.height/2)*s,
+   tx:tgt[0],ty:tgt[1],lift:-70-((i*31)%46),ang:-40+((i*53)%80),
    rj:0.96+((i*37)%23)/100,bo:((i*53)%17)-8,sp:0.34+((i*29)%11)/70});
  });
  ribbons.forEach(function(rb,i){rb.a0=(i*(360/Math.max(1,ribbons.length))+14)*Math.PI/180;});
@@ -814,8 +823,7 @@ function frame(el){
  var idle=(el<INTRO||el>FEND+GATHER);
  var breathe=idle?(1+0.02*Math.sin(el*1.6)):1;
 
- var heat=(el>=INTRO&&el<F0+0.3)?0.16*Math.sin(Math.PI*cl(((el-INTRO)/UNFURL-0.15)/0.6)):0;
- halo.setAttribute("opacity",(0.022+0.042*P+Math.max(0,heat)).toFixed(3));
+ halo.setAttribute("opacity",(0.020+0.030*P).toFixed(3));
  halo.setAttribute("transform","rotate("+(el*4).toFixed(1)+" 360 210)");
 
  motes.forEach(function(m){
@@ -824,43 +832,43 @@ function frame(el){
   m.el.setAttribute("cx",x.toFixed(1)); m.el.setAttribute("cy",y.toFixed(1));
   m.el.setAttribute("opacity",(P*(0.07+0.15*(0.5+0.5*Math.sin(el*1.3+m.ph)))).toFixed(3));
  });
- /* الشعار: يُرسم من الأسفل، ينقبض، ثم ينطلق دوراناً وتنفجر منه موجة تدفع البطاقة */
- var rev=out3(cl(el/1.0));
+ /* الشعار يُرسم من الأسفل، ثم تنفصل خطوطه وتنساب لتستقرّ عناصرَ في الواجهة */
+ var rev=out3(cl(el/0.95));
  lwrect.setAttribute("height",(300*rev).toFixed(1));
  lwrect.setAttribute("y",(345-300*rev).toFixed(1));
 
- var q = (el<INTRO)?0:((el<F0)?((el-INTRO)/UNFURL):1);
- var qb = (el>FEND+GATHER)?1:0;               /* الخاتمة تستخدم مساراً هادئاً */
- var sq = ease(cl(q/0.20));                    /* الانقباض */
- var fl = out3(cl((q-0.20)/0.44));             /* الاندفاع */
- var fade = out3(cl((q-0.30)/0.40));
- var ang = -13*sq*(1-fl) + 545*fl;
- var kx  = (1+0.16*sq*(1-fl))*(1+1.05*fl);
- var ky  = (1-0.13*sq*(1-fl))*(1+1.05*fl);
- if(P<1 && el>FEND){ ang=0; kx=ky=1+0.30*ease(P); fade=ease(P); }
- wholeG.setAttribute("opacity",((1-fade)*(0.2+0.8*cl(el/0.3))).toFixed(3));
- wholeG.setAttribute("transform","translate("+CX+","+CY+") rotate("+ang.toFixed(1)+
-  ") scale("+kx.toFixed(3)+","+ky.toFixed(3)+") translate("+(-CX)+","+(-CY)+")");
+ var flying = (el<F0) || (el>=FEND);
+ var kBase;
+ if(el<INTRO) kBase=-1;                                   /* الشعار كامل، لم ينطلق بعد */
+ else if(el<F0) kBase=(el-INTRO);                          /* التفكّك إلى الواجهة */
+ else if(el<FEND) kBase=99;                                /* داخل المشاهد: مختفٍ */
+ else kBase=-(el-FEND);                                    /* العودة: يتجمّع من الواجهة */
 
- var bw=cl((q-0.19)/0.52);
- if(bw>0&&bw<1&&el<F0+0.4){
-  burst.setAttribute("r",(26+330*out5(bw)).toFixed(1));
-  burst.setAttribute("opacity",(0.55*(1-bw)*(1-bw)).toFixed(3));
-  burst.setAttribute("stroke-width",(6*(1-bw)+0.6).toFixed(2));
-  var b2=cl((q-0.30)/0.55);
-  burst2.setAttribute("r",(20+260*out5(b2)).toFixed(1));
-  burst2.setAttribute("opacity",(0.4*(1-b2)*(1-b2)).toFixed(3));
- } else { burst.setAttribute("opacity","0"); burst2.setAttribute("opacity","0"); }
+ wholeG.setAttribute("opacity",(el<INTRO?cl(el/0.3):0).toFixed(3));
+ wholeG.setAttribute("transform","");
+ logoG.setAttribute("opacity", (el<INTRO?0:1));
 
- /* اللمسات الملوّنة لا تسافر — تظهر في مدارها وتخفت */
- ribbons.forEach(function(rb){
-  var th=rb.a0+el*rb.sp, o=orb(th);
-  var px=CX+RX*rb.rj*o[0], py=CY+RY*rb.rj*o[1]+Math.sin(el*0.8+rb.a0)*rb.bo;
-  var kk=0.34*breathe, ang=th*57.3*0.14;
-  rb.g.setAttribute("transform","translate("+(px).toFixed(1)+","+(py).toFixed(1)+
-   ") rotate("+ang.toFixed(1)+") scale("+kk.toFixed(3)+") translate("+(-rb.cx).toFixed(1)+","+(-rb.cy).toFixed(1)+")");
-  rb.g.setAttribute("opacity",(0.42*ease(P)).toFixed(3));
+ ribbons.forEach(function(rb,i){
+  var k, vis;
+  if(kBase===-1){ k=0; vis=0; }
+  else if(kBase===99){ k=1; vis=0; }
+  else if(kBase>=0){ k=ease(cl((kBase-i*0.075)/0.95)); vis=1-cl((k-0.78)/0.22); }
+  else { var g0=ease(cl((-kBase-(6-i)*0.075)/1.0)); k=1-g0; vis=cl(g0/0.3); }
+  if(!vis && k>0.99){ rb.g.setAttribute("opacity","0"); return; }
+  var sx=1-0.62*k, sy=1-0.94*k;
+  var mx=(rb.cx+rb.tx)/2, my=(rb.cy+rb.ty)/2+rb.lift;
+  var u2=1-k;
+  var x=u2*u2*rb.cx+2*u2*k*mx+k*k*rb.tx;
+  var y=u2*u2*rb.cy+2*u2*k*my+k*k*rb.ty;
+  var rot=rb.ang*k*(1-k)*4;
+  rb.g.setAttribute("transform","translate("+(x-rb.cx).toFixed(1)+","+(y-rb.cy).toFixed(1)+
+   ") translate("+rb.cx.toFixed(1)+","+rb.cy.toFixed(1)+") rotate("+rot.toFixed(1)+
+   ") scale("+sx.toFixed(3)+","+Math.max(0.05,sy).toFixed(3)+
+   ") translate("+(-rb.cx).toFixed(1)+","+(-rb.cy).toFixed(1)+")");
+  rb.g.setAttribute("opacity",cl(vis).toFixed(3));
  });
+ motes.forEach(function(m){ m.el.setAttribute("opacity","0"); });
+ burst.setAttribute("opacity","0"); burst2.setAttribute("opacity","0");
 
  var idx=-1,u=0;
  if(el>=F0&&el<FEND){idx=Math.floor((el-F0)/SEG);u=el-F0-idx*SEG;}

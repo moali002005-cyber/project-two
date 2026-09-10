@@ -315,6 +315,43 @@ body {
 
 
 <!-- ===== قسم الباقات ===== -->
+<!-- ===== شرح المنصة (رسم متحرّك) ===== -->
+<section class="cinesec" id="how">
+  <div class="container">
+    <div class="cine-shell">
+      <iframe id="cineFrame" title="كيف تشتغل فلفلونسر" data-src="/cinema.html?embed=1"
+              loading="lazy" scrolling="no"></iframe>
+    </div>
+  </div>
+</section>
+<style>
+.cinesec{padding:8px 0 34px;background:#fff}
+.cine-shell{max-width:980px;margin:0 auto;border:1px solid rgba(15,20,32,.07);border-radius:24px;
+ overflow:hidden;background:#fff;box-shadow:0 30px 60px -46px rgba(15,20,32,.30)}
+.cine-shell iframe{display:block;width:100%;height:940px;border:0;background:#fff}
+@media(max-width:700px){.cine-shell{border-radius:18px}.cine-shell iframe{height:820px}}
+</style>
+<script>
+(function(){
+  var f=document.getElementById('cineFrame'); if(!f) return;
+  function fit(){
+    try{ var d=f.contentDocument; if(!d||!d.body) return;
+      var h=Math.max(d.body.scrollHeight,d.documentElement.scrollHeight);
+      if(h>320) f.style.height=(h+8)+'px';
+    }catch(e){}
+  }
+  function load(){ if(f.src) return; f.src=f.getAttribute('data-src');
+    f.addEventListener('load',function(){ fit(); setTimeout(fit,600); }); }
+  if('IntersectionObserver' in window){
+    var io=new IntersectionObserver(function(en){
+      en.forEach(function(e){ if(e.isIntersecting){ load(); io.disconnect(); } });
+    },{rootMargin:'300px'});
+    io.observe(f);
+  } else load();
+  window.addEventListener('resize',fit);
+})();
+</script>
+
 <section class="plansec" id="plans" style="display:none">
   <div class="container">
     <div class="ps-head">
@@ -1243,6 +1280,20 @@ function build(){
 
 function go(){css(); if(!build()) setTimeout(go,200);}
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',go);else go();
+})();
+</script>
+<script>
+/* الباقات بعد الشرح لا قبله */
+(function(){
+  function move(){
+    var plans=document.getElementById('plans');
+    var host=document.querySelector('.fh');
+    if(!plans||!host||!host.parentNode) return false;
+    if(plans.previousElementSibling===host) return true;
+    host.parentNode.insertBefore(plans, host.nextSibling);
+    return true;
+  }
+  if(!move()){ var n=0, iv=setInterval(function(){ if(move()||++n>60) clearInterval(iv); },100); }
 })();
 </script>
 </body>
