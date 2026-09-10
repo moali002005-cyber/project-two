@@ -78,6 +78,8 @@ figure{position:absolute;left:50%;top:50%;margin:0;width:80%;aspect-ratio:600/38
    </defs>
    <g id="sparks"></g>
    <circle id="pulse" cx="360" cy="210" r="40" fill="none" stroke="url(#brand)" stroke-width="2" opacity="0"/>
+   <circle id="burst" cx="360" cy="210" r="40" fill="none" stroke="url(#brand)" stroke-width="5" opacity="0"/>
+   <circle id="burst2" cx="360" cy="210" r="40" fill="none" stroke="#F0A79E" stroke-width="2" opacity="0"/>
    <g id="logo"></g>
    <g id="whole" clip-path="url(#lwclip)"></g>
    <g id="lineG"><path id="line" opacity="0"></path>
@@ -722,7 +724,7 @@ var F=[
   p:"وكل حملة تطلقها تنضاف هنا — لوحة واحدة بدل ملفات وجروبات متفرّقة."}
 ];
 
-var INTRO=1.5,UNFURL=0.8,SEG=4.5,GATHER=1.0,ENDHOLD=1.1,XOVER=0.36;
+var INTRO=1.45,UNFURL=1.0,SEG=4.5,GATHER=1.0,ENDHOLD=1.1,XOVER=0.36;
 var F0=INTRO+UNFURL, FEND=F0+F.length*SEG, TOTAL=FEND+GATHER+ENDHOLD;
 var CARD_S=-0.22,CARD_E=0.50,COUT_S=SEG-0.26,XOUT=0.26;
 var CX=360,CY=210,RX=318,RY=202,BADGE_X=583,BADGE_Y=54,NEXP=3.4;
@@ -734,7 +736,9 @@ function pathAt(a,b,t){var A=NUM[a],B=NUM[b],i=0;
  return TPL.replace(/#/g,function(){var v=A[i]+(B[i]-A[i])*t;i++;return v.toFixed(1);});}
 
 var logoG=document.getElementById("logo"),wholeG=document.getElementById("whole"),
-    lwrect=document.getElementById("lwrect"),lineG=document.getElementById("lineG"),
+    lwrect=document.getElementById("lwrect"),
+    burst=document.getElementById("burst"),burst2=document.getElementById("burst2"),
+    lineG=document.getElementById("lineG"),
     line=document.getElementById("line"),spark=document.getElementById("spark"),
     halo=document.getElementById("halo"),pulse=document.getElementById("pulse"),
     sparksG=document.getElementById("sparks"),
@@ -810,7 +814,8 @@ function frame(el){
  var idle=(el<INTRO||el>FEND+GATHER);
  var breathe=idle?(1+0.02*Math.sin(el*1.6)):1;
 
- halo.setAttribute("opacity",(0.022+0.042*P).toFixed(3));
+ var heat=(el>=INTRO&&el<F0+0.3)?0.16*Math.sin(Math.PI*cl(((el-INTRO)/UNFURL-0.15)/0.6)):0;
+ halo.setAttribute("opacity",(0.022+0.042*P+Math.max(0,heat)).toFixed(3));
  halo.setAttribute("transform","rotate("+(el*4).toFixed(1)+" 360 210)");
 
  motes.forEach(function(m){
@@ -819,14 +824,33 @@ function frame(el){
   m.el.setAttribute("cx",x.toFixed(1)); m.el.setAttribute("cy",y.toFixed(1));
   m.el.setAttribute("opacity",(P*(0.07+0.15*(0.5+0.5*Math.sin(el*1.3+m.ph)))).toFixed(3));
  });
- /* الشعار المجمّع: يُكشف من الأسفل، يثبت، ثم يتّسع ويذوب — بلا تفكّك */
- var rev=out3(cl(el/1.05));
+ /* الشعار: يُرسم من الأسفل، ينقبض، ثم ينطلق دوراناً وتنفجر منه موجة تدفع البطاقة */
+ var rev=out3(cl(el/1.0));
  lwrect.setAttribute("height",(300*rev).toFixed(1));
  lwrect.setAttribute("y",(345-300*rev).toFixed(1));
- var gone=ease(P);
- wholeG.setAttribute("opacity",((1-gone)*(0.25+0.75*cl(el/0.35))).toFixed(3));
- wholeG.setAttribute("transform","translate("+CX+","+CY+") scale("+(1+0.30*gone).toFixed(3)+
-  ") translate("+(-CX)+","+(-CY)+")");
+
+ var q = (el<INTRO)?0:((el<F0)?((el-INTRO)/UNFURL):1);
+ var qb = (el>FEND+GATHER)?1:0;               /* الخاتمة تستخدم مساراً هادئاً */
+ var sq = ease(cl(q/0.20));                    /* الانقباض */
+ var fl = out3(cl((q-0.20)/0.44));             /* الاندفاع */
+ var fade = out3(cl((q-0.30)/0.40));
+ var ang = -13*sq*(1-fl) + 545*fl;
+ var kx  = (1+0.16*sq*(1-fl))*(1+1.05*fl);
+ var ky  = (1-0.13*sq*(1-fl))*(1+1.05*fl);
+ if(P<1 && el>FEND){ ang=0; kx=ky=1+0.30*ease(P); fade=ease(P); }
+ wholeG.setAttribute("opacity",((1-fade)*(0.2+0.8*cl(el/0.3))).toFixed(3));
+ wholeG.setAttribute("transform","translate("+CX+","+CY+") rotate("+ang.toFixed(1)+
+  ") scale("+kx.toFixed(3)+","+ky.toFixed(3)+") translate("+(-CX)+","+(-CY)+")");
+
+ var bw=cl((q-0.19)/0.52);
+ if(bw>0&&bw<1&&el<F0+0.4){
+  burst.setAttribute("r",(26+330*out5(bw)).toFixed(1));
+  burst.setAttribute("opacity",(0.55*(1-bw)*(1-bw)).toFixed(3));
+  burst.setAttribute("stroke-width",(6*(1-bw)+0.6).toFixed(2));
+  var b2=cl((q-0.30)/0.55);
+  burst2.setAttribute("r",(20+260*out5(b2)).toFixed(1));
+  burst2.setAttribute("opacity",(0.4*(1-b2)*(1-b2)).toFixed(3));
+ } else { burst.setAttribute("opacity","0"); burst2.setAttribute("opacity","0"); }
 
  /* اللمسات الملوّنة لا تسافر — تظهر في مدارها وتخفت */
  ribbons.forEach(function(rb){
@@ -835,7 +859,7 @@ function frame(el){
   var kk=0.34*breathe, ang=th*57.3*0.14;
   rb.g.setAttribute("transform","translate("+(px).toFixed(1)+","+(py).toFixed(1)+
    ") rotate("+ang.toFixed(1)+") scale("+kk.toFixed(3)+") translate("+(-rb.cx).toFixed(1)+","+(-rb.cy).toFixed(1)+")");
-  rb.g.setAttribute("opacity",(0.42*gone).toFixed(3));
+  rb.g.setAttribute("opacity",(0.42*ease(P)).toFixed(3));
  });
 
  var idx=-1,u=0;
