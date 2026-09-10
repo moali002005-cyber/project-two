@@ -318,34 +318,40 @@ body {
 <!-- ===== شرح المنصة (رسم متحرّك) ===== -->
 <section class="cinesec" id="how">
   <div class="container">
-    <div class="cine-shell">
-      <iframe id="cineFrame" title="كيف تشتغل فلفلونسر" data-src="/cinema.html?embed=1"
-              loading="lazy" scrolling="no"></iframe>
+    <div class="cine-head">
+      <div class="cine-eb">جولة سريعة</div>
+      <h2 class="cine-h2">شوف كيف تشتغل فلفلونسر — من إطلاق الحملة إلى النتايج.</h2>
     </div>
+    <iframe id="cineFrame" title="كيف تشتغل فلفلونسر" data-src="/cinema.html?embed=1"
+            loading="lazy" scrolling="no"></iframe>
   </div>
 </section>
 <style>
-.cinesec{padding:8px 0 34px;background:#fff}
-.cine-shell{max-width:980px;margin:0 auto;border:1px solid rgba(15,20,32,.07);border-radius:24px;
- overflow:hidden;background:#fff;box-shadow:0 30px 60px -46px rgba(15,20,32,.30)}
-.cine-shell iframe{display:block;width:100%;height:940px;border:0;background:#fff}
-@media(max-width:700px){.cine-shell{border-radius:18px}.cine-shell iframe{height:820px}}
+.cinesec{padding:26px 0 34px;background:#fff}
+.cine-head{max-width:980px;margin:0 auto 6px;text-align:center}
+.cine-eb{font-size:13px;font-weight:700;color:var(--accent);letter-spacing:.02em;margin-bottom:8px}
+.cine-h2{font-family:var(--font-display);font-size:clamp(22px,3vw,32px);font-weight:700;
+ line-height:1.4;color:var(--ink);margin:0;text-wrap:balance}
+.cinesec iframe{display:block;width:100%;max-width:1000px;margin:0 auto;height:820px;border:0;background:transparent}
+@media(max-width:700px){.cinesec{padding:18px 0 24px}.cinesec iframe{height:760px}}
 </style>
 <script>
 (function(){
   var f=document.getElementById('cineFrame'); if(!f) return;
   function fit(){
     try{ var d=f.contentDocument; if(!d||!d.body) return;
-      var h=Math.max(d.body.scrollHeight,d.documentElement.scrollHeight);
-      if(h>320) f.style.height=(h+8)+'px';
+      var last=d.querySelector('.ctl');
+      var h=last ? Math.ceil(last.getBoundingClientRect().bottom)+14
+                 : Math.max(d.body.scrollHeight,d.documentElement.scrollHeight);
+      if(h>320) f.style.height=h+'px';
     }catch(e){}
   }
   function load(){ if(f.src) return; f.src=f.getAttribute('data-src');
-    f.addEventListener('load',function(){ fit(); setTimeout(fit,600); }); }
+    f.addEventListener('load',function(){ fit(); setTimeout(fit,700); }); }
   if('IntersectionObserver' in window){
     var io=new IntersectionObserver(function(en){
       en.forEach(function(e){ if(e.isIntersecting){ load(); io.disconnect(); } });
-    },{rootMargin:'300px'});
+    },{rootMargin:'400px'});
     io.observe(f);
   } else load();
   window.addEventListener('resize',fit);
