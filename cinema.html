@@ -27,7 +27,7 @@ figure{position:absolute;left:50%;top:50%;margin:0;width:80%;aspect-ratio:600/38
  border-bottom:1px solid var(--ln)}
 .tag{flex:1;height:62%;border-radius:999px;background:#fff;border:1px solid var(--ln);
  display:flex;align-items:center;justify-content:center;font-size:11px;color:#B3A9A4;
- font-weight:500;padding-inline-start:26px}
+ font-weight:500}
 .view{height:89.6%;background:#fff}
 .shine{position:absolute;inset:0;direction:ltr;pointer-events:none;opacity:0;
  background:linear-gradient(112deg,transparent 34%,rgba(255,255,255,.72) 48%,transparent 62%)}
@@ -210,13 +210,10 @@ function S2(root){
   magic.querySelector("rect").setAttribute("fill",mg>0?"#FBDCDC":"#FDECEC");
   lines.forEach(function(l,i){
    l.setAttribute("width",(lerp(0,i===3?300:488,out3(seg(t,2.5+i*0.16,3.05+i*0.16)))).toFixed(1));});
-  var bp=seg(t,3.5,3.62);
-  br.setAttribute("transform","translate("+(75*(bp>0&&bp<1?0.03:0))+","+(16*(bp>0&&bp<1?0.03:0))+
-   ") scale("+(bp>0&&bp<1?0.97:1)+")");
-  var pos=along(t,[[0,470,300],[0.5,441,71],[1.1,470,155],[2.3,99,204],[3.4,115,318],[3.9,150,330]]);
-  cur.at(pos[0],pos[1],cl(seg(t,0.05,0.3))*(1-seg(t,3.75,3.9)*0.9));
+  br.setAttribute("opacity","0.42");
+  var pos=along(t,[[0,470,300],[0.5,441,71],[1.1,470,155],[2.3,99,204],[3.6,150,236]]);
+  cur.at(pos[0],pos[1],cl(seg(t,0.05,0.3))*(1-seg(t,3.6,3.9)*0.9));
   cur.click(seg(t,0.55,0.95)); if(t>1.2)cur.click(seg(t,2.35,2.75));
-  if(t>3.3)cur.click(seg(t,3.5,3.9));
  };
 }
 
@@ -405,8 +402,12 @@ function S7(root){
  var folls=row(178,["10–20 ألف","20–50 ألف","50–100 ألف","100–200 ألف"],118,16);
  lab(240,"مدينة المعلن");
  var cities=row(248,["الرياض","جدة","الدمام","كل المدن"],118,16);
- var note=E("text",{x:560,y:318,"text-anchor":"end","font-size":"12","font-weight":"700",fill:G,opacity:"0"},root);
+ var note=E("text",{x:560,y:316,"text-anchor":"end","font-size":"12","font-weight":"700",fill:G,opacity:"0"},root);
  note.textContent="يتوقّف التفاوض تلقائياً عند اكتمال العدد.";
+ var btn=E("g",{transform:"translate(40,300)"},root);
+ var br=E("rect",{x:0,y:0,width:150,height:32,rx:16,fill:R},btn);
+ E("text",{x:75,y:21,"text-anchor":"middle","font-size":"13","font-weight":"900",fill:"#fff"},btn)
+  .textContent="أطلق الحملة";
  var cur=cursor(root);
  function on(c,k,col){var a=k>0;
   c.r.setAttribute("fill",a?(col||R):SOFT); c.r.setAttribute("stroke",a?(col||R):LN);
@@ -416,13 +417,17 @@ function S7(root){
   plats.forEach(function(c,i){on(c,i===0?seg(t,1.05,1.15):0);});
   folls.forEach(function(c,i){on(c,(i===1?seg(t,1.65,1.75):(i===2?seg(t,2.05,2.15):0)));});
   cities.forEach(function(c,i){on(c,i===0?seg(t,2.65,2.75):0);});
-  note.setAttribute("opacity",out3(seg(t,2.95,3.45)).toFixed(2));
+  note.setAttribute("opacity",out3(seg(t,2.85,3.25)).toFixed(2));
+  var press=seg(t,3.62,3.74);
+  br.setAttribute("transform",(press>0&&press<1)?"translate(2.2,0.5) scale(0.972)":"");
   var pos=along(t,[[0,520,300],[0.4,sizes[5].cx,sizes[5].cy],[1.0,plats[0].cx,plats[0].cy],
    [1.6,folls[1].cx,folls[1].cy],[2.0,folls[2].cx,folls[2].cy],[2.6,cities[0].cx,cities[0].cy],
-   [3.3,cities[0].cx-30,cities[0].cy+46]]);
-  cur.at(pos[0],pos[1],cl(seg(t,0.05,0.28))*(1-seg(t,3.5,3.9)*0.9));
-  var ck=[[0.45,0.85],[1.05,1.45],[1.65,2.05],[2.05,2.45],[2.65,3.05]];
-  for(var i=0;i<ck.length;i++){ if(t>=ck[i][0]&&t<ck[i][1]){cur.click(seg(t,ck[i][0],ck[i][1]));break;} if(i===ck.length-1)cur.click(0); }
+   [3.6,115,316]]);
+  cur.at(pos[0],pos[1],cl(seg(t,0.05,0.28))*(1-seg(t,3.85,4.1)*0.9));
+  var ck=[[0.45,0.85],[1.05,1.45],[1.65,2.05],[2.05,2.45],[2.65,3.05],[3.62,4.05]];
+  var hit=0;
+  for(var i=0;i<ck.length;i++){ if(t>=ck[i][0]&&t<ck[i][1]){cur.click(seg(t,ck[i][0],ck[i][1]));hit=1;break;} }
+  if(!hit)cur.click(0);
  };
 }
 
@@ -612,14 +617,15 @@ function frame(el){
  }
  var cur=F[idx].k, prev=idx>0?F[idx-1].k:cur;
  line.setAttribute("d", idx>0?pathAt(prev,cur,ease(cl(u/MORPH))):ICONS[cur]);
- line.setAttribute("opacity",(idx===0?cl(u/0.45):1).toFixed(3));
+
 
  var bp = u<CIN_S?0 : (u<CIN_E?out5((u-CIN_S)/(CIN_E-CIN_S))
         : (u<COUT_S?1 : 1-ease(cl((u-COUT_S)/(SEG-COUT_S)))));
- var sc=1.06+(0.108-1.06)*bp;
- lineG.setAttribute("transform","translate("+(CX+(BADGE_X-CX)*bp).toFixed(1)+","+
-  (CY+(BADGE_Y-CY)*bp).toFixed(1)+") scale("+sc.toFixed(4)+") translate(-150,-150)");
- line.setAttribute("stroke-width",(14+(40-14)*bp).toFixed(1));
+ /* العلامة تبقى في مركز المشهد وتذوب داخل البطاقة — بلا انتقال إلى الزاوية */
+ var sc=1.06-0.24*bp;
+ lineG.setAttribute("transform","translate("+CX+","+CY+") scale("+sc.toFixed(4)+") translate(-150,-150)");
+ line.setAttribute("stroke-width","14");
+ line.setAttribute("opacity",((idx===0?cl(u/0.45):1)*(1-0.985*bp)).toFixed(3));
 
  if(u<CIN_S+0.12){
   try{ var L=line.getTotalLength(), pt=line.getPointAtLength(((el*0.42)%1)*L);
