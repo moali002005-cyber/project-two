@@ -22,13 +22,15 @@ h1,h3{margin:0;font-weight:900;text-wrap:balance;letter-spacing:-.01em}
 figure{position:absolute;left:50%;top:50%;margin:0;width:80%;aspect-ratio:600/384;
  transform:translate(-50%,-50%);opacity:0;pointer-events:none;
  border:1px solid rgba(26,21,18,.07);border-radius:20px;background:#fff;overflow:hidden;
- box-shadow:0 40px 70px -34px rgba(26,21,18,.34),0 2px 6px rgba(26,21,18,.04)}
+ box-shadow:0 26px 52px -30px rgba(26,21,18,.22),0 1px 4px rgba(26,21,18,.03)}
 .bar{height:10.4%;display:flex;align-items:center;padding:0 12px;background:#FCFAF9;
  border-bottom:1px solid var(--ln)}
 .tag{flex:1;height:62%;border-radius:999px;background:#fff;border:1px solid var(--ln);
  display:flex;align-items:center;justify-content:center;font-size:11px;color:#B3A9A4;
  font-weight:500;padding-inline-start:26px}
 .view{height:89.6%;background:#fff}
+.shine{position:absolute;inset:0;direction:ltr;pointer-events:none;opacity:0;
+ background:linear-gradient(112deg,transparent 34%,rgba(255,255,255,.72) 48%,transparent 62%)}
 .view svg{width:100%;height:100%;display:block;direction:ltr}
 .view text{font-family:"Tajawal",sans-serif}
 .caps{position:relative;min-height:124px;margin-top:20px;text-align:center}
@@ -390,9 +392,10 @@ var F=[
   p:"إجمالي الإنفاق، الصفقات المعتمدة، والعروض — لحظة بلحظة."}
 ];
 
-var INTRO=2.0,UNFURL=1.0,SEG=5.6,GATHER=1.3,ENDHOLD=1.5;
+var INTRO=1.7,UNFURL=0.9,SEG=5.1,GATHER=1.2,ENDHOLD=1.3,XOVER=0.36;
 var F0=INTRO+UNFURL, FEND=F0+F.length*SEG, TOTAL=FEND+GATHER+ENDHOLD;
-var MORPH=0.75,CIN_S=0.62,CIN_E=1.28,COUT_S=SEG-0.58;
+var MORPH=0.58,CIN_S=0.26,CIN_E=0.92,COUT_S=SEG-0.52,
+    CARD_S=0.30,CARD_E=0.96;
 var CX=360,CY=210,RX=318,RY=202,BADGE_X=583,BADGE_Y=54,NEXP=3.4;
 
 var NUM={},TPL=null;
@@ -408,15 +411,15 @@ var logoG=document.getElementById("logo"),lineG=document.getElementById("lineG")
     cardsEl=document.getElementById("cards"),capsEl=document.getElementById("caps"),
     dotsEl=document.getElementById("dots");
 
-var figs=[],draws=[];
+var figs=[],draws=[],shines=[];
 F.forEach(function(f,i){
  var fg=document.createElement("figure");
- fg.innerHTML='<div class="bar"><div class="tag">'+f.tag+'</div></div><div class="view"></div>';
+ fg.innerHTML='<div class="bar"><div class="tag">'+f.tag+'</div></div><div class="view"></div><i class="shine"></i>';
  cardsEl.appendChild(fg);
  var svg=document.createElementNS(NS,"svg");
  svg.setAttribute("viewBox","0 0 600 344");
  fg.querySelector(".view").appendChild(svg);
- draws.push(BUILD[i](svg)); figs.push(fg);
+ draws.push(BUILD[i](svg)); figs.push(fg); shines.push(fg.querySelector(".shine"));
 });
 
 var CAPS=[{h:"أنا فلفل",p:"مدير حملاتك الذكي. من إطلاق الحملة إلى النتايج — خلّني أوريك."}]
@@ -431,9 +434,9 @@ var dotEls=F.map(function(f,i){var b=document.createElement("button");
  dotsEl.appendChild(b);return b;});
 
 var COL=[G,Y,R,B,P],motes=[];
-for(var i=0;i<18;i++){
+for(var i=0;i<9;i++){
  var c=document.createElementNS(NS,"circle");
- c.setAttribute("r",(1.2+Math.random()*2.2).toFixed(2));
+ c.setAttribute("r",(1.0+Math.random()*1.5).toFixed(2));
  c.setAttribute("fill",COL[i%COL.length]); c.setAttribute("opacity","0");
  sparksG.appendChild(c);
  motes.push({el:c,a:Math.random()*6.283,sp:0.18+Math.random()*0.35,ph:Math.random()*6.283,
@@ -471,23 +474,23 @@ function frame(el){
  var idle=(el<INTRO||el>FEND+GATHER);
  var breathe=idle?(1+0.02*Math.sin(el*1.6)):1;
 
- halo.setAttribute("opacity",(0.035+0.075*P).toFixed(3));
+ halo.setAttribute("opacity",(0.022+0.042*P).toFixed(3));
  halo.setAttribute("transform","rotate("+(el*4).toFixed(1)+" 360 210)");
 
  motes.forEach(function(m){
   var th=m.a+el*m.sp, o=orb(th);
   var x=CX+RX*m.f*o[0], y=CY+RY*m.f*o[1]+Math.sin(el*m.sq+m.ph)*m.bo;
   m.el.setAttribute("cx",x.toFixed(1)); m.el.setAttribute("cy",y.toFixed(1));
-  m.el.setAttribute("opacity",(P*(0.18+0.34*(0.5+0.5*Math.sin(el*1.7+m.ph)))).toFixed(3));
+  m.el.setAttribute("opacity",(P*(0.07+0.15*(0.5+0.5*Math.sin(el*1.3+m.ph)))).toFixed(3));
  });
  ribbons.forEach(function(rb){
   var th=rb.a0+el*rb.sp, o=orb(th);
   var px=CX+RX*rb.rj*o[0], py=CY+RY*rb.rj*o[1]+Math.sin(el*0.8+rb.a0)*rb.bo;
   var dx=(px-rb.cx)*P, dy=(py-rb.cy)*P;
-  var kk=(1+(0.46-1)*P)*breathe, ang=(th*57.3*0.18)*P;
+  var kk=(1+(0.34-1)*P)*breathe, ang=(th*57.3*0.14)*P;
   rb.g.setAttribute("transform","translate("+(rb.cx+dx).toFixed(1)+","+(rb.cy+dy).toFixed(1)+
    ") rotate("+ang.toFixed(1)+") scale("+kk.toFixed(3)+") translate("+(-rb.cx).toFixed(1)+","+(-rb.cy).toFixed(1)+")");
-  rb.g.setAttribute("opacity",(1-0.2*P).toFixed(2));
+  rb.g.setAttribute("opacity",(1-0.58*P).toFixed(2));
  });
 
  var idx=-1,u=0;
@@ -519,17 +522,29 @@ function frame(el){
  } else spark.setAttribute("opacity","0");
 
  var pw=cl((u-CIN_S)/0.85);
- if(pw>0&&pw<1){ pulse.setAttribute("r",(46+300*out5(pw)).toFixed(1));
-  pulse.setAttribute("opacity",(0.32*(1-pw)).toFixed(3)); }
+ if(pw>0&&pw<1){ pulse.setAttribute("r",(40+250*out5(pw)).toFixed(1));
+  pulse.setAttribute("opacity",(0.15*(1-pw)*(1-pw)).toFixed(3)); }
  else pulse.setAttribute("opacity","0");
 
- var cp=bp;
  figs.forEach(function(fg,i){
-  if(i!==idx){ if(fg.style.opacity!=="0")fg.style.opacity="0"; return; }
-  fg.style.opacity=cp.toFixed(3);
-  fg.style.transform="translate(-50%,-50%) scale("+(0.9+0.1*cp).toFixed(3)+
-   ") translateY("+((1-cp)*10).toFixed(1)+"px)";
-  fg.style.filter=cp<0.99?"blur("+((1-cp)*4).toFixed(1)+"px)":"none";
+  var v=el-(F0+i*SEG);
+  if(v<CARD_S-0.02||v>SEG){ if(fg.style.opacity!=="0"){fg.style.opacity="0";fg.style.visibility="hidden";} return; }
+  /* البطاقة تتفتّح من الفلفلة وتعود تنطوي إليها — لا ظهور واختفاء مفاجئ */
+  var tin=out5(cl((v-CARD_S)/(CARD_E-CARD_S)));
+  var tout=ease(cl((v-COUT_S)/(SEG-COUT_S)));
+  var op=Math.min(tin,1-tout);
+  if(op<=0.004){ if(fg.style.opacity!=="0"){fg.style.opacity="0";fg.style.visibility="hidden";} return; }
+  fg.style.visibility="visible";
+  fg.style.opacity=op.toFixed(3);
+  var sc=0.80+0.20*tin-0.16*tout;
+  fg.style.transform="translate(-50%,-50%) scale("+sc.toFixed(3)+
+   ") translateY("+((1-tin)*10-tout*6).toFixed(1)+"px)";
+  var bl=(1-tin)*6+tout*5;
+  fg.style.filter=bl>0.06?"blur("+bl.toFixed(2)+"px)":"none";
+  var sh=shines[i];
+  if(sh){ var k=cl((v-CARD_E+0.10)/0.58);
+   sh.style.opacity=(k>0&&k<1?(0.85*Math.sin(Math.PI*k)):0).toFixed(3);
+   sh.style.transform="translateX("+(-130+260*k).toFixed(1)+"%)"; }
  });
  draws[idx](Math.max(0,u-CIN_E));
  setCap(idx+1);
