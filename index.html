@@ -14,7 +14,7 @@
 
 <script src="/splash.js?v=4"></script>
 
-<script defer src="/translations.js?v=10"></script>
+<script defer src="/translations.js?v=11"></script>
 <script defer src="/i18n.js?v=5"></script>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -129,16 +129,30 @@ body {
 .lang-toggle { padding: 10px 10px; font-weight: 600; min-width: 44px; justify-content: center; color: #8B8578; }
 .lang-toggle:hover { color: var(--accent); }
 .hero {
-  min-height: calc(100vh - 140px);
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 40px 0 56px;
+  padding: 34px 0 62px;
   position: relative;
+}
+.hero-h1{font-family:var(--font-display);font-size:clamp(26px,4.3vw,43px);font-weight:800;line-height:1.32;color:var(--ink);letter-spacing:-.01em;margin:0 0 16px;text-wrap:balance}
+.hero-h1 .hl{color:var(--accent)}
+.hero-sub{font-size:clamp(15px,1.8vw,17.5px);line-height:1.9;color:var(--ink-soft);max-width:62ch;margin:0 auto 30px}
+.hs-steps{display:grid;grid-template-columns:repeat(4,1fr);gap:4px;width:min(520px,88vw);margin:4px auto 0;padding:0;list-style:none}
+.hs-st{display:flex;flex-direction:column;align-items:center;gap:7px;font-size:12.5px;font-weight:700;line-height:1.5;color:#A9A2B0;text-align:center;transition:color .4s ease}
+.hs-st b{width:24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;background:#F1EDE8;color:#A9A2B0;transition:background .4s ease,color .4s ease,transform .4s ease}
+.hs-st.on{color:var(--ink)}
+.hs-st.on b{background:var(--accent);color:#fff;transform:scale(1.1)}
+.hero-assure{display:flex;justify-content:center;flex-wrap:wrap;gap:9px 24px;list-style:none;margin:24px 0 0;padding:0;font-size:13.5px;color:var(--ink-soft)}
+.hero-assure li{display:flex;align-items:center;gap:7px}
+.hero-assure svg{width:16px;height:16px;flex:none}
+@media(max-width:600px){
+  .hs-steps{grid-template-columns:repeat(2,1fr);gap:14px 4px;width:min(340px,90vw)}
+  .hero-assure{flex-direction:column;align-items:center;gap:10px}
 }
 .hero .container { width: 100%; }
 .hero-grid { width: min(760px, 100%); margin: 0 auto; text-align: center; }
-.hero-story{display:flex;flex-direction:column;align-items:center;gap:24px;margin-bottom:38px}
+.hero-story{display:flex;flex-direction:column;align-items:center;gap:6px;margin-bottom:28px}
 .hs-brand{position:relative;display:flex;align-items:center;justify-content:center;will-change:transform}
 .hs-brand .bm{position:relative;font-family:var(--font-display);font-weight:700;font-size:clamp(32px,5vw,44px);color:var(--ink);letter-spacing:-.01em;direction:ltr}
 .hs-glow{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:min(430px,80vw);height:150px;border-radius:50%;background:radial-gradient(closest-side,rgba(226,59,46,.20),transparent);pointer-events:none}
@@ -277,16 +291,12 @@ body {
   <div class="container">
     <div class="hero-grid">
       <div>
+        <h1 class="hero-h1"><span data-i18n="hero_h1a">حملات المؤثرين — من الفكرة إلى الفاتورة،</span> <span class="hl" data-i18n="hero_h1b">في مكان واحد</span>.</h1>
+        <p class="hero-sub" data-i18n="hero_sub">تحدّد الشركة هدفها وميزانيتها، فيرشّح وكيل فلفلونسر صنّاع المحتوى الأنسب ويتفاوض معهم بالعربية ويُغلق الاتفاق، ويتابع الطرفان كل مرحلة داخل المنصة حتى النشر وصرف المستحق.</p>
         <div class="hero-story" id="heroStory">
-          <div class="hs-brand" id="hsBrand"><div class="hs-glow" id="hsGlow" style="background:none"></div><img src="/brand/chili.svg" alt="Flfluencer" style="height:170px;display:block;margin:0 auto"></div>
-          <div class="hs-sents">
-            <span class="hs-s" data-i18n="story_step1">أطلق حملتك الإعلانية.</span>
-            <span class="hs-s" data-i18n="story_step2">وكيل تفاوض AI يرشّح لك الأنسب.</span>
-            <span class="hs-s" data-i18n="story_step3">يعرض سعرك على الجميع ويقفل الاتفاق.</span>
-            <span class="hs-s" data-i18n="story_step4">تابع تقدم حملتك بشكل مباشر.</span>
-          </div>
+          <div class="hs-brand" id="hsBrand"><div class="hs-glow" id="hsGlow" style="background:none"></div><img src="/brand/chili.svg" alt="Flfluencer" style="height:126px;display:block;margin:0 auto"></div>
           <div class="hs-stage">
-          <svg viewBox="0 0 520 150" aria-hidden="true">
+          <svg viewBox="0 26 520 92" aria-hidden="true">
             <polyline points="450,96 330,66 210,88 90,58" fill="none" stroke="#EDE4D3" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>
             <polyline id="hsProg" points="450,96 450,96" fill="none" stroke="var(--accent)" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>
             <g id="hsCps"></g>
@@ -301,11 +311,22 @@ body {
 <path fill-rule="nonzero" fill="rgb(5.097961%, 69.020081%, 29.411316%)" fill-opacity="1" d="M 236.394531 417.847656 C 240.925781 417.957031 249.453125 414.253906 250.804688 409.933594 C 247.332031 409.460938 237.742188 413.496094 235.953125 417.113281 C 235.875 417.277344 235.835938 417.496094 235.878906 417.601562 C 235.917969 417.703125 236.121094 417.839844 236.394531 417.847656 M 257.539062 403.316406 C 257.667969 405.21875 257.703125 407.183594 257.40625 409.0625 C 257.109375 410.949219 256.546875 412.804688 255.707031 414.503906 C 253.796875 418.367188 249.664062 421.472656 245.621094 422.78125 C 245.242188 422.847656 240.210938 423.808594 239.882812 424.027344 C 237.363281 424.496094 234.203125 424.800781 232.003906 423.675781 C 230.5625 422.9375 229.621094 421.515625 229.515625 419.828125 C 229.285156 416.183594 232.355469 412.503906 235.195312 410.257812 C 238.652344 407.523438 246.417969 404.066406 251.554688 404.089844 L 251.421875 399.773438 C 251.347656 397.328125 251.152344 394.980469 251.308594 392.539062 C 251.566406 388.492188 252.839844 384.050781 256.324219 381.839844 C 258.042969 380.75 260.027344 380.363281 261.941406 380.964844 C 265.058594 381.953125 266.820312 385.207031 265.65625 388.277344 C 265.207031 389.46875 264.109375 390.195312 262.871094 390.5625 C 263.179688 389.53125 263.234375 388.582031 262.75 387.664062 C 262.375 386.960938 261.621094 386.582031 261.011719 386.488281 C 260.089844 386.347656 259.382812 386.800781 258.816406 387.476562 C 257.105469 389.511719 256.886719 393.476562 257.074219 396.277344 Z M 257.539062 403.316406 "/></g></g></g>
           </svg>
           </div>
+          <ol class="hs-steps" id="hsSteps">
+            <li class="hs-st"><b>1</b><span data-i18n="story_step1">إطلاق الحملة</span></li>
+            <li class="hs-st"><b>2</b><span data-i18n="story_step2">ترشيح المؤثرين</span></li>
+            <li class="hs-st"><b>3</b><span data-i18n="story_step3">التفاوض والاتفاق</span></li>
+            <li class="hs-st"><b>4</b><span data-i18n="story_step4">المتابعة والصرف</span></li>
+          </ol>
         </div>
         <div class="cta-flow" id="ctaFlow">
           <a href="/signup.html?role=creator" class="fbtn primary" id="fbR"><svg class="leaf" viewBox="0 0 40 40" aria-hidden="true"><path d="M8 34 C10 20 20 12 34 10 C30 24 22 32 8 34Z" fill="#2AA36B"/></svg><span data-i18n="hero_cta_creator">التسجيل كمعلن ←</span></a>
           <a href="/signup.html?role=brand" class="fbtn ghost" id="fbL"><svg class="leaf" viewBox="0 0 40 40" aria-hidden="true"><path d="M8 34 C10 20 20 12 34 10 C30 24 22 32 8 34Z" fill="#2AA36B"/></svg><span data-i18n="hero_cta_brand">التسجيل كشركة</span></a>
         </div>
+        <ul class="hero-assure">
+          <li><svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><circle cx="10" cy="10" r="9" fill="rgba(42,163,107,.12)"/><path d="M6 10.4l2.6 2.6L14.2 7.4" stroke="#2AA36B" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg><span data-i18n="hero_assure1">لا يُنشر أي محتوى قبل اعتمادك</span></li>
+          <li><svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><circle cx="10" cy="10" r="9" fill="rgba(42,163,107,.12)"/><path d="M6 10.4l2.6 2.6L14.2 7.4" stroke="#2AA36B" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg><span data-i18n="hero_assure2">المنصة تستلم المبلغ وتحوّله لصانع المحتوى</span></li>
+          <li><svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><circle cx="10" cy="10" r="9" fill="rgba(42,163,107,.12)"/><path d="M6 10.4l2.6 2.6L14.2 7.4" stroke="#2AA36B" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg><span data-i18n="hero_assure3">كل مرحلة موثّقة في سجلّ الحملة</span></li>
+        </ul>
         </div>
       </div>
     </div>
@@ -639,7 +660,8 @@ document.addEventListener('DOMContentLoaded', async function () {
     var c=document.createElementNS('http://www.w3.org/2000/svg','circle');
     c.setAttribute('fill','#D8CDB8');c.setAttribute('opacity',0);puffG.appendChild(c);return c;});
   var hop=$('hsHop'),sq=$('hsSq'),glow=$('hsGlow'),prog=$('hsProg'),sh=$('hsShadow');
-  var sents=story.querySelectorAll('.hs-s');
+  var steps=[].slice.call(document.querySelectorAll('#hsSteps .hs-st'));
+  var curStep=-1;
   var DROP=420,REST=1700,CROUCH=150,FLIGHT=400,HOPW=CROUCH+FLIGHT,
       BACKC=170,BACKF=720;
   var land=[DROP],i;
@@ -722,16 +744,13 @@ document.addEventListener('DOMContentLoaded', async function () {
         c2.setAttribute('opacity',0.4*(1-a2));
       } else c2.setAttribute('opacity',0);
     });
-    sents.forEach(function(el,j4){
-      var s0=land[j4]+110, s1=(j4<3?land[j4]+REST+60:LAP+60);
-      var op=0,ty=10;
-      if(t>=s0&&t<s1){
-        var dt2=t-s0; op=Math.min(1,dt2/300); ty=10*(1-Math.min(1,dt2/300));
-        var out=s1-t; if(out<260) op=Math.min(op,out/260);
-      }
-      el.style.opacity=op;
-      el.style.transform='translateY('+ty+'px)';
-    });
+    var act=-1;
+    for(var j4=0;j4<4;j4++){ if(t>=land[j4]) act=j4; }
+    if(t>=LAP) act=3;
+    if(act!==curStep){
+      curStep=act;
+      steps.forEach(function(el,k){ el.classList.toggle('on', k===act); });
+    }
     glow.style.opacity=0.75+0.25*Math.sin(t/650);
   }
   var reduced=window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -1042,19 +1061,11 @@ function markup(){
  +'</div></div></sect>'
 
  +'<sect><div class="w"><div class="sh"><div class="eb">أرقامنا</div><h2>أرقام حقيقية، بلا تجميل.</h2></div>'
- +'<dl class="nums"><div><dt>مؤثر معتمد على المنصة</dt><dd>447</dd></div>'
- +'<div><dt>متوسط سعر الحملة الواحدة</dt><dd>976 <small>ريال</small></dd></div>'
+ +'<dl class="nums"><div><dt>مؤثر معتمد على المنصة</dt><dd>459</dd></div>'
+ +'<div><dt>متوسط سعر المؤثر الواحد</dt><dd>981 <small>ريال</small></dd></div>'
  +'<div><dt>الأسعار تبدأ من</dt><dd>100 <small>ريال</small></dd></div>'
  +'<div><dt>رسوم إدارة الحملة تنزل إلى</dt><dd>5<small>٪</small></dd></div></dl></div></sect>'
 
- +'<sect style="background:#FAF7F6;border-block:1px solid #EAE3E1"><div class="w">'
- +'<div class="sh"><div class="eb">الأسعار</div><h2>ابدأ مجانًا. وادفع لما تكبر.</h2>'
- +'<p>ما نطلب اشتراك عشان تجرّب. أنشئ حملتك الأولى وأنت على الباقة المجانية.</p></div>'
- +'<div class="tz">'
- +'<a class="pc" href="/plans.html"><div class="ico">🌱</div><h3>جرّب فلفل</h3><div class="fee">العمولة 15٪</div><div class="amt">0 <small>ر.س / شهر</small></div><p>أول حملة لك؟ خلّها عليّ.</p></a>'
- +'<a class="pc hot" href="/plans.html"><div class="ico">🚀</div><h3>فلفل الاحترافي</h3><div class="fee">العمولة 10٪</div><div class="amt">499 <small>ر.س / شهر</small></div><p>حملاتك كثرت؟ أنا لها.</p></a>'
- +'<a class="pc" href="/plans.html"><div class="ico">👑</div><h3>فلفل للأعمال</h3><div class="fee">العمولة 5٪</div><div class="amt">1,499 <small>ر.س / شهر</small></div><p>عندك حملات كثيرة؟ فلفل يشيلها عنك.</p></a>'
- +'</div></div></sect>'
 
  +'<sect><div class="w"><div class="doors">'
  +'<div class="dr"><h3>أنت شركة أو وكالة؟</h3><p>أطلق حملتك بالذكاء الاصطناعي، وخلّ فلفل يدير المؤثرين نيابةً عنك.</p>'
@@ -1105,7 +1116,7 @@ function wire(root){
      mt.appendChild(h);mt.appendChild(hd);mt.appendChild(rw);
      card.appendChild(ph);card.appendChild(mt);grid.appendChild(card);
    });
-   cnt.innerHTML='نعرض <b>'+l.length+'</b> من أصل <b>447</b> مؤثرًا معتمدًا';
+   cnt.innerHTML='نعرض <b>'+l.length+'</b> من أصل <b>459</b> مؤثرًا معتمدًا';
  }
  root.querySelector('#fh-chips').addEventListener('click',function(ev){
    var b=ev.target.closest('.chip');if(!b)return;
@@ -1243,6 +1254,22 @@ function build(){
 
 function go(){css(); if(!build()) setTimeout(go,200);}
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',go);else go();
+})();
+</script>
+<script>
+/* ترتيب الصفحة: الشرح أولاً ثم الأسعار — الزائر يفهم القيمة قبل السعر */
+(function(){
+  function move(){
+    var plans=document.getElementById('plans');
+    var host=document.querySelector('.fh');
+    if(!plans||!host||!host.parentNode) return false;
+    if(plans.previousElementSibling===host) return true;
+    host.parentNode.insertBefore(plans, host.nextSibling);
+    return true;
+  }
+  if(!move()){
+    var n=0, iv=setInterval(function(){ if(move()||++n>60) clearInterval(iv); }, 100);
+  }
 })();
 </script>
 </body>
