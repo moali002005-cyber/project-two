@@ -497,6 +497,26 @@ body {
 }
 .pay-now-btn:hover { transform: translateY(-1px); }
 .pay-now-btn:disabled { opacity: .6; cursor: default; transform: none; }
+/* ===== فاتورة الحملة — نافذة داخل الصفحة بدل نافذة المتصفح ===== */
+.inv-modal { max-width: 460px; padding: 0; overflow: hidden; }
+.inv-head { padding: 28px 28px 20px; border-bottom: 1px solid var(--line); }
+.inv-badge { display: inline-block; font-size: 11.5px; font-weight: 700; letter-spacing: .3px; color: #9A4B06; background: rgba(154,75,6,.09); border-radius: 100px; padding: 5px 12px; margin-bottom: 12px; }
+.inv-head h3 { margin: 0 0 6px; font-size: 19px; line-height: 1.45; }
+.inv-head .sub { margin: 0; font-size: 13px; line-height: 1.7; }
+.inv-rows { padding: 8px 28px 4px; }
+.inv-r { display: flex; align-items: baseline; justify-content: space-between; gap: 16px; padding: 13px 0; border-bottom: 1px dashed var(--line); font-size: 14px; color: var(--ink-soft); }
+.inv-r b { font-weight: 600; color: var(--ink); font-variant-numeric: tabular-nums; white-space: nowrap; }
+.inv-r.inv-total { border-bottom: 0; padding-top: 16px; font-size: 15px; color: var(--ink); font-weight: 600; }
+.inv-r.inv-total b { font-family: var(--font-display); font-size: 22px; color: var(--accent); }
+.inv-note { margin: 4px 28px 0; background: rgba(154,75,6,.07); color: #7F3D05; border-radius: 12px; padding: 12px 14px; font-size: 12.5px; line-height: 1.8; }
+.inv-actions { display: flex; flex-direction: column; gap: 9px; padding: 20px 28px 6px; }
+.inv-btn { border: 0; cursor: pointer; font-family: inherit; font-size: 14.5px; font-weight: 700; padding: 14px 20px; border-radius: 100px; transition: transform .15s, border-color .2s; }
+.inv-btn.pay { color: #fff; background: linear-gradient(135deg, #EE5A44, #C0231A); box-shadow: 0 10px 24px -12px rgba(226,59,46,.6); }
+.inv-btn.pay:hover { transform: translateY(-1px); }
+.inv-btn.ghost { order: 2; background: #fff; color: var(--ink-muted); border: 1px solid var(--line-strong); font-weight: 500; font-size: 13.5px; padding: 11px 20px; }
+.inv-btn.ghost:hover { border-color: var(--line-strong); color: var(--ink); }
+.inv-sec { margin: 0; padding: 12px 28px 24px; font-size: 11.5px; line-height: 1.75; color: var(--ink-faint); text-align: center; }
+@media (max-width: 480px) { .inv-head, .inv-rows, .inv-actions, .inv-sec { padding-inline: 20px; } .inv-note { margin-inline: 20px; } }
 .pay-wait { font-size:13px; font-weight:700; color:#9A4B06; background:rgba(154,75,6,0.09); border-radius:10px; padding:8px 12px; margin-bottom:10px; }
 /* شاشات الجوال: العمودان يتراكمان بدل ما ينضغط نص الحساب لعمود ضيق */
 @media (max-width: 620px) {
@@ -2751,6 +2771,55 @@ function payButtonHtml(campaignId, apps) {
   const waitLine = `<div class="pay-wait">⏸️ الحملة ما انطلقت بعد — بانتظار سداد مستحقاتها.</div>`;
   return `${waitLine}<button class="pay-now-btn" id="pay-btn-${campaignId}" onclick="event.stopPropagation(); startCampaignPayment('${campaignId}')">💳 ادفع الآن</button>`;
 }
+// فاتورة الحملة: نافذة مرتّبة داخل الصفحة بدل نافذة المتصفح الافتراضية
+function invoiceConfirm(o) {
+  return new Promise(function (resolve) {
+    const money = function (n) {
+      return Number(n || 0).toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 2 });
+    };
+    const dealsLine = (o.deals === 1) ? 'صفقة واحدة معتمدة' : toArabic(o.deals || 0) + ' صفقات معتمدة';
+    const el = document.createElement('div');
+    el.className = 'modal-backdrop show';
+    el.id = 'pay-invoice-modal';
+    el.innerHTML =
+      '<div class="modal inv-modal">'
+      + '<div class="inv-head">'
+      +   '<span class="inv-badge">فاتورة حملة</span>'
+      +   '<h3>' + escHtml(o.title || 'حملتك') + '</h3>'
+      +   '<p class="sub">' + dealsLine + ' — تُسدَّد مرة واحدة، وتنطلق الحملة فور تأكيد السداد.</p>'
+      + '</div>'
+      + '<div class="inv-rows">'
+      +   '<div class="inv-r"><span>مستحقات المعلنين</span><b>' + money(o.net) + ' ر.س</b></div>'
+      +   '<div class="inv-r"><span>عمولة المنصة' + (o.commission_pct != null ? ' (' + toArabic(o.commission_pct) + '٪)' : '') + '</span><b>' + money(o.commission) + ' ر.س</b></div>'
+      +   '<div class="inv-r inv-total"><span>الإجمالي المطلوب</span><b>' + money(o.amount) + ' ر.س</b></div>'
+      + '</div>'
+      + (o.pending > 0
+          ? '<div class="inv-note">' + toArabic(o.pending) + (o.pending === 1 ? ' صفقة ما زالت' : ' صفقة ما زالت') + ' بانتظار تعميدك، ولا تدخل في هذه الفاتورة. اعتمدها ثم سدّدها في دفعة تالية.</div>'
+          : '')
+      + '<div class="inv-actions">'
+      +   '<button type="button" class="inv-btn pay" data-inv="1">💳 متابعة إلى صفحة الدفع</button>'
+      +   '<button type="button" class="inv-btn ghost" data-inv="0">إلغاء</button>'
+      + '</div>'
+      + '<p class="inv-sec">الدفع عبر ميسر — مدى والبطاقات وApple Pay. بيانات بطاقتك لا تمرّ على فلفلونسر.</p>'
+      + '</div>';
+    function close(v) {
+      document.removeEventListener('keydown', onKey);
+      if (el.parentNode) el.parentNode.removeChild(el);
+      resolve(v);
+    }
+    function onKey(e) { if (e.key === 'Escape') close(false); }
+    el.addEventListener('click', function (e) {
+      const b = e.target.closest('[data-inv]');
+      if (b) { close(b.getAttribute('data-inv') === '1'); return; }
+      if (e.target === el) close(false);
+    });
+    document.addEventListener('keydown', onKey);
+    document.body.appendChild(el);
+    const payBtn = el.querySelector('.inv-btn.pay');
+    if (payBtn) payBtn.focus();
+  });
+}
+
 async function startCampaignPayment(campaignId) {
   const btn = document.getElementById('pay-btn-' + campaignId);
   const orig2 = btn ? btn.textContent : '';
@@ -2766,10 +2835,14 @@ async function startCampaignPayment(campaignId) {
     });
     const out = await res.json();
     if (!res.ok || !out.url) throw new Error(out.error || 'تعذّر تجهيز الدفع');
-    const _n = Number(out.net || 0).toLocaleString('en-US');
-    const _c = Number(out.commission || 0).toLocaleString('en-US');
-    const _g = Number(out.amount || 0).toLocaleString('en-US');
-    const _ok = confirm('فاتورة حملة\n\nالمجموع المطلوب سداده: ' + _g + ' ر.س\nمنها عمولة المنصة (' + (out.commission_pct != null ? out.commission_pct : '-') + '٪): ' + _c + ' ر.س\n\nنكمل إلى صفحة الدفع؟');
+    const _camp = (myCampaigns || []).find(c => c.id === campaignId);
+    const _pending = (campaignApps[campaignId] || [])
+      .filter(a => a.status === 'closed' && a.brand_approved !== true).length;
+    const _ok = await invoiceConfirm({
+      title: _camp ? _camp.title : 'حملتك',
+      deals: out.deals, net: out.net, commission: out.commission,
+      commission_pct: out.commission_pct, amount: out.amount, pending: _pending
+    });
     if (!_ok) { if (btn) { btn.disabled = false; btn.textContent = orig2; } return; }
     window.location.href = out.url; // صفحة دفع ميسر (مدى / بطاقات / Apple Pay)
   } catch (err) {
