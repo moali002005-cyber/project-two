@@ -1129,15 +1129,6 @@ function markup(){
  +'<div><span class="hint">البحث مجاني · بدون حساب · الأسعار معلنة من المؤثر نفسه</span></div></div>'
  +'</div></sect>'
 
- +'<sect id="fh-how"><div class="w"><div class="sh"><div class="eb">كيف يشتغل</div>'
- +'<h2>ثلاث خطوات، ومن غير ولا مكالمة.</h2>'
- +'<p>فلفل هو مدير حملاتك: يفهم هدفك، يرشّح لك الأنسب، ويفاوض بالعربي نيابةً عنك.</p></div>'
- +'<div class="steps">'
- +'<div class="st"><div class="sn">الخطوة ١</div><h3>اكتب فكرتك بجملة</h3><p>«أبي 5 مؤثرات في الرياض يجرّبون مطعمي». فلفل يبني البريف كامل: الهدف، المخرجات، الميزانية، والمواعيد.</p></div>'
- +'<div class="st"><div class="sn">الخطوة ٢</div><h3>فلفل يرشّح ويفاوض</h3><p>يختار الأنسب من قاعدة المؤثرين، يتواصل معهم، ويتفاوض على السعر والمخرجات — وأنت تشوف كل شي مباشر.</p></div>'
- +'<div class="st"><div class="sn">الخطوة ٣</div><h3>تعتمد وتدفع</h3><p>تراجع المحتوى قبل النشر، تعتمده، ويصرف المستحق للمؤثر. والمتابعة كلها من مكان واحد.</p></div>'
- +'</div></div></sect>'
-
  +'<sect class="ng"><div class="w"><div class="ngg"><div>'
  +'<div class="eb">الميزة اللي ما تلقاها في مكان ثاني</div>'
  +'<h2>وكيل تفاوض يتكلّم عربي سعودي.</h2>'
@@ -1150,12 +1141,6 @@ function markup(){
  +'<div class="msg us"><span class="who">المؤثرة</span>تمام، اتفقنا 👌</div>'
  +'<div class="deal">✓ أُقفلت الصفقة على 750 ريال — وفّرنا 150 ريال</div></div>'
  +'</div></div></sect>'
-
- +'<sect><div class="w"><div class="sh"><div class="eb">أرقامنا</div><h2>أرقام حقيقية، بلا تجميل.</h2></div>'
- +'<dl class="nums"><div><dt>مؤثر معتمد على المنصة</dt><dd>447</dd></div>'
- +'<div><dt>متوسط سعر الحملة الواحدة</dt><dd>976 <small>ريال</small></dd></div>'
- +'<div><dt>الأسعار تبدأ من</dt><dd>100 <small>ريال</small></dd></div>'
- +'<div><dt>رسوم إدارة الحملة تنزل إلى</dt><dd>5<small>٪</small></dd></div></dl></div></sect>'
 
  +'<sect style="background:#FAF7F6;border-block:1px solid #EAE3E1"><div class="w">'
  +'<div class="sh"><div class="eb">الأسعار</div><h2>ابدأ مجانًا. وادفع لما تكبر.</h2>'
@@ -1361,22 +1346,15 @@ function build(){
 
  var a=sect('', head('آلية العمل','فريق كامل… في ضغطة واحدة.','الاجتماع والتنسيق والمتابعة — اختصرناها في زر واحد.')+mtHtml);
 
- var fts='';
- NEW.forEach(function(f){ fts+='<div class="ft"><div class="ic">'+f[0]+'</div><h3>'+f[1]+'</h3><p>'+f[2]+'</p></div>'; });
- var b=sect('', head('جديد','المميزات اللي أضفناها.','')+'<div class="feats">'+fts+'</div>');
-
  var sl='';
  SOON.forEach(function(s){ sl+='<div class="si"><span class="tag">قيد التطوير</span><h3>'+s[0]+'</h3><p>'+s[1]+'</p></div>'; });
  var c=sect('soon', head('مستقبل إدارة الحملات','الحملة تدير نفسها، وأنت تعتمد فقط.',
    'اليوم فلفل يجهّز ويفاوض ويتابع. والقادم أن المنصة تسحب النتائج وتحجز المبالغ وتبني لك سجلّ مؤثريك — بدون تدخل منك.')
    +'<div class="sl">'+sl+'</div>');
 
- var how=document.getElementById('fh-how');
- if(how&&how.parentNode){ how.parentNode.insertBefore(a,how); how.parentNode.insertBefore(b,how.nextSibling); }
- else { host.insertBefore(a,host.firstChild); host.appendChild(b); }
-
  var ng=host.querySelector('.ng');
- if(ng&&ng.parentNode) ng.parentNode.insertBefore(c,ng.nextSibling); else host.appendChild(c);
+ if(ng&&ng.parentNode){ ng.parentNode.insertBefore(a,ng); ng.parentNode.insertBefore(c,ng.nextSibling); }
+ else { host.insertBefore(a,host.firstChild); host.appendChild(c); }
  return true;
 }
 
