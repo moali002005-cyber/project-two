@@ -1351,10 +1351,10 @@ function build(){
   +'<div class="crail" id="mtDots"></div>'
   +'<div class="cctl"><button type="button" id="mtAgain">من البداية</button>'
   +'<button type="button" id="mtHold">إيقاف</button></div>'
-  +'<div class="cmp"><span class="cmp-k"><i></i>مقارنة الأحجام</span>'
-  +'<h3>حملة بخمسة معلنين… أو بمئتين. تشتغل مرة وحدة.</h3>'
-  +'<svg id="mtCmp" viewBox="0 0 900 396" preserveAspectRatio="xMidYMid meet" aria-hidden="true"></svg>'
-  +'<p>كل صف حملة بحجم مختلف: على اليمين كم معلن فيها، وعلى اليسار كم مرة تشتغل أنت. الجواب على اليسار ما تغيّر ولا مرة — لأن الوكيل يفاوض الجميع بالتوازي، مو واحد بعد واحد.</p>'
+  +'<div class="cmp"><span class="cmp-k"><i></i>الوقت</span>'
+  +'<h3>شلنا الوقت من المعادلة.</h3>'
+  +'<svg id="mtCmp" viewBox="0 0 900 360" preserveAspectRatio="xMidYMid meet" aria-hidden="true"></svg>'
+  +'<p>الوكيل يفاوض الجميع بالتوازي، مو واحد بعد واحد — فزيادة المعلنين ما تضيف عليك وقتًا. ولهذا ما نقيس الحملة بالساعات: ما بقي فيها وقت يتغيّر أصلاً.</p>'
   +'</div>'
   +'</div>';
 
@@ -1593,71 +1593,96 @@ function mtWire(){
  E('rect',{x:-78,y:-18,width:156,height:36,rx:18,fill:'#E8F7EE',stroke:'#BFE6CF'},done);
  E('text',{x:0,y:5,'text-anchor':'middle','font-size':'13.5','font-weight':'900',fill:'#0A8A3C'},done).textContent='الحملة اكتملت';
 
- /* ---------- لوحة الوقت: حجم الحملة يكبر، وشغلك ثابت ---------- */
+ /* ---------- الوقت يخرج من المعادلة ---------- */
  var AR='٠١٢٣٤٥٦٧٨٩';
  function toAr(n){ return String(n).replace(/[0-9]/g,function(d){return AR[+d];}); }
- var SIZES=[5,10,15,20,30,50,100,200];
  var cmpSvg=document.getElementById('mtCmp'), cmpFrame=function(){};
  if(cmpSvg){
-  var AXIS=430, Y0=88, RH=20, RG=34, MINE=98, MX=AXIS-8, MINX=MX-MINE, BW=358;
+  var X0=846, X1=104, YB=286, YT=64;
+  function xn(n){ return X0-(X0-X1)*(n-5)/195; }
   var cd=E('defs',{},cmpSvg);
-  var bgr=E('linearGradient',{id:'cmpBrand',gradientUnits:'userSpaceOnUse',x1:AXIS+8,y1:'0',x2:AXIS+8+BW,y2:'0'},cd);
+  var bgr=E('linearGradient',{id:'cmpBrand',gradientUnits:'userSpaceOnUse',x1:X0,y1:'0',x2:X1,y2:'0'},cd);
   [[0,'#0DA64F'],[0.24,'#F5B417'],[0.5,'#E23B2E'],[0.76,'#3777BB'],[1,'#7C51A0']].forEach(function(o){
    E('stop',{offset:(o[0]*100)+'%','stop-color':o[1]},bgr); });
-  var lbA=E('text',{x:MX,y:56,'text-anchor':'end','font-size':'13.5','font-weight':'800',fill:'#8A807B'},cmpSvg);
-  lbA.textContent='كم مرة تشتغل أنت؟';
-  var lbB=E('text',{x:AXIS+10,y:56,'text-anchor':'start','font-size':'13.5','font-weight':'800',fill:'#8A807B'},cmpSvg);
-  lbB.textContent='كم معلن في الحملة؟';
-  E('line',{x1:AXIS,y1:68,x2:AXIS,y2:Y0+7*RG+RH+10,stroke:'#EFE7E4','stroke-width':'1.3'},cmpSvg);
-  var rows=SIZES.map(function(n,i){
-   var y=Y0+i*RG, g=E('g',{opacity:'0'},cmpSvg);
-   E('rect',{x:AXIS+8,y:y+RH/2-1.5,width:BW,height:3,rx:1.5,fill:'#F7F2EF'},g);
-   var big=E('rect',{x:AXIS+8,y:y,width:0,height:RH,rx:RH/2,fill:'url(#cmpBrand)'},g);
-   var mg=E('g',{},g);
-   var mine=E('rect',{x:MX,y:y,width:0,height:RH,rx:RH/2,fill:INK},mg);
-   var mtx=E('text',{x:MX-MINE/2,y:y+RH-6,'text-anchor':'middle','font-size':'12','font-weight':'900',fill:'#fff',opacity:'0'},mg);
-   mtx.textContent='مرة وحدة';
-   var num=E('text',{x:AXIS+8,y:y+RH-2.5,'text-anchor':'start','font-size':(i===7?'15':'13.5'),'font-weight':(i===7?'900':'800'),fill:(i===7?INK:'#A99E99'),opacity:'0'},g);
-   num.textContent=toAr(n);
-   return {g:g,big:big,mine:mine,mtx:mtx,num:num,y:y,w:16+(BW-16)*(n/200)};
+
+  var gOld=E('g',{},cmpSvg), gAx=E('g',{},cmpSvg), gPlot=E('g',{},cmpSvg);
+  var gNew=E('g',{},gPlot), gEnd=E('g',{},gPlot);
+
+  var yax=E('line',{x1:X0,y1:YB,x2:X0,y2:YB,stroke:'#E3D9D5','stroke-width':'1.6','stroke-linecap':'round'},gAx);
+  var xax=E('line',{x1:X0,y1:YB,x2:X0,y2:YB,stroke:'#E3D9D5','stroke-width':'1.6','stroke-linecap':'round'},gPlot);
+  var ylab=E('text',{x:X0+8,y:YT-16,'text-anchor':'end','font-size':'15','font-weight':'900',fill:'#8A807B',opacity:'0'},gAx);
+  ylab.textContent='الوقت';
+  var ystrike=E('line',{x1:X0+10,y1:YT-21,x2:X0+10,y2:YT-21,stroke:R,'stroke-width':'2.8','stroke-linecap':'round',opacity:'0'},gAx);
+  var xlab=E('text',{x:(X0+X1)/2,y:YB+58,'text-anchor':'middle','font-size':'13.5','font-weight':'800',fill:'#8A807B',opacity:'0'},gPlot);
+  xlab.textContent='عدد المعلنين في الحملة';
+  var TK=[5,50,100,200], ticks=TK.map(function(n){
+   var g=E('g',{opacity:'0'},gPlot);
+   E('line',{x1:xn(n),y1:YB,x2:xn(n),y2:YB+7,stroke:'#E3D9D5','stroke-width':'1.4'},g);
+   var t=E('text',{x:xn(n),y:YB+28,'text-anchor':'middle','font-size':'13','font-weight':'800',fill:'#A99E99'},g);
+   t.textContent=toAr(n);
+   return g;
   });
-  var edge=E('line',{x1:MINX,y1:Y0,x2:MINX,y2:Y0,stroke:INK,'stroke-width':'2.4','stroke-linecap':'round',opacity:'0'},cmpSvg);
-  var YE=Y0+7*RG+RH, MIDY=(Y0+YE)/2;
-  var tag=E('g',{opacity:'0'},cmpSvg);
-  E('path',{d:'M322 '+Y0+'H310V'+YE+'H322M310 '+MIDY.toFixed(1)+'H298',
-   fill:'none',stroke:'#D9CFCA','stroke-width':'1.4','stroke-linecap':'round','stroke-linejoin':'round'},tag);
-  E('text',{x:286,y:(MIDY-3).toFixed(1),'text-anchor':'end','font-size':'16.5','font-weight':'900',fill:INK},tag)
-   .textContent='الجواب ما تغيّر ولا مرة';
-  E('text',{x:286,y:(MIDY+23).toFixed(1),'text-anchor':'end','font-size':'13.5','font-weight':'700',fill:'#A99E99'},tag)
-   .textContent='تنشئ الحملة، وتعتمد';
-  var tag2=E('g',{opacity:'0'},cmpSvg);
-  E('text',{x:AXIS+8,y:YE+30,'text-anchor':'start','font-size':'13.5','font-weight':'700',fill:'#B0A29D'},tag2)
-   .textContent='وهنا الفرق أربعون ضعفًا بين أصغر حملة وأكبرها';
-  var CL=7.4;
+
+  var OD='M'+xn(5)+' '+(YB-18)+'C'+(xn(5)-190)+' '+(YB-26)+','+(xn(100)+70)+' '+(YB-112)+','+xn(100)+' '+(YB-152)
+        +'S'+(xn(200)+80)+' '+(YT+36)+','+xn(200)+' '+YT;
+  var oldp=E('path',{d:OD,fill:'none',stroke:'#CDB4AE','stroke-width':'2.8','stroke-linecap':'round'},gOld);
+  var OL=oldp.getTotalLength();
+  oldp.setAttribute('stroke-dasharray',OL); oldp.setAttribute('stroke-dashoffset',OL);
+  var odot=E('circle',{r:5,fill:'#C9AFA9',opacity:'0'},gOld);
+  var olab=E('text',{x:xn(200)+18,y:YT-2,'text-anchor':'start','font-size':'13.5','font-weight':'800',fill:'#B9A29C',opacity:'0'},gOld);
+  olab.textContent='الطريقة القديمة';
+
+  var YF=YB-18;
+  var newp=E('path',{d:'M'+xn(5)+' '+YF+'L'+xn(200)+' '+YF,fill:'none',stroke:'url(#cmpBrand)','stroke-width':'3.4','stroke-linecap':'round'},gNew);
+  var NL=Math.abs(xn(200)-xn(5));
+  newp.setAttribute('stroke-dasharray',NL); newp.setAttribute('stroke-dashoffset',NL);
+  var ndot=E('circle',{r:5.5,fill:'#7C51A0',opacity:'0'},gNew);
+  var nlab=E('text',{x:xn(200)+18,y:YF-14,'text-anchor':'start','font-size':'13.5','font-weight':'900',fill:INK,opacity:'0'},gNew);
+  nlab.textContent='مع فلفلونسر';
+
+  var endg=E('g',{opacity:'0'},gEnd);
+  E('text',{x:(X0+X1)/2,y:YF-46,'text-anchor':'middle','font-size':'17','font-weight':'900',fill:INK},endg)
+   .textContent='خط مستقيم — ما بقي وقت يتغيّر.';
+  E('text',{x:(X0+X1)/2,y:YF-22,'text-anchor':'middle','font-size':'13.5','font-weight':'700',fill:'#A99E99'},endg)
+   .textContent='ولذلك ما عاد فيه محور اسمه الوقت';
+
+  var CL=10.4;
   cmpFrame=function(u){
-   var fo=1-seg(u,6.6,7.2);
-   rows.forEach(function(rw,i){
-    var t0r=0.30+i*0.34, k=out5(seg(u,t0r,t0r+0.55));
-    rw.g.setAttribute('opacity',(out3(seg(u,t0r,t0r+0.22))*fo).toFixed(2));
-    rw.big.setAttribute('width',(rw.w*k).toFixed(1));
-    rw.mine.setAttribute('width',(MINE*k).toFixed(1));
-    rw.mine.setAttribute('x',(MX-MINE*k).toFixed(1));
-    rw.mtx.setAttribute('opacity',(out3(seg(u,t0r+0.34,t0r+0.62))*fo).toFixed(2));
-    rw.num.setAttribute('x',(AXIS+8+rw.w*k+12).toFixed(1));
-    rw.num.setAttribute('opacity',(out3(seg(u,t0r+0.4,t0r+0.7))*fo).toFixed(2));
-   });
-   var ek=out3(seg(u,3.35,4.25));
-   edge.setAttribute('opacity',(ek>0?fo:0).toFixed(2));
-   edge.setAttribute('y2',(Y0+(7*RG+RH)*ek).toFixed(1));
-   var tk=out5(seg(u,4.30,4.75));
-   tag.setAttribute('opacity',(tk*fo).toFixed(2));
-   tag.setAttribute('transform','translate(0,'+((1-tk)*7).toFixed(1)+')');
-   var t2k=out5(seg(u,4.65,5.10));
-   tag2.setAttribute('opacity',(t2k*0.95*fo).toFixed(2));
-   tag2.setAttribute('transform','translate(0,'+((1-t2k)*7).toFixed(1)+')');
+   var fo=1-seg(u,9.6,10.3);
+   var ay=out3(seg(u,0.15,0.75)), ax=out3(seg(u,0.35,1.05));
+   var gone=out3(seg(u,6.15,6.95));
+   xax.setAttribute('x2',lerp(X0,X1-6,ax).toFixed(1));
+   xlab.setAttribute('opacity',(out3(seg(u,1.0,1.4))*fo).toFixed(2));
+   ticks.forEach(function(g,i){ g.setAttribute('opacity',(out3(seg(u,1.0+i*0.12,1.35+i*0.12))*fo).toFixed(2)); });
+   var ok=out3(seg(u,1.45,3.30));
+   oldp.setAttribute('stroke-dashoffset',(OL*(1-ok)).toFixed(1));
+   var op=oldp.getPointAtLength(OL*ok);
+   odot.setAttribute('cx',op.x.toFixed(1)); odot.setAttribute('cy',op.y.toFixed(1));
+   odot.setAttribute('opacity',((ok>0&&ok<1?1:0)*(1-gone)*fo).toFixed(2));
+   olab.setAttribute('opacity',(out3(seg(u,3.05,3.45))*(1-gone)*fo).toFixed(2));
+   gOld.setAttribute('opacity',((1-gone)*fo).toFixed(3));
+   var yl=out3(seg(u,1.55,2.05));
+   var st=out3(seg(u,5.40,6.05));
+   ylab.setAttribute('opacity',(yl*(1-gone)*fo).toFixed(2));
+   ystrike.setAttribute('opacity',(st>0?((1-gone)*fo):0).toFixed(2));
+   ystrike.setAttribute('x2',(X0+10-70*st).toFixed(1));
+   ystrike.setAttribute('y2',(YT-21).toFixed(1));
+   yax.setAttribute('opacity',((1-gone)*fo).toFixed(3));
+   yax.setAttribute('y2',lerp(lerp(YB,YT-6,ay),YB,gone).toFixed(1));
+   var nk=out3(seg(u,3.55,4.85));
+   newp.setAttribute('stroke-dashoffset',(NL*(1-nk)).toFixed(1));
+   ndot.setAttribute('cx',lerp(xn(5),xn(200),nk).toFixed(1)); ndot.setAttribute('cy',YF);
+   ndot.setAttribute('opacity',((nk>0&&nk<1?1:0)*fo).toFixed(2));
+   newp.setAttribute('opacity',fo.toFixed(2));
+   nlab.setAttribute('opacity',(out3(seg(u,4.60,5.00))*(1-out3(seg(u,6.7,7.1)))*fo).toFixed(2));
+   newp.setAttribute('stroke-width',(3.4+2.4*out3(seg(u,6.6,7.3))).toFixed(2));
+   gPlot.setAttribute('transform','translate(0,'+(-112*out5(seg(u,6.35,7.25))).toFixed(1)+')');
+   var ek=out5(seg(u,6.95,7.55));
+   endg.setAttribute('opacity',(ek*fo).toFixed(2));
+   endg.setAttribute('transform','translate(0,'+((1-ek)*8).toFixed(1)+')');
   };
  }
- var CL=7.4;
+ var CL=10.4;
 
  var now=E('g',{opacity:'0'},svg);
  E('rect',{x:700,y:130,width:104,height:32,rx:16,fill:'#E8F7EE',stroke:'#BFE6CF'},now);
