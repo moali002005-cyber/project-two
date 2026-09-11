@@ -1848,3 +1848,28 @@ Object.assign(window.I18N_TEXT, {
  "فلفلونسر — كيف تعمل المنصة": "Flfluencer — how the platform works",
  "رسم متحرّك يشرح خطوات العمل": "An animation walking through how it works"
 });
+
+/* ===== قائمة التنقّل العلوية ===== */
+Object.assign(window.I18N_TEXT, {
+ "للشركات": "For companies",
+ "ابحث عن المؤثرين": "Find creators",
+ "بالمدينة والمنصة والسعر وعدد المتابعين": "By city, channel, price and follower count",
+ "بريف بالذكاء الاصطناعي": "AI-written brief",
+ "فكرة واحدة تصير حملة كاملة": "One idea becomes a full campaign",
+ "وكيل التفاوض": "The negotiation agent",
+ "يفاوض بالعربي نيابةً عنك": "It negotiates in Arabic on your behalf",
+ "الاعتماد والدفع": "Approval and payment",
+ "تعتمد المحتوى قبل صرف المستحق": "You approve the content before the payment is released",
+ "المطاعم والكافيهات": "Restaurants and cafés",
+ "حملات زيارات وتجربة": "Visit and tasting campaigns",
+ "المتاجر الإلكترونية": "Online stores",
+ "حملات منتجات ومحتوى مصوّر": "Product campaigns and filmed content",
+ "الوكالات": "Agencies",
+ "أدر حملات عملائك من لوحة واحدة": "Run all your clients' campaigns from one dashboard",
+ "حملات المنتجات": "Product campaigns",
+ "ترسل منتجك، والمؤثر يجرّبه ويصوّره": "You send your product, the creator tries it and films it",
+ "حملات الزيارات": "Visit campaigns",
+ "زيارة موقعك وتغطيتها": "A visit to your location, covered on camera",
+ "محتوى مصوّر (UGC)": "User-generated content (UGC)",
+ "محتوى جاهز لإعلاناتك المدفوعة": "Ready-made content for your paid ads"
+});
