@@ -1569,7 +1569,7 @@ function mtWire(){
  var halo=E('ellipse',{rx:150,ry:104,fill:'url(#flyH)',filter:'url(#flyBl)',opacity:'0'},gHalo);
  var bloom=E('circle',{cx:END[0]+40,cy:END[1],r:190,fill:'url(#flyB)',opacity:'0'},gHalo);
  var MO=[];
- for(var i=0;i<26;i++){
+ for(var i=0;i<11;i++){
   var mx=40+Math.random()*820,my=40+Math.random()*350,mr=0.9+Math.random()*2.2;
   MO.push({e:E('circle',{cx:mx,cy:my,r:mr,fill:[R,Y,G,B,P][i%5],opacity:'0'},gMote),
    x:mx,y:my,a:Math.random()*6.28,sp:0.18+Math.random()*0.5,am:8+Math.random()*20,ph:Math.random()*6.28});
@@ -1588,34 +1588,25 @@ function mtWire(){
  E('rect',{x:-78,y:-18,width:156,height:36,rx:18,fill:'#E8F7EE',stroke:'#BFE6CF'},done);
  E('text',{x:0,y:5,'text-anchor':'middle','font-size':'13.5','font-weight':'900',fill:'#0A8A3C'},done).textContent='الحملة اكتملت';
 
- /* ---------- HUD: العدد يتغيّر… ووقتك ما يتغيّر ---------- */
+ /* ---------- الخاتمة: لوحة المقارنة وحدها ---------- */
  var AR='٠١٢٣٤٥٦٧٨٩';
  function toAr(n){ return String(n).replace(/[0-9]/g,function(d){return AR[+d];}); }
  var SIZES=[5,10,15,20,30,50,100,200];
- var gHud=E('g',{},svg);
- function chip(x,title){
-  var g=E('g',{opacity:'0'},gHud), R0=x+230;
-  E('rect',{x:x,y:10,width:230,height:84,rx:20,fill:'#fff',stroke:'#EDE4E0'},g);
-  E('text',{x:R0-20,y:36,'text-anchor':'end','font-size':'12.5','font-weight':'700',fill:'#A99E99'},g).textContent=title;
-  E('rect',{x:x+20,y:74,width:190,height:7,rx:3.5,fill:'#F2ECE9'},g);
-  return {g:g,R:R0-20,x:x};
- }
- var cT=chip(26,'وقتك أنت'), cN=chip(660,'عدد المعلنين');
- var tV=E('text',{x:cT.R,y:64,'text-anchor':'end','font-size':'19','font-weight':'900',fill:INK},cT.g);
- tV.textContent='ضغطة وحدة';
- var tBar=E('rect',{x:cT.R-58,y:74,width:58,height:7,rx:3.5,fill:INK},cT.g);
- var nU=E('text',{x:cN.R,y:64,'text-anchor':'end','font-size':'14','font-weight':'700',fill:'#A99E99'},cN.g);
- nU.textContent='معلن';
- var nV=E('text',{x:cN.R,y:66,'text-anchor':'end','font-size':'26','font-weight':'900',fill:R},cN.g);
- var nBar=E('rect',{x:cN.R-10,y:74,width:10,height:7,rx:3.5,fill:R},cN.g);
- var hudB=E('g',{opacity:'0'},gHud);
- E('text',{x:450,y:36,'text-anchor':'middle','font-size':'12','font-weight':'700',fill:'#C6BAB5'},hudB).textContent='المراحل';
- var hudD=[];
- for(var i=0;i<5;i++){
-  E('circle',{cx:490-i*20,cy:58,r:6,fill:'none',stroke:'#E8E1DD','stroke-width':'1.6'},hudB);
-  hudD.push(E('circle',{cx:490-i*20,cy:58,r:6,fill:SN[i][1],opacity:'0'},hudB));
- }
- var now=E('g',{opacity:'0'},gHud);
+ var gEnd=E('g',{opacity:'0'},svg);
+ E('line',{x1:450,y1:112,x2:450,y2:286,stroke:'#EFE7E4','stroke-width':'1.4','stroke-dasharray':'2 8'},gEnd);
+ var cR=640, cL=250;
+ E('text',{x:cR,y:126,'text-anchor':'middle','font-size':'14','font-weight':'700',fill:'#A99E99'},gEnd).textContent='عدد المعلنين';
+ var eNum=E('text',{x:cR,y:214,'text-anchor':'middle','font-size':'74','font-weight':'900',fill:R},gEnd);
+ E('text',{x:cR,y:246,'text-anchor':'middle','font-size':'15','font-weight':'700',fill:'#A99E99'},gEnd).textContent='معلن في الحملة';
+ E('rect',{x:cR-120,y:268,width:240,height:8,rx:4,fill:'#F2ECE9'},gEnd);
+ var eBar=E('rect',{x:cR+120,y:268,width:0,height:8,rx:4,fill:R},gEnd);
+ E('text',{x:cL,y:126,'text-anchor':'middle','font-size':'14','font-weight':'700',fill:'#A99E99'},gEnd).textContent='وقتك أنت';
+ var eFix=E('text',{x:cL,y:206,'text-anchor':'middle','font-size':'40','font-weight':'900',fill:INK},gEnd);
+ eFix.textContent='ضغطة وحدة';
+ E('text',{x:cL,y:246,'text-anchor':'middle','font-size':'15','font-weight':'700',fill:'#A99E99'},gEnd).textContent='مهما كان العدد';
+ E('rect',{x:cL-120,y:268,width:240,height:8,rx:4,fill:'#F2ECE9'},gEnd);
+ E('rect',{x:cL+80,y:268,width:40,height:8,rx:4,fill:INK},gEnd);
+ var now=E('g',{opacity:'0'},svg);
  E('rect',{x:700,y:130,width:104,height:32,rx:16,fill:'#E8F7EE',stroke:'#BFE6CF'},now);
  E('text',{x:752,y:151,'text-anchor':'middle','font-size':'12.5','font-weight':'900',fill:'#0A8A3C'},now).textContent='بدأت الآن';
 
@@ -1643,7 +1634,7 @@ function mtWire(){
  var capsEl=document.getElementById('mtCaps'),dotsEl=document.getElementById('mtDots');
  var capEls=CAP.map(function(c,i){var d=document.createElement('div');d.className='ccap'+(i===0?' on':'');
   d.innerHTML='<h3>'+c.h+'</h3><p>'+c.p+'</p>';capsEl.appendChild(d);return d;});
- var TS=[2.35,4.15,5.95,7.75,9.55], T0=1.05, T1=11.35, LOOP=15.4;
+ var TS=[2.35,4.15,5.95,7.75,9.55], T0=1.05, T1=11.35, LOOP=18.6;
  var dotEls=SN.map(function(s,i){var b=document.createElement('button');b.type='button';b.className='cdot';
   b.setAttribute('aria-label',s[0]);b.addEventListener('click',function(){seek(TS[i]-0.55);});
   dotsEl.appendChild(b);return b;});
@@ -1665,7 +1656,7 @@ function mtWire(){
   MO.forEach(function(m,i){
    var dx=Math.sin(t*m.sp+m.ph)*m.am, dy=Math.cos(t*m.sp*0.74+m.ph)*m.am*0.7;
    m.e.setAttribute('cx',(m.x+dx).toFixed(1)); m.e.setAttribute('cy',(m.y+dy).toFixed(1));
-   m.e.setAttribute('opacity',(0.10+0.20*(0.5+0.5*Math.sin(t*1.5+i))).toFixed(2));
+   m.e.setAttribute('opacity',(0.07+0.13*(0.5+0.5*Math.sin(t*1.5+i))).toFixed(2));
   });
   /* launch ui */
   btn.setAttribute('opacity',(out3(seg(t,0.05,0.4))*(1-seg(t,0.95,1.25))).toFixed(2));
@@ -1724,16 +1715,11 @@ function mtWire(){
    s.g.setAttribute('transform','translate('+ST[i][0]+','+ST[i][1]+') scale('
      +(1+0.16*Math.sin(Math.PI*pop)).toFixed(3)+')');
   });
-  done.setAttribute('opacity',(out5(seg(t,T1+2.3,T1+2.8))*(1-seg(t,LOOP-0.9,LOOP-0.25))).toFixed(2));
-  /* camera: breathes and drifts with her */
-  if(camx===null||Math.abs(px-camx)>320){camx=px;camy=py;}
-  camx+=(px-camx)*0.05; camy+=(py-camy)*0.05;
-  var back=out3(seg(t,T1-0.1,T1+0.9));
-  var kz=1+0.075*out3(seg(t,T0,T0+0.9))*(1-back);
-  var fx=lerp(450,camx,0.26*(1-back)), fy=lerp(200,camy,0.20*(1-back));
-  gWorld.setAttribute('transform','translate(450,200) scale('+kz.toFixed(4)+') translate('
-   +(-fx).toFixed(1)+','+(-fy).toFixed(1)+')');
-  gMote.setAttribute('transform','translate('+((450-fx)*0.22).toFixed(1)+','+((200-fy)*0.22).toFixed(1)+')');
+  done.setAttribute('opacity',(out5(seg(t,T1+0.4,T1+0.9))*(1-seg(t,T1+1.5,T1+2.0))).toFixed(2));
+  /* الرحلة تخفت لما تجي الخاتمة */
+  var fade=out3(seg(t,T1+1.4,T1+2.1));
+  gWorld.setAttribute('opacity',(1-fade*0.965).toFixed(3));
+  gMote.setAttribute('opacity',(1-fade).toFixed(3));
   /* station micro-events */
   EV.forEach(function(fn,i){ fn(t-TS[i]); });
   /* finale: light runs through the whole trail */
@@ -1752,36 +1738,23 @@ function mtWire(){
    if(w>0&&w<1){ s.ring.setAttribute('opacity',(0.5*(1-w)).toFixed(2));
     s.ring.setAttribute('r',(25+40*out3(w)).toFixed(1)); }
   });
-  /* HUD */
-  var hz=1+0.05*Math.sin(Math.PI*cl(seg(t,T1+0.5,T1+1.5)));
-  cT.g.setAttribute('opacity',out3(seg(t,T0,T0+0.45)).toFixed(2));
-  cT.g.setAttribute('transform','translate('+(cT.x+115)+',52) scale('+hz.toFixed(3)+') translate('+(-cT.x-115)+',-52)');
-  cN.g.setAttribute('opacity',out3(seg(t,T0+0.5,T0+0.95)).toFixed(2));
-  cN.g.setAttribute('transform','translate('+(cN.x+115)+',52) scale('+hz.toFixed(3)+') translate('+(-cN.x-115)+',-52)');
-  var si=0, tStep=(T1-0.35-(T0+0.7))/(SIZES.length-1);
-  for(var q=0;q<SIZES.length;q++) if(t>=T0+0.7+q*tStep) si=q;
-  var sz=SIZES[si], pop=1+0.22*(1-cl((t-(T0+0.7+si*tStep))/0.26));
-  nV.textContent=toAr(sz);
-  var nw=0;
-  try{ nw=nV.getComputedTextLength(); }catch(e){}
-  nV.setAttribute('x',cN.R.toFixed(1));
-  nU.setAttribute('x',(cN.R-nw-9).toFixed(1));
-  nV.setAttribute('transform','translate('+cN.R+',58) scale('+pop.toFixed(3)+') translate('+(-cN.R)+',-58)');
-  var bw=190*sz/200;
-  nBar.setAttribute('width',bw.toFixed(1)); nBar.setAttribute('x',(cN.R-bw).toFixed(1));
-  tBar.setAttribute('width','58'); tBar.setAttribute('x',(cT.R-58).toFixed(1));
-  hudB.setAttribute('opacity',out3(seg(t,T0+0.2,T0+0.7)).toFixed(2));
-  hudD.forEach(function(d,i){
-   var k=out5(seg(t,TS[i],TS[i]+0.34));
-   d.setAttribute('opacity',k.toFixed(2));
-   d.setAttribute('r',(6*lerp(0.6,1,k)).toFixed(2));
-  });
+  /* الخاتمة: العدد يتغيّر، والوقت ثابت */
+  var E0=T1+1.7;
+  gEnd.setAttribute('opacity',out3(seg(t,E0,E0+0.6)).toFixed(3));
+  var si=0, st=0.34;
+  for(var q=0;q<SIZES.length;q++) if(t>=E0+0.7+q*st) si=q;
+  if(t<E0+0.7) si=0;
+  var sz=SIZES[si], pop=1+0.30*(1-cl((t-(E0+0.7+si*st))/0.22));
+  eNum.textContent=toAr(sz);
+  eNum.setAttribute('transform','translate('+cR+',196) scale('+pop.toFixed(3)+') translate('+(-cR)+',-196)');
+  var bw=240*sz/200;
+  eBar.setAttribute('width',bw.toFixed(1)); eBar.setAttribute('x',(cR+120-bw).toFixed(1));
   var nn=seg(t,0.72,1.9);
   now.setAttribute('opacity',(nn>0&&nn<1?out5(seg(t,0.72,0.95))*(1-seg(t,1.5,1.9)):0).toFixed(2));
   now.setAttribute('transform','translate(0,'+((1-out5(seg(t,0.72,0.98)))*8).toFixed(1)+')');
   /* caption */
   var ci=0;
-  if(t>=T1-0.15) ci=6; else { for(var i=0;i<TS.length;i++) if(t>=TS[i]-0.30) ci=i+1; }
+  if(t>=T1+1.5) ci=6; else { for(var i=0;i<TS.length;i++) if(t>=TS[i]-0.30) ci=i+1; }
   setCap(ci);
  }
 
