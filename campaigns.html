@@ -497,6 +497,9 @@ body {
 }
 .pay-now-btn:hover { transform: translateY(-1px); }
 .pay-now-btn:disabled { opacity: .6; cursor: default; transform: none; }
+.pay-now-btn.soft { background: #fff; color: var(--ink-soft); border: 1px solid var(--line-strong); box-shadow: none; font-weight: 600; }
+.pay-now-btn.soft:hover { color: var(--ink); border-color: var(--ink-faint); }
+.pay-later { font-size:13px; font-weight:700; color:#0B6B4F; background:rgba(11,107,79,0.08); border-radius:10px; padding:8px 12px; margin-bottom:10px; }
 /* ===== فاتورة الحملة — نافذة داخل الصفحة بدل نافذة المتصفح ===== */
 .inv-modal { max-width: 460px; padding: 0; overflow: hidden; }
 .inv-head { padding: 28px 28px 20px; border-bottom: 1px solid var(--line); }
@@ -2758,6 +2761,12 @@ function showPendingScreen(status) {
 }
 
 // ============ الدفع عبر ميسر: مستحقات الصفقات المعتمدة ============
+// اتفاق دفع آجل: الحملة تنطلق الآن، وتُسدَّد مستحقاتها بعد انتهائها
+function isPostpaidCampaign(campaignId) {
+  const c = (myCampaigns || []).find(x => x.id === campaignId);
+  return !!(c && c.payment_terms === 'postpaid');
+}
+
 function payUnpaidApps(apps) {
   return (apps || []).filter(a => a.status === 'closed' && a.brand_approved === true && !a.platform_paid);
 }
@@ -2768,6 +2777,10 @@ function payButtonHtml(campaignId, apps) {
   const unpaid = payUnpaidApps(apps);
   if (!unpaid.length) return '';
   // التفاصيل تظهر في الفاتورة عند الدفع — هنا زر واحد فقط
+  if (isPostpaidCampaign(campaignId)) {
+    return `<div class="pay-later">🤝 اتفاق دفع آجل — حملتك تعمل الآن، وتُسدَّد مستحقاتها بعد انتهائها.</div>`
+      + `<button class="pay-now-btn soft" id="pay-btn-${campaignId}" onclick="event.stopPropagation(); startCampaignPayment('${campaignId}')">سدّد الآن مبكرًا</button>`;
+  }
   const waitLine = `<div class="pay-wait">⏸️ الحملة ما انطلقت بعد — بانتظار سداد مستحقاتها.</div>`;
   return `${waitLine}<button class="pay-now-btn" id="pay-btn-${campaignId}" onclick="event.stopPropagation(); startCampaignPayment('${campaignId}')">💳 ادفع الآن</button>`;
 }
@@ -2800,6 +2813,7 @@ function invoiceConfirm(o) {
       +   '<button type="button" class="inv-btn pay" data-inv="1">💳 متابعة إلى صفحة الدفع</button>'
       +   '<button type="button" class="inv-btn ghost" data-inv="0">إلغاء</button>'
       + '</div>'
+      + (o.postpaid ? '<p class="inv-sec">حملتك على اتفاق دفع آجل — هذا سداد مبكر اختياري، ولا شيء يتوقف لو أجّلته.</p>' : '')
       + '<p class="inv-sec">الدفع عبر ميسر — مدى والبطاقات وApple Pay. بيانات بطاقتك لا تمرّ على فلفلونسر.</p>'
       + '</div>';
     function close(v) {
@@ -2841,7 +2855,8 @@ async function startCampaignPayment(campaignId) {
     const _ok = await invoiceConfirm({
       title: _camp ? _camp.title : 'حملتك',
       deals: out.deals, net: out.net, commission: out.commission,
-      commission_pct: out.commission_pct, amount: out.amount, pending: _pending
+      commission_pct: out.commission_pct, amount: out.amount, pending: _pending,
+      postpaid: isPostpaidCampaign(campaignId)
     });
     if (!_ok) { if (btn) { btn.disabled = false; btn.textContent = orig2; } return; }
     window.location.href = out.url; // صفحة دفع ميسر (مدى / بطاقات / Apple Pay)
@@ -3935,7 +3950,7 @@ function renderCellDetail(a) {
   const isRejected = a.status === 'rejected';
   const isClosed = a.status === 'closed';
   const isApproved = isClosed && a.brand_approved === true;
-  const awaitingLaunch = isApproved && a.platform_paid !== true;
+  const awaitingLaunch = isApproved && a.platform_paid !== true && !isPostpaidCampaign(a.campaign_id);
   const awaitingApproval = isClosed && !isApproved;
   const stageNow = a.stage || 1;
   const s = expandedCellStage;
@@ -3995,8 +4010,9 @@ function renderDealRow(a, idx, campaignType, fulfillmentMode) {
   const isRejected = a.status === 'rejected';
   const isClosed = a.status === 'closed';
   const isApproved = isClosed && a.brand_approved === true;
-  // اعتُمد المعلن لكن الحملة ما انطلقت (ما سُدّدت) — الوقوف على الشركة لا على المعلن
-  const awaitingLaunch = isApproved && a.platform_paid !== true;
+  // اعتُمد المعلن لكن الحملة ما انطلقت (ما سُدّدت) — الوقوف على الشركة لا على المعلن.
+  // إلا في اتفاق الدفع الآجل: الحملة تنطلق فورًا والسداد بعد انتهائها.
+  const awaitingLaunch = isApproved && a.platform_paid !== true && !isPostpaidCampaign(a.campaign_id);
   const awaitingApproval = isClosed && !isApproved;
   const isNegotiating = !isClosed && !isRejected;
   const stageNow = a.stage || 1;
@@ -4152,6 +4168,7 @@ function renderSingleCampaign(c) {
               ${c.platform ? `<span><strong>المنصة:</strong> ${PLATFORM_LABELS[c.platform] || c.platform}</span>` : ''}
               ${c.follower_range ? `<span><strong>المتابعين:</strong> ${followerRangeText(c)}</span>` : ''}
               ${c.campaign_size ? `<span><strong>حجم الحملة:</strong> ${toArabic(c.campaign_size)} معلن <span class="camp-count ${complete ? 'full' : ''}">${toArabic(approved)}/${toArabic(target)} معتمد</span></span>` : ''}
+              ${c.payment_terms === 'postpaid' ? `<span><strong>شروط السداد:</strong> دفع آجل — بعد انتهاء الحملة</span>` : ''}
               ${reserveCount > 0 ? `<span><strong>الاحتياط:</strong> ${toArabic(reserveCount)} معلن جاهز</span>` : ''}
               ${waitlistApps.length > 0 ? `<span><strong>قائمة الانتظار:</strong> ${toArabic(waitlistApps.length)} معلن</span>` : ''}
               ${c.country ? `<span><strong>الدولة:</strong> ${COUNTRY_LABELS[c.country] || c.country}</span>` : ''}

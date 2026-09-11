@@ -1908,8 +1908,9 @@ function renderCreatorDealCard(c, a) {
   const initial = (c.title || 'ح')[0];
   const isClosed = a.status === 'closed';
   const isApproved = isClosed && a.brand_approved === true;
-  // اعتُمد المعلن، لكن الشركة ما سدّدت لفلفلونسر بعد → الحملة ما انطلقت والمراحل ما تبدأ
-  const awaitingLaunch = isApproved && a.platform_paid !== true;
+  // اعتُمد المعلن، لكن الشركة ما سدّدت لفلفلونسر بعد → الحملة ما انطلقت والمراحل ما تبدأ.
+  // إلا لو الحملة على اتفاق دفع آجل مع المنصة: تنطلق فورًا ويُسدَّد بعد انتهائها.
+  const awaitingLaunch = isApproved && a.platform_paid !== true && !(c && c.payment_terms === 'postpaid');
   const awaitingApproval = isClosed && !isApproved;
   const isNegotiating = !isClosed;
   const isWaitlisted = a.status === 'waitlisted';
@@ -2252,8 +2253,9 @@ function renderOfferCard(c, a) {
   const campaignTitle = c.title || a.campaigns?.title || 'إعلان';
   const isClosed = a.status === 'closed';
   const isApproved = isClosed && a.brand_approved === true;
-  // اعتُمد المعلن، لكن الشركة ما سدّدت لفلفلونسر بعد → الحملة ما انطلقت والمراحل ما تبدأ
-  const awaitingLaunch = isApproved && a.platform_paid !== true;
+  // اعتُمد المعلن، لكن الشركة ما سدّدت لفلفلونسر بعد → الحملة ما انطلقت والمراحل ما تبدأ.
+  // إلا لو الحملة على اتفاق دفع آجل مع المنصة: تنطلق فورًا ويُسدَّد بعد انتهائها.
+  const awaitingLaunch = isApproved && a.platform_paid !== true && !(c && c.payment_terms === 'postpaid');
   const awaitingApproval = isClosed && !isApproved;
   const isNegotiating = !isClosed && !isDeadApp(a);
   const statusLabels = { pending: 'قيد المراجعة', active: 'تفاوض نشط', closed: 'مقفلة', rejected: 'مرفوضة' };
