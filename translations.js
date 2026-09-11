@@ -1873,3 +1873,36 @@ Object.assign(window.I18N_TEXT, {
  "محتوى مصوّر (UGC)": "User-generated content (UGC)",
  "محتوى جاهز لإعلاناتك المدفوعة": "Ready-made content for your paid ads"
 });
+
+/* ===== قائمة التنقّل — الصياغة المطوَّرة + بقايا الواجهة ===== */
+Object.assign(window.I18N_TEXT, {
+ "كل حملاتك في مكان واحد": "All your campaigns in one place",
+ "لوحة واحدة بدل المجموعات والملفات المتفرّقة": "One dashboard instead of scattered chat groups and files",
+ "حملة كاملة في دقائق": "A full campaign in minutes",
+ "تحدّد الميزانية والعدد، والمنصة تتولّى الباقي": "You set the budget and the number, the platform does the rest",
+ "بلا تفاوض ولا مساومة": "No haggling, no back-and-forth",
+ "الوكيل يفاوض الجميع، وأنت تعتمد المناسب فقط": "The agent negotiates with everyone — you only approve the right one",
+ "كل شيء أمامك أولًا بأول": "Everything in front of you, in real time",
+ "من الاتفاق إلى النشر في مسار واحد واضح": "From the deal to publishing, in one clear track",
+ "ترسل منتجك، والمعلن يجرّبه ويصوّره": "You send your product, the creator tries it and films it",
+ "للمعلنين": "For creators",
+
+ /* دليل المؤثرين */
+ "ابحث": "Search",
+ "نعرض": "Showing",
+ "من أصل": "of",
+ "مؤثرًا معتمدًا": "listed creators",
+ "شوف كل المؤثرين ←": "Browse all creators →",
+ " متابع": " followers",
+ "أقل من 800 ريال": "Under 800 SAR",
+ "إنستغرام": "Instagram",
+ "مكة": "Makkah",
+ "الرياض": "Riyadh",
+ "جدة": "Jeddah",
+
+ /* الباقات */
+ "الباقات": "Plans",
+ "اشترك مرّة… ووفّر على كل صفقة": "Subscribe once, save on every deal",
+ "جارٍ تحميل الباقات…": "Loading plans…",
+ "كل المزايا والمقارنة الكاملة ←": "All features and the full comparison →"
+});
