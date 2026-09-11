@@ -4003,7 +4003,13 @@ function getDeliveryRows(campaignId) {
     const sd = (typeof a.stage_data === 'object' && a.stage_data) ? a.stage_data : {};
     const s1 = sd[1] || sd['1'] || {};
     const creator = a.users || {};
-    return { name: creator.name || 'معلن', phone: s1.phone || '', address: s1.address || '' };
+    return {
+      name:     s1.recipient || creator.name || 'معلن',
+      phone:    s1.phone || '',
+      national: s1.national_address || '',
+      map:      s1.map_link || '',
+      address:  s1.address || ''
+    };
   });
 }
 
@@ -4022,16 +4028,16 @@ async function downloadDeliveryExcel(campaignId) {
   // قيد الباقة
   if (typeof simblGate === 'function' && !await simblGate('can_delivery_excel', 'إكسل التوصيل', 'جدول شحن جاهز تسلّمه لمندوب التوصيل بعناوين المعلنين كاملة — متاح مع باقة Standard فأعلى.')) return;
   const rows = getDeliveryRows(campaignId);
-  const hasAny = rows.some(r => r.address || r.phone);
+  const hasAny = rows.some(r => r.phone || r.national || r.map || r.address);
   if (!hasAny) { showToast('ما فيه بيانات توصيل بعد', 'error'); return; }
   try { showToast('جاري تجهيز الملف...'); await loadXLSX(); }
   catch (e) { showToast('تعذّر تحميل أداة الإكسل — تأكّد من الاتصال', 'error'); return; }
   const camp = (myCampaigns || []).find(c => c.id === campaignId);
   const campTitle = (camp && camp.title) ? camp.title : 'حملة';
-  const aoa = [['#', 'اسم المعلن', 'رقم التواصل', 'عنوان التوصيل']];
-  rows.forEach((r, i) => aoa.push([i + 1, r.name, r.phone, r.address]));
+  const aoa = [['#', 'اسم المستلم', 'رقم التواصل', 'العنوان الوطني', 'رابط الموقع', 'تفاصيل إضافية']];
+  rows.forEach((r, i) => aoa.push([i + 1, r.name, r.phone, r.national, r.map, r.address]));
   const ws = XLSX.utils.aoa_to_sheet(aoa);
-  ws['!cols'] = [{ wch: 5 }, { wch: 22 }, { wch: 18 }, { wch: 45 }];
+  ws['!cols'] = [{ wch: 5 }, { wch: 24 }, { wch: 16 }, { wch: 16 }, { wch: 42 }, { wch: 38 }];
   const wb = XLSX.utils.book_new();
   XLSX.utils.book_append_sheet(wb, ws, 'التوصيل');
   const safeName = campTitle.replace(/[\\/:*?"<>|]/g, '_').slice(0, 40);
@@ -4256,8 +4262,11 @@ const STAGE_ACTIONS = {
 
 const STAGE_FIELDS = {
   1: [
-    { name: 'address', label: 'العنوان الكامل', placeholder: 'مثل: الرياض، حي العليا، شارع الأمير محمد...', type: 'textarea', required: true },
-    { name: 'phone',   label: 'رقم الجوال للتوصيل', placeholder: '966501234567', type: 'tel', required: true }
+    { name: 'recipient',        label: 'اسم المستلم', placeholder: 'الاسم الثلاثي كما يستلم به الشحنة', type: 'text', required: true },
+    { name: 'phone',            label: 'رقم الجوال للتوصيل', placeholder: '05XXXXXXXX', type: 'tel', required: true },
+    { name: 'national_address', label: 'العنوان الوطني', placeholder: 'الرمز المختصر من تطبيق العنوان الوطني — مثل RRRD2929', type: 'text', required: true },
+    { name: 'map_link',         label: 'رابط الموقع على الخريطة', placeholder: 'https://maps.app.goo.gl/...', type: 'url', required: true },
+    { name: 'address',          label: 'تفاصيل إضافية للمندوب (اختياري)', placeholder: 'رقم الشقة، علامة مميزة، أو أي ملاحظة تسهّل التوصيل', type: 'textarea', required: false }
   ],
   2: [
     { name: 'tracking', label: 'رقم التتبع (اختياري)', placeholder: 'رقم بوليصة الشحن', type: 'text', required: false },

@@ -2409,8 +2409,11 @@ const STAGE_ACTIONS = {
 
 const STAGE_FIELDS = {
   1: [
-    { name: 'address', label: 'العنوان الكامل', placeholder: 'مثل: الرياض، حي العليا، شارع الأمير محمد...', type: 'textarea', required: true },
-    { name: 'phone',   label: 'رقم الجوال للتوصيل', placeholder: '966501234567', type: 'tel', required: true }
+    { name: 'recipient',        label: 'اسم المستلم', placeholder: 'الاسم الثلاثي كما يستلم به الشحنة', type: 'text', required: true },
+    { name: 'phone',            label: 'رقم الجوال للتوصيل', placeholder: '05XXXXXXXX', type: 'tel', required: true },
+    { name: 'national_address', label: 'العنوان الوطني', placeholder: 'الرمز المختصر من تطبيق العنوان الوطني — مثل RRRD2929', type: 'text', required: true },
+    { name: 'map_link',         label: 'رابط الموقع على الخريطة', placeholder: 'https://maps.app.goo.gl/...', type: 'url', required: true },
+    { name: 'address',          label: 'تفاصيل إضافية للمندوب (اختياري)', placeholder: 'رقم الشقة، علامة مميزة، أو أي ملاحظة تسهّل التوصيل', type: 'textarea', required: false }
   ],
   2: [
     { name: 'tracking', label: 'رقم التتبع (اختياري)', placeholder: 'رقم بوليصة الشحن', type: 'text', required: false },
