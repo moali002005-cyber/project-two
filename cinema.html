@@ -2,6 +2,8 @@
 <html lang="ar" dir="rtl"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>فلفلونسر — كيف تعمل المنصة</title>
+<script src="/translations.js?v=11"></script>
+<script src="/i18n.js?v=6"></script>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;900&display=swap">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap">
 <style>
@@ -108,6 +110,9 @@ if(/[?&]embed=1/.test(location.search)) document.body.classList.add("embed");
 (function(){
 var ICONS={"doc": "M104 72C108 72 121 72 130 72C139 72 147 72 156 72C165 72 175 70 182 72C189 74 194 78 196 84C198 90 196 101 196 110C196 119 196 127 196 136C196 145 196 153 196 162C196 171 196 179 196 188C196 197 198 207 196 214C194 221 190 226 184 228C178 230 167 228 158 228C149 228 141 228 132 228C123 228 111 232 106 228C101 224 104 212 104 204C104 196 104 187 104 178C104 169 104 161 104 152C104 143 104 135 104 126C104 117 104 109 104 100C104 91 104 78 104 74", "bubble": "M78 88C83 88 97 88 106 88C115 88 125 88 134 88C144 88 153 88 162 88C172 88 181 88 190 88C200 88 213 84 218 88C224 92 221 104 222 113C223 121 222 131 222 141C222 150 224 162 222 169C220 176 214 180 207 182C200 184 188 181 179 182C170 183 161 183 153 187C146 192 140 206 135 209C131 212 129 211 127 206C126 202 131 186 126 182C122 178 106 183 98 182C90 181 81 180 78 174C75 168 78 156 78 146C78 137 78 127 78 118C78 109 78 95 78 90", "box": "M150 62C155 65 171 73 182 79C193 84 209 86 214 95C220 104 216 118 216 130C216 142 216 154 216 166C216 178 221 193 216 202C211 211 196 214 185 220C175 225 164 236 153 236C143 237 132 228 121 223C110 218 95 215 89 207C83 198 85 185 84 174C83 162 84 149 84 137C84 125 79 111 84 101C89 92 101 88 111 82C121 76 137 64 143 65C150 67 149 81 150 91C151 101 148 118 150 127C152 135 154 143 160 142C166 140 179 126 188 119C197 111 211 100 216 96", "play": "M114 70C117 72 127 79 133 83C139 88 145 92 152 96C158 101 164 105 170 110C177 114 183 118 189 123C195 127 202 132 208 136C214 140 226 145 227 149C227 154 216 158 210 162C204 167 198 171 192 176C185 180 179 184 173 189C166 193 160 198 154 202C148 206 141 211 135 215C129 220 120 229 116 228C113 227 114 217 114 210C114 203 114 195 114 187C114 179 114 172 114 164C114 156 114 149 114 141C114 133 114 126 114 118C114 110 114 103 114 95C114 87 114 76 114 72", "check": "M74 150C75 151 79 156 82 158C85 161 88 164 90 167C93 170 96 172 98 175C101 178 104 181 106 184C109 186 112 189 115 192C117 195 120 199 123 201C125 202 128 201 131 199C133 197 136 193 139 190C141 188 144 185 147 182C149 179 152 176 155 173C157 170 160 167 162 165C165 162 168 159 170 156C173 153 176 150 178 147C181 145 184 142 186 139C189 136 192 133 194 130C197 127 200 125 202 122C205 119 207 116 210 113C213 110 215 107 218 105C221 102 225 97 226 96", "coin": "M150 70C154 71 168 72 176 74C184 77 192 82 199 87C206 92 212 99 217 106C222 114 225 122 227 130C229 139 230 148 229 157C229 165 227 174 223 182C220 190 215 198 209 204C203 210 196 216 188 220C180 224 172 227 163 229C155 230 145 230 137 229C128 227 120 224 112 220C104 216 97 210 91 204C85 198 80 190 77 182C73 174 71 165 71 157C70 148 71 139 73 130C75 122 78 114 83 106C88 99 94 92 101 87C108 82 116 77 124 74C132 72 146 71 150 70", "steps": "M74 222C76 222 84 222 89 222C94 222 100 223 103 222C107 221 109 218 110 214C111 210 110 204 110 199C110 195 108 188 110 185C112 182 116 181 120 180C124 179 130 180 134 180C139 180 146 182 149 180C152 178 150 171 150 166C150 162 150 156 150 152C150 147 148 140 151 138C154 136 161 138 166 138C170 138 176 139 180 138C184 137 188 136 190 133C192 130 190 123 190 119C190 114 189 108 190 104C191 100 193 97 197 96C200 95 206 96 211 96C216 96 224 96 226 96", "chart": "M74 206C75 204 80 199 82 195C85 192 88 188 91 185C94 181 96 176 99 174C102 172 105 170 109 171C113 172 117 176 121 178C125 180 129 185 132 185C135 185 137 179 139 176C141 172 143 167 145 163C147 159 149 155 151 151C153 147 155 143 157 139C159 135 161 128 164 127C166 126 171 131 174 133C178 135 182 139 186 140C189 142 193 144 196 143C198 141 200 135 202 131C204 127 206 122 208 118C210 114 212 110 214 106C216 102 218 98 220 94C222 90 225 84 226 82"};
 var NS="http://www.w3.org/2000/svg";
+var LANG_EN=(function(){try{return localStorage.getItem("simbl_lang")==="en";}catch(e){return false;}})();
+function T(x){ try{ if(localStorage.getItem("simbl_lang")!=="en") return x; }catch(e){ return x; }
+ var m=window.I18N_TEXT||{}; return (m[x]!=null)?m[x]:x; }
 var EMB=document.body.classList.contains("embed");
 var G="#0DB04B",Y="#FCB813",R="#EC1C24",B="#3777BB",P="#7C51A0",
     INK="#1A1512",DIM="#B3A9A4",LN="#F1ECE9",SOFT="#FBF8F6";
@@ -149,20 +154,20 @@ function along(t,pts){ /* pts:[[t,x,y]...] eased between */
 function S1(root){
  E("rect",{x:0,y:0,width:600,height:344,fill:"#fff"},root);
  E("text",{x:40,y:38,"text-anchor":"start","font-size":"13","font-weight":"700",fill:DIM},root)
-  .textContent="حملاتي";
+  .textContent=T("حملاتي");
  var cnt=E("text",{x:560,y:38,"text-anchor":"end","font-size":"20","font-weight":"900",fill:INK},root);
  var DATA=[
-  {n:"عطر رمل الجديد",   s:"نشطة",  c:G, d:"32/50", k:0.64},
-  {n:"إفطار المقهى",     s:"نشطة",  c:Y, d:"18/30", k:0.60},
-  {n:"مجموعة الشتاء",    s:"مكتملة",c:B, d:"20/20", k:1.00},
-  {n:"زيارة الفرع",      s:"نشطة",  c:R, d:"7/15",  k:0.47},
-  {n:"كود خصم الجمعة",   s:"مكتملة",c:P, d:"50/50", k:1.00},
-  {n:"فيديو المنتج",     s:"نشطة",  c:G, d:"11/25", k:0.44}
+  {n:T("عطر رمل الجديد"),   s:T("نشطة"),  c:G, d:"32/50", k:0.64},
+  {n:T("إفطار المقهى"),     s:T("نشطة"),  c:Y, d:"18/30", k:0.60},
+  {n:T("مجموعة الشتاء"),    s:T("مكتملة"),c:B, d:"20/20", k:1.00},
+  {n:T("زيارة الفرع"),      s:T("نشطة"),  c:R, d:"7/15",  k:0.47},
+  {n:T("كود خصم الجمعة"),   s:T("مكتملة"),c:P, d:"50/50", k:1.00},
+  {n:T("فيديو المنتج"),     s:T("نشطة"),  c:G, d:"11/25", k:0.44}
  ];
  var cards=[];
  for(var i=0;i<6;i++){
   var cx=60+(i%3)*172, cy=64+Math.floor(i/3)*122;
-  var d=DATA[i], done=(d.s==="مكتملة");
+  var d=DATA[i], done=(d.s===T("مكتملة"));
   var g=E("g",{},root);
   E("rect",{x:0,y:0,width:152,height:104,rx:14,fill:"#fff",stroke:LN},g);
   /* اسم الحملة على سطر مستقل */
@@ -198,16 +203,16 @@ function S1(root){
    c.bar.setAttribute("x",(138-w).toFixed(1));
   });
   var q=seg(t,1.6,2.7);
-  cnt.textContent=q>0?fmt(lerp(0,11,ease(q)))+" حملة":"";
+  cnt.textContent=q>0?fmt(lerp(0,11,ease(q)))+T(" حملة"):"";
  };
 }
 
 /* ---------- 2 · launch in 60 seconds ---------- */
 function S2(root){
  E("rect",{x:0,y:0,width:600,height:344,fill:"#fff"},root);
- var chips=[],CH=["فيديو جاهز","زيارة","منزلي"];
+ var chips=[],CH=[T("فيديو جاهز"),T("زيارة"),T("منزلي")];
  E("text",{x:560,y:40,"text-anchor":"end","font-size":"13","font-weight":"700",fill:DIM},root)
-  .textContent="نوع الحملة";
+  .textContent=T("نوع الحملة");
  for(var i=0;i<3;i++){
   var g=E("g",{transform:"translate("+(384-i*126)+",54)"},root);
   var r=E("rect",{x:0,y:0,width:114,height:34,rx:17,fill:SOFT,stroke:LN},g);
@@ -215,16 +220,16 @@ function S2(root){
   tx.textContent=CH[i]; chips.push({r:r,t:tx});
  }
  E("text",{x:560,y:124,"text-anchor":"end","font-size":"13","font-weight":"700",fill:DIM},root)
-  .textContent="عنوان الحملة";
+  .textContent=T("عنوان الحملة");
  E("rect",{x:40,y:136,width:520,height:38,rx:12,fill:"#fff",stroke:LN},root);
  var title=E("text",{x:546,y:161,"text-anchor":"end","font-size":"14","font-weight":"700",fill:INK},root);
  var caret=E("rect",{x:0,y:144,width:2,height:22,fill:R,opacity:"0"},root);
  E("text",{x:560,y:206,"text-anchor":"end","font-size":"13","font-weight":"700",fill:DIM},root)
-  .textContent="البريف الإعلاني";
+  .textContent=T("البريف الإعلاني");
  var magic=E("g",{transform:"translate(40,190)"},root);
  E("rect",{x:0,y:0,width:118,height:28,rx:14,fill:"#FDECEC",stroke:"#F7C9C9"},magic);
  E("text",{x:59,y:19,"text-anchor":"middle","font-size":"12","font-weight":"700",fill:R},magic)
-  .textContent="اكتب لي البريف";
+  .textContent=T("اكتب لي البريف");
  E("rect",{x:40,y:218,width:520,height:74,rx:12,fill:SOFT,stroke:LN},root);
  var lines=[];
  for(var j=0;j<4;j++) lines.push(E("rect",{x:56,y:232+j*16,width:0,height:8,rx:4,
@@ -232,14 +237,14 @@ function S2(root){
  var btn=E("g",{transform:"translate(40,302)"},root);
  var br=E("rect",{x:0,y:0,width:150,height:32,rx:16,fill:R},btn);
  E("text",{x:75,y:21,"text-anchor":"middle","font-size":"13","font-weight":"900",fill:"#fff"},btn)
-  .textContent="أطلق الحملة";
+  .textContent=T("أطلق الحملة");
  var ring=E("g",{transform:"translate(524,318)"},root);
  E("circle",{r:22,fill:"none",stroke:LN,"stroke-width":"4"},ring);
  var arc=E("circle",{r:22,fill:"none",stroke:G,"stroke-width":"4","stroke-linecap":"round",
   transform:"rotate(-90)","stroke-dasharray":"138.2","stroke-dashoffset":"0"},ring);
  var num=E("text",{x:0,y:5,"text-anchor":"middle","font-size":"14","font-weight":"900",fill:INK},ring);
  var cur=cursor(root);
- var TXT="إطلاق عطر رمل الجديد";
+ var TXT=T("إطلاق عطر رمل الجديد");
  return function(t){
   var p=cl(t/3.9);
   arc.setAttribute("stroke-dashoffset",(138.2*p).toFixed(1));
@@ -284,7 +289,7 @@ function S3(root){
  var done=E("g",{transform:"translate(300,286)",opacity:"0"},root);
  E("rect",{x:-104,y:-20,width:208,height:40,rx:20,fill:"#E8F7EE",stroke:"#BFE6CF"},done);
  E("text",{x:0,y:7,"text-anchor":"middle","font-size":"15","font-weight":"900",fill:"#0A8A3C"},done)
-  .textContent="✓ تم الاتفاق — 900 ر.س";
+  .textContent=T("✓ تم الاتفاق — 900 ر.س");
  return function(t){
   bub.forEach(function(b,i){
    var k=out5(seg(t,0.15+i*0.62,0.75+i*0.62));
@@ -293,7 +298,7 @@ function S3(root){
   });
   var v=1000; if(t>1.5)v=lerp(1000,950,ease(seg(t,1.5,2.0)));
   if(t>2.4)v=lerp(950,900,ease(seg(t,2.4,2.95)));
-  pv.textContent=fmt(v)+" ر.س";
+  pv.textContent=fmt(v)+T(" ر.س");
   var d=seg(t,3.15,3.5);
   price.setAttribute("opacity",(1-d).toFixed(2));
   done.setAttribute("opacity",d.toFixed(2));
@@ -305,14 +310,14 @@ function S3(root){
 function S4(root){
  E("rect",{x:0,y:0,width:600,height:344,fill:"#fff"},root);
  E("text",{x:560,y:34,"text-anchor":"end","font-size":"14","font-weight":"900",fill:INK},root)
-  .textContent="العروض المستلمة";
+  .textContent=T("العروض المستلمة");
  E("text",{x:40,y:34,"text-anchor":"start","font-size":"11.5","font-weight":"700",fill:DIM},root)
-  .textContent="اختر من يناسبك";
+  .textContent=T("اختر من يناسبك");
  var D=[
-  {n:"سارة الم.", h:"@sara.creates", f:"320K", p:"1,200", c:Y, i:"س"},
-  {n:"خالد الع.", h:"@khaled.vlog",  f:"180K", p:"900",   c:G, i:"خ"},
-  {n:"ريم الس.",  h:"@reem.daily",   f:"240K", p:"1,450", c:B, i:"ر"},
-  {n:"فهد الق.",  h:"@fahad.food",   f:"95K",  p:"1,050", c:P, i:"ف"}
+  {n:T("سارة الم."), h:"@sara.creates", f:"320K", p:"1,200", c:Y, i:"س"},
+  {n:T("خالد الع."), h:"@khaled.vlog",  f:"180K", p:"900",   c:G, i:"خ"},
+  {n:T("ريم الس."),  h:"@reem.daily",   f:"240K", p:"1,450", c:B, i:"ر"},
+  {n:T("فهد الق."),  h:"@fahad.food",   f:"95K",  p:"1,050", c:P, i:"ف"}
  ];
  var rows=[];
  for(var i=0;i<4;i++){
@@ -331,9 +336,9 @@ function S4(root){
   var fg2=E("g",{transform:"translate(300,"+(y+17)+")"},g);
   E("rect",{x:0,y:0,width:62,height:22,rx:11,fill:SOFT},fg2);
   E("text",{x:31,y:15,"text-anchor":"middle","font-size":"11","font-weight":"900",fill:DIM},fg2)
-   .textContent=D[i].f+" متابع";
+   .textContent=D[i].f+T(" متابع");
   E("text",{x:150,y:y+35,"text-anchor":"start","font-size":"15","font-weight":"900",fill:INK},g)
-   .textContent=D[i].p+" ر.س";
+   .textContent=D[i].p+T(" ر.س");
   var box=E("rect",{x:56,y:y+16,width:24,height:24,rx:8,fill:"#fff",stroke:"#DCD3D0","stroke-width":"1.6"},g);
   var chk=E("path",{d:"M61 28l5 5l9 -11",fill:"none",stroke:"#fff","stroke-width":"2.6",
    "stroke-linecap":"round","stroke-linejoin":"round","stroke-dasharray":"22","stroke-dashoffset":"22"},g);
@@ -363,11 +368,11 @@ function S4(root){
 /* ---------- 5 · track every step ---------- */
 function S5(root){
  E("rect",{x:0,y:0,width:600,height:344,fill:"#fff"},root);
- var LB=["العنوان","الشحن","الاستلام","المحتوى","الموافقة","النشر","مكتمل"];
+ var LB=[T("العنوان"),T("الشحن"),T("الاستلام"),T("المحتوى"),T("الموافقة"),T("النشر"),T("مكتمل")];
  E("text",{x:560,y:40,"text-anchor":"end","font-size":"14","font-weight":"900",fill:INK},root)
-  .textContent="إطلاق عطر رمل الجديد";
+  .textContent=T("إطلاق عطر رمل الجديد");
  E("text",{x:560,y:62,"text-anchor":"end","font-size":"12","font-weight":"500",fill:DIM},root)
-  .textContent="حساب معلن · تيك توك · 900 ر.س";
+  .textContent=T("حساب معلن · تيك توك · 900 ر.س");
  E("line",{x1:40,y1:84,x2:560,y2:84,stroke:LN,"stroke-width":"1"},root);
  var pct=E("text",{x:40,y:40,"text-anchor":"start","font-size":"20","font-weight":"900",fill:"#0A8A3C"},root);
  var x0=545,x1=55,y=190,n=7,nodes=[];
@@ -417,7 +422,7 @@ function S5(root){
 /* ---------- 6 · the results ---------- */
 function S6(root){
  E("rect",{x:0,y:0,width:600,height:344,fill:"#fff"},root);
- var KPI=[{l:"إجمالي الإنفاق",v:50000,c:G},{l:"صفقات معتمدة",v:50,c:R},{l:"عروض مستلمة",v:118,c:B}];
+ var KPI=[{l:T("إجمالي الإنفاق"),v:50000,c:G},{l:T("صفقات معتمدة"),v:50,c:R},{l:T("عروض مستلمة"),v:118,c:B}];
  var vals=KPI.map(function(k,i){
   var g=E("g",{transform:"translate("+(500-i*186)+",30)"},root);
   E("rect",{x:-84,y:0,width:168,height:64,rx:14,fill:SOFT,stroke:LN},g);
@@ -433,7 +438,7 @@ function S6(root){
  var exG=E("g",{transform:"translate(40,106)"},root);
  E("rect",{x:0,y:0,width:52,height:22,rx:11,fill:"#FDECEC"},exG);
  E("text",{x:26,y:15,"text-anchor":"middle","font-size":"11","font-weight":"900",fill:R},exG)
-  .textContent="مثال";
+  .textContent=T("مثال");
  var pathD="M"+(520)+" "+(300-46);
  for(var i=1;i<7;i++) pathD+="L"+(520-i*72)+" "+(300-H[i]);
  var ln=E("path",{d:pathD,fill:"none",stroke:"url(#brand)","stroke-width":"4",
@@ -446,7 +451,7 @@ function S6(root){
   });
   ln.setAttribute("stroke-dashoffset",(600*(1-out3(seg(t,1.1,2.6)))).toFixed(1));
   var q=ease(seg(t,1.4,3.1));
-  vals.forEach(function(v,i){v.textContent=fmt(KPI[i].v*q)+(i===0?" ر.س":"");});
+  vals.forEach(function(v,i){v.textContent=fmt(KPI[i].v*q)+(i===0?T(" ر.س"):"");});
  };
 }
 
@@ -467,20 +472,20 @@ function S7(root){
   }
   return out;
  }
- lab(30,"عدد المعلنين");
+ lab(30,T("عدد المعلنين"));
  var sizes=row(38,["5","10","15","20","30","50","100","200"],58,8);
- lab(100,"المنصة");
- var plats=row(108,["تيك توك","سناب شات","انستقرام","يوتيوب"],118,16);
- lab(170,"نطاق المتابعين  ·  يمكن اختيار أكثر من نطاق");
- var folls=row(178,["10–20 ألف","20–50 ألف","50–100 ألف","100–200 ألف"],118,16);
- lab(240,"مدينة المعلن");
- var cities=row(248,["الرياض","جدة","الدمام","كل المدن"],118,16);
+ lab(100,T("المنصة"));
+ var plats=row(108,[T("تيك توك"),T("سناب شات"),T("انستقرام"),T("يوتيوب")],118,16);
+ lab(170,T("نطاق المتابعين  ·  يمكن اختيار أكثر من نطاق"));
+ var folls=row(178,[T("10–20 ألف"),T("20–50 ألف"),T("50–100 ألف"),T("100–200 ألف")],118,16);
+ lab(240,T("مدينة المعلن"));
+ var cities=row(248,[T("الرياض"),T("جدة"),T("الدمام"),T("كل المدن")],118,16);
  var note=E("text",{x:560,y:316,"text-anchor":"end","font-size":"12","font-weight":"700",fill:G,opacity:"0"},root);
- note.textContent="يتوقّف التفاوض تلقائياً عند اكتمال العدد.";
+ note.textContent=T("يتوقّف التفاوض تلقائياً عند اكتمال العدد.");
  var btn=E("g",{transform:"translate(40,300)"},root);
  var br=E("rect",{x:0,y:0,width:150,height:32,rx:16,fill:R},btn);
  E("text",{x:75,y:21,"text-anchor":"middle","font-size":"13","font-weight":"900",fill:"#fff"},btn)
-  .textContent="أطلق الحملة";
+  .textContent=T("أطلق الحملة");
  var cur=cursor(root);
  function on(c,k,col){var a=k>0;
   c.r.setAttribute("fill",a?(col||R):SOFT); c.r.setAttribute("stroke",a?(col||R):LN);
@@ -519,7 +524,7 @@ function S8(root){
   E("rect",{x:0,y:0,width:W,height:H,rx:12,fill:SOFT,stroke:LN},g);
   E("circle",{cx:W-20,cy:20,r:11,fill:COLS[i%5],opacity:"0.16"},g);
   E("text",{x:W-20,y:24.5,"text-anchor":"middle","font-size":"11","font-weight":"900",
-   fill:COLS[i%5]},g).textContent="نجحمسرهفبطكل".charAt(i);
+   fill:COLS[i%5]},g).textContent=T("نجحمسرهفبطكل").charAt(i);
   E("rect",{x:W-66,y:14,width:36,height:6,rx:3,fill:"#D9D1CD"},g);
   E("rect",{x:W-86,y:26,width:56,height:5,rx:2.5,fill:"#E6DFDB"},g);
   var pr=E("text",{x:W-16,y:45,"text-anchor":"end","font-size":"11.5","font-weight":"900",fill:DIM},g);
@@ -532,31 +537,31 @@ function S8(root){
    ask:1150+((i*67)%5)*50, at:0.75+i*0.22, dur:0.55});
  }
  var note=E("text",{x:300,y:324,"text-anchor":"middle","font-size":"11.5","font-weight":"700",fill:DIM,opacity:"0"},root);
- note.textContent="في حملة من ٥٠ معلناً يفتح الوكيل ١٠٠ مفاوضة في آنٍ واحد؛ تُعتمد صفقات أول ٥٠ يتفقون، والبقيّة احتياط.";
+ note.textContent=T("في حملة من ٥٠ معلناً يفتح الوكيل ١٠٠ مفاوضة في آنٍ واحد؛ تُعتمد صفقات أول ٥٠ يتفقون، والبقيّة احتياط.");
  return function(t){
   var n=Math.round(lerp(6,100,out3(cl(t/1.5))));
-  live.textContent="يفاوض "+n+" معلناً الآن";
+  live.textContent=T("يفاوض ")+n+T(" معلناً الآن");
   dotL.setAttribute("opacity",(0.45+0.55*(0.5+0.5*Math.sin(t*7))).toFixed(2));
   var agreed=0;
   rows.forEach(function(rw){
    var k=seg(t,rw.at,rw.at+rw.dur);
    var price=Math.round(lerp(rw.ask,1000,out3(k)));
-   rw.pr.textContent=fmt(price)+" ر.س";
+   rw.pr.textContent=fmt(price)+T(" ر.س");
    if(k>=1){
     agreed++;
     rw.pb.setAttribute("fill","#E9F7EF"); rw.pb.setAttribute("stroke","#BFE6CE");
-    rw.pt.setAttribute("fill","#1C7A46"); rw.pt.textContent="اتفق";
+    rw.pt.setAttribute("fill","#1C7A46"); rw.pt.textContent=T("اتفق");
     rw.pr.setAttribute("fill",INK);
     rw.tick.setAttribute("opacity","0");
    }else{
     rw.pb.setAttribute("fill","#FDF4E3"); rw.pb.setAttribute("stroke","#F2E0BC");
     rw.pt.setAttribute("fill","#9A7414");
-    rw.pt.textContent=(Math.floor(t*3)%3===0)?"يفاوض .":(Math.floor(t*3)%3===1?"يفاوض ..":"يفاوض ...");
+    rw.pt.textContent=(Math.floor(t*3)%3===0)?T("يفاوض ."):(Math.floor(t*3)%3===1?T("يفاوض .."):T("يفاوض ..."));
     rw.pr.setAttribute("fill",DIM);
    }
   });
   var total=Math.round(agreed*(50/12));
-  done.textContent="اتفق "+total+" من 50";
+  done.textContent=T("اتفق ")+total+T(" من 50");
   note.setAttribute("opacity",out3(seg(t,1.5,2.1)).toFixed(2));
  };
 }
@@ -568,8 +573,8 @@ var LM_OUT=[[34.6,28.05],[34.9,29.35],[36.0,29.35],[37.0,30.0],[37.5,30.5],[38.0
 [52.6,23.0],[55.2,22.7],[55.7,22.0],[55.0,20.0],[52.0,19.0],[49.0,18.6],[47.0,17.0],
 [45.0,17.4],[43.4,17.4],[43.2,16.9],[42.8,16.4],[42.6,17.3],[41.8,18.6],[41.0,19.9],
 [40.0,20.6],[39.1,21.5],[38.4,22.6],[38.0,23.8],[37.2,25.0],[36.5,25.7],[35.6,27.0],[34.9,27.8]];
-var LM_CT=[["الرياض",46.72,24.69],["جدة",39.19,21.49],["الدمام",50.10,26.43],["المدينة",39.61,24.47],
-["أبها",42.51,18.22],["تبوك",36.57,28.38],["بريدة",43.97,26.36],["جازان",42.55,16.89]];
+var LM_CT=[[T("الرياض"),46.72,24.69],[T("جدة"),39.19,21.49],[T("الدمام"),50.10,26.43],[T("المدينة"),39.61,24.47],
+[T("أبها"),42.51,18.22],[T("تبوك"),36.57,28.38],[T("بريدة"),43.97,26.36],[T("جازان"),42.55,16.89]];
 
 function S9(root){
  E("rect",{x:0,y:0,width:600,height:344,fill:"#fff"},root);
@@ -606,16 +611,16 @@ function S9(root){
 
  /* عمود النص على اليمين — اتجاه القراءة العربي */
  E("text",{x:560,y:96,"text-anchor":"end","font-size":"11.5","font-weight":"700",fill:DIM},root)
-  .textContent="تم نشر حملتك";
+  .textContent=T("تم نشر حملتك");
  var ttl=E("text",{x:560,y:126,"text-anchor":"end","font-size":"17","font-weight":"900",fill:INK},root);
  var sub=E("text",{x:560,y:152,"text-anchor":"end","font-size":"11.5","font-weight":"700",fill:DIM,opacity:"0"},root);
- sub.textContent="نجهّز قائمة المعلنين المطابقين…";
+ sub.textContent=T("نجهّز قائمة المعلنين المطابقين…");
  var divi=E("rect",{x:392,y:172,width:168,height:1,fill:LN,opacity:"0"},root);
  var big=E("text",{x:560,y:222,"text-anchor":"end","font-size":"34","font-weight":"900",fill:R,opacity:"0"},root);
  var bigL=E("text",{x:560,y:246,"text-anchor":"end","font-size":"12","font-weight":"700",fill:DIM,opacity:"0"},root);
- bigL.textContent="معلناً مطابقاً لمواصفاتك";
+ bigL.textContent=T("معلناً مطابقاً لمواصفاتك");
  var foot=E("text",{x:560,y:284,"text-anchor":"end","font-size":"11.5","font-weight":"700",fill:G,opacity:"0"},root);
- foot.textContent="يبدأ الوكيل التفاوض معهم الآن";
+ foot.textContent=T("يبدأ الوكيل التفاوض معهم الآن");
 
  return function(t){
   var dr=out3(cl(t/1.45));
@@ -631,7 +636,7 @@ function S9(root){
   line.setAttribute("stroke", fk>0.6?"#CBD2DA":R);
   line.setAttribute("stroke-width",(2.4-1.0*fk).toFixed(2));
 
-  ttl.textContent = t<1.6 ? "جارٍ رسم نطاق حملتك…" : "وصلت حملتك إلى 8 مدن";
+  ttl.textContent = t<1.6 ? T("جارٍ رسم نطاق حملتك…") : T("وصلت حملتك إلى 8 مدن");
   sub.setAttribute("opacity",(t>1.6?0:out3(seg(t,0.4,0.9))).toFixed(2));
 
   pts.forEach(function(pt,i){
@@ -659,15 +664,15 @@ function S0(root){
  E("rect",{x:252,y:66,width:96,height:22,rx:11,fill:"#F1FAF4",stroke:"#D7EEE0"},pill);
  E("circle",{cx:336,cy:77,r:3.4,fill:G},pill);
  E("text",{x:326,y:81,"text-anchor":"end","font-size":"11","font-weight":"700",fill:"#1C7A46"},pill)
-  .textContent="منصتك جاهزة";
+  .textContent=T("منصتك جاهزة");
  var ttl=E("text",{x:300,y:130,"text-anchor":"middle","font-size":"27","font-weight":"900",fill:INK,opacity:"0"},root);
- ttl.textContent="أهلًا بك";
+ ttl.textContent=T("أهلًا بك");
  var sub=E("text",{x:300,y:160,"text-anchor":"middle","font-size":"12.5","font-weight":"700",fill:DIM,opacity:"0"},root);
- sub.textContent="أطلق حملتك، ويتولّى الوكيل التفاوض وإغلاق الاتفاق.";
+ sub.textContent=T("أطلق حملتك، ويتولّى الوكيل التفاوض وإغلاق الاتفاق.");
 
  /* صف الأزرار — الترتيب من اليمين */
- var BT=[{t:"متابعة الحملات",w:118,p:1},{t:"حملة جديدة",w:110,p:0,plus:1},
-         {t:"الأداء",w:64,p:0},{t:"الحملات السابقة",w:120,p:0}];
+ var BT=[{t:T("متابعة الحملات"),w:LANG_EN?124:118,p:1},{t:T("حملة جديدة"),w:LANG_EN?126:110,p:0,plus:1},
+         {t:T("الأداء"),w:LANG_EN?100:64,p:0},{t:T("الحملات السابقة"),w:LANG_EN?118:120,p:0}];
  var total=0; BT.forEach(function(b){total+=b.w;}); total+=10*(BT.length-1);
  var x0=300+total/2, btns=[];
  BT.forEach(function(b){
@@ -715,24 +720,24 @@ function S0(root){
 
 var BUILD=[S0,S2,S7,S9,S8,S4,S5,S6,S1];
 var F=[
- {k:"doc",tag:"لوحتك",h:"كل شيء يبدأ من لوحة التحكّم",
-  p:"تفتح المنصة وتضغط «حملة جديدة»، وهذا كل ما يلزم للبدء."},
- {k:"coin",tag:"حملة جديدة",h:"إطلاق الحملة خلال ٦٠ ثانية",
-  p:"تحدّد نوع الحملة وعنوانها وميزانيتها، ويتولّى النظام صياغة البريف الإعلاني."},
- {k:"box",tag:"مواصفات الحملة",h:"تحديد المواصفات بدقّة",
-  p:"عدد المعلنين من ٥ إلى ٢٠٠، والمنصة، ونطاق المتابعين، والمدينة المستهدفة."},
- {k:"play",tag:"انطلاق الحملة",h:"انطلاق الحملة على الخريطة",
-  p:"يُرسم نطاق الحملة، وتضيء المدن التي وصلها إعلانك — وهي الشاشة ذاتها داخل المنصة."},
- {k:"bubble",tag:"مفاوضة الوكيل",h:"التفاوض مع الجميع في وقت واحد",
-  p:"مئة مفاوضة مفتوحة في آنٍ واحد بالعربية، كلٌّ منها مستقلّة، وتتوقّف تلقائياً عند اكتمال العدد."},
- {k:"check",tag:"العروض المستلمة",h:"مراجعة العروض واعتماد المناسب",
-  p:"يُعرض كل معلن وسعره أمامك، فتعتمد من يناسب حملتك."},
- {k:"steps",tag:"متابعة الحملة",h:"متابعة كل مرحلة في صفحة واحدة",
-  p:"العنوان، الشحن، الاستلام، المحتوى، الموافقة، النشر — سبع مراحل في مسار واحد."},
- {k:"chart",tag:"الأداء",h:"قراءة النتائج",
-  p:"إجمالي الإنفاق، والصفقات المعتمدة، والعروض المستلمة — محدّثة أولاً بأول."},
- {k:"doc",tag:"لوحة الحملات",h:"حملاتك الإعلانية بمكان واحد",
-  p:"كل حملة تُطلقها تُضاف هنا — لوحة واحدة بدل الملفات والمجموعات المتفرّقة."}
+ {k:"doc",tag:T("لوحتك"),h:T("كل شيء يبدأ من لوحة التحكّم"),
+  p:T("تفتح المنصة وتضغط «حملة جديدة»، وهذا كل ما يلزم للبدء.")},
+ {k:"coin",tag:T("حملة جديدة"),h:T("إطلاق الحملة خلال ٦٠ ثانية"),
+  p:T("تحدّد نوع الحملة وعنوانها وميزانيتها، ويتولّى النظام صياغة البريف الإعلاني.")},
+ {k:"box",tag:T("مواصفات الحملة"),h:T("تحديد المواصفات بدقّة"),
+  p:T("عدد المعلنين من ٥ إلى ٢٠٠، والمنصة، ونطاق المتابعين، والمدينة المستهدفة.")},
+ {k:"play",tag:T("انطلاق الحملة"),h:T("انطلاق الحملة على الخريطة"),
+  p:T("يُرسم نطاق الحملة، وتضيء المدن التي وصلها إعلانك — وهي الشاشة ذاتها داخل المنصة.")},
+ {k:"bubble",tag:T("مفاوضة الوكيل"),h:T("التفاوض مع الجميع في وقت واحد"),
+  p:T("مئة مفاوضة مفتوحة في آنٍ واحد بالعربية، كلٌّ منها مستقلّة، وتتوقّف تلقائياً عند اكتمال العدد.")},
+ {k:"check",tag:T("العروض المستلمة"),h:T("مراجعة العروض واعتماد المناسب"),
+  p:T("يُعرض كل معلن وسعره أمامك، فتعتمد من يناسب حملتك.")},
+ {k:"steps",tag:T("متابعة الحملة"),h:T("متابعة كل مرحلة في صفحة واحدة"),
+  p:T("العنوان، الشحن، الاستلام، المحتوى، الموافقة، النشر — سبع مراحل في مسار واحد.")},
+ {k:"chart",tag:T("الأداء"),h:T("قراءة النتائج"),
+  p:T("إجمالي الإنفاق، والصفقات المعتمدة، والعروض المستلمة — محدّثة أولاً بأول.")},
+ {k:"doc",tag:T("لوحة الحملات"),h:T("حملاتك الإعلانية بمكان واحد"),
+  p:T("كل حملة تُطلقها تُضاف هنا — لوحة واحدة بدل الملفات والمجموعات المتفرّقة.")}
 ];
 
 var INTRO=1.35,UNFURL=1.45,SEG=4.5,GATHER=1.35,ENDHOLD=1.1,XOVER=0.36;
@@ -757,6 +762,42 @@ var logoG=document.getElementById("logo"),wholeG=document.getElementById("whole"
     cardsEl=document.getElementById("cards"),capsEl=document.getElementById("caps"),
     dotsEl=document.getElementById("dots");
 
+/* توسيع الأزرار والشرائح تلقائياً حين يكون النص أطول (مثلاً بالإنجليزية) */
+function autofit(svg){
+ try{
+  if(localStorage.getItem("simbl_lang")!=="en") return;
+ }catch(e){ return; }
+ [120,600,1500,3000].forEach(function(ms){ setTimeout(function(){ autofitNow(svg); }, ms); });
+}
+function autofitNow(svg){
+ (function(){
+  var texts=svg.querySelectorAll("text");
+  Array.prototype.forEach.call(texts,function(tx){
+   var g=tx.parentNode; if(!g||g.nodeName!=="g") return;
+   var rects=g.querySelectorAll(":scope > rect"); if(rects.length!==1) return;
+   var r=rects[0];
+   var rx=parseFloat(r.getAttribute("x")), rw=parseFloat(r.getAttribute("width"));
+   if(!isFinite(rx)||!isFinite(rw)) return;
+   var need; try{ need=tx.getComputedTextLength(); }catch(e){ return; }
+   if(!need) return;
+   var pad=11, want=need+pad*2;
+   if(want<=rw) return;
+   var anc=tx.getAttribute("text-anchor"), tvx=parseFloat(tx.getAttribute("x"));
+   if(anc==="end"&&isFinite(tvx)){
+    r.setAttribute("x",(tvx-need-pad).toFixed(1));
+    r.setAttribute("width",want.toFixed(1));
+   } else if(anc==="start"&&isFinite(tvx)){
+    r.setAttribute("x",(tvx-pad).toFixed(1));
+    r.setAttribute("width",want.toFixed(1));
+   } else {
+    var cx=rx+rw/2;
+    r.setAttribute("x",(cx-want/2).toFixed(1));
+    r.setAttribute("width",want.toFixed(1));
+    tx.setAttribute("x",cx.toFixed(1));
+   }
+  });
+ })();
+}
 var figs=[],draws=[],shines=[];
 F.forEach(function(f,i){
  var fg=document.createElement("figure");
@@ -766,11 +807,12 @@ F.forEach(function(f,i){
  svg.setAttribute("viewBox","0 0 600 344");
  fg.querySelector(".view").appendChild(svg);
  draws.push(BUILD[i](svg)); figs.push(fg); shines.push(fg.querySelector(".shine"));
+ autofit(svg);
 });
 
-var CAPS=[{h:"فلفلونسر",p:"منصّة إدارة حملات المؤثرين — من إطلاق الحملة إلى قراءة النتائج."}]
+var CAPS=[{h:T("فلفلونسر"),p:T("منصّة إدارة حملات المؤثرين — من إطلاق الحملة إلى قراءة النتائج.")}]
  .concat(F.map(function(f){return {h:f.h,p:f.p};}))
- .concat([{h:"واكتملت الحملة",p:"حملة كاملة، دون مكالمة واحدة."}]);
+ .concat([{h:T("واكتملت الحملة"),p:T("حملة كاملة، دون مكالمة واحدة.")}]);
 var capEls=CAPS.map(function(c,i){var d=document.createElement("div");
  d.className="cap"+(i===0?" on":"");d.innerHTML="<h3>"+c.h+"</h3><p>"+c.p+"</p>";
  capsEl.appendChild(d);return d;});
@@ -933,10 +975,10 @@ function tick(now){
 }
 requestAnimationFrame(tick);
 document.getElementById("again").addEventListener("click",function(){
- seek(0); if(paused){paused=false;document.getElementById("hold").textContent="إيقاف";}});
+ seek(0); if(paused){paused=false;document.getElementById("hold").textContent=T("إيقاف");}});
 document.getElementById("hold").addEventListener("click",function(){
  if(paused){paused=false;t0=performance.now()-pauseAt*1000;}
  else{paused=true;pauseAt=((performance.now()-t0)/1000)%TOTAL;}
- this.textContent=paused?"تشغيل":"إيقاف";});
+ this.textContent=paused?T("تشغيل"):T("إيقاف");});
 })();
 </script></body></html>
