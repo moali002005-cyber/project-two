@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl" data-i18n-title="brand_title">
 <head>
-<meta charset="UTF-8">h
+<meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>لوحة الشركة - Flfluencer</title>
 <link rel="icon" type="image/svg+xml" href="/brand/chili.svg?v=6">
@@ -1415,6 +1415,15 @@ table.xl td.cell.copied .dp, table.xl td.cell.copied .dues-link { color:#fff; }
 .ac-status.negotiating { background: rgba(226,59,46,0.10); color: var(--accent-ink); display: inline-flex; align-items: center; gap: 6px; }
 .ac-status.negotiating .nego-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--accent); animation: nego-dot-blink 1.4s ease-in-out infinite; }
 .ac-status.awaiting { background: rgba(226,59,46,0.12); color: #7E2119; }
+.ac-status.reserve { background: rgba(55,119,187,0.10); color: #2B5C91; }
+.ac-status.waitlist { background: rgba(15,20,32,0.05); color: var(--ink-muted); }
+/* ===== رؤوس مجموعات العروض: الأساسية · الاحتياط · الانتظار ===== */
+.grp-head { margin: 22px 0 12px; padding: 12px 14px; border-radius: 12px; background: rgba(15,20,32,0.025); border: 1px solid rgba(15,20,32,0.06); }
+.grp-head:first-child { margin-top: 4px; }
+.gh-t { font-size: 13px; font-weight: 700; color: var(--ink); letter-spacing: .1px; }
+.gh-d { font-size: 12.5px; line-height: 1.75; color: var(--ink-muted); margin-top: 5px; }
+.gh-btn { margin-top: 10px; background: #fff; border: 1px solid rgba(15,20,32,0.12); color: var(--ink); font: inherit; font-size: 12.5px; font-weight: 600; padding: 7px 14px; border-radius: 100px; cursor: pointer; }
+.gh-btn:hover { border-color: var(--accent); color: var(--accent-ink); }
 .stage-badge { white-space: nowrap; }
 .stage-badge.mine { background: var(--accent); color: #fff; }
 .stage-badge.waiting { background: rgba(15,20,32,0.05); color: var(--ink-muted); }
@@ -2542,7 +2551,7 @@ function updateHeroStats() {
     }
   } catch (e) {}
   const allApps = Object.values(campaignApps).flat();
-  const closed = allApps.filter(a => a.status === 'closed').length;
+  const closed = allApps.filter(a => a.status === 'closed' && a.is_reserve !== true).length;
 
   document.getElementById('hero-status').textContent =
     `${activeCampaignsLabel(active)} · ${closedDealsLabel(closed)}`;
@@ -2743,7 +2752,7 @@ function renderStats() {
   const activeCount = myCampaigns.filter(c => c.status !== 'closed').length;
   const totalApps = allApps.length;
   const pendingApps = allApps.filter(a => a.status === 'pending').length;
-  const closedDeals = allApps.filter(a => a.status === 'closed').length;
+  const closedDeals = allApps.filter(a => a.status === 'closed' && a.is_reserve !== true).length;
 
   document.getElementById('stats-row').innerHTML = `
     <div class="stat-card">
@@ -2792,7 +2801,7 @@ function renderCampaigns() {
     <button class="pill-add" onclick="openCampaignModal()">+ حملة جديدة</button>
     ${myCampaigns.map(c => {
       const apps = campaignApps[c.id] || [];
-      const hasAwaitingApproval = apps.some(a => a.status === 'closed' && !a.brand_approved);
+      const hasAwaitingApproval = apps.some(a => a.status === 'closed' && !a.brand_approved && a.is_reserve !== true);
       const hasActiveNegotiation = apps.some(a => a.status === 'pending' || a.status === 'active');
       let dot = '';
       if (hasAwaitingApproval) dot = '<span class="tab-dot warn"></span>';
@@ -2939,6 +2948,10 @@ function isBrandTurn(stage) {
 function renderSingleCampaign(c) {
     const apps = campaignApps[c.id] || [];
     const pendingApps = apps.filter(a => a.status === 'pending');
+    // تجميع صادق: القائمة الأساسية · الاحتياط · قائمة الانتظار
+    const mainApps    = apps.filter(a => a.is_reserve !== true && a.status !== 'waitlisted');
+    const reserveApps = apps.filter(a => a.is_reserve === true);
+    const waitApps    = apps.filter(a => a.is_reserve !== true && a.status === 'waitlisted');
 
     return `
       <div class="campaign-row">
@@ -2975,26 +2988,67 @@ function renderSingleCampaign(c) {
         ${apps.length > 0 ? `
           <div class="applications-summary">
             <div class="text">
-              تم استلام <strong>${apps.length}</strong> ${apps.length === 1 ? 'عرض' : 'عروض'}
-              ${apps.filter(a => a.status === 'closed').length > 0 ? `· <strong>${apps.filter(a => a.status === 'closed').length}</strong> صفقة مقفلة` : ''}
-              ${pendingApps.length > 0 ? `· <strong style="color:var(--ink-muted)">${pendingApps.length}</strong> قيد المراجعة` : ''}
+              <strong>${toArabic(apps.length)}</strong> ${apps.length === 1 ? 'معلن تفاوض' : 'معلنًا تفاوضوا'} على حملتك
+              ${mainApps.length > 0 ? `— <strong>${toArabic(mainApps.length)}</strong> ضمن حملتك` : ''}
+              ${reserveApps.length > 0 ? `· <strong>${toArabic(reserveApps.length)}</strong> جاهزًا كاحتياط` : ''}
+              ${waitApps.length > 0 ? `· <strong>${toArabic(waitApps.length)}</strong> في قائمة الانتظار` : ''}
             </div>
           </div>
           <div class="unified-list" id="apps-${c.id}">
-            ${apps.map((a, idx) => {
+            ${renderAppGroups(c, mainApps, reserveApps, waitApps)}
+          </div>
+        ` : `
+          <div class="applications-summary">
+            <div class="text">لم يتم تلقي أي عروض بعد</div>
+          </div>
+        `}
+      </div>
+    `;
+}
+
+// ===== عرض العروض في ثلاث مجموعات واضحة، بلا إخفاء أي رقم عن الشركة =====
+function renderAppGroups(c, mainApps, reserveApps, waitApps) {
+  const grouped = (reserveApps.length + waitApps.length) > 0;
+  const hdr = (t, d, btn) => `<div class="grp-head"><div class="gh-t">${t}</div>${d ? `<div class="gh-d">${d}</div>` : ''}${btn || ''}</div>`;
+  let out = '';
+  if (grouped && mainApps.length) {
+    out += hdr('ضمن حملتك · ' + toArabic(mainApps.length) + ' معلن', '');
+  }
+  out += mainApps.map(appCard).join('');
+  if (reserveApps.length) {
+    out += hdr('الاحتياط · ' + toArabic(reserveApps.length) + ' معلن',
+      'أكملوا التفاوض وقبلوا سعر حملتك. يحلّ أحدهم محلّ أي معلن يعتذر أو يتأخر — بلا تفاوض جديد ولا انتظار. ولا يُحتسب أحدهم على ميزانيتك ما لم يدخل بديلًا فعليًا.');
+    out += reserveApps.map(appCard).join('');
+  }
+  if (waitApps.length) {
+    out += hdr('قائمة الانتظار · ' + toArabic(waitApps.length) + ' معلن',
+      'طلبوا المشاركة بعد اكتمال حملتك واحتياطها، ولم يبدأ التفاوض معهم. وسّع حجم الحملة لتضمّ عددًا أكبر منهم.',
+      `<button class="gh-btn" onclick="event.stopPropagation(); openEditModal('${c.id}')">وسّع حجم حملتك</button>`);
+    out += waitApps.map(appCard).join('');
+  }
+  return out;
+}
+
+function appCard(a) {
               const creator = a.users || {};
               const brandInitial = (creator.name || 'م')[0];
+              const isReserve = a.is_reserve === true;
+              const isWait = a.status === 'waitlisted';
               const isClosed = a.status === 'closed';
               const isApproved = isClosed && a.brand_approved === true;
-              const awaitingApproval = isClosed && !isApproved;
-              const isNegotiating = !isClosed;
+              const awaitingApproval = isClosed && !isApproved && !isReserve;
+              const isNegotiating = !isClosed && !isWait;
               const forcedExpand = awaitingApproval; // بانتظار التعميد فقط يفتح تلقائياً
               const isExpanded = forcedExpand || expandedAppId === a.id;
-              const expandable = !isNegotiating; // التفاوض: زر عرض المفاوضة يكفي
+              const expandable = !isNegotiating && !isWait && !isReserve;
 
               // الشارة على اليمين حسب الحالة
               let headRight;
-              if (isNegotiating) {
+              if (isWait) {
+                headRight = `<span class="ac-status waitlist">في قائمة الانتظار</span>`;
+              } else if (isReserve) {
+                headRight = `<span class="ac-status reserve">احتياط جاهز</span>`;
+              } else if (isNegotiating) {
                 headRight = `<span class="ac-chatbtn" onclick="event.stopPropagation(); startNegotiation('${a.id}')">💬 عرض المفاوضة</span>`;
               } else if (awaitingApproval) {
                 headRight = `<span class="ac-status awaiting">⏳ بانتظار تعميدك</span>`;
@@ -3004,9 +3058,9 @@ function renderSingleCampaign(c) {
               }
 
               // السعر: للمعمّدة/بانتظار التعميد فقط (مو أثناء التفاوض)
-              const priceHtml = isNegotiating ? '' : `<div class="ac-price">
+              const priceHtml = (isNegotiating || isWait) ? '' : `<div class="ac-price">
                   ${(isClosed && a.final_price && a.final_price !== a.price) ? `<span class="strike">${a.price.toLocaleString('en-US')} ر.س</span>` : ''}
-                  <span><span class="ac-price-lbl">السعر النهائي</span>${(a.final_price || a.price).toLocaleString('en-US')} ر.س</span>
+                  <span><span class="ac-price-lbl">${isReserve ? 'السعر المتفق' : 'السعر النهائي'}</span>${(a.final_price || a.price).toLocaleString('en-US')} ر.س</span>
                 </div>`;
 
               // المحتوى المتوسّع
@@ -3064,15 +3118,6 @@ function renderSingleCampaign(c) {
                     <button class="btn-negotiation" onclick="event.stopPropagation(); startNegotiation('${a.id}')">💬 عرض المفاوضة</button>` : '')}</div>` : ''}
                 </div>
               `;
-            }).join('')}
-          </div>
-        ` : `
-          <div class="applications-summary">
-            <div class="text">لم يتم تلقي أي عروض بعد</div>
-          </div>
-        `}
-      </div>
-    `;
 }
 
 function toggleApplications(campaignId) {
