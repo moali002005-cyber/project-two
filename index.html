@@ -1346,7 +1346,7 @@ function build(){
 
  var mtHtml =
    '<div class="cw" id="mtStage">'
-  +'<div class="cfly"><svg id="mtSvg" viewBox="0 0 900 420" preserveAspectRatio="xMidYMid meet" aria-hidden="true"></svg></div>'
+  +'<div class="cfly"><svg id="mtSvg" viewBox="0 0 900 356" preserveAspectRatio="xMidYMid meet" aria-hidden="true"></svg></div>'
   +'<div class="ccaps" id="mtCaps"></div>'
   +'<div class="crail" id="mtDots"></div>'
   +'<div class="cctl"><button type="button" id="mtAgain">من البداية</button>'
@@ -1359,7 +1359,7 @@ function build(){
   +'<i class="on">أسرع</i><i>أسهل</i><i>أفضل</i></span></p>'
   +'</div>';
 
- var a=sect('', head('آلية العمل','فريق كامل… في ضغطة واحدة.','بدل الاجتماع والتنسيق والمتابعة بين فريق كامل — تُنشئ الحملة، وتتولّى المنصة ما بعدها حتى النشر.')+mtHtml);
+ var a=sect('', head('آلية العمل','فريق كامل… في ضغطة واحدة.','الاجتماع والتنسيق والمتابعة — اختصرناها في زر واحد.')+mtHtml);
 
  var fts='';
  NEW.forEach(function(f){ fts+='<div class="ft"><div class="ic">'+f[0]+'</div><h3>'+f[1]+'</h3><p>'+f[2]+'</p></div>'; });
@@ -1394,16 +1394,16 @@ function mtWire(){
  function lerp(a,b,t){return a+(b-a)*t;}
 
  /* ---------- من فريق كامل إلى ضغطة واحدة ---------- */
- var CXc=450, CYc=204, N=16, CO=[R,G,Y,B,P];
+ var CXc=450, CYc=176, N=16, CO=[R,G,Y,B,P];
  var gTable=E('g',{},svg), gLink=E('g',{},svg), gBub=E('g',{},svg),
      gPpl=E('g',{},svg), gBtn=E('g',{opacity:'0'},svg);
 
- var table=E('ellipse',{cx:CXc,cy:CYc,rx:214,ry:96,fill:'#F6F1EE',opacity:'0'},gTable);
+ var table=E('ellipse',{cx:CXc,cy:CYc,rx:192,ry:84,fill:'#F6F1EE',opacity:'0'},gTable);
 
  var ppl=[];
  for(var i=0;i<N;i++){
   var a=(-90+i*(360/N))*Math.PI/180;
-  var px=CXc+Math.cos(a)*318, py=CYc+Math.sin(a)*162;
+  var px=CXc+Math.cos(a)*300, py=CYc+Math.sin(a)*138;
   var g=E('g',{opacity:'0'},gPpl);
   E('circle',{cx:0,cy:-15,r:12,fill:CO[i%5]},g);
   E('path',{d:'M-18 13C-18 2 -8 -4 0 -4C8 -4 18 2 18 13Z',fill:CO[i%5]},g);
@@ -1416,7 +1416,7 @@ function mtWire(){
   links.push(E('line',{x1:A.x,y1:A.y,x2:A.x,y2:A.y,stroke:'#E0D6D1','stroke-width':'1.1','stroke-dasharray':'3 7',opacity:'0'},gLink));
  }
 
- var BP=[[-124,-40],[-8,-58],[108,-34],[-64,14],[58,26],[152,-2]];
+ var BP=[[-108,-34],[-6,-50],[96,-28],[-56,14],[52,24],[134,0]];
  var bubs=BP.map(function(o){
   var g=E('g',{opacity:'0'},gBub);
   E('rect',{x:CXc+o[0]-38,y:CYc+o[1]-17,width:76,height:34,rx:10,fill:'#fff',stroke:'#EDE4E0'},g);
@@ -1425,17 +1425,17 @@ function mtWire(){
   return g;
  });
 
- var bw=206, bh=58;
+ var bw=246, bh=66;
  E('rect',{x:CXc-bw/2,y:CYc-bh/2,width:bw,height:bh,rx:29,fill:R},gBtn);
- E('text',{x:CXc,y:CYc+7,'text-anchor':'middle','font-size':'19','font-weight':'900',fill:'#fff','font-family':'var(--font-display)'},gBtn)
+ E('text',{x:CXc,y:CYc+8,'text-anchor':'middle','font-size':'22','font-weight':'900',fill:'#fff'},gBtn)
   .textContent='أطلق الحملة';
  var ring=E('rect',{x:CXc-bw/2,y:CYc-bh/2,width:bw,height:bh,rx:29,fill:'none',stroke:R,'stroke-width':'2',opacity:'0'},gBtn);
  var cur=E('g',{opacity:'0'},gBtn);
  E('path',{d:'M0 0L0 24L6.4 18.4L10.2 27.4L14.4 25.6L10.7 16.8L18.4 16.8Z',fill:INK,stroke:'#fff','stroke-width':'2','stroke-linejoin':'round'},cur);
 
  var CAP=[
-  {h:'اجتماع، وتنسيق، ومتابعة…',p:'فريق كامل يتبادل الرسائل لإدارة حملة واحدة.'},
-  {h:'ضغطة واحدة.',p:'تُنشئ الحملة، وتتولّى المنصة ما بعدها حتى النشر.'}
+  {h:'اجتماع، وتنسيق، ومتابعة…',p:'فريق كامل لإدارة حملة واحدة.'},
+  {h:'ضغطة واحدة.',p:'تُنشئ الحملة، ويكتمل الباقي داخل المنصة.'}
  ];
  var capsEl=document.getElementById('mtCaps'),dotsEl=document.getElementById('mtDots');
  var capEls=CAP.map(function(c,i){var d=document.createElement('div');d.className='ccap'+(i===0?' on':'');
@@ -1455,8 +1455,8 @@ function mtWire(){
   var fo=1-seg(t,LOOP-0.9,LOOP-0.15);
   var col=out5(seg(t,T1,T1+1.35));
   table.setAttribute('opacity',(out3(seg(t,0.7,1.5))*(1-out3(seg(t,T1,T1+0.8)))*fo).toFixed(2));
-  table.setAttribute('rx',(214*(1-0.75*col)).toFixed(1));
-  table.setAttribute('ry',(96*(1-0.75*col)).toFixed(1));
+  table.setAttribute('rx',(192*(1-0.75*col)).toFixed(1));
+  table.setAttribute('ry',(84*(1-0.75*col)).toFixed(1));
   ppl.forEach(function(m,i){
    var ap=out5(seg(t,0.2+i*0.055,0.85+i*0.055));
    var x=lerp(m.x,CXc,col), y=lerp(m.y,CYc,col), sc=lerp(0.62,1,ap)*(1-col);
@@ -1483,21 +1483,29 @@ function mtWire(){
   gBtn.setAttribute('transform','translate('+CXc+','+CYc+') scale('+(lerp(0.8,1,bk)*(press>0&&press<1?0.972:1)).toFixed(3)+') translate('+(-CXc)+','+(-CYc)+')');
   var rk=seg(t,T1+2.25,T1+3.15);
   ring.setAttribute('opacity',(rk>0&&rk<1?(0.5*(1-rk)):0).toFixed(2));
-  var gw=bw+70*out3(rk), gh=bh+70*out3(rk);
+  var gw=bw+80*out3(rk), gh=bh+80*out3(rk);
   ring.setAttribute('x',(CXc-gw/2).toFixed(1)); ring.setAttribute('y',(CYc-gh/2).toFixed(1));
   ring.setAttribute('width',gw.toFixed(1)); ring.setAttribute('height',gh.toFixed(1));
   ring.setAttribute('rx',(gh/2).toFixed(1));
   var cp=seg(t,T1+1.5,T1+2.2);
   cur.setAttribute('opacity',(out3(seg(t,T1+1.45,T1+1.8))*(1-seg(t,T1+3.4,T1+3.9))*fo).toFixed(2));
-  cur.setAttribute('transform','translate('+lerp(CXc+126,CXc+18,ease(cp)).toFixed(1)+','
-   +(lerp(CYc+74,CYc+6,ease(cp))+(press>0&&press<1?2:0)).toFixed(1)+')');
+  cur.setAttribute('transform','translate('+lerp(CXc+140,CXc+22,ease(cp)).toFixed(1)+','
+   +(lerp(CYc+82,CYc+8,ease(cp))+(press>0&&press<1?2:0)).toFixed(1)+')');
   setCap(t<T1+0.9?0:1);
  }
 
  var t0=performance.now(),paused=false,pauseAt=0,last=performance.now(),vis=true;
- function seek(t){ t0=performance.now()-t*1000; curCap=-1; pauseAt=t; if(paused)frame(t%LOOP); }
- if(window.IntersectionObserver) new IntersectionObserver(function(e){vis=e[0].isIntersecting;},{threshold:0.04}).observe(stage);
+ var started=false, wasOut=true;
+ function seek(t){ started=true; t0=performance.now()-t*1000; curCap=-1; pauseAt=t; if(paused)frame(t%LOOP); }
+ if(window.IntersectionObserver){
+  new IntersectionObserver(function(e){
+   var iv=e[0].isIntersecting; vis=iv;
+   if(iv&&wasOut){ wasOut=false; started=true; t0=performance.now(); pauseAt=0; curCap=-1; }
+   if(!iv) wasOut=true;
+  },{threshold:0.34}).observe(stage);
+ } else { started=true; }
  function loop(now){
+  if(!started){ last=now; requestAnimationFrame(loop); return; }
   if(!paused&&vis&&!document.hidden){ if(now-last>900) t0=now-pauseAt*1000;
    var el=((now-t0)/1000)%LOOP; if(!(el>=0))el=0; pauseAt=el; frame(el); cmpFrame(((now-t0)/1000)%CL); }
   last=now; requestAnimationFrame(loop);
