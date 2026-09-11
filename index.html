@@ -147,7 +147,7 @@ body {
 .hs-stage{width:min(440px,84vw)}
 .hs-stage svg{display:block;width:100%;height:auto;overflow:visible}
 
-.cta-flow{display:flex;justify-content:center;align-items:center;gap:34px;width:min(760px,100%);margin:14px auto 0;padding:14px 0 10px}
+.cta-flow{display:none;justify-content:center;align-items:center;gap:34px;width:min(760px,100%);margin:14px auto 0;padding:14px 0 10px}
 .cta-flow .fbtn{position:relative;width:224px;height:58px;display:flex;align-items:center;justify-content:center;gap:8px;border-radius:18px;font-weight:800;font-size:16.5px;text-decoration:none;transition:transform .25s ease,border-radius .25s ease}
 .cta-flow .fbtn .leaf{position:absolute;top:-14px;width:26px;pointer-events:none}
 .cta-flow .fbtn.primary{background:linear-gradient(160deg,#EE5A44 0%,#E23B2E 45%,#B4271C 100%);color:#fff;animation:flameGlow 2.2s ease-in-out infinite alternate}
@@ -315,10 +315,7 @@ body {
           </svg>
           </div>
         </div>
-        <div class="cta-flow" id="ctaFlow">
-          <a href="/signup.html?role=creator" class="fbtn primary" id="fbR"><svg class="leaf" viewBox="0 0 40 40" aria-hidden="true"><path d="M8 34 C10 20 20 12 34 10 C30 24 22 32 8 34Z" fill="#2AA36B"/></svg><span data-i18n="hero_cta_creator">التسجيل كمعلن ←</span></a>
-          <a href="/signup.html?role=brand" class="fbtn ghost" id="fbL"><svg class="leaf" viewBox="0 0 40 40" aria-hidden="true"><path d="M8 34 C10 20 20 12 34 10 C30 24 22 32 8 34Z" fill="#2AA36B"/></svg><span data-i18n="hero_cta_brand">التسجيل كشركة</span></a>
-        </div>
+        <div class="cta-flow" id="ctaFlow"></div>
         </div>
       </div>
     </div>
@@ -744,6 +741,7 @@ document.addEventListener('DOMContentLoaded', async function () {
     const heroCtas = document.getElementById('ctaFlow') || document.getElementById('hero-ctas');
     if (heroCtas) {
       heroCtas.innerHTML = `<a href="${dashboardUrl}" class="btn btn-primary hero-cta-lg" data-i18n="${dashKey}">${dashLabel}</a>`;
+      heroCtas.style.display = 'flex';
     }
     // أعد تطبيق اللغة على الأزرار الجديدة
     if (window.simblI18n) simblI18n.apply();
