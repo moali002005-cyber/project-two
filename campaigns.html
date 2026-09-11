@@ -2113,6 +2113,15 @@ function hasPerm(p){ return !window.TEAM_WS || ((window.TEAM_WS.permissions||[])
 let myCampaigns = [];
 let campaignApps = {};
 let reserveCounts = {}; // عدد الاحتياط لكل حملة — خارج الشيت، لكنه يُعرض للشركة بصراحة
+
+// عدد من تفاوض فعلًا على الحملة — مصدر واحد للرقم في كل مكان حتى لا تختلف الأرقام
+function engagedCount(campaignId) {
+  const apps = campaignApps[campaignId] || [];
+  const closed = apps.filter(a => a.status === 'closed').length;
+  const live   = apps.filter(a => a.status === 'pending' || a.status === 'active').length;
+  const wait   = apps.filter(a => a.status === 'waitlisted').length;
+  return closed + live + wait + (reserveCounts[campaignId] || 0);
+}
 let selectedCampaignId = null;
 let expandedAppId = null;
 
@@ -3123,7 +3132,7 @@ async function refreshDuesLive() {
 function renderStats() {
   const allApps = Object.values(campaignApps).flat();
   const activeCount = myCampaigns.filter(c => c.status !== 'closed').length;
-  const totalApps = allApps.length;
+  const totalApps = myCampaigns.reduce((n, c) => n + engagedCount(c.id), 0);
   const pendingApps = allApps.filter(a => a.status === 'pending').length;
   const closedDeals = allApps.filter(a => a.status === 'closed').length;
 
@@ -3179,7 +3188,7 @@ function renderCampaigns() {
       if (isCampaignComplete(c)) dot = '<span class="tab-done">✓ مكتملة</span>';
       else if (hasAwaitingApproval) dot = '<span class="tab-dot warn"></span>';
       else if (hasActiveNegotiation) dot = '<span class="tab-dot live"></span>';
-      const totalApps = apps.length;
+      const totalApps = engagedCount(c.id);
       const isActive = c.id === selectedCampaignId;
       const countBadge = totalApps > 0 ? `<span class="tab-count">${toArabic(totalApps)}</span>` : '';
       return `<button class="pill-item ${isActive ? 'active' : ''}" onclick="selectCampaign('${c.id}')">${escHtml(c.title)}${countBadge}${dot}</button>`;
@@ -4038,7 +4047,7 @@ function renderSingleCampaign(c) {
     const reserveCount = reserveCounts[c.id] || 0;
     const closedCount  = apps.filter(a => a.status === 'closed').length;
     const liveCount    = apps.filter(a => a.status === 'pending' || a.status === 'active').length;
-    const engagedTotal = closedCount + liveCount + waitlistApps.length + reserveCount;
+    const engagedTotal = engagedCount(c.id);
     const target = campaignTarget(c);
     const approved = approvedDealCount(c.id);
     const complete = isCampaignComplete(c);
