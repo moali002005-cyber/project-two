@@ -4025,8 +4025,7 @@ function loadXLSX() {
 }
 
 async function downloadDeliveryExcel(campaignId) {
-  // قيد الباقة
-  if (typeof simblGate === 'function' && !await simblGate('can_delivery_excel', 'إكسل التوصيل', 'جدول شحن جاهز تسلّمه لمندوب التوصيل بعناوين المعلنين كاملة — متاح مع باقة Standard فأعلى.')) return;
+  // إكسل التوصيل متاح لكل الباقات — بيانات شحن الشركة نفسها، لا تُحجب عنها
   const rows = getDeliveryRows(campaignId);
   const hasAny = rows.some(r => r.phone || r.national || r.map || r.address);
   if (!hasAny) { showToast('ما فيه بيانات توصيل بعد', 'error'); return; }

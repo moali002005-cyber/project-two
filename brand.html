@@ -2775,6 +2775,12 @@ function renderStats() {
 }
 
 function renderCampaigns() {
+  // متابعة الحملات كلها في campaigns.html. هذه الصفحة لا ترسم الشيت إطلاقًا —
+  // نسخة ثانية من نفس الواجهة تتفرّع وتتناقض مع الأصل (وقد حصل فعلًا).
+  return;
+}
+
+function _renderCampaignsLegacy_unused() {
   const list = document.getElementById('campaigns-list');
   const pillsContainer = document.getElementById('campaign-pills');
   if (!list || !pillsContainer) return;
