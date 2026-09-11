@@ -1660,3 +1660,71 @@ Object.assign(window.I18N_TEXT, {
  "💳 المستحقات": "💳 Payments due",
  "🌡️ حرارة الحملة": "🌡️ Campaign heat"
 });
+
+/* ===== واجهة الصفحة الرئيسية — تحديث سبتمبر 2026 ===== */
+Object.assign(window.I18N_TEXT, {
+ /* التنقّل */
+ "المميزات": "Features",
+ "حالات الاستخدام": "Use cases",
+ "الأسعار": "Pricing",
+ "لصنّاع المحتوى": "For creators",
+ "القائمة": "Menu",
+
+ /* قسم شرح المنصة */
+ "حملتك الإعلانية الآن بضغطة زر": "Your ad campaign is now one click away",
+ "كيف تشتغل فلفلونسر": "How Flfluencer works",
+
+ /* دليل المؤثرين */
+ "آلاف المؤثرين بمكان واحد": "Thousands of creators in one place",
+ "تصفّح المؤثرين المسجّلين في المنصة، وفلترهم بالمنصة والتصنيف ونطاق المتابعين والدولة. تطّلع على ملف كل مؤثر وسعره المعلن ودرجة ثقته، وتضيف من يناسب حملتك إلى سلّتك قبل الإطلاق.": "Browse the creators registered on the platform and filter them by channel, category, follower range and country. Open any creator's profile to see their listed price and trust score, then add whoever fits your campaign to your basket before you launch.",
+ "أكثر من 45 مليون متابع": "Over 45 million followers",
+ "فلترة بالتصنيف ونطاق المتابعين": "Filter by category and follower range",
+ "درجة ثقة لكل مؤثر": "A trust score for every creator",
+ "مؤثرو الجمال · 50–100 ألف متابع · الرياض": "Beauty creators · 50–100K followers · Riyadh",
+ "ابحث باسم المؤثر أو المدينة…": "Search by creator name or city…",
+ "المنصة": "Channel",
+ "البحث مجاني · بدون حساب · الأسعار معلنة من المؤثر نفسه": "Free to search · no account needed · prices listed by the creators themselves",
+
+ /* مشهد آلية العمل */
+ "الوقت الذي كنت تقضيه في الإعداد… لم يعد موجودًا": "The time you used to spend setting up is gone",
+ "أطلق الحملة": "Launch campaign",
+ "الطريقة المعتادة": "The usual way",
+ "تبحث عن المؤثرين، وتتواصل مع كل واحد منهم، وتتفاوض على السعر، ثم تتابع التنفيذ. عمل يحتاج فريقًا ووقتًا طويلًا.": "You hunt for creators, contact each one, haggle over the price, then chase delivery. That takes a team and a lot of time.",
+ "الطريقة في فلفلونسر": "The Flfluencer way",
+ "تحدّد ميزانيتك وعدد المؤثرين، ثم تضغط زرًا واحدًا. المنصة تتولّى الاختيار والتواصل والتفاوض والمتابعة حتى التسليم.": "You set your budget and how many creators you want, then press one button. The platform handles selection, outreach, negotiation and follow-up all the way to delivery.",
+
+ /* لوح الوقت */
+ "الوقت": "Time",
+ "حملة كانت تأخذ أسابيع… تنتهي منها الآن بدقائق.": "A campaign that used to take weeks is now done in minutes.",
+ "وقتك": "Your time",
+ "عدد المعلنين": "Number of creators",
+ "ثابت دائمًا": "Always the same",
+ "تُنشئ مرة، وتعتمد": "Set it up once, then approve",
+ "أربعون ضعفًا": "Forty times",
+
+ /* وكيل التفاوض */
+ "وكيل تفاوض يقفل الصفقة نيابةً عنك": "A negotiation agent that closes the deal for you",
+ "يفاوض جميع معلني حملتك في وقت واحد": "It negotiates with every creator in your campaign at once",
+ "وبقيّتهم": "and the rest",
+ "الخطّ المتقطّع هو سقف ميزانيتك — ولا صفقة تتجاوزه.": "The dashed line is your budget ceiling — no deal ever crosses it.",
+
+ /* بابا التسجيل */
+ "شركة أو وكالة": "Brand or agency",
+ "أطلق حملتك، وفلفل يتولّى المؤثرين نيابةً عنك.": "Launch your campaign and let Flfluencer handle the creators for you.",
+ "سجّل شركتك ←": "Register your company →",
+ "معلن": "Creator",
+ "شوف فرصك مع الشركات، ونمِّ أعمالك.": "See your opportunities with brands and grow your business.",
+ "سجّل كمعلن ←": "Sign up as a creator →",
+
+ /* التذييل */
+ "الاسترجاع والإلغاء": "Refunds & cancellation",
+ "الشروط والأحكام": "Terms & conditions",
+ "سياسة الخصوصية": "Privacy policy",
+ "تواصل معنا": "Contact us",
+ "مؤسسة فلفلونسر آي — سجل تجاري (الرقم الوطني الموحد): 7051501588 — المملكة العربية السعودية": "Flfluencer AI Est. — Commercial registration (Unified National Number): 7051501588 — Kingdom of Saudi Arabia",
+ "© Flfluencer — جميع الحقوق محفوظة": "© Flfluencer — All rights reserved"
+});
+Object.assign(window.I18N_TEXT, {
+ "القائمة": "Menu",
+ "كيف تشتغل فلفلونسر": "How Flfluencer works"
+});

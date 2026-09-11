@@ -57,6 +57,19 @@
       if (lang === 'en' && map[key] != null) el.setAttribute('placeholder', map[key]);
       else el.setAttribute('placeholder', orig);
     });
+    // سمات نصّية أخرى: aria-label / title / alt
+    ['aria-label', 'title', 'alt'].forEach(function (attr) {
+      var list = root.querySelectorAll ? Array.prototype.slice.call(root.querySelectorAll('[' + attr + ']')) : [];
+      if (root.nodeType === 1 && root.hasAttribute && root.hasAttribute(attr)) list.push(root);
+      Array.prototype.forEach.call(list, function (el) {
+        var store = '_oa_' + attr;
+        if (el[store] == null) el[store] = el.getAttribute(attr) || '';
+        var orig = el[store], key = orig.trim();
+        if (!key) return;
+        if (lang === 'en' && map[key] != null) el.setAttribute(attr, map[key]);
+        else el.setAttribute(attr, orig);
+      });
+    });
   }
 
   function apply() {

@@ -1570,7 +1570,9 @@ function mtWire(){
 
  /* ---------- لوحة الأحجام: حجم الحملة يكبر، وشغلك ثابت ---------- */
  var AR='٠١٢٣٤٥٦٧٨٩';
- function toAr(n){ return String(n).replace(/[0-9]/g,function(d){return AR[+d];}); }
+ function isEN(){ try{ return localStorage.getItem('simbl_lang')==='en'; }catch(e){ return false; } }
+ function toAr(n){ if(isEN()) return String(n);
+  return String(n).replace(/[0-9]/g,function(d){return AR[+d];}); }
  var SIZES=[5,10,15,20,30,50,100,200];
  var cmpSvg=document.getElementById('mtCmp'), cmpFrame=function(){};
  if(cmpSvg){
