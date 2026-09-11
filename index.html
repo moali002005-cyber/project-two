@@ -1351,10 +1351,10 @@ function build(){
   +'<div class="crail" id="mtDots"></div>'
   +'<div class="cctl"><button type="button" id="mtAgain">من البداية</button>'
   +'<button type="button" id="mtHold">إيقاف</button></div>'
-  +'<div class="cmp"><span class="cmp-k"><i></i>الوقت</span>'
-  +'<h3>الفجوة انسدّت.</h3>'
-  +'<svg id="mtCmp" viewBox="0 0 900 244" preserveAspectRatio="xMidYMid meet" aria-hidden="true"></svg>'
-  +'<p>بين ضغطتك وبين اشتغال الحملة ما بقي شي تنتظره. ولهذا ما نقيس الحملة بالساعات — ما بقي فيها وقت يتغيّر أصلاً.</p>'
+  +'<div class="cmp"><span class="cmp-k"><i></i>مقارنة الأحجام</span>'
+  +'<h3>مهما كبر العدد… شغلك هو هو.</h3>'
+  +'<svg id="mtCmp" viewBox="0 0 900 348" preserveAspectRatio="xMidYMid meet" aria-hidden="true"></svg>'
+  +'<p>ثمانية أحجام حملات — من خمسة معلنين إلى مئتين. العمود الملوّن حجم الحملة، والأسود شغلك أنت فيها: تنشئ الحملة مرة وحدة. الحافة اليسرى مستقيمة في الصفوف الثمانية.</p>'
   +'</div>'
   +'</div>';
 
@@ -1593,112 +1593,67 @@ function mtWire(){
  E('rect',{x:-78,y:-18,width:156,height:36,rx:18,fill:'#E8F7EE',stroke:'#BFE6CF'},done);
  E('text',{x:0,y:5,'text-anchor':'middle','font-size':'13.5','font-weight':'900',fill:'#0A8A3C'},done).textContent='الحملة اكتملت';
 
- /* ---------- الفجوة: ساعة تُشطب ثم تنسدّ الفجوة ---------- */
+ /* ---------- لوحة الأحجام: حجم الحملة يكبر، وشغلك ثابت ---------- */
+ var AR='٠١٢٣٤٥٦٧٨٩';
+ function toAr(n){ return String(n).replace(/[0-9]/g,function(d){return AR[+d];}); }
+ var SIZES=[5,10,15,20,30,50,100,200];
  var cmpSvg=document.getElementById('mtCmp'), cmpFrame=function(){};
  if(cmpSvg){
-  var CW=132, CY2=56, CYM=CY2+CW/2, MID=450;
-  var RA=700, LA=90, RB=MID+4, LB=MID-4-CW;
+  var AXIS=430, Y0=76, RH=15, RG=31, MINE=44, MX=AXIS-8, MINX=MX-MINE, BW=358;
   var cd=E('defs',{},cmpSvg);
-  var bg2=E('linearGradient',{id:'gapG',gradientUnits:'userSpaceOnUse',x1:'760',y1:'0',x2:'140',y2:'0'},cd);
-  [[0,'#0DA64F'],[0.3,'#F5B417'],[0.58,'#E23B2E'],[0.8,'#3777BB'],[1,'#7C51A0']].forEach(function(o){
-   E('stop',{offset:(o[0]*100)+'%','stop-color':o[1]},bg2); });
-
-  var gGap=E('g',{},cmpSvg), gR=E('g',{opacity:'0'},cmpSvg), gL=E('g',{opacity:'0'},cmpSvg),
-      gClock=E('g',{opacity:'0'},cmpSvg), gSlash=E('g',{},cmpSvg), gSpark=E('g',{},cmpSvg);
-
-  /* الفجوة المنقّطة */
-  var dash=E('line',{x1:RA,y1:CYM,x2:RA,y2:CYM,stroke:'#E3D9D5','stroke-width':'2','stroke-linecap':'round','stroke-dasharray':'2 10'},gGap);
-
-  /* البطاقة اليمنى — الضغطة */
-  E('rect',{x:0,y:0,width:CW,height:CW,rx:26,fill:'#fff',stroke:'#E9DFDB','stroke-width':'1.6'},gR);
-  E('rect',{x:26,y:44,width:80,height:30,rx:15,fill:'#E23B2E'},gR);
-  var curs=E('path',{d:'M62 62L62 92L70 85L75 96L82 93L77 82L88 82Z',fill:INK,stroke:'#fff','stroke-width':'2.4','stroke-linejoin':'round'},gR);
-  var prs=E('circle',{cx:66,cy:59,r:0,fill:'none',stroke:'#E23B2E','stroke-width':'2.4',opacity:'0'},gR);
-
-  /* البطاقة اليسرى — الحملة تمشي */
-  E('rect',{x:0,y:0,width:CW,height:CW,rx:26,fill:'#fff',stroke:'#E9DFDB','stroke-width':'1.6'},gL);
-  var chG=E('g',{},gL);
-  fetch('/brand/chili.svg').then(function(r){return r.text();}).then(function(txt){
-   var d=new DOMParser().parseFromString(txt,'image/svg+xml'), src=d.documentElement;
-   var vb=(src.getAttribute('viewBox')||'0 0 300 300').split(/[\s,]+/).map(Number);
-   var inn=E('g',{},chG), sc=84/vb[3];
-   [].slice.call(src.querySelectorAll('path')).forEach(function(pp){ inn.appendChild(pp.cloneNode(true)); });
-   inn.setAttribute('transform','translate('+(CW/2)+','+(CW/2)+') scale('+sc.toFixed(4)+') translate('
-    +(-(vb[0]+vb[2]/2)).toFixed(1)+','+(-(vb[1]+vb[3]/2)).toFixed(1)+')');
-  }).catch(function(){});
-
-  /* الساعة */
-  E('circle',{cx:0,cy:0,r:38,fill:'#fff',stroke:'#D9CFCA','stroke-width':'2.6'},gClock);
-  for(var q=0;q<12;q++){
-   var a=q*Math.PI/6;
-   E('line',{x1:(Math.cos(a)*31).toFixed(1),y1:(Math.sin(a)*31).toFixed(1),
-    x2:(Math.cos(a)*(q%3?27:24)).toFixed(1),y2:(Math.sin(a)*(q%3?27:24)).toFixed(1),
-    stroke:'#DDD3CE','stroke-width':(q%3?1.6:2.4)},gClock);
-  }
-  var hh=E('line',{x1:0,y1:0,x2:0,y2:-16,stroke:'#8A807B','stroke-width':'3.4','stroke-linecap':'round'},gClock);
-  var mh=E('line',{x1:0,y1:0,x2:0,y2:-25,stroke:'#B0A29D','stroke-width':'2.6','stroke-linecap':'round'},gClock);
-  E('circle',{cx:0,cy:0,r:3,fill:'#8A807B'},gClock);
-
-  /* الشطب */
-  var sl1=E('line',{x1:MID-46,y1:CYM+46,x2:MID-46,y2:CYM+46,stroke:'#E23B2E','stroke-width':'6','stroke-linecap':'round'},gSlash);
-  var sl2=E('line',{x1:MID+46,y1:CYM+46,x2:MID+46,y2:CYM+46,stroke:'#E23B2E','stroke-width':'6','stroke-linecap':'round',opacity:'0'},gSlash);
-
-  /* شرارة التلامس */
-  var sp=[];
-  for(var q=0;q<14;q++) sp.push(E('circle',{r:3,fill:['#E23B2E','#F5B417','#0DA64F','#3777BB','#7C51A0'][q%5],opacity:'0'},gSpark));
-  var joinLine=E('line',{x1:MID,y1:CYM,x2:MID,y2:CYM,stroke:'url(#gapG)','stroke-width':'0','stroke-linecap':'round',opacity:'0'},gSpark);
-
-  var CL=9.0;
+  var bgr=E('linearGradient',{id:'cmpBrand',gradientUnits:'userSpaceOnUse',x1:AXIS+8,y1:'0',x2:AXIS+8+BW,y2:'0'},cd);
+  [[0,'#0DA64F'],[0.24,'#F5B417'],[0.5,'#E23B2E'],[0.76,'#3777BB'],[1,'#7C51A0']].forEach(function(o){
+   E('stop',{offset:(o[0]*100)+'%','stop-color':o[1]},bgr); });
+  var lbA=E('text',{x:MX,y:46,'text-anchor':'end','font-size':'13','font-weight':'700',fill:'#A99E99'},cmpSvg);
+  lbA.textContent='شغلك أنت';
+  var lbB=E('text',{x:AXIS+10,y:46,'text-anchor':'start','font-size':'13','font-weight':'700',fill:'#A99E99'},cmpSvg);
+  lbB.textContent='حجم الحملة — معلن';
+  E('line',{x1:AXIS,y1:58,x2:AXIS,y2:Y0+7*RG+RH+10,stroke:'#EFE7E4','stroke-width':'1.3'},cmpSvg);
+  var rows=SIZES.map(function(n,i){
+   var y=Y0+i*RG, g=E('g',{opacity:'0'},cmpSvg);
+   E('rect',{x:AXIS+8,y:y+RH/2-1.5,width:BW,height:3,rx:1.5,fill:'#F7F2EF'},g);
+   var big=E('rect',{x:AXIS+8,y:y,width:0,height:RH,rx:RH/2,fill:'url(#cmpBrand)'},g);
+   var mine=E('rect',{x:MX,y:y,width:0,height:RH,rx:RH/2,fill:INK},g);
+   var num=E('text',{x:AXIS+8,y:y+RH-2.5,'text-anchor':'start','font-size':(i===7?'15':'13.5'),'font-weight':(i===7?'900':'800'),fill:(i===7?INK:'#A99E99'),opacity:'0'},g);
+   num.textContent=toAr(n);
+   return {g:g,big:big,mine:mine,num:num,y:y,w:16+(BW-16)*(n/200)};
+  });
+  var edge=E('line',{x1:MINX,y1:Y0,x2:MINX,y2:Y0,stroke:INK,'stroke-width':'2.4','stroke-linecap':'round',opacity:'0'},cmpSvg);
+  var YE=Y0+7*RG+RH, MIDY=(Y0+YE)/2;
+  var tag=E('g',{opacity:'0'},cmpSvg);
+  E('path',{d:'M368 '+Y0+'H356V'+YE+'H368M356 '+MIDY.toFixed(1)+'H344',
+   fill:'none',stroke:'#D9CFCA','stroke-width':'1.4','stroke-linecap':'round','stroke-linejoin':'round'},tag);
+  E('text',{x:332,y:(MIDY-3).toFixed(1),'text-anchor':'end','font-size':'16','font-weight':'900',fill:INK},tag)
+   .textContent='نفس الشي في كل مرة';
+  E('text',{x:332,y:(MIDY+22).toFixed(1),'text-anchor':'end','font-size':'13.5','font-weight':'700',fill:'#A99E99'},tag)
+   .textContent='تنشئ الحملة مرة وحدة';
+  var tag2=E('g',{opacity:'0'},cmpSvg);
+  E('text',{x:AXIS+8,y:YE+30,'text-anchor':'start','font-size':'13.5','font-weight':'700',fill:'#B0A29D'},tag2)
+   .textContent='أربعون ضعفًا بين أصغر حملة وأكبرها';
+  var CL=7.4;
   cmpFrame=function(u){
-   var fo=1-seg(u,8.2,8.9);
-   var close=out5(seg(u,4.55,6.05));
-   var rx=lerp(RA,RB,close), lx=lerp(LA,LB,close);
-   var ri=out5(seg(u,0.15,0.75)), li=out5(seg(u,0.30,0.90));
-   gR.setAttribute('opacity',(ri*fo).toFixed(2));
-   gR.setAttribute('transform','translate('+rx.toFixed(1)+','+CY2+') scale('+lerp(0.86,1,ri).toFixed(3)+')');
-   gL.setAttribute('opacity',(li*fo).toFixed(2));
-   gL.setAttribute('transform','translate('+lx.toFixed(1)+','+CY2+') scale('+lerp(0.86,1,li).toFixed(3)+')');
-   /* ضغطة داخل البطاقة اليمنى */
-   var pk=seg(u,1.15,1.75);
-   curs.setAttribute('transform','translate(0,'+(pk>0&&pk<1?(3*Math.sin(Math.PI*pk)):0).toFixed(1)+')');
-   prs.setAttribute('opacity',(pk>0&&pk<1?(0.8*(1-pk))*fo:0).toFixed(2));
-   prs.setAttribute('r',(6+26*out3(pk)).toFixed(1));
-   /* الفجوة */
-   var dk=out3(seg(u,0.75,1.35));
-   dash.setAttribute('x1',(rx-14).toFixed(1));
-   dash.setAttribute('x2',lerp(rx-14,lx+CW+14,dk).toFixed(1));
-   dash.setAttribute('opacity',((1-out3(seg(u,4.55,5.4)))*fo).toFixed(2));
-   /* الساعة */
-   var ck=out5(seg(u,1.25,1.85)), crush=out3(seg(u,4.55,5.45));
-   gClock.setAttribute('opacity',(ck*(1-crush)*fo).toFixed(2));
-   gClock.setAttribute('transform','translate('+MID+','+CYM+') scale('+(lerp(0.7,1,ck)*(1-crush)).toFixed(3)+') rotate('+(crush*36).toFixed(1)+')');
-   var spin=Math.max(0,u-1.6);
-   mh.setAttribute('transform','rotate('+(spin*330).toFixed(1)+')');
-   hh.setAttribute('transform','rotate('+(spin*27.5).toFixed(1)+')');
-   /* الشطب */
-   var s1=out3(seg(u,3.55,4.05)), s2=out3(seg(u,3.95,4.40));
-   sl1.setAttribute('x2',lerp(MID-46,MID+46,s1).toFixed(1));
-   sl1.setAttribute('y2',lerp(CYM+46,CYM-46,s1).toFixed(1));
-   sl1.setAttribute('opacity',((s1>0?1:0)*(1-crush)*fo).toFixed(2));
-   sl2.setAttribute('opacity',((s2>0?1:0)*(1-crush)*fo).toFixed(2));
-   sl2.setAttribute('x2',lerp(MID+46,MID-46,s2).toFixed(1));
-   sl2.setAttribute('y2',lerp(CYM+46,CYM-46,s2).toFixed(1));
-   /* التلامس */
-   var jk=seg(u,6.0,6.3);
-   joinLine.setAttribute('opacity',(jk>0&&jk<1?(1-jk)*fo:0).toFixed(2));
-   joinLine.setAttribute('stroke-width',(18*(1-jk)).toFixed(1));
-   joinLine.setAttribute('y1',(CYM-30*jk).toFixed(1));
-   joinLine.setAttribute('y2',(CYM+30*jk).toFixed(1));
-   sp.forEach(function(e,i){
-    var a=(i/14)*Math.PI*2, k=seg(u,6.0,6.9);
-    e.setAttribute('cx',(MID+Math.cos(a)*(10+96*out3(k))).toFixed(1));
-    e.setAttribute('cy',(CYM+Math.sin(a)*(10+64*out3(k))).toFixed(1));
-    e.setAttribute('r',(3*(1-k)).toFixed(2));
-    e.setAttribute('opacity',(k>0&&k<1?(1-k)*fo:0).toFixed(2));
+   var fo=1-seg(u,6.6,7.2);
+   rows.forEach(function(rw,i){
+    var t0r=0.30+i*0.34, k=out5(seg(u,t0r,t0r+0.55));
+    rw.g.setAttribute('opacity',(out3(seg(u,t0r,t0r+0.22))*fo).toFixed(2));
+    rw.big.setAttribute('width',(rw.w*k).toFixed(1));
+    rw.mine.setAttribute('width',(MINE*k).toFixed(1));
+    rw.mine.setAttribute('x',(MX-MINE*k).toFixed(1));
+    rw.num.setAttribute('x',(AXIS+8+rw.w*k+12).toFixed(1));
+    rw.num.setAttribute('opacity',(out3(seg(u,t0r+0.4,t0r+0.7))*fo).toFixed(2));
    });
+   var ek=out3(seg(u,3.35,4.25));
+   edge.setAttribute('opacity',(ek>0?fo:0).toFixed(2));
+   edge.setAttribute('y2',(Y0+(7*RG+RH)*ek).toFixed(1));
+   var tk=out5(seg(u,4.30,4.75));
+   tag.setAttribute('opacity',(tk*fo).toFixed(2));
+   tag.setAttribute('transform','translate(0,'+((1-tk)*7).toFixed(1)+')');
+   var t2k=out5(seg(u,4.65,5.10));
+   tag2.setAttribute('opacity',(t2k*0.95*fo).toFixed(2));
+   tag2.setAttribute('transform','translate(0,'+((1-t2k)*7).toFixed(1)+')');
   };
  }
- var CL=9.0;
+ var CL=7.4;
 
  var now=E('g',{opacity:'0'},svg);
  E('rect',{x:700,y:130,width:104,height:32,rx:16,fill:'#E8F7EE',stroke:'#BFE6CF'},now);
