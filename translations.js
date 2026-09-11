@@ -1906,3 +1906,12 @@ Object.assign(window.I18N_TEXT, {
  "جارٍ تحميل الباقات…": "Loading plans…",
  "كل المزايا والمقارنة الكاملة ←": "All features and the full comparison →"
 });
+Object.assign(window.I18N_TEXT, {
+ "عمولة المنصة تنزل كل ما ارتفعت باقتك. الاشتراك يدفع نفسه من أول شهر تتجاوز فيه نقطة التعادل.": "The platform fee drops with every plan you move up. The subscription pays for itself in the first month you pass the break-even point.",
+ "نقطة التعادل = المبلغ الشهري الذي يتساوى عنده الاشتراك مع ما توفّره من العمولة. فوقه تربح، وتحته الباقة المجانية أوفر لك.": "Break-even = the monthly spend at which the subscription equals what you save in fees. Above it you come out ahead; below it the free plan costs you less.",
+ "باقات الشركات — كل ترقية تنزّل عمولتك على كل حملة. الاشتراك يدفع نفسه من أول شهر تتجاوز فيه نقطة التعادل.": "Company plans — every upgrade lowers your fee on each campaign. The subscription pays for itself in the first month you pass the break-even point.",
+ "باقات المعلنين — كل ترقية تنزّل العمولة على مستحقاتك. الاشتراك يدفع نفسه من أول شهر تتجاوز فيه نقطة التعادل.": "Creator plans — every upgrade lowers the fee on your earnings. The subscription pays for itself in the first month you pass the break-even point.",
+ "أكثر من 500 ألف متابع": "Over 500K followers",
+ "أكثر من 45 مليون متابع": "Over 45 million followers",
+ "فلترة بالتصنيف ونطاق المتابعين": "Filter by category and follower range"
+});
