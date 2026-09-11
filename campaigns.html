@@ -488,6 +488,7 @@ body {
 }
 .applications-summary .text { font-size: 14px; color: var(--ink-soft); }
 .applications-summary strong { color: var(--accent); font-weight: 600; }
+.applications-summary .as-note { grid-column: 1 / -1; font-size: 12.5px; line-height: 1.8; color: var(--ink-muted); border-top: 1px solid rgba(15,20,32,0.07); padding-top: 10px; margin-top: 2px; }
 .pay-now-btn {
   border: 0; cursor: pointer; font-family: inherit; font-size: 13.5px; font-weight: 700;
   color: #fff; background: linear-gradient(135deg, #EE5A44, #C0231A);
@@ -2111,6 +2112,7 @@ let WORKSPACE_ID = null; // مساحة العمل الفعّالة (المالك
 function hasPerm(p){ return !window.TEAM_WS || ((window.TEAM_WS.permissions||[]).indexOf(p) >= 0); }
 let myCampaigns = [];
 let campaignApps = {};
+let reserveCounts = {}; // عدد الاحتياط لكل حملة — خارج الشيت، لكنه يُعرض للشركة بصراحة
 let selectedCampaignId = null;
 let expandedAppId = null;
 
@@ -2785,10 +2787,15 @@ async function loadData() {
       allApps = await dbGetAppsForCampaigns(campIds);
     }
     campaignApps = {};
-    myCampaigns.forEach(c => { campaignApps[c.id] = []; });
+    reserveCounts = {};
+    myCampaigns.forEach(c => { campaignApps[c.id] = []; reserveCounts[c.id] = 0; });
     allApps.forEach(a => {
       if (a.status === 'campaign_full') return; // تفاوض متوقف لاكتمال الحملة — لا يظهر في الشيت
-      if (a.is_reserve === true) return; // احتياط مخفي — جاهز في الخلفية، لا يظهر للشركة
+      if (a.is_reserve === true) {
+        // الاحتياط خارج حجم الحملة فلا يدخل شيت الصفقات — لكن عدده يُعرض للشركة، لا يُخفى عنها
+        if (a.status === 'closed') reserveCounts[a.campaign_id] = (reserveCounts[a.campaign_id] || 0) + 1;
+        return;
+      }
       (campaignApps[a.campaign_id] = campaignApps[a.campaign_id] || []).push(a);
     });
 
@@ -4027,6 +4034,11 @@ function renderSingleCampaign(c) {
     const pendingApps = apps.filter(a => a.status === 'pending');
     const waitlistApps = apps.filter(a => a.status === 'waitlisted');
     const sheetApps = apps.filter(a => a.status !== 'waitlisted' && a.status !== 'rejected' && a.status !== 'campaign_full');
+    // الأرقام الصادقة: كل من تفاوض على هذه الحملة فعلًا
+    const reserveCount = reserveCounts[c.id] || 0;
+    const closedCount  = apps.filter(a => a.status === 'closed').length;
+    const liveCount    = apps.filter(a => a.status === 'pending' || a.status === 'active').length;
+    const engagedTotal = closedCount + liveCount + waitlistApps.length + reserveCount;
     const target = campaignTarget(c);
     const approved = approvedDealCount(c.id);
     const complete = isCampaignComplete(c);
@@ -4053,6 +4065,7 @@ function renderSingleCampaign(c) {
               ${c.platform ? `<span><strong>المنصة:</strong> ${PLATFORM_LABELS[c.platform] || c.platform}</span>` : ''}
               ${c.follower_range ? `<span><strong>المتابعين:</strong> ${followerRangeText(c)}</span>` : ''}
               ${c.campaign_size ? `<span><strong>حجم الحملة:</strong> ${toArabic(c.campaign_size)} معلن <span class="camp-count ${complete ? 'full' : ''}">${toArabic(approved)}/${toArabic(target)} معتمد</span></span>` : ''}
+              ${reserveCount > 0 ? `<span><strong>الاحتياط:</strong> ${toArabic(reserveCount)} معلن جاهز</span>` : ''}
               ${waitlistApps.length > 0 ? `<span><strong>قائمة الانتظار:</strong> ${toArabic(waitlistApps.length)} معلن</span>` : ''}
               ${c.country ? `<span><strong>الدولة:</strong> ${COUNTRY_LABELS[c.country] || c.country}</span>` : ''}
               ${c.city ? `<span><strong>المدينة:</strong> ${CITY_LABELS[c.city] || c.city}</span>` : ''}
@@ -4086,14 +4099,16 @@ function renderSingleCampaign(c) {
         ${apps.length > 0 ? `
           <div class="applications-summary">
             <div class="text">
-              تم استلام <strong>${apps.length}</strong> ${apps.length === 1 ? 'عرض' : 'عروض'}
-              ${apps.filter(a => a.status === 'closed').length > 0 ? `· <strong>${apps.filter(a => a.status === 'closed').length}</strong> صفقة مقفلة` : ''}
-              ${pendingApps.length > 0 ? `· <strong style="color:var(--ink-muted)">${pendingApps.length}</strong> قيد المراجعة` : ''}
-              ${waitlistApps.length > 0 ? `· <strong style="color:#5B6B7A">${waitlistApps.length}</strong> في قائمة الانتظار` : ''}
+              <strong>${toArabic(engagedTotal)}</strong> ${engagedTotal === 1 ? 'معلن تفاوض' : 'معلنًا تفاوضوا'} على حملتك
+              ${closedCount > 0 ? `— <strong>${toArabic(closedCount)}</strong> ضمن حملتك` : ''}
+              ${liveCount > 0 ? `· <strong style="color:var(--ink-muted)">${toArabic(liveCount)}</strong> قيد التفاوض` : ''}
+              ${reserveCount > 0 ? `· <strong style="color:#2B5C91">${toArabic(reserveCount)}</strong> جاهزًا كاحتياط` : ''}
+              ${waitlistApps.length > 0 ? `· <strong style="color:#5B6B7A">${toArabic(waitlistApps.length)}</strong> في قائمة الانتظار` : ''}
               ${payPaidCount(apps) > 0 ? `· <strong style="color:#0F6E56">💳 ${payPaidCount(apps)} مدفوعة للمنصة</strong>` : ''}
               ${c.fulfillment_mode === 'code' ? codesChipHtml(c.id) : ''}
             </div>
             ${payButtonHtml(c.id, apps)}
+            ${reserveCount > 0 ? `<div class="as-note">الاحتياط: معلنون أكملوا التفاوض وقبلوا سعر حملتك. يدخل أحدهم تلقائيًا مكان أي معلن يعتذر أو تستبدله — بلا تفاوض جديد ولا انتظار، ولا يُحتسب على ميزانيتك ما لم يدخل فعلًا.</div>` : ''}
           </div>
           <div class="mx-wrap"><table class="mx-table" id="apps-${c.id}">
             <thead><tr>
