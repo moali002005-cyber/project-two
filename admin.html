@@ -105,6 +105,22 @@ a{color:var(--accent);text-decoration:none}
 select.filter{background:var(--panel2);border:1px solid var(--line2);border-radius:9px;padding:9px 12px;color:var(--text);font-family:var(--font);font-size:13.5px;cursor:pointer}
 select.filter:focus{outline:none;border-color:var(--accent)}
 .count-tag{font-size:12.5px;color:var(--muted)}
+/* خدمة العملاء */
+.sp-t{border:1px solid var(--line);border-radius:14px;padding:14px 16px;margin-bottom:10px;background:var(--panel)}
+.sp-h{display:flex;justify-content:space-between;gap:12px;align-items:flex-start;flex-wrap:wrap;margin-bottom:8px}
+.sp-st{font-size:11.5px;font-weight:700;border-radius:100px;padding:3px 10px;white-space:nowrap}
+.sp-st.sp-open{background:rgba(154,75,6,.10);color:#8a5b00}
+.sp-st.sp-answered{background:rgba(12,163,12,.10);color:#0a7a0a}
+.sp-st.sp-closed{background:rgba(15,20,32,.06);color:var(--muted)}
+.sp-m{font-size:13px;line-height:1.8;color:var(--text);white-space:pre-wrap;word-break:break-word}
+.sp-r{margin-top:8px;padding-top:8px;border-top:1px dashed var(--line);font-size:12.5px;line-height:1.8;white-space:pre-wrap}
+.sp-r b{display:block;font-size:11px;margin-bottom:2px}
+.sp-r.sp-admin b{color:#0a7a0a}.sp-r.sp-user b{color:var(--muted)}
+.sp-rep{margin-top:10px;padding-top:10px;border-top:1px solid var(--line)}
+.sp-rep textarea{width:100%;box-sizing:border-box;font-family:inherit;font-size:13px;padding:9px 11px;
+  border:1px solid var(--line2);border-radius:10px;background:var(--panel);color:var(--text);resize:vertical}
+.sp-acts{display:flex;gap:8px;margin-top:8px;flex-wrap:wrap}
+
 /* ===== لوحة العمليات الحيّة ===== */
 .lo-root{ --lo-s1:#86b6ef; --lo-s2:#5598e7; --lo-s3:#2a78d6; --lo-s4:#184f95;
   --lo-track:#eef1f4; --lo-out:#b9c0c6;
@@ -352,6 +368,7 @@ pre.json{background:var(--bg);border:1px solid var(--line);border-radius:9px;pad
   <div class="tabs">
     <button class="tab active" data-tab="overview">نظرة عامة</button>
     <button class="tab" data-tab="approvals">طلبات التفعيل<span id="pending-count"></span><span id="tier-req-count"></span></button>
+    <button class="tab" data-tab="support">خدمة العملاء<span id="support-count"></span></button>
     <button class="tab" data-tab="overdue">متأخرات الدفع<span id="overdue-count"></span></button>
     <a class="tab" href="/payouts.html" style="text-decoration:none;display:inline-block">صرف المستحقات ↗</a>
     <button class="tab" data-tab="analytics">تحليلات</button>
@@ -504,6 +521,23 @@ pre.json{background:var(--bg);border:1px solid var(--line);border-radius:9px;pad
   </div>
 
   <!-- overdue payments -->
+  <div class="panel" id="panel-support">
+    <div class="card">
+      <h3>خدمة العملاء</h3>
+      <div class="hint">رسائل المعلنين والشركات من داخل المنصة. الرد يظهر لهم في «رسائلي» داخل حساباتهم.</div>
+      <div class="toolbar" style="margin-top:10px">
+        <select class="filter" id="sp-status">
+          <option value="open">المفتوحة</option>
+          <option value="">الكل</option>
+          <option value="answered">فيها رد</option>
+          <option value="closed">المغلقة</option>
+        </select>
+        <span class="count-tag" id="sp-count"></span>
+      </div>
+      <div id="support-list" style="margin-top:12px"></div>
+    </div>
+  </div>
+
   <div class="panel" id="panel-overdue">
     <div class="section">
       <h2><i class="ti ti-alarm"></i> متأخرات الدفع</h2>
@@ -614,6 +648,7 @@ const gmvVal = a => Number(a && (a.final_price||a.price))||0;
 let USERS=[], CAMPAIGNS=[], APPS=[], NEGS=[];
 // بيانات التجارب (is_test) مخفيّة افتراضيًا — نحتفظ بالخام ونفلتر العرض فقط، بلا حذف
 let RAW_USERS=[], RAW_CAMPAIGNS=[], RAW_APPS=[], RAW_NEGS=[];
+let TICKETS=[], TREPLIES=[];
 let SHOW_TEST = (function(){ try{ return localStorage.getItem('flf_admin_show_test')==='1'; }catch(e){ return false; } })();
 function applyTestFilter(){
   USERS     = RAW_USERS.filter(x => SHOW_TEST || x.is_test !== true);
@@ -705,12 +740,15 @@ async function loadAll(silent){
     $('#gate-body').innerHTML = '<h1>جارٍ تحميل البيانات…</h1><p>نجمع كل أرقام منصتك</p><div class="spinner"></div>';
   }
   try{
-    const [u,c,a,n] = await Promise.all([
+    const [u,c,a,n,tk,tr] = await Promise.all([
       fetchAllRpc('admin_list_users'),
       fetchAll('campaigns','*'),
       fetchAll('applications','*'),
-      fetchAll('negotiations','*')
+      fetchAll('negotiations','*'),
+      fetchAll('support_tickets','*').catch(()=>null),
+      fetchAll('support_replies','*').catch(()=>null)
     ]);
+    if(Array.isArray(tk)) TICKETS=tk; if(Array.isArray(tr)) TREPLIES=tr;
     // احتفظ بآخر بيانات صالحة إذا فشل أحد الطلبات مؤقتاً (تحديث تلقائي كل 60ث)
     if(Array.isArray(u)) RAW_USERS=u; if(Array.isArray(c)) RAW_CAMPAIGNS=c;
     if(Array.isArray(a)) RAW_APPS=a; if(Array.isArray(n)) RAW_NEGS=n;
@@ -732,6 +770,7 @@ async function loadAll(silent){
 function renderAllPanels(){
   renderLeaderBar(); renderLiveOps(); renderOverview(); renderAnalytics(); renderInsights();
   renderApprovals(); renderOverdue(); renderUsers(); renderCampaigns(); renderDeals(); renderCompanies();
+  renderSupport();
 }
 
 function updateUpd(){
@@ -1339,6 +1378,87 @@ function daysOverdue(a){
   if(!dl) return null;
   const diff=Math.floor((Date.now()-dl.getTime())/86400000);
   return diff>0?diff:0;
+}
+
+
+// ===== خدمة العملاء =====
+const SP_CAT = { payment:'مستحقات ودفع', campaign:'حملة أو صفقة', agent:'وكيل التفاوض',
+                 account:'الحساب والتفعيل', bug:'عطل في المنصة', other:'شيء آخر' };
+const SP_ST  = { open:'مفتوحة', answered:'فيها رد', closed:'مغلقة' };
+
+function spAgo(t){
+  if(!t) return '';
+  const d=new Date(t); if(isNaN(d)) return '';
+  const m=Math.floor((Date.now()-d.getTime())/60000);
+  if(m<1) return 'الآن';
+  if(m<60) return 'قبل '+num(m)+' دقيقة';
+  const h=Math.floor(m/60);
+  if(h<24) return 'قبل '+num(h)+' ساعة';
+  return 'قبل '+num(Math.floor(h/24))+' يوم';
+}
+
+function renderSupport(){
+  const openN = TICKETS.filter(t=>t.status==='open').length;
+  const badge = $('#support-count');
+  if(badge) badge.innerHTML = openN ? ('<span class="pending-badge">'+num(openN)+'</span>') : '';
+  const box = $('#support-list'); if(!box) return;
+  const flt = ($('#sp-status') && $('#sp-status').value) || '';
+  let list = TICKETS.slice();
+  if(flt) list = list.filter(t=>t.status===flt);
+  list.sort((a,b)=> new Date(b.updated_at||b.created_at||0) - new Date(a.updated_at||a.created_at||0));
+  const cnt = $('#sp-count'); if(cnt) cnt.textContent = num(list.length)+' رسالة';
+  if(!list.length){ box.innerHTML='<div class="empty">ما فيه رسائل في هذا التصنيف.</div>'; return; }
+
+  const byT = {};
+  TREPLIES.forEach(r=>{ (byT[r.ticket_id]=byT[r.ticket_id]||[]).push(r); });
+  Object.values(byT).forEach(arr=>arr.sort((a,b)=>new Date(a.created_at||0)-new Date(b.created_at||0)));
+
+  box.innerHTML = list.map(t=>{
+    const u = usersById[t.user_id];
+    const who = u ? (u.company_name || u.name || '—') : '—';
+    const role = u ? (u.role==='brand'?'شركة':'معلن') : '—';
+    const contact = u ? [u.email, u.phone].filter(Boolean).join(' · ') : '';
+    const reps = (byT[t.id]||[]).map(r=>
+      '<div class="sp-r sp-'+esc(r.from_role)+'"><b>'+(r.from_role==='admin'?'فلفلونسر':esc(who))+' · '+spAgo(r.created_at)+'</b>'
+      + esc(r.body)+'</div>').join('');
+    return '<div class="sp-t" data-id="'+esc(t.id)+'">'
+      + '<div class="sp-h"><div><span class="badge b-'+(u&&u.role==='brand'?'brand':'creator')+'">'+role+'</span> <b>'+esc(who)+'</b>'
+      +   '<div class="dim" style="font-size:11.5px">'+esc(contact)+'</div></div>'
+      +   '<div style="text-align:end"><span class="sp-st sp-'+esc(t.status)+'">'+esc(SP_ST[t.status]||t.status)+'</span>'
+      +   '<div class="dim" style="font-size:11.5px">'+esc(SP_CAT[t.category]||t.category)+' · '+spAgo(t.created_at)+'</div></div></div>'
+      + '<div class="sp-m">'+esc(t.message)+'</div>'
+      + (t.page_url?'<div class="dim" style="font-size:11px;margin-top:4px">من صفحة '+esc(t.page_url)+'</div>':'')
+      + reps
+      + (t.status==='closed' ? ''
+         : '<div class="sp-rep"><textarea placeholder="اكتب الرد للعميل…" rows="2"></textarea>'
+           + '<div class="sp-acts"><button class="btn btn-primary" data-a="reply">إرسال الرد</button>'
+           + '<button class="btn" data-a="close">إغلاق التذكرة</button></div></div>')
+      + '</div>';
+  }).join('');
+
+  box.querySelectorAll('[data-a="reply"]').forEach(b=>{
+    b.onclick = async ()=>{
+      const wrap=b.closest('.sp-t'), ta=wrap.querySelector('textarea');
+      const body=(ta.value||'').trim(); if(body.length<2) return;
+      b.disabled=true; b.textContent='جاري الإرسال…';
+      try{
+        const { error } = await sb.from('support_replies').insert([{ ticket_id:wrap.getAttribute('data-id'), from_role:'admin', body }]);
+        if(error) throw error;
+        await loadAll(true);
+      }catch(e){ console.error(e); b.disabled=false; b.textContent='إرسال الرد'; }
+    };
+  });
+  box.querySelectorAll('[data-a="close"]').forEach(b=>{
+    b.onclick = async ()=>{
+      const wrap=b.closest('.sp-t'); b.disabled=true;
+      try{
+        const { error } = await sb.from('support_tickets').update({ status:'closed', updated_at:new Date().toISOString() })
+          .eq('id', wrap.getAttribute('data-id'));
+        if(error) throw error;
+        await loadAll(true);
+      }catch(e){ console.error(e); b.disabled=false; }
+    };
+  });
 }
 
 function renderOverdue(){
@@ -2080,6 +2200,7 @@ async function uploadCreatorPhoto(id, input){
   }
 }
 $('[data-tab="photos"]').addEventListener('click', loadPhotos);
+if($('#sp-status')) $('#sp-status').addEventListener('change', renderSupport);
 $('#ph-search').addEventListener('input', renderPhotos);
 
 document.querySelectorAll('.tab').forEach(t=>t.addEventListener('click',()=>{
