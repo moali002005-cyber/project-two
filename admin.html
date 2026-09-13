@@ -278,6 +278,7 @@ pre.json{background:var(--bg);border:1px solid var(--line);border-radius:9px;pad
     <div class="topbar-actions">
       <span class="upd" id="last-upd">مباشر</span>
       <span class="admin-pill"><i class="ti ti-shield-lock"></i><span id="admin-email">hello@</span></span>
+      <button class="icon-btn" id="btn-test" onclick="toggleTestData()" style="width:auto;padding:0 12px;font-size:12px;font-weight:600">🧪 التجارب مخفيّة</button>
       <button class="icon-btn" id="btn-refresh" title="تحديث">↻</button>
       <button class="icon-btn" id="btn-logout" title="خروج">⎋</button>
     </div>
@@ -550,6 +551,30 @@ const gmvVal = a => Number(a && (a.final_price||a.price))||0;
 
 // ===== state =====
 let USERS=[], CAMPAIGNS=[], APPS=[], NEGS=[];
+// بيانات التجارب (is_test) مخفيّة افتراضيًا — نحتفظ بالخام ونفلتر العرض فقط، بلا حذف
+let RAW_USERS=[], RAW_CAMPAIGNS=[], RAW_APPS=[], RAW_NEGS=[];
+let SHOW_TEST = (function(){ try{ return localStorage.getItem('flf_admin_show_test')==='1'; }catch(e){ return false; } })();
+function applyTestFilter(){
+  USERS     = RAW_USERS.filter(x => SHOW_TEST || x.is_test !== true);
+  CAMPAIGNS = RAW_CAMPAIGNS.filter(c => SHOW_TEST || c.is_test !== true);
+  const campOk = new Set(CAMPAIGNS.map(c => c.id));
+  APPS = RAW_APPS.filter(a => campOk.has(a.campaign_id));
+  const appOk = new Set(APPS.map(a => a.id));
+  NEGS = RAW_NEGS.filter(n => appOk.has(n.application_id));
+  usersById={}; USERS.forEach(x=>usersById[x.id]=x);
+  campsById={}; CAMPAIGNS.forEach(x=>campsById[x.id]=x);
+}
+function toggleTestData(){
+  SHOW_TEST = !SHOW_TEST;
+  try{ localStorage.setItem('flf_admin_show_test', SHOW_TEST ? '1' : '0'); }catch(e){}
+  applyTestFilter(); renderAllPanels(); syncTestBtn();
+}
+function syncTestBtn(){
+  const b = document.getElementById('btn-test');
+  if(!b) return;
+  b.textContent = SHOW_TEST ? '🧪 التجارب ظاهرة' : '🧪 التجارب مخفيّة';
+  b.title = SHOW_TEST ? 'اضغط لإخفاء بيانات التجارب' : 'اضغط لإظهار بيانات التجارب';
+}
 let usersById={}, campsById={};
 
 // ===== boot =====
@@ -626,13 +651,12 @@ async function loadAll(silent){
       fetchAll('negotiations','*')
     ]);
     // احتفظ بآخر بيانات صالحة إذا فشل أحد الطلبات مؤقتاً (تحديث تلقائي كل 60ث)
-    if(Array.isArray(u)) USERS=u; if(Array.isArray(c)) CAMPAIGNS=c;
-    if(Array.isArray(a)) APPS=a; if(Array.isArray(n)) NEGS=n;
-    usersById={}; USERS.forEach(x=>usersById[x.id]=x);
-    campsById={}; CAMPAIGNS.forEach(x=>campsById[x.id]=x);
+    if(Array.isArray(u)) RAW_USERS=u; if(Array.isArray(c)) RAW_CAMPAIGNS=c;
+    if(Array.isArray(a)) RAW_APPS=a; if(Array.isArray(n)) RAW_NEGS=n;
+    applyTestFilter(); syncTestBtn();
     $('#gate').style.display='none'; $('#dash').style.display='block';
     $('#err-box').style.display='none';
-    renderLeaderBar(); renderLiveOps(); renderOverview(); renderAnalytics(); renderInsights(); renderApprovals(); renderOverdue(); renderUsers(); renderCampaigns(); renderDeals(); renderCompanies();
+    renderAllPanels();
     loadTierRequests();
     updateUpd();
   }catch(err){
@@ -644,6 +668,11 @@ async function loadAll(silent){
     }
   }
 }
+function renderAllPanels(){
+  renderLeaderBar(); renderLiveOps(); renderOverview(); renderAnalytics(); renderInsights();
+  renderApprovals(); renderOverdue(); renderUsers(); renderCampaigns(); renderDeals(); renderCompanies();
+}
+
 function updateUpd(){
   const t=new Date().toLocaleTimeString('ar-SA-u-nu-latn',{hour:'2-digit',minute:'2-digit',second:'2-digit'});
   const el=$('#last-upd'); if(el) el.textContent='محدّث '+t;
