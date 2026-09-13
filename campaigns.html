@@ -4143,7 +4143,12 @@ function renderSingleCampaign(c) {
     const apps = campaignApps[c.id] || [];
     const pendingApps = apps.filter(a => a.status === 'pending');
     const waitlistApps = apps.filter(a => a.status === 'waitlisted');
-    const sheetApps = apps.filter(a => a.status !== 'waitlisted' && a.status !== 'rejected' && a.status !== 'campaign_full');
+    // اكتمل عدد الحملة؟ إذن من يفاوض الآن يفاوض على مقعد احتياط — لا يدخل الشيت الأساسي
+    const mainClosed = apps.filter(a => a.status === 'closed').length;
+    const listFull = campaignTarget(c) > 0 && mainClosed >= campaignTarget(c);
+    const sheetApps = apps.filter(a =>
+      a.status !== 'waitlisted' && a.status !== 'rejected' && a.status !== 'campaign_full'
+      && !(listFull && a.status !== 'closed'));
     // ترتيب ثابت: الصفقات المقفلة أعلى الشيت، ثم ما زال قيد التفاوض أسفلها
     const rowRank = (a) => {
       if (a.status !== 'closed') return 2;          // قيد التفاوض
@@ -4219,7 +4224,7 @@ function renderSingleCampaign(c) {
             <div class="text">
               <strong>${toArabic(engagedTotal)}</strong> ${engagedTotal === 1 ? 'معلن تفاوض' : 'معلنًا تفاوضوا'} على حملتك
               ${closedCount > 0 ? `— <strong>${toArabic(closedCount)}</strong> ضمن حملتك` : ''}
-              ${liveCount > 0 ? `· <strong style="color:var(--ink-muted)">${toArabic(liveCount)}</strong> قيد التفاوض` : ''}
+              ${liveCount > 0 ? `· <strong style="color:var(--ink-muted)">${toArabic(liveCount)}</strong> ${listFull ? 'يفاوضون على مقعد احتياط' : 'قيد التفاوض'}` : ''}
               ${reserveCount > 0 ? `· <strong style="color:#2B5C91">${toArabic(reserveCount)}</strong> جاهزًا كاحتياط` : ''}
               ${waitlistApps.length > 0 ? `· <strong style="color:#5B6B7A">${toArabic(waitlistApps.length)}</strong> في قائمة الانتظار` : ''}
               ${payPaidCount(apps) > 0 ? `· <strong style="color:#0F6E56">💳 ${payPaidCount(apps)} مدفوعة للمنصة</strong>` : ''}
