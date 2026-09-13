@@ -172,9 +172,17 @@ function renderPlans(){
 
 // ===== جدول المقارنة: كل صف يقرأ من عمود حقيقي في plans (مفروض في القاعدة/الـAPI) =====
 var CT_AR = { home:'استضافة منزلية', visit:'زيارة موقع', video:'فيديو', code:'كود خصم' };
-function capTxt(v, unit){
+// جمع عربي سليم: 1 مفرد · 2 مثنى · 3–10 جمع · 11+ مفرد منصوب
+function arPlural(n, one, two, few, many){
+  n = Number(n);
+  if (n === 1) return one;
+  if (n === 2) return two;
+  if (n >= 3 && n <= 10) return ar(n) + ' ' + few;
+  return ar(n) + ' ' + many;
+}
+function capTxt(v, one, two, few, many){
   if (v === null || v === undefined) return 'بلا حد';
-  return ar(v) + (unit ? ' ' + unit : '');
+  return arPlural(v, one, two, few, many);
 }
 function renderCompare(){
   var box = document.getElementById('plans-compare');
@@ -186,19 +194,19 @@ function renderCompare(){
     { k:'رسوم إدارة الحملة', best:'min', v:function(p){ return (p.commission_pct==null) ? null : Number(p.commission_pct); },
       t:function(p,x){ return x==null ? '—' : ar(x)+'٪'; } },
     { k:'العلامات التجارية في الحساب', best:'max', v:function(p){ return p.max_brands==null ? Infinity : Number(p.max_brands); },
-      t:function(p,x){ return p.max_brands==null ? 'بلا حد' : (Number(p.max_brands)>1 ? ar(p.max_brands)+' علامات' : 'علامة واحدة'); } },
+      t:function(p,x){ return capTxt(p.max_brands, 'علامة واحدة', 'علامتان', 'علامات', 'علامة'); } },
     { k:'مقاعد الفريق', best:'max', v:function(p){ return p.max_seats==null ? Infinity : Number(p.max_seats); },
-      t:function(p,x){ return p.max_seats==null ? 'بلا حد' : ar(p.max_seats)+(Number(p.max_seats)>2?' حسابات':(Number(p.max_seats)==2?' حسابان':' حساب')); } },
+      t:function(p,x){ return capTxt(p.max_seats, 'حساب واحد', 'حسابان', 'حسابات', 'حسابًا'); } },
     { k:'المعلنون في الحملة الواحدة', best:'max', v:function(p){ return p.max_creators_per_campaign==null ? Infinity : Number(p.max_creators_per_campaign); },
-      t:function(p,x){ return capTxt(p.max_creators_per_campaign, 'معلنًا'); } },
+      t:function(p,x){ return capTxt(p.max_creators_per_campaign, 'معلن واحد', 'معلنان', 'معلنين', 'معلنًا'); } },
     { k:'الحملات النشطة', best:'max', v:function(p){ return p.max_active_campaigns==null ? Infinity : Number(p.max_active_campaigns); },
-      t:function(p,x){ return capTxt(p.max_active_campaigns, 'حملة'); } },
+      t:function(p,x){ return capTxt(p.max_active_campaigns, 'حملة واحدة', 'حملتان', 'حملات', 'حملة'); } },
     { k:'أنواع الحملات', best:'max', v:function(p){ return (p.campaign_types||[]).length; },
       t:function(p,x){ var a = p.campaign_types||[]; return '<span style="white-space:normal">' + (a.length ? a.map(function(c){ return esc(CT_AR[c]||c); }).join(' · ') : '—') + '</span>'; } },
     { k:'حملات كود الخصم', best:'max', v:function(p){ return (p.campaign_types||[]).indexOf('code')>=0 ? 1 : 0; },
       t:function(p,x){ return x ? '✓' : '<span class="no">—</span>'; } },
     { k:'مرفقات البريف', best:'max', v:function(p){ return p.max_brief_attachments==null ? Infinity : Number(p.max_brief_attachments); },
-      t:function(p,x){ return capTxt(p.max_brief_attachments, 'مرفق'); } }
+      t:function(p,x){ return capTxt(p.max_brief_attachments, 'مرفق واحد', 'مرفقان', 'مرفقات', 'مرفقًا'); } }
   ];
 
   var head = '<tr><th>المقارنة</th>' + ps.map(function(p){
