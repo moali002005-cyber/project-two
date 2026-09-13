@@ -4137,6 +4137,13 @@ function renderSingleCampaign(c) {
     const pendingApps = apps.filter(a => a.status === 'pending');
     const waitlistApps = apps.filter(a => a.status === 'waitlisted');
     const sheetApps = apps.filter(a => a.status !== 'waitlisted' && a.status !== 'rejected' && a.status !== 'campaign_full');
+    // ترتيب ثابت: الصفقات المقفلة أعلى الشيت، ثم ما زال قيد التفاوض أسفلها
+    const rowRank = (a) => {
+      if (a.status !== 'closed') return 2;          // قيد التفاوض
+      return a.brand_approved === true ? 1 : 0;     // معتمدة بعد «بانتظار تعميدك»
+    };
+    sheetApps.sort((x, y) => (rowRank(x) - rowRank(y))
+      || (new Date(x.created_at || 0) - new Date(y.created_at || 0)));
     // الأرقام الصادقة: كل من تفاوض على هذه الحملة فعلًا
     const reserveCount = reserveCounts[c.id] || 0;
     const closedCount  = apps.filter(a => a.status === 'closed').length;
