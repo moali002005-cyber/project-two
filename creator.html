@@ -1942,6 +1942,8 @@ function renderCreatorDealCard(c, a) {
     badge = a.is_reserve
       ? `<span class="dc-badge" style="background:#FCE9D2;color:#9A4B06;border:1px solid #F0C79A;">🕓 احتياط جاهز</span>`
       : `<span class="dc-badge amber">بانتظار التعميد</span>`;
+  } else if (a.status === 'campaign_full') {
+    badge = `<span class="dc-badge full">اكتمل العدد قبل دخولك</span>`;
   } else if (a.status === 'rejected') {
     badge = `<span class="dc-badge" style="background:#FDECEA;color:#a93226;border:1px solid #f0b4b4;">⌛ انتهت مشاركتك</span>`;
   } else {
@@ -1955,7 +1957,9 @@ function renderCreatorDealCard(c, a) {
   }
 
   let body = '';
-  if (didntWin) {
+  if (a.status === 'campaign_full') {
+    body = `<div class="dc-note full">اكتملت مقاعد هذي الحملة وقائمة الاحتياط معها قبل ما تدخل التفاوض، فأقفل النظام الباب تلقائيًا — ما فيه خطأ في حسابك. المقاعد تُحجز بسرعة، فخلّي إشعاراتك مفتوحة وقدّم فور وصول الحملة 🌟</div>`;
+  } else if (didntWin) {
     body = `<div class="dc-note full">اكتمل العدد المطلوب لهذي الحملة واعتمدت الشركة معلنيها. نشكر لك مشاركتك — تابع الحملات الجديدة وقدّم بسرعة، حظ أوفر 🌟</div>`;
   } else if (isWaitlisted) {
     body = `<div class="dc-note" style="background:#FFF6EC;color:#9A4B06;border-right:3px solid #E8850C;">🕓 أنت في قائمة الانتظار لهذي الحملة<span data-wpos="${a.id}"></span>. العدد المطلوب اكتمل حالياً، وبمجرد ما ينفتح مكان بننبّهك فورًا ويبدأ الوكيل يفاوضك. خلّك متابع 🌿</div>`;
@@ -2033,7 +2037,7 @@ function renderUnified() {
   };
   const bestByCampaign = new Map();
   myApplications.forEach(a => {
-    if (!a || a.status === 'campaign_full') return; // نبقي المرفوض ظاهرًا في صفقاتي بحالة واضحة
+    if (!a) return; // نُبقي المرفوض والمكتمل ظاهرين في صفقاتي بحالة واضحة — إخفاؤهما كان يربك المعلن
     // نجيب بيانات الحملة من القائمة النشطة، وإلا من بيانات الصفقة نفسها (للحملات المكتملة/المقفلة)
     const c = allCampaigns.find(x => x.id === a.campaign_id) || a.campaigns;
     if (!c) return;
