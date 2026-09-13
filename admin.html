@@ -303,6 +303,7 @@ pre.json{background:var(--bg);border:1px solid var(--line);border-radius:9px;pad
 
   <!-- overview -->
   <div class="panel active" id="panel-overview">
+    <div id="live-ops"></div>
     <div id="dash-body"></div>
   </div>
 
@@ -631,7 +632,7 @@ async function loadAll(silent){
     campsById={}; CAMPAIGNS.forEach(x=>campsById[x.id]=x);
     $('#gate').style.display='none'; $('#dash').style.display='block';
     $('#err-box').style.display='none';
-    renderLeaderBar(); renderOverview(); renderAnalytics(); renderInsights(); renderApprovals(); renderOverdue(); renderUsers(); renderCampaigns(); renderDeals(); renderCompanies();
+    renderLeaderBar(); renderLiveOps(); renderOverview(); renderAnalytics(); renderInsights(); renderApprovals(); renderOverdue(); renderUsers(); renderCampaigns(); renderDeals(); renderCompanies();
     loadTierRequests();
     updateUpd();
   }catch(err){
@@ -1347,6 +1348,153 @@ const DSH_CITY = { riyadh:'الرياض', jeddah:'جدة', dammam:'الدمام'
 const DSH_MONTHS = ['يناير','فبراير','مارس','أبريل','مايو','يونيو','يوليو','أغسطس','سبتمبر','أكتوبر','نوفمبر','ديسمبر'];
 const DSH_STATUS = { campaign_full:'اكتمال الحملة', waitlisted:'قائمة انتظار', closed:'صفقات مقفلة', rejected:'مرفوضة', pending:'قيد المراجعة', active:'تفاوض نشط', campaign_full_ar:'' };
 
+
+// ===== الحملات الجارية الآن من كل الشركات: أين وصلت، وعلى مَن وقفت =====
+const LO_BRAND_ST = { 2: 'الشحن', 6: 'مراجعة المحتوى' };
+const LO_CREATOR_ST = { 1: 'العنوان', 3: 'الاستلام', 5: 'المحتوى', 7: 'النشر', 8: 'البيانات البنكية' };
+
+function loAgo(t){
+  if(!t) return '—';
+  const d = new Date(t); if(isNaN(d)) return '—';
+  const m = Math.floor((Date.now() - d.getTime()) / 60000);
+  if(m < 1) return 'الآن';
+  if(m < 60) return 'قبل ' + num(m) + ' دقيقة';
+  const h = Math.floor(m / 60);
+  if(h < 24) return 'قبل ' + num(h) + ' ساعة';
+  return 'قبل ' + num(Math.floor(h / 24)) + ' يوم';
+}
+function loPill(txt, tone){
+  const c = tone === 'warn' ? ['#9A4B06','rgba(154,75,6,.10)']
+          : tone === 'bad' ? ['#c0392b','rgba(192,57,43,.10)']
+          : tone === 'good' ? ['#1D9E75','rgba(29,158,117,.12)']
+          : ['var(--ink-muted,#6b6b6b)','rgba(15,20,32,.05)'];
+  return '<span style="display:inline-block;font-size:12px;font-weight:600;color:'+c[0]+';background:'+c[1]
+    + ';border-radius:100px;padding:3px 10px;white-space:nowrap">' + txt + '</span>';
+}
+
+function renderLiveOps(){
+  const box = $('#live-ops'); if(!box) return;
+
+  // حملة "جارية" = نشطة، أو فيها صفقة معتمدة لم تكتمل بعد
+  const live = CAMPAIGNS.filter(c => {
+    if(c.status === 'active') return true;
+    return APPS.some(a => a.campaign_id === c.id && a.status === 'closed'
+      && a.brand_approved === true && (a.stage || 1) < 9);
+  });
+
+  const lastTouch = c => {
+    let t = c.created_at ? new Date(c.created_at).getTime() : 0;
+    APPS.forEach(a => {
+      if(a.campaign_id !== c.id) return;
+      [a.created_at, a.closed_at, a.brand_approved_at, a.platform_paid_at,
+       a.paid_marked_at, a.received_confirmed_at, a.rejected_at].forEach(x => {
+        if(!x) return; const v = new Date(x).getTime();
+        if(!isNaN(v) && v > t) t = v;
+      });
+    });
+    return t;
+  };
+  live.sort((a, b) => lastTouch(b) - lastTouch(a));
+
+  if(!live.length){
+    box.innerHTML = '<div class="card"><h3>الحملات الجارية</h3><div class="empty">ما فيه حملة جارية الآن.</div></div>';
+    return;
+  }
+
+  const cards = live.map(c => {
+    const brand = usersById[c.brand_id];
+    const brandName = brand ? (brand.company_name || brand.name || '—') : '—';
+    const ca = APPS.filter(a => a.campaign_id === c.id);
+    const size = parseInt(c.campaign_size, 10) || 0;
+    const closedMain = ca.filter(a => a.status === 'closed' && a.is_reserve !== true).length;
+    const approved = ca.filter(a => a.status === 'closed' && a.brand_approved === true);
+    const reserve = ca.filter(a => a.status === 'closed' && a.is_reserve === true).length;
+    const wait = ca.filter(a => a.status === 'waitlisted').length;
+    const liveN = ca.filter(a => a.status === 'pending' || a.status === 'active').length;
+    const awaitAppr = ca.filter(a => a.status === 'closed' && a.brand_approved !== true && a.is_reserve !== true).length;
+    const done = approved.filter(a => (a.stage || 1) >= 9).length;
+
+    // على مَن وقف العمل
+    const onBrand = {}, onCreator = {};
+    approved.forEach(a => {
+      const st = a.stage || 1;
+      if(st >= 9) return;
+      if(LO_BRAND_ST[st]) onBrand[st] = (onBrand[st] || 0) + 1;
+      else if(LO_CREATOR_ST[st]) onCreator[st] = (onCreator[st] || 0) + 1;
+    });
+    const fmt = (m, names) => Object.entries(m).sort((x, y) => y[1] - x[1])
+      .map(([st, n]) => esc(names[st]) + ' ' + num(n)).join(' · ');
+
+    const blockers = [];
+    if(awaitAppr) blockers.push(loPill('بانتظار تعميد الشركة ' + num(awaitAppr), 'warn'));
+    if(Object.keys(onBrand).length) blockers.push(loPill('على الشركة: ' + fmt(onBrand, LO_BRAND_ST), 'warn'));
+    if(Object.keys(onCreator).length) blockers.push(loPill('على المعلنين: ' + fmt(onCreator, LO_CREATOR_ST)));
+    if(liveN) blockers.push(loPill('يفاوضون الآن ' + num(liveN)));
+    if(!blockers.length) blockers.push(loPill(done ? 'كل الصفقات مكتملة' : 'ما فيه شيء معلّق', 'good'));
+
+    const pctFill = size ? Math.min(100, Math.round(closedMain / size * 100)) : 0;
+    const pctAppr = size ? Math.min(100, Math.round(approved.length / size * 100)) : 0;
+    const isBarter = c.compensation === 'product';
+    const comp = isBarter ? '🎁 مقابل منتج' : (esc(String(c.budget || '—')) + ' ر.س للمعلن');
+    const terms = c.payment_terms === 'postpaid' ? loPill('دفع آجل', 'good') : '';
+    const unpaidN = approved.filter(a => (a.stage || 1) >= 9 && a.payment_status !== 'confirmed').length;
+
+    return '<div style="border:1px solid var(--line);border-radius:14px;padding:14px 16px;background:var(--panel,#fff)">'
+      + '<div style="display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;align-items:baseline">'
+      +   '<div><div style="font-weight:700;font-size:14.5px">' + esc(c.title || '—') + '</div>'
+      +   '<div class="dim" style="font-size:12px">' + esc(brandName) + ' · ' + esc(PLATFORM[c.platform] || c.platform || '—')
+      +     ' · ' + esc(CITY[c.city] || c.city || '—') + ' · ' + comp + '</div></div>'
+      +   '<div class="dim" style="font-size:11.5px;white-space:nowrap">آخر حركة ' + loAgo(new Date(lastTouch(c)).toISOString()) + '</div>'
+      + '</div>'
+      + '<div style="display:flex;align-items:center;gap:10px;margin:10px 0 8px">'
+      +   '<div style="flex:1;height:8px;border-radius:100px;background:rgba(15,20,32,.07);position:relative;overflow:hidden">'
+      +     '<div style="position:absolute;inset-inline-start:0;top:0;bottom:0;width:' + pctFill + '%;background:#E23B2E;opacity:.35"></div>'
+      +     '<div style="position:absolute;inset-inline-start:0;top:0;bottom:0;width:' + pctAppr + '%;background:#1D9E75"></div>'
+      +   '</div>'
+      +   '<span class="mono" style="font-size:12.5px;white-space:nowrap">' + num(closedMain) + (size ? '/' + num(size) : '') + ' مقفلة · '
+      +     num(approved.length) + ' معتمدة · ' + num(done) + ' مكتملة</span>'
+      + '</div>'
+      + '<div style="display:flex;flex-wrap:wrap;gap:6px">'
+      +   blockers.join('')
+      +   (reserve ? loPill('احتياط ' + num(reserve)) : '')
+      +   (wait ? loPill('انتظار ' + num(wait)) : '')
+      +   (unpaidN ? loPill('مستحقات غير مدفوعة ' + num(unpaidN), 'bad') : '')
+      +   terms
+      + '</div></div>';
+  }).join('');
+
+  // آخر التحديثات عبر المنصة
+  const ev = [];
+  APPS.forEach(a => {
+    const camp = campsById[a.campaign_id]; if(!camp) return;
+    const br = usersById[camp.brand_id];
+    const bn = br ? (br.company_name || br.name || '—') : '—';
+    const who = creatorName(a);
+    const ttl = camp.title || '—';
+    const push = (t, txt) => { if(t) ev.push({ t: t, txt: txt }); };
+    push(a.created_at, esc(who) + ' دخل التفاوض · ' + esc(ttl));
+    push(a.closed_at, 'الوكيل أقفل الصفقة مع ' + esc(who) + ' · ' + esc(ttl));
+    push(a.brand_approved_at, esc(bn) + ' عمّدت ' + esc(who) + ' · ' + esc(ttl));
+    push(a.platform_paid_at, esc(bn) + ' سدّدت للمنصة · ' + esc(ttl));
+    push(a.received_confirmed_at, esc(who) + ' أكّد استلام مستحقاته · ' + esc(ttl));
+    push(a.rejected_at, 'خرج ' + esc(who) + ' من ' + esc(ttl));
+  });
+  CAMPAIGNS.forEach(c => {
+    const br = usersById[c.brand_id];
+    if(c.created_at) ev.push({ t: c.created_at, txt: 'حملة جديدة «' + esc(c.title || '—') + '» من ' + esc(br ? (br.company_name || br.name || '—') : '—') });
+  });
+  ev.sort((x, y) => new Date(y.t || 0) - new Date(x.t || 0));
+  const feed = ev.slice(0, 14).map(e =>
+    '<div style="display:flex;justify-content:space-between;gap:12px;font-size:12.5px;border-top:1px solid var(--line);padding:7px 2px">'
+    + '<span>' + e.txt + '</span><span class="dim" style="white-space:nowrap">' + loAgo(e.t) + '</span></div>').join('');
+
+  box.innerHTML =
+    '<div class="card"><h3>🔴 الحملات الجارية الآن <span class="count-tag">' + num(live.length) + '</span></h3>'
+    + '<div class="hint">كل حملة نشطة في المنصة، وأين وقفت، ومَن المطلوب منه التحرّك. تتحدّث تلقائيًا كل ٤٥ ثانية.</div>'
+    + '<div style="display:flex;flex-direction:column;gap:10px;margin-top:10px">' + cards + '</div></div>'
+    + '<div class="card"><h3>آخر التحديثات</h3>' + (feed || '<div class="empty">لا حركة بعد</div>') + '</div>';
+}
+
 function renderOverview(){
   const box = $('#dash-body'); if(!box) return;
   const val = a => Number(a.final_price||a.price)||0;
@@ -1779,9 +1927,9 @@ $('#drawer-ov').addEventListener('click',e=>{ if(e.target===$('#drawer-ov')) clo
 document.addEventListener('keydown',e=>{ if(e.key==='Escape') closeDrawer(); });
 
 // live auto-refresh every 60s (only while dashboard is visible)
-setInterval(()=>{ if(document.hidden) return; if($('dash').style.display!=='none') loadAll(true); }, 180000);
+setInterval(()=>{ if(document.hidden) return; const d=$('#dash'); if(d && d.style.display!=='none') loadAll(true); }, 45000);
 /* حدّث فورًا عند الرجوع للتبويب حتى تبقى الأرقام طازجة وقت النظر إليها فقط */
-document.addEventListener('visibilitychange', ()=>{ if(!document.hidden && $('dash') && $('dash').style.display!=='none') loadAll(true); });
+document.addEventListener('visibilitychange', ()=>{ const d=$('#dash'); if(!document.hidden && d && d.style.display!=='none') loadAll(true); });
 </script>
 </body>
 </html>
