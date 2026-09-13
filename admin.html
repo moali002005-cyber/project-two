@@ -105,6 +105,67 @@ a{color:var(--accent);text-decoration:none}
 select.filter{background:var(--panel2);border:1px solid var(--line2);border-radius:9px;padding:9px 12px;color:var(--text);font-family:var(--font);font-size:13.5px;cursor:pointer}
 select.filter:focus{outline:none;border-color:var(--accent)}
 .count-tag{font-size:12.5px;color:var(--muted)}
+/* ===== لوحة العمليات الحيّة ===== */
+.lo-root{ --lo-s1:#86b6ef; --lo-s2:#5598e7; --lo-s3:#2a78d6; --lo-s4:#184f95;
+  --lo-track:#eef1f4; --lo-out:#b9c0c6;
+  --lo-good:#0ca30c; --lo-warning:#fab219; --lo-serious:#ec835a; --lo-critical:#d03b3b; }
+.lo-kpis{ display:grid; grid-template-columns:repeat(auto-fit,minmax(190px,1fr)); gap:12px; margin-bottom:14px }
+.lo-tile{ background:var(--panel); border:1px solid var(--line); border-radius:14px; padding:14px 16px;
+  border-top:3px solid var(--line2) }
+.lo-tile.lo-good{ border-top-color:var(--lo-good) } .lo-tile.lo-warn{ border-top-color:var(--lo-warning) }
+.lo-tile.lo-serious{ border-top-color:var(--lo-serious) } .lo-tile.lo-critical{ border-top-color:var(--lo-critical) }
+.lo-tl{ font-size:12.5px; color:var(--muted) }
+.lo-tv{ font-size:30px; font-weight:700; line-height:1.25; font-variant-numeric:tabular-nums; color:var(--text) }
+.lo-ts{ font-size:11.5px; color:var(--faint) }
+.lo-legend{ display:flex; flex-wrap:wrap; gap:6px 16px; margin:10px 0 14px; font-size:12px; color:var(--muted) }
+.lo-legend span{ display:inline-flex; align-items:center; gap:6px }
+.lo-legend i{ width:11px; height:11px; border-radius:3px; display:inline-block }
+.lo-cards{ display:flex; flex-direction:column; gap:12px }
+.lo-card{ border:1px solid var(--line); border-radius:14px; padding:14px 16px 12px; background:var(--panel);
+  border-inline-start:3px solid var(--line2) }
+.lo-card.lo-b-good{ border-inline-start-color:var(--lo-good) }
+.lo-card.lo-b-warning{ border-inline-start-color:var(--lo-warning) }
+.lo-card.lo-b-serious{ border-inline-start-color:var(--lo-serious) }
+.lo-card.lo-b-critical{ border-inline-start-color:var(--lo-critical) }
+.lo-head{ display:flex; justify-content:space-between; align-items:flex-start; gap:14px; flex-wrap:wrap }
+.lo-head h4{ margin:0; font-size:15px; font-weight:700; color:var(--text) }
+.lo-sub{ font-size:12px; color:var(--muted); margin-top:2px }
+.lo-hr{ display:flex; align-items:center; gap:10px; flex-wrap:wrap }
+.lo-badge{ font-size:12px; font-weight:700; border-radius:100px; padding:3px 11px; white-space:nowrap;
+  background:rgba(15,20,32,.05); color:var(--muted) }
+.lo-badge.lo-good{ color:#0a7a0a; background:rgba(12,163,12,.10) }
+.lo-badge.lo-warning{ color:#8a5b00; background:rgba(250,178,25,.16) }
+.lo-badge.lo-serious{ color:#a04a20; background:rgba(236,131,90,.16) }
+.lo-badge.lo-critical{ color:#a52424; background:rgba(208,59,59,.12) }
+.lo-idle{ font-size:11.5px; color:var(--faint); white-space:nowrap }
+.lo-idle.lo-warning-t{ color:#8a5b00 } .lo-idle.lo-critical-t{ color:#a52424; font-weight:600 }
+.lo-bar{ display:flex; gap:2px; height:10px; margin:12px 0 8px; border-radius:5px; overflow:hidden; background:var(--lo-track) }
+.lo-seg{ display:block; min-width:3px }
+.lo-seg.lo-free{ background:var(--lo-track) }
+.lo-meta{ font-size:12.5px; color:var(--muted); font-variant-numeric:tabular-nums }
+.lo-sep{ margin:0 7px; color:var(--faint) }
+.lo-stages{ display:grid; grid-template-columns:repeat(9,1fr); gap:6px; margin:12px 0 10px;
+  padding-top:10px; border-top:1px solid var(--line) }
+.lo-st{ display:flex; flex-direction:column; align-items:center; justify-content:flex-end; gap:4px; min-width:0 }
+.lo-stv{ font-size:11.5px; font-weight:700; color:var(--text); height:14px; font-variant-numeric:tabular-nums }
+.lo-stb{ width:100%; border-radius:4px 4px 0 0; background:var(--lo-s3) }
+.lo-stl{ font-size:10.5px; color:var(--faint); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:100% }
+.lo-st-done .lo-stl{ color:var(--muted); font-weight:600 }
+.lo-chips{ display:flex; flex-wrap:wrap; gap:6px; margin-top:8px }
+.lo-chip{ display:inline-flex; align-items:center; gap:6px; font-size:12px; font-weight:600;
+  border-radius:100px; padding:4px 11px; background:rgba(15,20,32,.05); color:var(--muted) }
+.lo-chip b{ font-size:10px; line-height:1 }
+.lo-chip.lo-good{ color:#0a7a0a; background:rgba(12,163,12,.10) }
+.lo-chip.lo-warning{ color:#8a5b00; background:rgba(250,178,25,.16) }
+.lo-chip.lo-serious{ color:#a04a20; background:rgba(236,131,90,.16) }
+.lo-chip.lo-critical{ color:#a52424; background:rgba(208,59,59,.12) }
+.lo-feed{ list-style:none; margin:0; padding:0 }
+.lo-ev{ display:flex; align-items:center; gap:10px; padding:8px 2px; border-top:1px solid var(--line); font-size:12.5px }
+.lo-dot{ width:8px; height:8px; border-radius:50%; flex:0 0 auto }
+.lo-evt{ flex:1; min-width:0 }
+.lo-evd{ color:var(--faint); font-size:11.5px; white-space:nowrap }
+@media (max-width:720px){ .lo-stages{ grid-template-columns:repeat(5,1fr) } .lo-stl{ font-size:9.5px } }
+
 
 /* ===== table ===== */
 .tbl-wrap{overflow-x:auto;border:1px solid var(--line);border-radius:11px}
@@ -1404,7 +1465,6 @@ function loPill(txt, tone){
 function renderLiveOps(){
   const box = $('#live-ops'); if(!box) return;
 
-  // حملة "جارية" = نشطة، أو فيها صفقة معتمدة لم تكتمل بعد
   const live = CAMPAIGNS.filter(c => {
     if(c.status === 'active') return true;
     return APPS.some(a => a.campaign_id === c.id && a.status === 'closed'
@@ -1423,105 +1483,193 @@ function renderLiveOps(){
     });
     return t;
   };
-  live.sort((a, b) => lastTouch(b) - lastTouch(a));
 
-  if(!live.length){
-    box.innerHTML = '<div class="card"><h3>الحملات الجارية</h3><div class="empty">ما فيه حملة جارية الآن.</div></div>';
-    return;
-  }
-
-  const cards = live.map(c => {
+  // ===== قياسات كل حملة =====
+  const rows = live.map(c => {
     const brand = usersById[c.brand_id];
-    const brandName = brand ? (brand.company_name || brand.name || '—') : '—';
     const ca = APPS.filter(a => a.campaign_id === c.id);
     const size = parseInt(c.campaign_size, 10) || 0;
     const closedMain = ca.filter(a => a.status === 'closed' && a.is_reserve !== true).length;
     const approved = ca.filter(a => a.status === 'closed' && a.brand_approved === true);
-    const reserve = ca.filter(a => a.status === 'closed' && a.is_reserve === true).length;
-    const wait = ca.filter(a => a.status === 'waitlisted').length;
-    const liveN = ca.filter(a => a.status === 'pending' || a.status === 'active').length;
-    const awaitAppr = ca.filter(a => a.status === 'closed' && a.brand_approved !== true && a.is_reserve !== true).length;
-    const done = approved.filter(a => (a.stage || 1) >= 9).length;
+    const doneN = approved.filter(a => (a.stage || 1) >= 9).length;
+    const runN = approved.filter(a => (a.stage || 1) > 1 && (a.stage || 1) < 9).length;
+    const startN = approved.filter(a => (a.stage || 1) <= 1).length;
+    const waitApprN = ca.filter(a => a.status === 'closed' && a.brand_approved !== true && a.is_reserve !== true).length;
+    const stages = {};
+    approved.forEach(a => { const st = a.stage || 1; if(st < 9) stages[st] = (stages[st] || 0) + 1; });
+    const onBrandN = Object.keys(stages).filter(k => LO_BRAND_ST[k]).reduce((n,k)=>n+stages[k],0);
+    const unpaid = approved.filter(a => (a.stage || 1) >= 9 && a.payment_status !== 'confirmed');
+    const overdueN = unpaid.filter(a => { try { return isOverdue(a); } catch(e){ return false; } }).length;
+    const t = lastTouch(c);
+    const idleH = t ? (Date.now() - t) / 3600000 : 999;
 
-    // على مَن وقف العمل
-    const onBrand = {}, onCreator = {};
-    approved.forEach(a => {
-      const st = a.stage || 1;
-      if(st >= 9) return;
-      if(LO_BRAND_ST[st]) onBrand[st] = (onBrand[st] || 0) + 1;
-      else if(LO_CREATOR_ST[st]) onCreator[st] = (onCreator[st] || 0) + 1;
-    });
-    const fmt = (m, names) => Object.entries(m).sort((x, y) => y[1] - x[1])
-      .map(([st, n]) => esc(names[st]) + ' ' + num(n)).join(' · ');
+    let health = 'good', healthTxt = 'تسير بانتظام';
+    if(overdueN){ health = 'critical'; healthTxt = 'مستحقات متأخرة'; }
+    else if(idleH >= 24){ health = 'critical'; healthTxt = 'متوقّفة منذ يوم'; }
+    else if(waitApprN && idleH >= 6){ health = 'serious'; healthTxt = 'تنتظر تعميد الشركة'; }
+    else if(waitApprN || onBrandN){ health = 'warning'; healthTxt = 'تنتظر إجراءً من الشركة'; }
+    else if(size && closedMain >= size && !approved.length){ health = 'serious'; healthTxt = 'اكتملت ولم تُعتمد'; }
 
-    const blockers = [];
-    if(awaitAppr) blockers.push(loPill('بانتظار تعميد الشركة ' + num(awaitAppr), 'warn'));
-    if(Object.keys(onBrand).length) blockers.push(loPill('على الشركة: ' + fmt(onBrand, LO_BRAND_ST), 'warn'));
-    if(Object.keys(onCreator).length) blockers.push(loPill('على المعلنين: ' + fmt(onCreator, LO_CREATOR_ST)));
-    if(liveN) blockers.push(loPill('يفاوضون الآن ' + num(liveN)));
-    if(!blockers.length) blockers.push(loPill(done ? 'كل الصفقات مكتملة' : 'ما فيه شيء معلّق', 'good'));
+    return { c, brand, ca, size, closedMain, approved, doneN, runN, startN,
+             waitApprN, stages, onBrandN, unpaid, overdueN, t, idleH, health, healthTxt };
+  });
 
-    const pctFill = size ? Math.min(100, Math.round(closedMain / size * 100)) : 0;
-    const pctAppr = size ? Math.min(100, Math.round(approved.length / size * 100)) : 0;
+  const RANK = { critical: 0, serious: 1, warning: 2, good: 3 };
+  rows.sort((a, b) => (RANK[a.health] - RANK[b.health]) || (b.t - a.t));
+
+  if(!rows.length){
+    box.innerHTML = '<div class="card"><h3>الحملات الجارية</h3><div class="empty">ما فيه حملة جارية الآن.</div></div>';
+    return;
+  }
+
+  // ===== شريط المؤشرات =====
+  const totWaitAppr = rows.reduce((n, r) => n + r.waitApprN, 0);
+  const totStuck = rows.filter(r => r.idleH >= 6).length;
+  const totOverdueAmt = rows.reduce((n, r) => n + r.unpaid
+      .filter(a => { try { return isOverdue(a); } catch(e){ return false; } })
+      .reduce((s, a) => s + (Number(a.final_price || a.price) || 0), 0), 0);
+  const needAction = rows.filter(r => r.health !== 'good').length;
+
+  const tile = (label, value, sub, tone) =>
+    '<div class="lo-tile' + (tone ? ' lo-' + tone : '') + '">'
+    + '<div class="lo-tl">' + esc(label) + '</div>'
+    + '<div class="lo-tv">' + value + '</div>'
+    + '<div class="lo-ts">' + sub + '</div></div>';
+
+  const kpis = '<div class="lo-kpis">'
+    + tile('حملات جارية', num(rows.length), needAction ? (num(needAction) + ' تحتاج تدخّلًا') : 'كلها تسير بانتظام', needAction ? 'warn' : 'good')
+    + tile('صفقات بانتظار التعميد', num(totWaitAppr), totWaitAppr ? 'الشركة هي من يوقف التنفيذ' : 'لا شيء معلّق', totWaitAppr ? 'serious' : 'good')
+    + tile('حملات بلا حركة', num(totStuck), 'أكثر من ٦ ساعات', totStuck ? 'warn' : 'good')
+    + tile('مستحقات متأخرة', money(totOverdueAmt), 'حقوق معلنين لم تُصرف', totOverdueAmt ? 'critical' : 'good')
+    + '</div>';
+
+  // ===== مفتاح القراءة (مرة واحدة لكل البطاقات) =====
+  const legend = '<div class="lo-legend">'
+    + '<span><i style="background:var(--lo-s4)"></i>مكتملة</span>'
+    + '<span><i style="background:var(--lo-s3)"></i>قيد التنفيذ</span>'
+    + '<span><i style="background:var(--lo-s2)"></i>معتمدة لم تبدأ</span>'
+    + '<span><i style="background:var(--lo-s1)"></i>بانتظار التعميد</span>'
+    + '<span><i style="background:var(--lo-track);border:1px solid var(--line)"></i>مقاعد شاغرة</span>'
+    + '</div>';
+
+  const HEALTH_ICON = { good: '✓', warning: '●', serious: '▲', critical: '■' };
+
+  const cards = rows.map(r => {
+    const c = r.c, brandName = r.brand ? (r.brand.company_name || r.brand.name || '—') : '—';
+    const denom = r.size || Math.max(1, r.closedMain);
+    const seg = (n, varName, label) => n > 0
+      ? '<span class="lo-seg" style="flex:' + n + ';background:var(' + varName + ')" title="' + esc(label + ': ' + n) + '"></span>'
+      : '';
+    const freeSeats = Math.max(0, denom - r.doneN - r.runN - r.startN - r.waitApprN);
+    const bar = '<div class="lo-bar">'
+      + seg(r.doneN, '--lo-s4', 'مكتملة')
+      + seg(r.runN, '--lo-s3', 'قيد التنفيذ')
+      + seg(r.startN, '--lo-s2', 'معتمدة لم تبدأ')
+      + seg(r.waitApprN, '--lo-s1', 'بانتظار التعميد')
+      + (freeSeats > 0 ? '<span class="lo-seg lo-free" style="flex:' + freeSeats + '" title="مقاعد شاغرة: ' + freeSeats + '"></span>' : '')
+      + '</div>';
+
+    // مسار التنفيذ: توزيع الصفقات المعتمدة على المراحل ١..٨
+    let stageStrip = '';
+    if(r.approved.length){
+      const maxN = Math.max(1, ...Object.values(r.stages));
+      let cells = '';
+      for(let st = 1; st <= 8; st++){
+        const n = r.stages[st] || 0;
+        const h = n ? Math.max(14, Math.round(n / maxN * 34)) : 2;
+        const who = LO_BRAND_ST[st] ? 'على الشركة' : 'على المعلن';
+        cells += '<div class="lo-st" title="' + esc(st + ' · ' + (STAGE[st] || '') + ' — ' + who + ': ' + n + ' صفقة') + '">'
+          + '<div class="lo-stv">' + (n ? num(n) : '') + '</div>'
+          + '<div class="lo-stb" style="height:' + h + 'px' + (n ? '' : ';background:var(--line2)') + '"></div>'
+          + '<div class="lo-stl">' + esc(STAGE[st] || st) + '</div></div>';
+      }
+      const doneCell = '<div class="lo-st lo-st-done" title="' + esc('مكتملة: ' + r.doneN + ' صفقة') + '">'
+        + '<div class="lo-stv">' + (r.doneN ? num(r.doneN) : '') + '</div>'
+        + '<div class="lo-stb" style="height:' + (r.doneN ? 34 : 2) + 'px;background:var(--lo-s4)"></div>'
+        + '<div class="lo-stl">مكتملة</div></div>';
+      stageStrip = '<div class="lo-stages">' + cells + doneCell + '</div>';
+    }
+
+    // واقف على مَن — حالة، لا هوية: أيقونة + نص دائمًا
+    const fmt = (names) => Object.keys(r.stages).filter(k => names[k]).sort((x, y) => r.stages[y] - r.stages[x])
+      .map(k => esc(names[k]) + ' ' + num(r.stages[k])).join(' · ');
+    const chips = [];
+    if(r.waitApprN) chips.push(['serious', '▲', 'بانتظار تعميد الشركة ' + num(r.waitApprN)]);
+    const ob = fmt(LO_BRAND_ST); if(ob) chips.push(['warning', '●', 'على الشركة: ' + ob]);
+    const oc = fmt(LO_CREATOR_ST); if(oc) chips.push(['neutral', '○', 'على المعلنين: ' + oc]);
+    if(r.overdueN) chips.push(['critical', '■', 'مستحقات متأخرة ' + num(r.overdueN)]);
+    if(!chips.length) chips.push(['good', '✓', r.doneN ? 'كل الصفقات مكتملة' : 'ما فيه شيء معلّق']);
+
+    const negN = r.ca.filter(a => a.status === 'pending' || a.status === 'active').length;
+    const resN = r.ca.filter(a => a.status === 'closed' && a.is_reserve === true).length;
+    const waitN = r.ca.filter(a => a.status === 'waitlisted').length;
+    const meta = [
+      (r.size ? num(r.closedMain) + '/' + num(r.size) + ' مقعد مقفل' : num(r.closedMain) + ' مقفلة'),
+      num(r.approved.length) + ' معتمدة',
+      num(r.doneN) + ' مكتملة',
+      (negN ? num(negN) + ' يفاوضون' : null),
+      (resN ? num(resN) + ' احتياط' : null),
+      (waitN ? num(waitN) + ' في الانتظار' : null),
+      (c.payment_terms === 'postpaid' ? 'دفع آجل' : null)
+    ].filter(Boolean).join('<span class="lo-sep">·</span>');
+
     const isBarter = c.compensation === 'product';
-    const comp = isBarter ? '🎁 مقابل منتج' : (esc(String(c.budget || '—')) + ' ر.س للمعلن');
-    const terms = c.payment_terms === 'postpaid' ? loPill('دفع آجل', 'good') : '';
-    const unpaidN = approved.filter(a => (a.stage || 1) >= 9 && a.payment_status !== 'confirmed').length;
+    const comp = isBarter ? 'مقابل منتج' : (esc(String(c.budget || '—')) + ' ر.س للمعلن');
+    const idleTone = r.idleH >= 24 ? 'critical' : (r.idleH >= 6 ? 'warning' : '');
 
-    return '<div style="border:1px solid var(--line);border-radius:14px;padding:14px 16px;background:var(--panel,#fff)">'
-      + '<div style="display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;align-items:baseline">'
-      +   '<div><div style="font-weight:700;font-size:14.5px">' + esc(c.title || '—') + '</div>'
-      +   '<div class="dim" style="font-size:12px">' + esc(brandName) + ' · ' + esc(PLATFORM[c.platform] || c.platform || '—')
-      +     ' · ' + esc(CITY[c.city] || c.city || '—') + ' · ' + comp + '</div></div>'
-      +   '<div class="dim" style="font-size:11.5px;white-space:nowrap">آخر حركة ' + loAgo(new Date(lastTouch(c)).toISOString()) + '</div>'
-      + '</div>'
-      + '<div style="display:flex;align-items:center;gap:10px;margin:10px 0 8px">'
-      +   '<div style="flex:1;height:8px;border-radius:100px;background:rgba(15,20,32,.07);position:relative;overflow:hidden">'
-      +     '<div style="position:absolute;inset-inline-start:0;top:0;bottom:0;width:' + pctFill + '%;background:#E23B2E;opacity:.35"></div>'
-      +     '<div style="position:absolute;inset-inline-start:0;top:0;bottom:0;width:' + pctAppr + '%;background:#1D9E75"></div>'
+    return '<article class="lo-card lo-b-' + r.health + '">'
+      + '<header class="lo-head">'
+      +   '<div><h4>' + esc(c.title || '—') + '</h4>'
+      +     '<div class="lo-sub">' + esc(brandName) + '<span class="lo-sep">·</span>' + esc(PLATFORM[c.platform] || c.platform || '—')
+      +     '<span class="lo-sep">·</span>' + esc(CITY[c.city] || c.city || '—') + '<span class="lo-sep">·</span>' + comp + '</div></div>'
+      +   '<div class="lo-hr">'
+      +     '<span class="lo-badge lo-' + r.health + '">' + HEALTH_ICON[r.health] + ' ' + esc(r.healthTxt) + '</span>'
+      +     '<span class="lo-idle' + (idleTone ? ' lo-' + idleTone + '-t' : '') + '">آخر حركة ' + loAgo(r.t ? new Date(r.t).toISOString() : null) + '</span>'
       +   '</div>'
-      +   '<span class="mono" style="font-size:12.5px;white-space:nowrap">' + num(closedMain) + (size ? '/' + num(size) : '') + ' مقفلة · '
-      +     num(approved.length) + ' معتمدة · ' + num(done) + ' مكتملة</span>'
-      + '</div>'
-      + '<div style="display:flex;flex-wrap:wrap;gap:6px">'
-      +   blockers.join('')
-      +   (reserve ? loPill('احتياط ' + num(reserve)) : '')
-      +   (wait ? loPill('انتظار ' + num(wait)) : '')
-      +   (unpaidN ? loPill('مستحقات غير مدفوعة ' + num(unpaidN), 'bad') : '')
-      +   terms
-      + '</div></div>';
+      + '</header>'
+      + bar
+      + '<div class="lo-meta">' + meta + '</div>'
+      + stageStrip
+      + '<div class="lo-chips">' + chips.map(x =>
+          '<span class="lo-chip lo-' + x[0] + '"><b>' + x[1] + '</b>' + x[2] + '</span>').join('') + '</div>'
+      + '</article>';
   }).join('');
 
-  // آخر التحديثات عبر المنصة
+  // ===== آخر التحديثات =====
   const ev = [];
   APPS.forEach(a => {
     const camp = campsById[a.campaign_id]; if(!camp) return;
     const br = usersById[camp.brand_id];
     const bn = br ? (br.company_name || br.name || '—') : '—';
-    const who = creatorName(a);
-    const ttl = camp.title || '—';
-    const push = (t, txt) => { if(t) ev.push({ t: t, txt: txt }); };
-    push(a.created_at, esc(who) + ' دخل التفاوض · ' + esc(ttl));
-    push(a.closed_at, 'الوكيل أقفل الصفقة مع ' + esc(who) + ' · ' + esc(ttl));
-    push(a.brand_approved_at, esc(bn) + ' عمّدت ' + esc(who) + ' · ' + esc(ttl));
-    push(a.platform_paid_at, esc(bn) + ' سدّدت للمنصة · ' + esc(ttl));
-    push(a.received_confirmed_at, esc(who) + ' أكّد استلام مستحقاته · ' + esc(ttl));
-    push(a.rejected_at, 'خرج ' + esc(who) + ' من ' + esc(ttl));
+    const who = creatorName(a), ttl = camp.title || '—';
+    const push = (t, txt, kind) => { if(t) ev.push({ t: t, txt: txt, k: kind, c: ttl }); };
+    push(a.created_at, esc(who) + ' دخل التفاوض', 'neg');
+    push(a.closed_at, 'الوكيل أقفل الصفقة مع ' + esc(who), 'close');
+    push(a.brand_approved_at, esc(bn) + ' عمّدت ' + esc(who), 'appr');
+    push(a.platform_paid_at, esc(bn) + ' سدّدت للمنصة', 'pay');
+    push(a.received_confirmed_at, esc(who) + ' أكّد استلام مستحقاته', 'pay');
+    push(a.rejected_at, 'خرج ' + esc(who), 'out');
   });
   CAMPAIGNS.forEach(c => {
     const br = usersById[c.brand_id];
-    if(c.created_at) ev.push({ t: c.created_at, txt: 'حملة جديدة «' + esc(c.title || '—') + '» من ' + esc(br ? (br.company_name || br.name || '—') : '—') });
+    if(c.created_at) ev.push({ t: c.created_at, txt: 'حملة جديدة من ' + esc(br ? (br.company_name || br.name || '—') : '—'), k: 'new', c: c.title || '—' });
   });
   ev.sort((x, y) => new Date(y.t || 0) - new Date(x.t || 0));
-  const feed = ev.slice(0, 14).map(e =>
-    '<div style="display:flex;justify-content:space-between;gap:12px;font-size:12.5px;border-top:1px solid var(--line);padding:7px 2px">'
-    + '<span>' + e.txt + '</span><span class="dim" style="white-space:nowrap">' + loAgo(e.t) + '</span></div>').join('');
+  const KIND = { neg:'--lo-s1', close:'--lo-s2', appr:'--lo-s3', pay:'--lo-s4', out:'--lo-out', new:'--lo-s3' };
+  const feed = ev.slice(0, 12).map(e =>
+    '<li class="lo-ev"><span class="lo-dot" style="background:var(' + (KIND[e.k] || '--lo-s2') + ')"></span>'
+    + '<span class="lo-evt">' + e.txt + '<span class="lo-sep">·</span><span class="dim">' + esc(e.c || '') + '</span></span>'
+    + '<span class="lo-evd">' + loAgo(e.t) + '</span></li>').join('');
 
   box.innerHTML =
-    '<div class="card"><h3>🔴 الحملات الجارية الآن <span class="count-tag">' + num(live.length) + '</span></h3>'
-    + '<div class="hint">كل حملة نشطة في المنصة، وأين وقفت، ومَن المطلوب منه التحرّك. تتحدّث تلقائيًا كل ٤٥ ثانية.</div>'
-    + '<div style="display:flex;flex-direction:column;gap:10px;margin-top:10px">' + cards + '</div></div>'
-    + '<div class="card"><h3>آخر التحديثات</h3>' + (feed || '<div class="empty">لا حركة بعد</div>') + '</div>';
+    '<section class="lo-root">'
+    + kpis
+    + '<div class="card"><h3>الحملات الجارية الآن <span class="count-tag">' + num(rows.length) + '</span></h3>'
+    +   '<div class="hint">مرتّبة بالأولوية: ما يحتاج تدخّلًا أولًا. تتحدّث تلقائيًا كل ٤٥ ثانية.</div>'
+    +   legend
+    +   '<div class="lo-cards">' + cards + '</div></div>'
+    + '<div class="card"><h3>آخر التحديثات</h3><ul class="lo-feed">' + (feed || '<li class="empty">لا حركة بعد</li>') + '</ul></div>'
+    + '</section>';
 }
 
 function renderOverview(){
