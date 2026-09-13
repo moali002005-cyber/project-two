@@ -658,7 +658,9 @@ function isInternalBrand(u){
   const cn = String(u.company_name || '').trim().toLowerCase();
   return cn === 'agentsimpleai' || cn === 'فلفلونسر' || cn === 'flfluencer ai';
 }
-function clientBrands(){ return USERS.filter(u => u.role === 'brand' && !isInternalBrand(u)); }
+// الشركات = الحسابات الرئيسية فقط. العلامات الفرعية (parent_brand_id) تُحسب داخل شركتها الأم
+function clientBrands(){ return USERS.filter(u => u.role === 'brand' && !isInternalBrand(u) && !u.parent_brand_id); }
+function subBrandsOf(id){ return USERS.filter(u => u.role === 'brand' && u.parent_brand_id === id); }
 let SHOW_TEST = (function(){ try{ return localStorage.getItem('flf_admin_show_test')==='1'; }catch(e){ return false; } })();
 function applyTestFilter(){
   USERS     = RAW_USERS.filter(x => SHOW_TEST || x.is_test !== true);
@@ -1004,6 +1006,9 @@ function companyOpsHtml(r){
              : (b.approval_status === 'approved' ? '<span style="color:#1D9E75">مفعّل</span>' : esc(b.approval_status || '—'))],
     ['مسجّلة منذ', b.created_at ? esc(new Date(b.created_at).toLocaleDateString('ar-SA-u-nu-latn')) : '—']
   ];
+  const subs = subBrandsOf(b.id);
+  if (subs.length) idRows.push(['علامات تحت الحساب',
+    num(subs.length + 1) + ' — ' + [b.company_name].concat(subs.map(x => x.company_name)).map(esc).join(' · ')]);
   const idCard = '<div style="display:flex;flex-wrap:wrap;gap:8px 22px;padding:8px 2px 12px;border-bottom:1px solid var(--line);margin-bottom:10px">'
     + idRows.map(x => opsChip(x[0], x[1])).join('') + '</div>';
 
