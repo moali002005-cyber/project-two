@@ -798,12 +798,12 @@ function renderCompanies(){
     const overdueCell = r.overdueAmt > 0
       ? '<td style="color:#c0392b;font-weight:600">'+money(r.overdueAmt)+' <small>('+num(r.overdue.length)+')</small></td>'
       : '<td class="dim">—</td>';
-    // صفّ التفاصيل: قائمة المستحقات غير المدفوعة
-    let det;
+    // صفّ التفاصيل: ملف تشغيلي كامل + قائمة المستحقات غير المدفوعة
+    let det = companyOpsHtml(r);
     if(!r.unpaid.length){
-      det = '<div style="color:#1D9E75;padding:6px 2px">✓ لا مستحقات معلّقة — كل الصفقات المكتملة مدفوعة.</div>';
+      det += '<div style="color:#1D9E75;padding:6px 2px">✓ لا مستحقات معلّقة — كل الصفقات المكتملة مدفوعة.</div>';
     } else {
-      det = '<div style="display:flex;flex-direction:column;gap:6px;padding:4px 2px">'
+      det += '<div style="display:flex;flex-direction:column;gap:6px;padding:4px 2px">'
         + '<div style="font-weight:600;margin-bottom:2px">مستحقات غير مدفوعة ('+num(r.unpaid.length)+'):</div>'
         + r.unpaid.slice().sort((x,y)=>{ let dx=0,dy=0; try{dx=daysOverdue(x)||0;}catch(e){} try{dy=daysOverdue(y)||0;}catch(e){} return dy-dx; }).map(a => {
             const camp = campsById[a.campaign_id];
@@ -831,6 +831,108 @@ function renderCompanies(){
       + '</tr>'
       + '<tr id="co-det-'+esc(String(b.id))+'" style="display:none"><td colspan="9" style="background:var(--panel2)">'+det+'</td></tr>';
   }).join('');
+}
+
+
+// ===== الملف التشغيلي للشركة: من هي، وش عندها، ومين واقف عليه العمل الآن =====
+const OPS_COMP = { product: 'مقابل منتج', cash: 'نقدي' };
+const OPS_CTYPE = { home: 'تجربة منزلية', visit: 'زيارة', video: 'فيديو جاهز' };
+const OPS_BRAND_STAGES = { 2: 'الشحن', 6: 'مراجعة المحتوى' };
+const OPS_CREATOR_STAGES = { 1: 'إرسال العنوان', 3: 'تأكيد الاستلام', 5: 'رفع المحتوى', 7: 'النشر', 8: 'البيانات البنكية' };
+
+function opsChip(label, value, tone){
+  const c = tone === 'warn' ? '#9A4B06' : (tone === 'bad' ? '#c0392b' : (tone === 'good' ? '#1D9E75' : 'var(--ink)'));
+  return '<span style="display:inline-flex;gap:5px;align-items:baseline;font-size:12.5px;white-space:nowrap">'
+    + '<span class="dim">' + esc(label) + '</span>'
+    + '<b style="color:' + c + '">' + value + '</b></span>';
+}
+
+function companyOpsHtml(r){
+  const b = r.b;
+  const val = a => Number(a.final_price || a.price) || 0;
+
+  // --- من هي الشركة ---
+  const idRows = [
+    ['المسؤول', esc(b.name || '—')],
+    ['البريد', esc(b.email || '—')],
+    ['الجوال', esc(b.phone || '—')],
+    ['الموقع', b.website ? '<a href="' + esc(b.website) + '" target="_blank" rel="noopener">' + esc(b.website) + '</a>' : '—'],
+    ['المجال', esc(INDUSTRY[b.industry] || b.industry || '—')],
+    ['المدينة', esc(CITY[b.city] || b.city || '—')],
+    ['الباقة', esc(b.plan_code || 'بلا اشتراك')],
+    ['الحالة', b.approval_status === 'suspended' ? '<span style="color:#c0392b">موقوف</span>'
+             : (b.approval_status === 'approved' ? '<span style="color:#1D9E75">مفعّل</span>' : esc(b.approval_status || '—'))],
+    ['مسجّلة منذ', b.created_at ? esc(new Date(b.created_at).toLocaleDateString('ar-SA-u-nu-latn')) : '—']
+  ];
+  const idCard = '<div style="display:flex;flex-wrap:wrap;gap:8px 22px;padding:8px 2px 12px;border-bottom:1px solid var(--line);margin-bottom:10px">'
+    + idRows.map(x => opsChip(x[0], x[1])).join('') + '</div>';
+
+  // --- مين واقف عليه العمل الآن ---
+  const live = r.approved.filter(a => (a.stage || 1) < 9);
+  const awaitingApproval = r.apps.filter(a => a.status === 'closed' && a.brand_approved !== true && a.is_reserve !== true);
+  const onBrand = [], onCreator = [];
+  live.forEach(a => {
+    const st = a.stage || 1;
+    if (OPS_BRAND_STAGES[st]) onBrand.push([st, a]);
+    else if (OPS_CREATOR_STAGES[st]) onCreator.push([st, a]);
+  });
+  const groupBy = (arr, names) => {
+    const m = {};
+    arr.forEach(([st]) => { m[st] = (m[st] || 0) + 1; });
+    return Object.entries(m).sort((x, y) => y[1] - x[1])
+      .map(([st, n]) => esc(names[st]) + ' (' + num(n) + ')').join(' · ');
+  };
+  const todo = [];
+  if (awaitingApproval.length) todo.push(opsChip('بانتظار تعميد الشركة', num(awaitingApproval.length) + ' صفقة', 'warn'));
+  if (onBrand.length) todo.push(opsChip('على الشركة', groupBy(onBrand, OPS_BRAND_STAGES), 'warn'));
+  if (onCreator.length) todo.push(opsChip('على المعلنين', groupBy(onCreator, OPS_CREATOR_STAGES)));
+  if (r.overdue.length) todo.push(opsChip('متأخر عن السداد', num(r.overdue.length) + ' صفقة · ' + money(r.overdueAmt), 'bad'));
+  if (!todo.length) todo.push(opsChip('الحالة', 'ما فيه شيء معلّق', 'good'));
+  const todoCard = '<div style="display:flex;flex-wrap:wrap;gap:8px 22px;padding:0 2px 12px;border-bottom:1px solid var(--line);margin-bottom:10px">'
+    + '<span style="font-weight:600;font-size:13px">واقف على:</span>' + todo.join('') + '</div>';
+
+  // --- حملاتها ---
+  let campTable;
+  if (!r.camps.length) {
+    campTable = '<div class="dim" style="padding:6px 2px">ما أطلقت أي حملة بعد.</div>';
+  } else {
+    const rows = r.camps.slice().sort((x, y) => new Date(y.created_at || 0) - new Date(x.created_at || 0)).map(c => {
+      const ca = APPS.filter(a => a.campaign_id === c.id);
+      const closedMain = ca.filter(a => a.status === 'closed' && a.is_reserve !== true).length;
+      const reserve = ca.filter(a => a.status === 'closed' && a.is_reserve === true).length;
+      const wait = ca.filter(a => a.status === 'waitlisted').length;
+      const liveN = ca.filter(a => a.status === 'pending' || a.status === 'active').length;
+      const appr = ca.filter(a => a.status === 'closed' && a.brand_approved === true).length;
+      const size = parseInt(c.campaign_size, 10) || 0;
+      const isBarter = c.compensation === 'product';
+      const money_ = isBarter ? '🎁 مقابل منتج' : (esc(String(c.budget || '—')) + ' ر.س');
+      const unpaidN = ca.filter(a => a.status === 'closed' && a.brand_approved === true && (a.stage || 1) >= 9 && a.payment_status !== 'confirmed').length;
+      const terms = c.payment_terms === 'postpaid' ? '<span style="color:#0B6B4F">دفع آجل</span>' : 'مُقدَّم';
+      const fill = size ? (num(closedMain) + '/' + num(size)) : num(closedMain);
+      const stBadge = c.status === 'active' ? '<span style="color:#1D9E75">نشطة</span>'
+                    : (c.status === 'closed' || c.status === 'completed' ? '<span class="dim">منتهية</span>' : esc(c.status || '—'));
+      return '<tr>'
+        + '<td style="max-width:220px"><div style="font-weight:600">' + esc(c.title || '—') + '</div>'
+        +   '<div class="dim" style="font-size:11.5px">' + esc(OPS_CTYPE[c.campaign_type] || c.campaign_type || '—')
+        +   ' · ' + esc(PLATFORM[c.platform] || c.platform || '—') + ' · ' + esc(CITY[c.city] || c.city || '—') + '</div></td>'
+        + '<td>' + stBadge + '</td>'
+        + '<td>' + money_ + '</td>'
+        + '<td class="mono">' + fill + '</td>'
+        + '<td class="mono">' + num(appr) + '</td>'
+        + '<td class="mono">' + (reserve ? num(reserve) : '<span class="dim">—</span>') + '</td>'
+        + '<td class="mono">' + (wait ? num(wait) : '<span class="dim">—</span>') + '</td>'
+        + '<td class="mono">' + (liveN ? num(liveN) : '<span class="dim">—</span>') + '</td>'
+        + '<td>' + terms + '</td>'
+        + '<td class="mono">' + (unpaidN ? '<span style="color:#9A4B06">' + num(unpaidN) + '</span>' : '<span class="dim">—</span>') + '</td>'
+        + '</tr>';
+    }).join('');
+    campTable = '<div class="tbl-wrap" style="margin-bottom:12px"><table><thead><tr>'
+      + '<th>الحملة</th><th>الحالة</th><th>المقابل</th><th>مقفلة/الحجم</th><th>معتمدة</th>'
+      + '<th>احتياط</th><th>انتظار</th><th>قيد التفاوض</th><th>السداد</th><th>مستحقات</th>'
+      + '</tr></thead><tbody>' + rows + '</tbody></table></div>';
+  }
+
+  return idCard + todoCard + campTable;
 }
 
 function toggleCompany(id){
