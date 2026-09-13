@@ -649,6 +649,16 @@ let USERS=[], CAMPAIGNS=[], APPS=[], NEGS=[];
 // بيانات التجارب (is_test) مخفيّة افتراضيًا — نحتفظ بالخام ونفلتر العرض فقط، بلا حذف
 let RAW_USERS=[], RAW_CAMPAIGNS=[], RAW_APPS=[], RAW_NEGS=[];
 let TICKETS=[], TREPLIES=[];
+// حسابات المنصة نفسها ليست عملاء — تُستثنى من عدّ الشركات وإحصاءاتها
+const FLF_INTERNAL_EMAILS = ['flfluencerai@gmail.com','malak.altwairqe@gmail.com'];
+function isInternalBrand(u){
+  if(!u || u.role !== 'brand') return false;
+  const e = String(u.email || '').trim().toLowerCase();
+  if(FLF_INTERNAL_EMAILS.indexOf(e) >= 0) return true;
+  const cn = String(u.company_name || '').trim().toLowerCase();
+  return cn === 'agentsimpleai' || cn === 'فلفلونسر' || cn === 'flfluencer ai';
+}
+function clientBrands(){ return USERS.filter(u => u.role === 'brand' && !isInternalBrand(u)); }
 let SHOW_TEST = (function(){ try{ return localStorage.getItem('flf_admin_show_test')==='1'; }catch(e){ return false; } })();
 function applyTestFilter(){
   USERS     = RAW_USERS.filter(x => SHOW_TEST || x.is_test !== true);
@@ -801,7 +811,7 @@ function mini(label,value,icon,acc){
 }
 
 function renderAnalytics(){
-  const brands=USERS.filter(u=>u.role==='brand');
+  const brands=clientBrands();
   const creators=USERS.filter(u=>u.role==='creator');
   const closed=APPS.filter(isClosed);
   const approved=APPS.filter(isApprovedDeal); // نفس تعريف GMV في «نظرة عامة» و«الشركات»
@@ -895,7 +905,7 @@ function companyStats(b){
 function renderCompanies(){
   const rowsBox = $('#companies-rows'); if(!rowsBox) return;
   const q = ($('#co-search') && $('#co-search').value || '').trim().toLowerCase();
-  const brands = USERS.filter(u => u.role === 'brand');
+  const brands = clientBrands();
   let stats = brands.map(companyStats);
 
   // مؤشرات علوية
@@ -1071,7 +1081,7 @@ function toggleCompany(id){
 }
 
 function renderInsights(){
-  const brands=USERS.filter(u=>u.role==='brand');
+  const brands=clientBrands();
   const creators=USERS.filter(u=>u.role==='creator');
   const closed=APPS.filter(isClosed);
 
@@ -1529,7 +1539,9 @@ function brandNameForApp(a){ const c=campsById[a.campaign_id]; return c?brandOfC
 function renderLeaderBar(){
   const box = $('#kpis'); if(!box) return;
   const val = a => Number(a.final_price||a.price)||0;
-  const brands = USERS.filter(u=>u.role==='brand' && u.company_name!=='agentsimpleai');
+  const brands = clientBrands();
+  const brandsLive = brands.filter(u=>u.approval_status==='approved');
+  const brandsPending = brands.filter(u=>u.approval_status!=='approved');
   const creators = USERS.filter(u=>u.role==='creator');
   const activeCamps = CAMPAIGNS.filter(c=>c.status==='active').length;
   const approved = APPS.filter(a=>a.status==='closed' && a.brand_approved===true);
@@ -1547,9 +1559,9 @@ function renderLeaderBar(){
     +   fig('💰','قيمة الصفقات (GMV)', r(gmv), num(approved.length)+' صفقة معتمدة')
     +   fig('✓','مدفوع للمؤثرين', r(paid), 'حُوّلت فعليًا للمؤثرين')
     +   fig('⚠️','مستحق للمؤثرين', r(owed), owed>0?'غير مدفوعة — تحتاج متابعة':'كل الحقوق مدفوعة ✓', owed>0?'alert':'')
-    +   fig('👥','المستخدمون', num(creators.length+brands.length), num(creators.length)+' مؤثر · '+num(brands.length)+' شركات')
+    +   fig('👥','المستخدمون', num(creators.length+brandsLive.length), num(creators.length)+' معلنًا · '+num(brandsLive.length)+(brandsLive.length===1?' شركة':' شركات'))
     +   fig('🚀','حملات نشطة', num(activeCamps)+' <small>/ '+num(CAMPAIGNS.length)+'</small>', num(waitlisted)+' في قوائم الانتظار')
-    +   fig('🏢','الشركات', num(brands.length), 'شركة معلِنة على المنصة')
+    +   fig('🏢','الشركات', num(brandsLive.length), brandsPending.length ? (num(brandsPending.length)+' بانتظار التفعيل') : 'شركة معلِنة مفعّلة')
     + '</div>';
 }
 
@@ -1795,7 +1807,7 @@ function renderLiveOps(){
 function renderOverview(){
   const box = $('#dash-body'); if(!box) return;
   const val = a => Number(a.final_price||a.price)||0;
-  const brands = USERS.filter(u=>u.role==='brand' && u.company_name!=='agentsimpleai');
+  const brands = clientBrands();
   const creators = USERS.filter(u=>u.role==='creator');
   const activeCamps = CAMPAIGNS.filter(c=>c.status==='active').length;
   const approved = APPS.filter(a=>a.status==='closed' && a.brand_approved===true);
