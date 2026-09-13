@@ -5,10 +5,10 @@
   window.__flfSupportLoaded = true;
 
   var CATS = [
-    ['payment', 'مستحقات ودفع'],
     ['campaign', 'حملة أو صفقة'],
-    ['agent', 'وكيل التفاوض'],
     ['account', 'الحساب والتفعيل'],
+    ['payment', 'مستحقات ودفع'],
+    ['agent', 'وكيل التفاوض'],
     ['bug', 'عطل في المنصة'],
     ['other', 'شيء آخر']
   ];
@@ -20,6 +20,10 @@
     + 'background:#16110F;color:#fff;border:0;border-radius:100px;padding:12px 18px;font-family:inherit;font-size:13.5px;'
     + 'font-weight:600;cursor:pointer;box-shadow:0 10px 28px -12px rgba(0,0,0,.55);transition:transform .15s}'
     + '.flfs-btn:hover{transform:translateY(-2px)}'
+    + '.flfs-st{border-radius:10px;padding:10px 12px;font-size:12.5px;line-height:1.7;margin-bottom:14px}'
+    + '.flfs-st.ok{background:#E8F7EE;color:#1B6B3A}'
+    + '.flfs-st.wait{background:#FDF4E3;color:#8A5A12}'
+    + '.flfs-st.no{background:#FDECEA;color:#B02A20}'
     + '.flfs-btn .flfs-dot{width:8px;height:8px;border-radius:50%;background:#E23B2E;display:none}'
     + '.flfs-btn.has-reply .flfs-dot{display:inline-block}'
     + '.flfs-ov{position:fixed;inset:0;z-index:9999;background:rgba(15,20,32,.45);display:none;align-items:flex-end;justify-content:flex-start;padding:20px}'
@@ -138,7 +142,9 @@
       return;
     }
     bodyBox.innerHTML =
-      '<div class="flfs-f"><label for="flfs-cat">نوع المشكلة</label><select id="flfs-cat">'
+      statusStrip(u)
+      + '<div class="flfs-f"><label for="flfs-cat">نوع المشكلة</label><select id="flfs-cat">'
+      + '<option value="" selected>— اختر نوع المشكلة —</option>'
       + CATS.map(function (c) { return '<option value="' + c[0] + '">' + c[1] + '</option>'; }).join('')
       + '</select></div>'
       + '<div class="flfs-f"><label for="flfs-msg">اشرح لنا بالتفصيل</label>'
@@ -148,17 +154,41 @@
     document.getElementById('flfs-send').onclick = send;
   }
 
+  // عنوان مختصر من أول سطر الرسالة — كان العنوان اسم التصنيف نفسه
+  // فكانت كل تذاكر الدفع بعنوان واحد ولا يمكن تمييزها في لوحة الأدمن
+  function shortSubject(msg) {
+    var line = String(msg || '').split(/\r?\n/)[0].trim();
+    if (!line) return null;
+    return line.length > 70 ? line.slice(0, 70) + '…' : line;
+  }
+
+  // جواب جاهز لأكثر سؤال يتكرر: «هل تم قبول حسابي؟» — نعرضه قبل ما يسأل
+  function statusStrip(u) {
+    var st = u && u.approval_status;
+    if (st === 'approved') {
+      return '<div class="flfs-st ok">✅ حسابك مُفعّل — تقدر تقدّم على أي حملة تناسبك من صفحة الحملات.</div>';
+    }
+    if (st === 'pending') {
+      return '<div class="flfs-st wait">⏳ حسابك قيد المراجعة. ما تحتاج ترسل لنا عن التفعيل — يوصلك إشعار أول ما يُعتمد.</div>';
+    }
+    if (st === 'rejected') {
+      return '<div class="flfs-st no">حسابك غير مُعتمد حاليًا. لو تشوف أن فيه خطأ، اكتب لنا وسنراجعه.</div>';
+    }
+    return '';
+  }
+
   async function send() {
     var u = me(); if (!u) return;
     var b = document.getElementById('flfs-send');
     var msg = (document.getElementById('flfs-msg').value || '').trim();
     var cat = document.getElementById('flfs-cat').value;
+    if (!cat) { alertish('اختر نوع المشكلة أولًا حتى توصل لفريقها الصح.'); return; }
     if (msg.length < 10) { alertish('اكتب لنا تفاصيل أكثر حتى نقدر نساعدك.'); return; }
     b.disabled = true; b.textContent = 'جاري الإرسال...';
     try {
       var r = await supabaseClient.from('support_tickets').insert([{
         user_id: u.id, user_role: u.role || null, category: cat,
-        subject: CAT_AR[cat] || null, message: msg, page_url: location.pathname
+        subject: shortSubject(msg), message: msg, page_url: location.pathname
       }]).select().single();
       if (r.error) throw r.error;
       bodyBox.innerHTML = '<div class="flfs-ok">وصلتنا رسالتك 🌿<br>رقم التذكرة: <b>'
