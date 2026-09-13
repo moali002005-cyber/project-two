@@ -2773,6 +2773,13 @@ function payUnpaidApps(apps) {
 function payPaidCount(apps) {
   return (apps || []).filter(a => a.status === 'closed' && a.brand_approved === true && a.platform_paid === true).length;
 }
+// وصف المقابل في الشيت: حملات «مقابل منتج» ما فيها رقم مالي، فالصفر يقرأ خطأً
+function dealValueText(a) {
+  if (a && a.payment_status === 'barter') return '🎁 مقابل منتج';
+  const v = (a && (a.final_price || a.price)) || 0;
+  return Number(v).toLocaleString('en-US') + ' ر.س';
+}
+
 function payButtonHtml(campaignId, apps) {
   const unpaid = payUnpaidApps(apps);
   if (!unpaid.length) return '';
@@ -3968,7 +3975,7 @@ function renderCellDetail(a) {
           <div class="ag-icon">⏳</div>
           <div class="ag-info">
             <div class="ag-title">الوكيل توصّل لسعر نهائي:</div>
-            <div class="ag-price">${(a.final_price || a.price).toLocaleString('en-US')} ر.س</div>
+            <div class="ag-price">${dealValueText(a)}</div>
             <div class="ag-desc">اعتمد المعلن وابدأ التنفيذ، أو ارفضه ويترقّى التالي من قائمة الانتظار.</div>
           </div>
         </div>
@@ -4044,7 +4051,7 @@ function renderDealRow(a, idx, campaignType, fulfillmentMode) {
     });
   } else if (awaitingApproval) {
     cells = `<td colspan="${NCOL}" style="padding:4px 6px;"><div class="mx-approve-row">
-        <span class="mx-appr-price">⏳ اتفاق عند ${(a.final_price || a.price).toLocaleString('en-US')} ر.س</span>
+        <span class="mx-appr-price">${a.payment_status === 'barter' ? '⏳ اتفاق ' + dealValueText(a) : '⏳ اتفاق عند ' + dealValueText(a)}</span>
         <span class="mx-appr-btns">
           <button class="mx-btn approve" onclick="event.stopPropagation(); approveDeal('${a.id}')">✓ اعتماد</button>
           <button class="mx-btn reject" onclick="event.stopPropagation(); openRejectModal('${a.id}')">✗ رفض</button>
