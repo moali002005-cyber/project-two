@@ -67,6 +67,21 @@ h3{font-size:15.5px;font-weight:700;margin:16px 0 6px}
 .cta{display:block;width:100%;text-align:center;background:var(--accent);color:#fff;border:none;border-radius:12px;padding:12px;font-family:var(--font);font-size:14.5px;font-weight:700;cursor:pointer;text-decoration:none}
 .cta.ghost{background:#fff;color:var(--accent);border:1.5px solid var(--accent)}
 .cta.cur{background:#F4F5F7;color:var(--ink-soft);cursor:default}
+.cmp{margin:10px 0 26px}
+.cmp h2{font-size:19px;font-weight:700;margin-bottom:4px}
+.cmp .sub{font-size:13.5px;color:var(--ink-muted);margin-bottom:14px}
+.cmp-wrap{overflow-x:auto;border:1.5px solid var(--line);border-radius:16px;background:#fff;box-shadow:0 10px 30px rgba(15,20,32,.05)}
+table.cmp-t{width:100%;border-collapse:collapse;font-size:14px;min-width:520px;font-variant-numeric:tabular-nums}
+table.cmp-t th,table.cmp-t td{padding:12px 14px;text-align:center;border-bottom:1px solid var(--line);white-space:nowrap}
+table.cmp-t th:first-child,table.cmp-t td:first-child{text-align:right;white-space:normal;font-weight:600;background:#FAFBFC;position:sticky;right:0}
+table.cmp-t thead th{background:#FBE9E6;color:var(--accent-ink);font-weight:700;font-size:13.5px}
+table.cmp-t thead th:first-child{background:#FBE9E6}
+table.cmp-t thead th.best{background:var(--accent);color:#fff}
+table.cmp-t tbody tr:last-child td{border-bottom:none}
+table.cmp-t td.win{font-weight:700;color:var(--accent-ink);background:#FFF8F7}
+table.cmp-t .pc{font-size:12.5px;color:var(--ink-muted);font-weight:400;display:block}
+table.cmp-t .no{color:#C9CFDA}
+.cmp-foot{font-size:12.5px;color:var(--ink-muted);margin-top:10px;line-height:1.8}
 </style>
 </head>
 <body>
@@ -93,6 +108,8 @@ h3{font-size:15.5px;font-weight:700;margin:16px 0 6px}
   <div class="grid" id="plans-grid">
     <div class="loading">جاري تحميل الباقات…</div>
   </div>
+
+  <section class="cmp" id="plans-compare" hidden></section>
 
   <div class="note" id="pg-note" hidden></div>
 
@@ -151,6 +168,69 @@ function renderPlans(){
       + btn
       + '</div>';
   }).join('');
+}
+
+// ===== جدول المقارنة: كل صف يقرأ من عمود حقيقي في plans (مفروض في القاعدة/الـAPI) =====
+var CT_AR = { home:'استضافة منزلية', visit:'زيارة موقع', video:'فيديو', code:'كود خصم' };
+function capTxt(v, unit){
+  if (v === null || v === undefined) return 'بلا حد';
+  return ar(v) + (unit ? ' ' + unit : '');
+}
+function renderCompare(){
+  var box = document.getElementById('plans-compare');
+  if (!box) return;
+  var ps = PLANS.filter(function(p){ return !p.is_custom_price; });
+  if (AUD !== 'brand' || ps.length < 2){ box.hidden = true; return; }
+
+  var rows = [
+    { k:'رسوم إدارة الحملة', best:'min', v:function(p){ return (p.commission_pct==null) ? null : Number(p.commission_pct); },
+      t:function(p,x){ return x==null ? '—' : ar(x)+'٪'; } },
+    { k:'العلامات التجارية في الحساب', best:'max', v:function(p){ return p.max_brands==null ? Infinity : Number(p.max_brands); },
+      t:function(p,x){ return p.max_brands==null ? 'بلا حد' : (Number(p.max_brands)>1 ? ar(p.max_brands)+' علامات' : 'علامة واحدة'); } },
+    { k:'مقاعد الفريق', best:'max', v:function(p){ return p.max_seats==null ? Infinity : Number(p.max_seats); },
+      t:function(p,x){ return p.max_seats==null ? 'بلا حد' : ar(p.max_seats)+(Number(p.max_seats)>2?' حسابات':(Number(p.max_seats)==2?' حسابان':' حساب')); } },
+    { k:'المعلنون في الحملة الواحدة', best:'max', v:function(p){ return p.max_creators_per_campaign==null ? Infinity : Number(p.max_creators_per_campaign); },
+      t:function(p,x){ return capTxt(p.max_creators_per_campaign, 'معلنًا'); } },
+    { k:'الحملات النشطة', best:'max', v:function(p){ return p.max_active_campaigns==null ? Infinity : Number(p.max_active_campaigns); },
+      t:function(p,x){ return capTxt(p.max_active_campaigns, 'حملة'); } },
+    { k:'أنواع الحملات', best:'max', v:function(p){ return (p.campaign_types||[]).length; },
+      t:function(p,x){ var a = p.campaign_types||[]; return '<span style="white-space:normal">' + (a.length ? a.map(function(c){ return esc(CT_AR[c]||c); }).join(' · ') : '—') + '</span>'; } },
+    { k:'حملات كود الخصم', best:'max', v:function(p){ return (p.campaign_types||[]).indexOf('code')>=0 ? 1 : 0; },
+      t:function(p,x){ return x ? '✓' : '<span class="no">—</span>'; } },
+    { k:'مرفقات البريف', best:'max', v:function(p){ return p.max_brief_attachments==null ? Infinity : Number(p.max_brief_attachments); },
+      t:function(p,x){ return capTxt(p.max_brief_attachments, 'مرفق'); } }
+  ];
+
+  var head = '<tr><th>المقارنة</th>' + ps.map(function(p){
+    var pr = Number(PERIOD==='yearly' ? p.price_yearly : p.price_monthly) || 0;
+    var cls = FEAT(p) ? ' class="best"' : '';
+    return '<th'+cls+'>' + esc(p.name_ar) + '<span class="pc">'
+      + (pr>0 ? ar(pr)+' ر.س / '+(PERIOD==='yearly'?'سنة':'شهر') : 'مجانًا') + '</span></th>';
+  }).join('') + '</tr>';
+
+  var body = rows.map(function(r){
+    var vals = ps.map(r.v);
+    var finite = vals.filter(function(x){ return typeof x === 'number' && isFinite(x); });
+    var target = null;
+    if (finite.length){
+      var pool = (r.best==='min') ? vals.filter(function(x){ return typeof x==='number' && isFinite(x); }) : vals;
+      target = (r.best==='min') ? Math.min.apply(null, pool) : Math.max.apply(null, pool.map(function(x){ return typeof x==='number'?x:-1; }));
+    } else if (r.best==='max') {
+      target = Math.max.apply(null, vals.map(function(x){ return typeof x==='number'?x:-1; }));
+    }
+    var uniq = vals.filter(function(x){ return x===target; }).length !== vals.length;
+    return '<tr><td>' + r.k + '</td>' + ps.map(function(p,i){
+      var win = uniq && vals[i]===target;
+      return '<td' + (win ? ' class="win"' : '') + '>' + r.t(p, vals[i]) + '</td>';
+    }).join('') + '</tr>';
+  }).join('');
+
+  box.innerHTML = '<h2>وش الفرق بين الباقات؟</h2>'
+    + '<div class="sub">الأرقام هذي مفروضة فعليًا في النظام — لا في الصفحة وحدها.</div>'
+    + '<div class="cmp-wrap"><table class="cmp-t"><thead>' + head + '</thead><tbody>' + body + '</tbody></table></div>'
+    + '<div class="cmp-foot">رسوم إدارة الحملة تُحسب على قيمة الصفقات المعتمدة وتظهر في الفاتورة قبل الدفع. '
+    + 'خاصية «العلامات التجارية» تخليك تضيف علامات تحت نفس الحساب وتنقل بينها من صفحة الحملات — مفيدة للمجموعات الي تدير أكثر من علامة.</div>';
+  box.hidden = false;
 }
 
 var PLAN_MONTHS_AR=['يناير','فبراير','مارس','أبريل','مايو','يونيو','يوليو','أغسطس','سبتمبر','أكتوبر','نوفمبر','ديسمبر'];
@@ -254,6 +334,7 @@ async function init(){
     }
   } catch (e){}
   renderPlans();
+  renderCompare();
   renderMine();
   await checkReturn();
 }
@@ -264,6 +345,7 @@ document.getElementById('period-toggle').addEventListener('click', function(e){
   PERIOD = b.getAttribute('data-p');
   [].forEach.call(this.querySelectorAll('button'), function(x){ x.classList.toggle('on', x === b); });
   renderPlans();
+  renderCompare();
 });
 
 init();
@@ -327,7 +409,9 @@ else{if(num&&num.dataset.mo)num.textContent=num.dataset.mo;if(cur2&&cur2.dataset
 var b=c.querySelector('button.cta');
 if(b&&m&&m.cta&&b.className.indexOf('cur')<0)b.textContent=m.cta;
 if(m&&m.foot&&!c.querySelector('.felfel-foot')){var p2=document.createElement('div');p2.className='felfel-foot';p2.textContent=m.foot;c.appendChild(p2);}
-});}
+})
+try{if(typeof window.renderCompare==='function')window.renderCompare();}catch(e){}
+}
 function load(){try{var sc=window.supabaseClient;if(!sc||!sc.from)return Promise.resolve();
 return sc.from('plans').select('name_ar,price_monthly,price_yearly,list_price_monthly,list_price_yearly,commission_pct,cta_ar,footnote_ar,audience,is_active').then(function(r){
 (r.data||[]).forEach(function(p){if(p.audience!=='brand'||!p.is_active)return;

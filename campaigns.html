@@ -497,6 +497,26 @@ body {
 }
 .pay-now-btn:hover { transform: translateY(-1px); }
 .pay-now-btn:disabled { opacity: .6; cursor: default; transform: none; }
+/* ===== مبدّل العلامات التجارية (باقة الأعمال) ===== */
+.bsw{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin:0 0 14px;padding:10px 14px;
+  background:var(--cream-darker,#FAF7F5);border:1px solid var(--line);border-radius:14px}
+.bsw-lbl{font-size:12px;font-weight:700;color:var(--ink-muted);margin-inline-end:2px}
+.bsw-b{position:relative;background:#fff;border:1px solid var(--line-strong);color:var(--ink-soft);
+  font-family:inherit;font-size:13px;font-weight:600;padding:7px 15px;border-radius:100px;cursor:pointer;
+  transition:border-color .15s,color .15s}
+.bsw-b:hover{border-color:var(--ink-faint);color:var(--ink)}
+.bsw-b.on{background:var(--ink,#16110F);border-color:var(--ink,#16110F);color:#fff}
+.bsw-dot{position:absolute;top:6px;inset-inline-start:7px;width:6px;height:6px;border-radius:50%;
+  background:#0DA64F;display:block}
+.bsw-b.on .bsw-dot{background:#7BE3A8}
+.bsw-add{background:transparent;border:1px dashed var(--line-strong);color:var(--ink-muted);
+  font-family:inherit;font-size:12.5px;font-weight:600;padding:7px 14px;border-radius:100px;cursor:pointer}
+.bsw-add:hover{border-color:var(--accent);color:var(--accent-ink)}
+.bsw-up{font-size:12.5px;font-weight:600;color:var(--accent-ink);text-decoration:none}
+.bsw-up:hover{text-decoration:underline}
+.bsw-max{font-size:12px;color:var(--ink-faint)}
+@media(max-width:520px){.bsw{padding:9px 11px}.bsw-b{font-size:12.5px;padding:6px 12px}}
+
 .pay-now-btn.soft { background: #fff; color: var(--ink-soft); border: 1px solid var(--line-strong); box-shadow: none; font-weight: 600; }
 .pay-now-btn.soft:hover { color: var(--ink); border-color: var(--ink-faint); }
 .pay-later { font-size:13px; font-weight:700; color:#0B6B4F; background:rgba(11,107,79,0.08); border-radius:10px; padding:8px 12px; margin-bottom:10px; }
@@ -1753,6 +1773,7 @@ async function simblExitImpersonation(){
   <!-- ============ APP CONTENT ============ -->
   <div id="app-section" class="section-divider"></div>
 
+  <div id="brand-switcher"></div>
   <div class="campaign-pills" id="campaign-pills"></div>
   <div class="campaigns-list" id="campaigns-list"></div>
 </main>
@@ -2132,6 +2153,81 @@ PROMO-02" style="width:100%;box-sizing:border-box;font-family:inherit;"></textar
 <script>
 let currentUser = null;
 let WORKSPACE_ID = null; // مساحة العمل الفعّالة (المالك لو كان عضو فريق)
+// ====== العلامات التجارية: حساب واحد يدير أكثر من علامة ======
+let MY_BRANDS = [];
+let BRAND_LIMIT = 1;
+function activeBrand(){ return MY_BRANDS.find(b => b.id === WORKSPACE_ID) || MY_BRANDS[0] || null; }
+function savedBrandId(){ try { return localStorage.getItem('flf_active_brand') || ''; } catch(e){ return ''; } }
+
+async function loadMyBrands(){
+  const { data, error } = await supabaseClient.rpc('my_brands');
+  if (error) throw error;
+  MY_BRANDS = data || [];
+  try {
+    const pr = window.__PLAN || (await supabaseClient.rpc('brand_plan_status')).data;
+    BRAND_LIMIT = (pr && (pr.max_brands != null)) ? Number(pr.max_brands) : 1;
+  } catch (e) { BRAND_LIMIT = 1; }
+  const saved = savedBrandId();
+  if (saved && MY_BRANDS.some(b => b.id === saved)) WORKSPACE_ID = saved;
+  else WORKSPACE_ID = (MY_BRANDS[0] && MY_BRANDS[0].id) || currentUser.id;
+  renderBrandBar();
+}
+
+function renderBrandBar(){
+  const host = document.getElementById('brand-switcher');
+  if (!host) return;
+  // علامة واحدة وما فيه سقف أعلى → لا نعرض شيئًا ولا نزعج المستخدم
+  if (MY_BRANDS.length <= 1 && BRAND_LIMIT <= 1) { host.innerHTML = ''; return; }
+  const cur = activeBrand();
+  host.innerHTML =
+    '<div class="bsw">'
+    + '<span class="bsw-lbl">العلامة التجارية</span>'
+    + MY_BRANDS.map(b =>
+        '<button type="button" class="bsw-b' + (cur && b.id === cur.id ? ' on' : '') + '" '
+        + 'onclick="switchBrand(\'' + b.id + '\')" title="' + escHtml((b.campaigns||0) + ' حملة · ' + (b.approved_deals||0) + ' صفقة معتمدة') + '">'
+        + escHtml(b.company_name || 'علامة')
+        + (b.active_campaigns ? '<i class="bsw-dot"></i>' : '')
+        + '</button>').join('')
+    + (MY_BRANDS.length < BRAND_LIMIT
+        ? '<button type="button" class="bsw-add" onclick="openAddBrand()">+ علامة جديدة</button>'
+        : (BRAND_LIMIT <= 1
+            ? '<a class="bsw-up" href="/plans.html">رقِّ الباقة لإدارة أكثر من علامة ←</a>'
+            : '<span class="bsw-max">وصلت الحد (' + toArabic(BRAND_LIMIT) + ')</span>'))
+    + '</div>';
+}
+
+function switchBrand(id){
+  if (!id || id === WORKSPACE_ID) return;
+  try { localStorage.setItem('flf_active_brand', id); } catch(e){}
+  WORKSPACE_ID = id;
+  selectedCampaignId = null;
+  const b = activeBrand();
+  if (b) {
+    const nm = b.company_name || 'الشركة';
+    const un = document.getElementById('user-name'); if (un) un.textContent = nm;
+    const ui = document.getElementById('user-initial'); if (ui) ui.textContent = nm[0];
+    const wn = document.getElementById('welcome-name'); if (wn) wn.textContent = nm;
+  }
+  renderBrandBar();
+  loadData();
+}
+
+async function openAddBrand(){
+  const nm = prompt('اسم العلامة التجارية الجديدة:');
+  if (nm === null) return;
+  const name = String(nm).trim();
+  if (name.length < 2) { showToast('اكتب اسمًا صحيحًا', 'error'); return; }
+  try {
+    const { data, error } = await supabaseClient.rpc('create_sub_brand', { p_company_name: name });
+    if (error) throw error;
+    showToast('أُضيفت العلامة «' + name + '» 🌿', 'success');
+    await loadMyBrands();
+    if (data) switchBrand(data);
+  } catch (e) {
+    console.error('create_sub_brand', e);
+    showToast(e.message || 'تعذّرت إضافة العلامة', 'error');
+  }
+}
 function hasPerm(p){ return !window.TEAM_WS || ((window.TEAM_WS.permissions||[]).indexOf(p) >= 0); }
 let myCampaigns = [];
 let campaignApps = {};
@@ -2701,7 +2797,11 @@ async function init() {
     if (ws && ws.is_member && ws.owner_id) { WORKSPACE_ID = ws.owner_id; window.TEAM_WS = ws; }
   } catch (e) {}
 
-  const companyName = window.TEAM_WS ? (window.TEAM_WS.owner_company_name || 'الشركة') : (currentUser.company_name || 'الشركة');
+  // ====== العلامات التجارية المتعددة (باقة الأعمال) ======
+  if (!window.TEAM_WS) { try { await loadMyBrands(); } catch (e) { console.warn('brands', e); } }
+
+  const companyName = window.TEAM_WS ? (window.TEAM_WS.owner_company_name || 'الشركة')
+    : (activeBrand() ? (activeBrand().company_name || 'الشركة') : (currentUser.company_name || 'الشركة'));
   document.getElementById('user-name').textContent = companyName;
   document.getElementById('user-initial').textContent = companyName[0];
   var _wn = document.getElementById('welcome-name'); if (_wn) _wn.textContent = companyName;
