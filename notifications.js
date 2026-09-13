@@ -369,7 +369,8 @@ function renderNotifList() {
     new_application: { class: 'application', emoji: '📨' },
     new_message: { class: 'message', emoji: '💬' },
     workflow_update: { class: 'workflow', emoji: '✓' },
-    deal_closed: { class: 'deal', emoji: '🤝' }
+    deal_closed: { class: 'deal', emoji: '🤝' },
+    tier_decision: { class: 'workflow', emoji: '🏷️' }
   };
 
   list.innerHTML = notifData.map(n => {
