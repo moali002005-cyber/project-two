@@ -1943,7 +1943,9 @@ function renderCreatorDealCard(c, a) {
       ? `<span class="dc-badge" style="background:#FCE9D2;color:#9A4B06;border:1px solid #F0C79A;">🕓 احتياط جاهز</span>`
       : `<span class="dc-badge amber">بانتظار التعميد</span>`;
   } else if (a.status === 'campaign_full') {
-    badge = `<span class="dc-badge full">اكتمل العدد قبل دخولك</span>`;
+    badge = /مهلة التفاوض/.test(a.rejection_reason || '')
+      ? `<span class="dc-badge" style="background:#FDECEA;color:#a93226;border:1px solid #f0b4b4;">⌛ انتهت المهلة</span>`
+      : `<span class="dc-badge full">اكتمل العدد قبل دخولك</span>`;
   } else if (a.status === 'rejected') {
     badge = `<span class="dc-badge" style="background:#FDECEA;color:#a93226;border:1px solid #f0b4b4;">⌛ انتهت مشاركتك</span>`;
   } else {
@@ -1958,7 +1960,13 @@ function renderCreatorDealCard(c, a) {
 
   let body = '';
   if (a.status === 'campaign_full') {
-    body = `<div class="dc-note full">اكتملت مقاعد هذي الحملة وقائمة الاحتياط معها قبل ما تدخل التفاوض، فأقفل النظام الباب تلقائيًا — ما فيه خطأ في حسابك. المقاعد تُحجز بسرعة، فخلّي إشعاراتك مفتوحة وقدّم فور وصول الحملة 🌟</div>`;
+    const _cfr = a.rejection_reason || '';
+    if (/مهلة التفاوض/.test(_cfr)) {
+      // انتهت مهلة التفاوض — نعرض السبب الحقيقي بدل رسالة اكتمال المقاعد
+      body = `<div class="dc-note" style="background:#FDECEA;color:#a93226;border-right:3px solid #c0392b;">⌛ <b>انتهت مهلة التفاوض قبل ما تُقفل الصفقة.</b><br>${escHtml(_cfr)}<br>المهلة الآن ١٥ دقيقة من لحظة ما يجيك دورك — خلّي إشعاراتك مفتوحة وافتح المحادثة أول ما يوصلك التنبيه 🌿</div>`;
+    } else {
+      body = `<div class="dc-note full">اكتملت مقاعد هذي الحملة وقائمة الاحتياط معها قبل ما تدخل التفاوض، فأقفل النظام الباب تلقائيًا — ما فيه خطأ في حسابك. المقاعد تُحجز بسرعة، فخلّي إشعاراتك مفتوحة وقدّم فور وصول الحملة 🌟</div>`;
+    }
   } else if (didntWin) {
     body = `<div class="dc-note full">اكتمل العدد المطلوب لهذي الحملة واعتمدت الشركة معلنيها. نشكر لك مشاركتك — تابع الحملات الجديدة وقدّم بسرعة، حظ أوفر 🌟</div>`;
   } else if (isWaitlisted) {
