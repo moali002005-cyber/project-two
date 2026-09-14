@@ -3535,6 +3535,20 @@ function applyCrop(){
   }, 'image/jpeg', 0.9);
 }
 
+// يتحقق أن الملف وصل التخزين فعلًا حتى لو انقطع رد السيرفر عن جوال المعلن
+async function flfVerifyUploaded(path) {
+  for (let i = 0; i < 3; i++) {
+    try {
+      const pub = supabaseClient.storage.from('content').getPublicUrl(path);
+      const u = pub.data.publicUrl + (pub.data.publicUrl.indexOf('?') >= 0 ? '&' : '?') + 'v=' + Date.now();
+      const r = await fetch(u, { method: 'HEAD', cache: 'no-store' });
+      if (r && r.ok) return pub.data.publicUrl;
+    } catch (e) { /* نعيد المحاولة */ }
+    await new Promise(r => setTimeout(r, 2000));
+  }
+  return null;
+}
+
 async function uploadContentVideo(file, appId, onProgress) {
   const ext = (file.name.split('.').pop() || 'mp4').toLowerCase().replace(/[^a-z0-9]/g, '') || 'mp4';
   const path = `${appId}_${Date.now()}.${ext}`;
@@ -3549,6 +3563,7 @@ async function uploadContentVideo(file, appId, onProgress) {
     await new Promise((resolve, reject) => {
       const xhr = new XMLHttpRequest();
       xhr.open('PUT', signed.data.signedUrl, true);
+      xhr.timeout = 20 * 60 * 1000; // مهلة صريحة بدل التعليق للأبد
       xhr.setRequestHeader('Content-Type', contentType);
       xhr.setRequestHeader('x-upsert', 'true');
       xhr.upload.onprogress = (e) => {
@@ -3560,9 +3575,15 @@ async function uploadContentVideo(file, appId, onProgress) {
         if (xhr.status >= 200 && xhr.status < 300) resolve();
         else reject(new Error('فشل الرفع (رمز ' + xhr.status + ')'));
       };
+      // انقطاع الرد لا يعني ضياع الملف: كثيرًا ما يكتمل الرفع ثم لا يصل الرد للجوال.
+      // نتحقق من وصول الملف فعليًا قبل ما نعلن الفشل.
       xhr.onerror = () => reject(new Error('انقطع الاتصال أثناء الرفع'));
       xhr.ontimeout = () => reject(new Error('انتهت مهلة الرفع'));
       xhr.send(file);
+    }).catch(async (err) => {
+      const okUrl = await flfVerifyUploaded(path);
+      if (okUrl) return; // الملف وصل فعلًا — نكمل عادي
+      throw err;
     });
 
     const pub = supabaseClient.storage.from('content').getPublicUrl(path);
@@ -3575,6 +3596,22 @@ async function uploadContentVideo(file, appId, onProgress) {
     if (up.error) throw up.error;
     const pub = supabaseClient.storage.from('content').getPublicUrl(path);
     return { url: pub.data.publicUrl, path };
+  }
+}
+
+// يربط الفيديو المرفوع بالنموذج ويبرز زر الإرسال حتى لا ينسى المعلن الخطوة الأخيرة
+function flfAttachUploaded(appId, url, path, wrap, btn, submitB) {
+  const linkEl = document.getElementById('sf-' + appId + '-content_link');
+  const pathEl = document.getElementById('sf-' + appId + '-_video_path');
+  if (linkEl) linkEl.value = url;
+  if (pathEl) pathEl.value = path;
+  if (wrap) wrap.innerHTML = '<video src="' + url + '" controls playsinline style="width:100%;border-radius:10px;max-height:260px;background:#000;"></video>'
+    + '<div style="font-size:12.5px;color:#177245;margin-top:6px;font-weight:600;">✓ تم رفع الفيديو</div>'
+    + '<div style="font-size:12.5px;color:#B02A20;margin-top:4px;font-weight:600;">تبقّت خطوة واحدة: اضغطي «إرسال الفيديو للتعميد» تحت 👇</div>';
+  if (btn) { btn.textContent = '🎬 تغيير الفيديو'; btn.disabled = false; }
+  if (submitB) {
+    submitB.disabled = false;
+    try { submitB.scrollIntoView({ behavior: 'smooth', block: 'center' }); } catch (e) {}
   }
 }
 
@@ -3614,14 +3651,11 @@ async function handleVideoUpload(input, appId) {
       renderProgress(pct);
       if (btn && pct !== null) btn.textContent = 'جاري الرفع ' + pct + '%…';
     });
-    document.getElementById('sf-' + appId + '-content_link').value = url;
-    document.getElementById('sf-' + appId + '-_video_path').value = path;
-    if (wrap) wrap.innerHTML = `<video src="${url}" controls playsinline style="width:100%;border-radius:10px;max-height:260px;background:#000;"></video><div style="font-size:12px;color:#B02A20;margin-top:6px;">✓ تم رفع الفيديو بنجاح</div>`;
-    btn.textContent = '🎬 تغيير الفيديو'; btn.disabled = false;
-    if (submitB) submitB.disabled = false;
+    flfAttachUploaded(appId, url, path, wrap, btn, submitB);
   } catch (e) {
     console.error('video upload failed:', e);
-    showToast('فشل رفع الفيديو: ' + (e.message || 'حاول مرة أخرى'), 'error');
+    // التحقق من وصول الملف يتم داخل uploadContentVideo — الوصول هنا يعني أنه فعلًا لم يصل
+    showToast('تعذّر إكمال الرفع: ' + (e.message || 'حاول مرة أخرى') + ' — جرّبي من جديد وما راح تخسري شي.', 'error', 6000);
     if (wrap) wrap.innerHTML = '';
     btn.textContent = '🎬 اختر الفيديو من جهازك'; btn.disabled = false;
     input.value = '';
