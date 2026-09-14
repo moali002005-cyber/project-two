@@ -270,6 +270,54 @@ body {
 .fc-b .p:hover{background:#C4331F}
 .fc-b .g{background:#fff;color:#16110F;border-color:#E7DFDC}
 .fc-b .g:hover{border-color:#16110F}
+
+/* ===== بطاقات المميزات: نص مختصر + رسم بنفس أسلوب الرئيسية ===== */
+.fb-w{max-width:880px}
+.fb-c{display:grid;grid-template-columns:1fr 238px;gap:24px;align-items:center}
+.fb-c .fb-t p{margin:7px 0 0;font-size:14.5px;line-height:1.85;color:#7A6F6A}
+@media(max-width:760px){.fb-c{grid-template-columns:1fr;gap:16px}.fb-c .mw{max-width:300px;margin-inline:auto;width:100%}}
+.mw{background:#fff;border:1px solid rgba(26,21,18,.07);border-radius:14px;overflow:hidden;
+box-shadow:0 18px 36px -26px rgba(26,21,18,.3),0 1px 3px rgba(26,21,18,.03)}
+.mw-bar{height:26px;display:flex;align-items:center;justify-content:center;background:#FCFAF9;border-bottom:1px solid #F1ECE9}
+.mw-tab{min-width:58%;height:16px;border-radius:999px;background:#fff;border:1px solid #F1ECE9;
+display:flex;align-items:center;justify-content:center;font-size:9px;color:#B3A9A4;font-weight:500}
+.mw-v{padding:12px 11px;display:flex;flex-direction:column;gap:6px;min-height:122px;justify-content:center}
+.mw-row{display:flex;align-items:center;gap:7px;padding:6px 8px;border:1px solid #F4EEEB;border-radius:10px;background:#fff}
+.mw-av{width:18px;height:18px;border-radius:50%;flex:none}
+.mw-av.a1{background:#E9857A}.mw-av.a2{background:#7FA9DA}.mw-av.a3{background:#9E86C4}.mw-av.a4{background:#8FBE9B}
+.mw-nm{flex:1;min-width:0;font-size:9.5px;color:#8A807B;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
+.mw-nm.ltr{direction:ltr;text-align:start}
+.mw-st{font-size:8.5px;font-weight:700;color:#B0A29D;background:#F7F3F1;border-radius:999px;padding:3px 7px;flex:none;white-space:nowrap}
+.mw-st.ok{color:#3E7D57;background:#F1F8F3}
+.mw-st.hot{color:#C0563F;background:#FDF3F0}
+.mw-chip{display:inline-flex;align-items:center;gap:5px;background:#F1F8F3;border:1px solid #DCEEE2;border-radius:999px;
+padding:3px 9px;font-size:9.5px;font-weight:700;color:#3E7D57;align-self:center}
+.mw-chip i{width:5px;height:5px;border-radius:50%;background:#4FA97A}
+.mw-btn{font-size:9.5px;font-weight:700;border-radius:999px;padding:6px 12px;background:#E23B2E;color:#fff;
+align-self:center;display:inline-flex;gap:5px;align-items:center;white-space:nowrap}
+.mw-btn.g{background:#fff;color:#8A807B;border:1px solid #F1ECE9}
+.mw-f{display:flex;justify-content:space-between;align-items:center;gap:8px;border:1px solid #F4EEEB;border-radius:10px;
+padding:6px 9px;font-size:9.5px;color:#16110F;font-weight:700}
+.mw-f span{color:#B0A29D;font-weight:500}
+.mw-b{max-width:92%;border-radius:11px;padding:6px 9px;font-size:9.5px;line-height:1.6}
+.mw-b.me{align-self:flex-end;background:linear-gradient(150deg,#F0725F,#E23B2E);color:#fff;border-end-start-radius:3px}
+.mw-b.you{align-self:flex-start;background:#F3EDEA;color:#6B615D;border-end-end-radius:3px}
+.mw-steps{display:flex;gap:3px;align-items:center;margin-top:2px}
+.mw-steps i{height:5px;border-radius:999px;background:#F1ECE9;flex:1}
+.mw-steps i.on{background:#E23B2E}
+.mw-big{font-family:'Tajawal',system-ui,sans-serif;font-size:24px;font-weight:800;color:#E23B2E;text-align:center;line-height:1.15;direction:ltr}
+.mw-cap{text-align:center;font-size:9.5px;color:#B0A29D;line-height:1.6}
+.mw-tiles{display:grid;grid-template-columns:repeat(3,1fr);gap:5px}
+.mw-tile{border:1px solid #F4EEEB;border-radius:9px;padding:7px 4px;text-align:center}
+.mw-tile b{display:block;font-family:'Tajawal',system-ui,sans-serif;font-size:13px;font-weight:800;color:#16110F;direction:ltr}
+.mw-tile span{display:block;font-size:8px;color:#B0A29D;margin-top:2px}
+.mw-tags{display:flex;flex-wrap:wrap;gap:4px;justify-content:center}
+.mw-tag{font-size:8.5px;font-weight:700;color:#8A807B;background:#F7F3F1;border-radius:999px;padding:4px 8px}
+.mw-tag.on{background:#FDF3F0;color:#C0563F}
+.mw-ck{display:flex;align-items:center;gap:6px;font-size:9.5px;color:#6B615D}
+.mw-ck s{text-decoration:none;width:13px;height:13px;border-radius:50%;background:#F1F8F3;border:1px solid #DCEEE2;
+color:#3E7D57;font-size:8px;display:inline-flex;align-items:center;justify-content:center;flex:none}
+
 @media(max-width:640px){.fx{padding:44px 0 22px}.fb-c{padding:18px 18px}}
 </style>
 </head>
@@ -297,10 +345,10 @@ body {
 </div></section>
 
 <section class="fb"><div class="fb-w">
-  <div class="fb-c"><h2>يفاوض الجميع في وقت واحد</h2><p>مفاوضات متوازية مستقلّة، لا واحدة تلو الأخرى.</p></div>
-  <div class="fb-c"><h2>لا يتجاوز سقف ميزانيتك</h2><p>السقف الذي تحدّده هو الحد الذي لا يُتخطّى في أي صفقة.</p></div>
-  <div class="fb-c"><h2>يتّفق على المخرجات والمواعيد أولًا</h2><p>عدد المقاطع ونوعها وموعد التسليم تُقفل قبل أي التزام مالي.</p></div>
-  <div class="fb-c"><h2>كل محادثة محفوظة كسجلّ</h2><p>تعود إليها متى شئت — لا اتفاق شفهي ولا وعود خارج المنصة.</p></div>
+  <div class="fb-c"><div class="fb-t"><h2>يفاوض الجميع في وقت واحد</h2><p>محادثات متوازية مستقلّة لا متتابعة.</p></div><div class="mw"><div class="mw-bar"><span class="mw-tab">المفاوضات</span></div><div class="mw-v"><div class="mw-row"><span class="mw-av a1"></span><span class="mw-nm ltr">@reem.creates</span><span class="mw-st hot">يفاوض</span></div><div class="mw-row"><span class="mw-av a2"></span><span class="mw-nm ltr">@khaled.vlog</span><span class="mw-st hot">يفاوض</span></div><div class="mw-row"><span class="mw-av a3"></span><span class="mw-nm ltr">@nouf.daily</span><span class="mw-st ok">اتفق</span></div></div></div></div>
+  <div class="fb-c"><div class="fb-t"><h2>لا يتجاوز سقف ميزانيتك</h2><p>السقف الذي تحدّده لا يُتخطّى أبدًا.</p></div><div class="mw"><div class="mw-bar"><span class="mw-tab">الميزانية</span></div><div class="mw-v"><div class="mw-f">سقفك<span>١٬٠٠٠ ر.س</span></div><div class="mw-f">أُقفلت عند<span>١٬٠٠٠ ر.س</span></div><span class="mw-chip"><i></i>ضمن السقف</span></div></div></div>
+  <div class="fb-c"><div class="fb-t"><h2>يتّفق على المخرجات أولًا</h2><p>العدد والنوع والموعد قبل أي التزام.</p></div><div class="mw"><div class="mw-bar"><span class="mw-tab">الاتفاق</span></div><div class="mw-v"><div class="mw-ck"><s>✓</s>٣ مقاطع تيك توك</div><div class="mw-ck"><s>✓</s>تسليم خلال ٣ أيام</div><div class="mw-ck"><s>✓</s>مراجعة قبل النشر</div></div></div></div>
+  <div class="fb-c"><div class="fb-t"><h2>كل محادثة محفوظة</h2><p>سجلّ كامل تعود له متى شئت.</p></div><div class="mw"><div class="mw-bar"><span class="mw-tab">سجل التفاوض</span></div><div class="mw-v"><div class="mw-b me">المبلغ ١٬٠٠٠ ريال، يناسبك؟</div><div class="mw-b you">تمام، موافق.</div><div class="mw-cap">سُجّلت ١٣:٢١:٥٨</div></div></div></div>
 </div></section>
 
 <section class="fc"><div class="fc-w">
