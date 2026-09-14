@@ -2867,6 +2867,11 @@ function isPostpaidCampaign(campaignId) {
   return !!(c && c.payment_terms === 'postpaid');
 }
 
+// حملة «مقابل منتج» بلا رسوم منصة ما لها مستحقات — فلا تُحجز عن الانطلاق ولا يظهر لها زر دفع
+function isFreeBarterCampaign(campaignId) {
+  const c = (myCampaigns || []).find(x => x.id === campaignId);
+  return !!(c && c.compensation === 'product' && !Number(c.barter_fee_sar || 0));
+}
 function payUnpaidApps(apps) {
   return (apps || []).filter(a => a.status === 'closed' && a.brand_approved === true && !a.platform_paid);
 }
@@ -2881,6 +2886,7 @@ function dealValueText(a) {
 }
 
 function payButtonHtml(campaignId, apps) {
+  if (isFreeBarterCampaign(campaignId)) return '';
   const unpaid = payUnpaidApps(apps);
   if (!unpaid.length) return '';
   // التفاصيل تظهر في الفاتورة عند الدفع — هنا زر واحد فقط
