@@ -3581,10 +3581,10 @@ async function uploadContentVideo(file, appId, onProgress) {
 async function handleVideoUpload(input, appId) {
   const file = input.files && input.files[0];
   if (!file) return;
-  // حد حجم الفيديو حسب الباقة (Free ١٠٠ ميجا · Pro وPremium ٢٠٠)
-  var maxMB = 200;
+  // حد حجم الفيديو: قيمة null في الباقة = بلا حد (قرار المالك — رُفعت كل القيود)
+  var maxMB = null;
   try { var _lm = (typeof simblLimit === 'function') ? await simblLimit('max_video_mb') : null; if (_lm != null) maxMB = _lm; } catch (e) {}
-  if (file.size > maxMB * 1024 * 1024) {
+  if (maxMB != null && file.size > maxMB * 1024 * 1024) {
     showToast(`حجم الفيديو أكبر من ${maxMB} ميجا. اختر فيديو أصغر أو اضغطه.`, 'error');
     input.value = '';
     return;
