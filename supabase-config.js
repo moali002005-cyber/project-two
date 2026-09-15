@@ -1365,11 +1365,14 @@ window.flfIsBarterApp = function (a) {
     btn.type = 'button';
     btn.id = 'flf-gold-claim';
 
-    var later = el('button',
-      'width:100%;background:none;border:0;color:rgba(247,233,198,.42);' +
-      'font-family:inherit;font-size:13.5px;padding:10px 8px 2px;cursor:pointer', 'لاحقًا');
-    later.type = 'button';
-    later.onclick = function () { wrap.remove(); };
+    // لا يوجد زر إغلاق: البطاقة تبقى ظاهرة كل دخول حتى يُضغط «تفعيل الباقة».
+    // المخرج الوحيد غير التفعيل يظهر فقط إذا فشل التفعيل فعلًا، حتى لا يعلق المعلن.
+    var escape = el('button',
+      'display:none;width:100%;background:none;border:0;color:rgba(247,233,198,.42);' +
+      'font-family:inherit;font-size:13.5px;padding:10px 8px 2px;cursor:pointer',
+      'تصفّح الآن وأفعّلها لاحقًا');
+    escape.type = 'button';
+    escape.onclick = function () { wrap.remove(); };
 
     var err = el('div', 'display:none;font-size:13px;color:#F2A9A2;margin-top:10px;line-height:1.8');
 
@@ -1391,6 +1394,7 @@ window.flfIsBarterApp = function (a) {
         btn.textContent = 'تفعيل الباقة';
         err.textContent = 'تعذّر التفعيل الآن. يُرجى المحاولة مرة أخرى بعد لحظات.';
         err.style.display = 'block';
+        escape.style.display = 'block';   // مخرج عند التعذّر فقط
       }
     };
 
@@ -1401,7 +1405,7 @@ window.flfIsBarterApp = function (a) {
     inner.appendChild(perksBox);
     inner.appendChild(btn);
     inner.appendChild(err);
-    inner.appendChild(later);
+    inner.appendChild(escape);
 
     card.appendChild(halo);
     card.appendChild(sheen);
