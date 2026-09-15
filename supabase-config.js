@@ -1417,12 +1417,31 @@ window.flfIsBarterApp = function (a) {
   window.flfRewardCard = render;
 
   // الفحص التلقائي: مرة واحدة لكل تحميل صفحة، وللمعلن فقط
+  // صفحات المعلن وحدها. لا تظهر على الصفحة التعريفية ولا على صفحات الشركة.
+  var ALLOWED = ['creator.html', 'profile.html'];
+
+  function onCreatorPage() {
+    var p = (location.pathname || '').toLowerCase();
+    for (var i = 0; i < ALLOWED.length; i++) {
+      if (p.indexOf(ALLOWED[i]) >= 0) return true;
+    }
+    return false;
+  }
+
   window.flfCheckReward = async function () {
     if (shown) return;
+    if (!onCreatorPage()) return;
     try {
       if (!window.supabaseClient) return;
       var s = await window.supabaseClient.auth.getSession();
       if (!s || !s.data || !s.data.session) return;
+
+      // حارس إضافي: المكافآت للمعلنين فقط
+      try {
+        var pl = await window.simblPlan();
+        if (pl && pl.role && pl.role !== 'creator') return;
+      } catch (e) { /* تعذّر معرفة الدور — نكمل، فالدالة نفسها تحرس الملكية */ }
+
       var r = await window.supabaseClient.rpc('my_pending_reward');
       var d = r && r.data;
       if (!d || d.none || !d.ok) return;
