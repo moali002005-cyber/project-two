@@ -1417,20 +1417,21 @@ window.flfIsBarterApp = function (a) {
   window.flfRewardCard = render;
 
   // الفحص التلقائي: مرة واحدة لكل تحميل صفحة، وللمعلن فقط
-  // صفحات المعلن وحدها. لا تظهر على الصفحة التعريفية ولا على صفحات الشركة.
-  var ALLOWED = ['creator.html', 'profile.html'];
+  // تنبثق أول ما يدخل المعلن الموقع، في أي صفحة يفتحها — عدا صفحات
+  // لا معنى لها فيها: الأدمن (معاينة حساب غيره)، وصفحات الدخول والتسجيل.
+  var BLOCKED = ['admin.html', 'login.html', 'signup.html', 'reset', 'auth'];
 
-  function onCreatorPage() {
+  function onAllowedPage() {
     var p = (location.pathname || '').toLowerCase();
-    for (var i = 0; i < ALLOWED.length; i++) {
-      if (p.indexOf(ALLOWED[i]) >= 0) return true;
+    for (var i = 0; i < BLOCKED.length; i++) {
+      if (p.indexOf(BLOCKED[i]) >= 0) return false;
     }
-    return false;
+    return true;
   }
 
   window.flfCheckReward = async function () {
     if (shown) return;
-    if (!onCreatorPage()) return;
+    if (!onAllowedPage()) return;
     try {
       if (!window.supabaseClient) return;
       var s = await window.supabaseClient.auth.getSession();
