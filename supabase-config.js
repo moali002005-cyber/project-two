@@ -1209,3 +1209,235 @@ window.flfBarterText = function (c) {
 window.flfIsBarterApp = function (a) {
   return !!a && a.payment_status === 'barter';
 };
+
+
+/* ============================================================
+   بطاقة المكافأة الذهبية — تظهر للمعلن أول ما يدخل إذا عنده مكافأة معلّقة،
+   وتحتها زر تفعيل. الباقة لا تُفعَّل إلا بضغطته.
+   مستقلة بأنماطها فتعمل في أي صفحة بلا اعتماد على CSS الصفحة.
+   ============================================================ */
+(function () {
+  var FONT = '"IBM Plex Sans Arabic","Segoe UI",Tahoma,sans-serif';
+  var shown = false;
+
+  function el(tag, css, txt) {
+    var e = document.createElement(tag);
+    if (css) e.style.cssText = css;
+    if (txt != null) e.textContent = txt;
+    return e;
+  }
+
+  function injectKeyframes() {
+    if (document.getElementById('flf-gold-kf')) return;
+    var s = document.createElement('style');
+    s.id = 'flf-gold-kf';
+    s.textContent =
+      '@keyframes flfGoldIn{from{opacity:0;transform:translateY(18px) scale(.96)}to{opacity:1;transform:none}}' +
+      '@keyframes flfGoldSheen{0%{transform:translateX(-120%) rotate(18deg)}55%,100%{transform:translateX(320%) rotate(18deg)}}' +
+      '@keyframes flfGoldGlow{0%,100%{opacity:.55}50%{opacity:.9}}' +
+      '@media (prefers-reduced-motion: reduce){' +
+      '#flf-gold-card{animation:none!important}#flf-gold-sheen{display:none!important}#flf-gold-halo{animation:none!important}}';
+    document.head.appendChild(s);
+  }
+
+  // بطاقة النجاح بعد التفعيل
+  function successView(card, planName, expiresAt) {
+    card.innerHTML = '';
+    var d = '';
+    try {
+      d = new Date(expiresAt).toLocaleDateString('ar-SA-u-nu-latn',
+        { year: 'numeric', month: 'long', day: 'numeric' });
+    } catch (e) { d = ''; }
+
+    var tick = el('div',
+      'width:74px;height:74px;border-radius:50%;margin:0 auto 20px;' +
+      'background:linear-gradient(145deg,#F7E3AE,#C9A227);color:#2A1E05;' +
+      'display:flex;align-items:center;justify-content:center;font-size:36px;font-weight:700', '✓');
+
+    var h = el('div', 'font-size:22px;font-weight:700;color:#F7E9C6;margin-bottom:10px', 'تم التفعيل');
+    var p = el('div',
+      'font-size:14.5px;line-height:2;color:rgba(247,233,198,.72);margin-bottom:6px',
+      'باقة ' + planName + ' فعّالة الآن' + (d ? (' حتى ' + d) : '') + '.');
+    var p2 = el('div',
+      'font-size:13.5px;line-height:2;color:rgba(247,233,198,.55);margin-bottom:22px',
+      'بطاقة إنجازي وأرشيف أعمالي والشارة الموثّقة — كلها انفتحت لك من الملف الشخصي.');
+
+    var go = el('a', 'display:block;background:linear-gradient(145deg,#F7E3AE,#C9A227);color:#2A1E05;' +
+      'text-decoration:none;font-weight:700;font-size:15px;padding:14px;border-radius:13px;margin-bottom:10px',
+      'فتح الملف الشخصي ←');
+    go.href = '/profile.html';
+
+    var close = el('button', 'width:100%;background:none;border:0;color:rgba(247,233,198,.5);' +
+      'font-family:inherit;font-size:14px;padding:8px;cursor:pointer', 'إغلاق');
+    close.type = 'button';
+    close.onclick = function () {
+      var w = document.getElementById('flf-gold');
+      if (w) w.remove();
+    };
+
+    card.appendChild(tick); card.appendChild(h); card.appendChild(p);
+    card.appendChild(p2); card.appendChild(go); card.appendChild(close);
+  }
+
+  function render(rw) {
+    injectKeyframes();
+    var old = document.getElementById('flf-gold');
+    if (old) old.remove();
+
+    var wrap = el('div',
+      'position:fixed;inset:0;z-index:99999;background:rgba(12,9,4,.72);' +
+      'display:flex;align-items:center;justify-content:center;padding:20px;' +
+      'font-family:' + FONT + ';overflow:auto');
+    wrap.id = 'flf-gold';
+    wrap.setAttribute('dir', 'rtl');
+
+    var card = el('div',
+      'position:relative;overflow:hidden;background:linear-gradient(160deg,#241A08 0%,#17120B 62%);' +
+      'border:1px solid rgba(201,162,39,.42);border-radius:22px;max-width:400px;width:100%;' +
+      'padding:34px 26px 24px;text-align:center;' +
+      'box-shadow:0 26px 70px rgba(0,0,0,.55), inset 0 1px 0 rgba(247,227,174,.16);' +
+      'animation:flfGoldIn .42s cubic-bezier(.2,.8,.25,1) both');
+    card.id = 'flf-gold-card';
+
+    // هالة ذهبية خلف الوسام
+    var halo = el('div',
+      'position:absolute;top:-90px;left:50%;transform:translateX(-50%);width:260px;height:260px;' +
+      'border-radius:50%;background:radial-gradient(circle,rgba(201,162,39,.38),transparent 68%);' +
+      'pointer-events:none;animation:flfGoldGlow 3.4s ease-in-out infinite');
+    halo.id = 'flf-gold-halo';
+
+    // لمعة تمرّ على البطاقة مرة واحدة
+    var sheen = el('div',
+      'position:absolute;top:-40%;left:0;width:55%;height:180%;pointer-events:none;' +
+      'background:linear-gradient(90deg,transparent,rgba(247,227,174,.13),transparent);' +
+      'animation:flfGoldSheen 2.6s ease-out .5s 1 both');
+    sheen.id = 'flf-gold-sheen';
+
+    var inner = el('div', 'position:relative');
+
+    var medal = el('div',
+      'width:78px;height:78px;border-radius:50%;margin:0 auto 18px;' +
+      'background:linear-gradient(145deg,#F7E3AE,#C9A227 55%,#8A6B12);' +
+      'display:flex;align-items:center;justify-content:center;font-size:38px;' +
+      'box-shadow:0 8px 26px rgba(201,162,39,.38)', '🏅');
+
+    var eyebrow = el('div',
+      'font-size:12px;font-weight:600;letter-spacing:2.5px;color:rgba(247,227,174,.62);margin-bottom:10px',
+      'مبروك');
+
+    var h = el('div',
+      'font-size:23px;font-weight:700;line-height:1.5;margin-bottom:12px;' +
+      'background:linear-gradient(120deg,#FBEFD0,#C9A227);-webkit-background-clip:text;' +
+      'background-clip:text;color:transparent', rw.title || 'مكافأة');
+
+    var body = el('div',
+      'font-size:14.5px;line-height:2.05;color:rgba(247,233,198,.72);margin-bottom:20px',
+      rw.body || '');
+
+    // ما الذي تفتحه الباقة
+    var perksBox = el('div',
+      'background:rgba(247,227,174,.06);border:1px solid rgba(201,162,39,.2);' +
+      'border-radius:14px;padding:14px 16px;margin-bottom:22px;text-align:right');
+
+    var perksHead = el('div',
+      'font-size:12.5px;font-weight:600;color:rgba(247,227,174,.8);margin-bottom:9px',
+      'باقة ' + (rw.plan_name || '') + ' — ' + (rw.days || 30) + ' يومًا مجانًا');
+    perksBox.appendChild(perksHead);
+
+    ['عمولة 15٪ بدل 20٪ على كل صفقة',
+      'أولوية في قوائم انتظار الحملات',
+      'شارة موثّق على ملفك',
+      '🏅 بطاقة إنجازي — جاهزة للنشر'
+    ].forEach(function (t) {
+      var row = el('div',
+        'font-size:13.5px;line-height:1.95;color:rgba(247,233,198,.66);' +
+        'display:flex;gap:8px;align-items:flex-start');
+      row.appendChild(el('span', 'color:#C9A227;flex:none', '·'));
+      row.appendChild(el('span', '', t));
+      perksBox.appendChild(row);
+    });
+
+    var btn = el('button',
+      'width:100%;border:0;cursor:pointer;font-family:inherit;font-weight:700;font-size:15.5px;' +
+      'padding:15px;border-radius:13px;color:#2A1E05;' +
+      'background:linear-gradient(145deg,#F7E3AE,#C9A227);' +
+      'box-shadow:0 8px 22px rgba(201,162,39,.32)', 'تفعيل الباقة');
+    btn.type = 'button';
+    btn.id = 'flf-gold-claim';
+
+    var later = el('button',
+      'width:100%;background:none;border:0;color:rgba(247,233,198,.42);' +
+      'font-family:inherit;font-size:13.5px;padding:10px 8px 2px;cursor:pointer', 'لاحقًا');
+    later.type = 'button';
+    later.onclick = function () { wrap.remove(); };
+
+    var err = el('div', 'display:none;font-size:13px;color:#F2A9A2;margin-top:10px;line-height:1.8');
+
+    btn.onclick = async function () {
+      btn.disabled = true;
+      btn.style.opacity = '.7';
+      btn.textContent = 'جارٍ التفعيل…';
+      err.style.display = 'none';
+      try {
+        var r = await window.supabaseClient.rpc('claim_reward', { p_id: rw.id });
+        var d = r && r.data;
+        if (!d || d.error) throw new Error((d && d.error) || 'claim');
+        try { sessionStorage.removeItem('simbl_plan'); } catch (e) {}
+        if (typeof window.simblPlan === 'function') { try { await window.simblPlan(true); } catch (e) {} }
+        successView(card, d.plan_name || rw.plan_name || '', d.expires_at);
+      } catch (e) {
+        btn.disabled = false;
+        btn.style.opacity = '1';
+        btn.textContent = 'تفعيل الباقة';
+        err.textContent = 'تعذّر التفعيل الآن. يُرجى المحاولة مرة أخرى بعد لحظات.';
+        err.style.display = 'block';
+      }
+    };
+
+    inner.appendChild(medal);
+    inner.appendChild(eyebrow);
+    inner.appendChild(h);
+    inner.appendChild(body);
+    inner.appendChild(perksBox);
+    inner.appendChild(btn);
+    inner.appendChild(err);
+    inner.appendChild(later);
+
+    card.appendChild(halo);
+    card.appendChild(sheen);
+    card.appendChild(inner);
+    wrap.appendChild(card);
+    document.body.appendChild(wrap);
+  }
+
+  window.flfRewardCard = render;
+
+  // الفحص التلقائي: مرة واحدة لكل تحميل صفحة، وللمعلن فقط
+  window.flfCheckReward = async function () {
+    if (shown) return;
+    try {
+      if (!window.supabaseClient) return;
+      var s = await window.supabaseClient.auth.getSession();
+      if (!s || !s.data || !s.data.session) return;
+      var r = await window.supabaseClient.rpc('my_pending_reward');
+      var d = r && r.data;
+      if (!d || d.none || !d.ok) return;
+      shown = true;
+      render(d);
+    } catch (e) { /* المكافأة تحسينية فقط — لا تُعطّل الصفحة */ }
+  };
+})();
+
+/* تشغيل تلقائي: يُفحص وجود مكافأة معلّقة بعد استقرار الصفحة */
+(function () {
+  function go() {
+    setTimeout(function () {
+      if (typeof window.flfCheckReward === 'function') {
+        window.flfCheckReward().catch(function () {});
+      }
+    }, 900);
+  }
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', go);
+  } else { go(); }
+})();
