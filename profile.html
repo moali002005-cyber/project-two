@@ -2767,12 +2767,20 @@ function feeLines(a) {
     document.getElementById('tr-current').textContent = TIER_NAME[cur] || cur;
     var sel = document.getElementById('tr-tier');
     sel.innerHTML = '';
+    // تُعرض الفئات الثلاث كلها مع تعليم الحالية. استثناء الفئة الحالية كان يمنع
+    // من يظن نفسه مصنَّفًا خطأً في فئة أعلى من طلب النزول إلى Micro (UGC)،
+    // فيضطر لاختيار فئة لا يريدها ويكتب مراده في الملاحظة.
     ['micro', 'medium', 'mega'].forEach(function (k) {
-      if (k === cur) return;
       var o = document.createElement('option');
-      o.value = k; o.textContent = TIER_NAME[k];
+      o.value = k;
+      o.textContent = TIER_NAME[k] + (k === cur ? ' — فئتك الحالية' : '');
+      if (k === cur) o.disabled = true;
       sel.appendChild(o);
     });
+    // أول خيار متاح يكون المحدَّد، فلا تُرسَل الفئة الحالية بالخطأ
+    for (var _i = 0; _i < sel.options.length; _i++) {
+      if (!sel.options[_i].disabled) { sel.selectedIndex = _i; break; }
+    }
     var f = document.getElementById('tr-followers');
     if (f && !f.value && typeof currentUser !== 'undefined' && currentUser && currentUser.followers) f.value = currentUser.followers;
     var u = document.getElementById('tr-url');
