@@ -280,7 +280,7 @@ body {
       <button type="button" class="btn btn-ghost lang-toggle" data-i18n-toggle onclick="simblI18n.toggle()">EN</button>
       <div id="nav-actions" style="display:inline-flex; gap:32px; align-items:center;">
           <a href="/login.html" class="btn btn-ghost" data-i18n="nav_login">تسجيل دخول</a>
-        <a href="/signup.html" class="btn btn-primary" data-i18n="nav_start">ابدأ الآن ←</a>
+        <a href="/signup.html" class="btn btn-primary" data-i18n="nav_start">البدء الآن ←</a>
       </div>
     </div>
   </div>
@@ -296,7 +296,7 @@ body {
             <span class="hs-s" data-i18n="story_step1">أطلق حملتك الإعلانية.</span>
             <span class="hs-s" data-i18n="story_step2">وكيل تفاوض AI يرشّح لك الأنسب.</span>
             <span class="hs-s" data-i18n="story_step3">يعرض سعرك على الجميع ويقفل الاتفاق.</span>
-            <span class="hs-s" data-i18n="story_step4">تابع تقدم حملتك بشكل مباشر.</span>
+            <span class="hs-s" data-i18n="story_step4">متابعة تقدّم الحملة بشكل مباشر.</span>
           </div>
           <div class="hs-stage">
           <svg viewBox="0 0 520 150" aria-hidden="true">
@@ -448,7 +448,7 @@ body {
   <div class="container">
     <div class="ps-head">
       <div class="ps-eyebrow">الباقات</div>
-      <h2 class="ps-title">اشترك مرّة… ووفّر على كل صفقة</h2>
+      <h2 class="ps-title">اشتراك واحد… وتوفير على كل صفقة</h2>
       <p class="ps-sub">عمولة المنصة تنزل كل ما ارتفعت باقتك. الاشتراك يدفع نفسه من أول شهر تتجاوز فيه نقطة التعادل.</p>
       <div class="ps-tabs">
         <button type="button" class="ps-tab on" data-aud="brand">للشركات</button>
@@ -532,7 +532,7 @@ body {
     var href = (isFree && !ME)
       ? '/signup.html?role=' + (aud === 'brand' ? 'brand' : 'creator')
       : page;
-    var label = isFree ? (ME ? 'الباقة الأساسية' : 'ابدأ مجانًا') : 'اشترك الآن';
+    var label = isFree ? (ME ? 'الباقة الأساسية' : 'البدء مجانًا') : 'الاشتراك الآن';
     var mine = !!(ME && ME.code === p.code);
     var be = breakEven(p, base);
     return '<div class="ps-card' + (featured ? ' feat' : '') + '">'
@@ -550,7 +550,7 @@ body {
   function render(){
     var g = document.getElementById('psGrid');
     var list = PS[aud] || [];
-    if (!list.length){ g.innerHTML = '<div class="ps-load">تعذّر تحميل الباقات — <a href="/plans.html" style="color:inherit">افتح صفحة الباقات</a></div>'; return; }
+    if (!list.length){ g.innerHTML = '<div class="ps-load">تعذّر تحميل الباقات — <a href="/plans.html" style="color:inherit">فتح صفحة الباقات</a></div>'; return; }
     var base = list.filter(function(p){ return !(Number(p.price_monthly) > 0); })[0] || null;
     var paid = list.filter(function(p){ return Number(p.price_monthly) > 0; });
     var top = paid.length ? paid[paid.length-1].code : null;
@@ -691,7 +691,7 @@ body {
       banner.innerHTML = eye +
         '<div style="flex:1;min-width:0;">' +
           '<div style="font-weight:600;font-size:15px;margin-bottom:2px;">أضِف Flfluencer لشاشتك</div>' +
-          '<div style="font-size:12px;opacity:0.85;line-height:1.6;">اضغط زر المشاركة <span style="display:inline-block;border:1px solid rgba(255,255,255,0.5);border-radius:5px;padding:0 5px;">&#8593;</span> بالأسفل، ثم اختر <strong>«إضافة إلى الشاشة الرئيسية»</strong></div>' +
+          '<div style="font-size:12px;opacity:0.85;line-height:1.6;">الضغط على زر المشاركة <span style="display:inline-block;border:1px solid rgba(255,255,255,0.5);border-radius:5px;padding:0 5px;">&#8593;</span> بالأسفل، ثم اختيار <strong>«إضافة إلى الشاشة الرئيسية»</strong></div>' +
         '</div>' +
         '<button id="simbl-install-x" style="background:transparent;color:#fff;border:none;padding:4px 6px;font-size:22px;cursor:pointer;opacity:0.6;line-height:1;flex-shrink:0;" aria-label="إغلاق">&times;</button>';
       document.body.appendChild(banner);
@@ -883,7 +883,7 @@ document.addEventListener('DOMContentLoaded', async function () {
     <a href="/refund.html" style="color:#2C3548;text-decoration:none;font-weight:600">الاسترجاع والإلغاء</a>
     <a href="/terms.html" style="color:#2C3548;text-decoration:none;font-weight:600">الشروط والأحكام</a>
     <a href="/privacy.html" style="color:#2C3548;text-decoration:none;font-weight:600">سياسة الخصوصية</a>
-    <a href="mailto:flfluencerai@gmail.com" style="color:#2C3548;text-decoration:none;font-weight:600">تواصل معنا</a>
+    <a href="mailto:flfluencerai@gmail.com" style="color:#2C3548;text-decoration:none;font-weight:600">للتواصل معنا</a>
   </div>
   <div>مؤسسة فلفلونسر آي — سجل تجاري (الرقم الوطني الموحد): 7051501588 — المملكة العربية السعودية<br>© Flfluencer — جميع الحقوق محفوظة</div>
 </footer>
@@ -1154,8 +1154,8 @@ function markup(){
  return ''
  +'<sect class="mkt"><div class="w">'
  +'<div class="srch"><select id="fh-plat" aria-label="المنصة"><option value="">كل المنصات</option><option value="tiktok">تيك توك</option><option value="instagram">إنستغرام</option><option value="snapchat">سناب شات</option></select>'
- +'<input id="fh-q" type="search" placeholder="ابحث باسم المؤثر أو المدينة…" autocomplete="off">'
- +'<button class="fbtn fp" id="fh-go" type="button">ابحث</button></div>'
+ +'<input id="fh-q" type="search" placeholder="بحث باسم المؤثر أو المدينة…" autocomplete="off">'
+ +'<button class="fbtn fp" id="fh-go" type="button">بحث</button></div>'
  +'<div class="chips" id="fh-chips">'
  +'<button class="chip" type="button" data-k="city" data-v="riyadh" aria-pressed="false">الرياض</button>'
  +'<button class="chip" type="button" data-k="city" data-v="jeddah" aria-pressed="false">جدة</button>'
@@ -1163,7 +1163,7 @@ function markup(){
  +'<button class="chip" type="button" data-k="max" data-v="800" aria-pressed="false">أقل من 800 ريال</button>'
  +'<button class="chip" type="button" data-k="minf" data-v="500000" aria-pressed="false">أكثر من 500 ألف متابع</button>'
  +'</div><p class="cnt" id="fh-cnt"></p><div class="grid" id="fh-grid"></div>'
- +'<div class="more"><a class="fbtn fg" href="/signup.html">شوف كل المؤثرين ←</a>'
+ +'<div class="more"><a class="fbtn fg" href="/signup.html">عرض كل المؤثرين ←</a>'
  +'<div><span class="hint">البحث مجاني · بدون حساب · الأسعار معلنة من المؤثر نفسه</span></div></div>'
  +'</div></sect>'
 
@@ -1194,12 +1194,12 @@ function markup(){
  +'<path d="M20 12 L20 24 M20 12 L15.5 16.5 M20 12 L24.5 16.5" fill="none" stroke="#E23B2E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>'
  +'<path d="M13 27 H27" stroke="#F5B417" stroke-width="2" stroke-linecap="round"/></svg></span>'
  +'<h3>شركة أو وكالة</h3><p>أطلق حملتك، وفلفل يتولّى المؤثرين نيابةً عنك.</p>'
- +'<a class="fbtn fp" href="/signup.html?role=brand">سجّل شركتك ←</a></div>'
+ +'<a class="fbtn fp" href="/signup.html?role=brand">تسجيل الشركة ←</a></div>'
  +'<div class="dr"><span class="drm drm-c">'
  +'<svg viewBox="0 0 40 40" aria-hidden="true"><path d="M22.5 8 H30 a2 2 0 0 1 2 2 V17.5 L18 31.5 a2 2 0 0 1-2.8 0 L8.5 24.8 a2 2 0 0 1 0-2.8 Z" fill="none" stroke="#3777BB" stroke-width="2" stroke-linejoin="round"/>'
  +'<circle cx="26" cy="14" r="2.2" fill="#0DA64F"/></svg></span>'
- +'<h3>معلن</h3><p>شوف فرصك مع الشركات، ونمِّ أعمالك.</p>'
- +'<a class="fbtn fg" href="/signup.html?role=creator">سجّل كمعلن ←</a></div>'
+ +'<h3>معلن</h3><p>استعراض الفرص مع الشركات وتنمية الأعمال.</p>'
+ +'<a class="fbtn fg" href="/signup.html?role=creator">التسجيل كمعلن ←</a></div>'
  +'</div></div></sect>';
 }
 
@@ -1220,7 +1220,7 @@ function wire(root){
  }
  function draw(){
    var l=C.filter(ok);grid.textContent='';
-   if(!l.length){var e=document.createElement('div');e.className='emp';e.textContent='ما فيه مؤثر يطابق بحثك — جرّب تشيل أحد الفلاتر.';grid.appendChild(e);}
+   if(!l.length){var e=document.createElement('div');e.className='emp';e.textContent='لا يوجد مؤثر يطابق البحث — يمكن إزالة أحد الفلاتر.';grid.appendChild(e);}
    else l.forEach(function(c){
      var card=document.createElement('article');card.className='card';
      var ph=document.createElement('div');ph.className='ph';

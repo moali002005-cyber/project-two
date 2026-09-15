@@ -1746,7 +1746,7 @@ async function simblExitImpersonation(){
     <div class="user-menu" id="user-menu">
       <button class="btn-push" id="btn-push" onclick="manualEnablePush()" title="تفعيل الإشعارات">
         <span>🔔</span>
-        <span>فعّل الإشعارات</span>
+        <span>تفعيل الإشعارات</span>
       </button>
       <div class="user-pill">
         <div class="user-avatar" id="user-initial">ش</div>
@@ -1763,7 +1763,7 @@ async function simblExitImpersonation(){
   <section class="hero" style="padding-top:24px;">
     <div style="margin:0 0 12px;"><a href="/brand.html" style="display:inline-flex;align-items:center;gap:5px;color:var(--ink-soft);text-decoration:none;font-size:13px;font-weight:600;">→ الرئيسية</a></div>
     <h1 class="hero-title">حملاتي والعروض</h1>
-    <p class="hero-sub">راجع العروض، تابع مفاوضات الوكيل، واعتمد الصفقات.</p>
+    <p class="hero-sub">مراجعة العروض، ومتابعة مفاوضات الوكيل، واعتماد الصفقات.</p>
     <div style="display: flex; gap: 12px; flex-wrap: wrap; justify-content: center;">
       <button class="hero-cta" onclick="openCampaignModal()">+ حملة جديدة</button>
       <button class="hero-cta" onclick="window.location.href='/dues.html'" style="background:#fff;color:var(--ink);border:1.5px solid rgba(15,20,32,0.18);">📋 الحملات السابقة</button>
@@ -1781,7 +1781,7 @@ async function simblExitImpersonation(){
 <div class="modal-backdrop" id="campaign-modal">
   <div class="modal">
     <h3>إنشاء حملة جديدة</h3>
-    <p class="sub">عبّئ تفاصيل الحملة وراح تظهر للمؤثرين المسجّلين في Flfluencer.</p>
+    <p class="sub">تعبئة تفاصيل الحملة لتظهر للمؤثرين المسجّلين في Flfluencer.</p>
 
     <form onsubmit="submitCampaign(event)">
       <style>
@@ -1816,7 +1816,7 @@ async function simblExitImpersonation(){
       <div class="field" id="pickup-field" style="display:none;">
         <label>عنوان الفرع</label>
         <input type="text" name="pickup_address" placeholder="مثال: الرياض — حي الملقا، شارع أنس بن مالك، فرع رقم ٣">
-        <div class="hint">اكتب العنوان بوضوح ليسهل على المعلن الوصول.</div>
+        <div class="hint">يُكتب العنوان بوضوح ليسهل على المعلن الوصول.</div>
         <label style="margin-top:12px;display:block;">أوقات الاستلام</label>
         <input type="text" name="pickup_hours" placeholder="مثال: السبت – الخميس، ١٠ صباحاً – ١٠ مساءً">
         <label style="margin-top:12px;display:block;">رابط الموقع على الخريطة (اختياري)</label>
@@ -1831,23 +1831,23 @@ async function simblExitImpersonation(){
 
       <div class="field" id="codes-field" style="display:none;">
         <label>أكواد الخصم <span id="codes-pool-status" style="font-weight:600;color:#7E2119;font-size:12px;"></span></label>
-        <textarea name="codes_list" rows="4" dir="ltr" placeholder="اكتب كل كود في سطر مستقل — مثال:
+        <textarea name="codes_list" rows="4" dir="ltr" placeholder="كل كود في سطر مستقل — مثال:
 PROMO-01
 PROMO-02" style="width:100%;box-sizing:border-box;font-family:inherit;"></textarea>
-        <div class="hint">كل كود يُصرف تلقائياً لمعلن واحد فقط لحظة اعتماده. تقدر تضيف أكواداً جديدة من «تعديل الحملة» بأي وقت.</div>
+        <div class="hint">كل كود يُصرف تلقائياً لمعلن واحد فقط لحظة اعتماده. ويمكن إضافة أكواد جديدة من «تعديل الحملة» بأي وقت.</div>
       </div>
 
       <div class="field" id="video-note-field" style="display:none;">
         <div style="background:#FDF0EE;border:1px solid #F0C4BD;border-radius:12px;padding:12px 14px;font-size:12.5px;color:#7E2119;line-height:1.9;">
           🎬 <b>فيديو جاهز للنشر:</b> أنت ترفق الفيديوهات الجاهزة وتكتب في البريف طلبك بالضبط. المعلن المعتمد يحمّلها، يعدّلها ويرتّبها حسب البريف، يرسل لك النسخة النهائية للتعميد، وبعد موافقتك ينشرها بنفسه.<br>
-          أرفق الفيديوهات في الخانة تحت — تُرفع تلقائياً مع نشر الحملة.
+          تُرفق الفيديوهات في الخانة أدناه — وتُرفع تلقائياً مع نشر الحملة.
         </div>
       </div>
 
       <div class="field" id="video-files-field" style="display:none;">
         <label>فيديوهات الحملة</label>
         <label style="display:inline-flex;align-items:center;gap:8px;border:1.5px dashed #E23B2E;background:#FDF4F2;color:#7E2119;font-size:13px;font-weight:700;padding:10px 18px;border-radius:12px;cursor:pointer;">
-          🎬 اختر الفيديوهات من جهازك
+          🎬 اختيار الفيديوهات من الجهاز
           <input type="file" id="video-files-input" accept="image/jpeg,image/png,image/webp,video/mp4,video/quicktime,video/webm" multiple style="display:none;" onchange="pickVideoFiles(this)">
         </label>
         <div id="video-files-list" style="margin-top:9px;display:flex;flex-direction:column;gap:6px;"></div>
@@ -1862,24 +1862,24 @@ PROMO-02" style="width:100%;box-sizing:border-box;font-family:inherit;"></textar
 
       <div class="field" id="visit-location-field" style="display:none;">
         <label>موقع الزيارة</label>
-        <input type="text" name="visit_location" placeholder="الصق رابط الموقع من خرائط قوقل">
+        <input type="text" name="visit_location" placeholder="رابط الموقع من خرائط قوقل">
         <div class="hint">رابط موقع الزيارة الذي يقصده المعلن.</div>
       </div>
 
       <div class="field">
         <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:6px;">
           <label style="margin:0;">البريف الإعلاني</label>
-          <button type="button" id="brief-ai-btn" onclick="toggleBriefAI(this)" style="display:inline-flex;align-items:center;gap:6px;border:1px solid #E23B2E;background:#FDF0EE;color:#7E2119;font-family:inherit;font-size:12px;font-weight:700;padding:6px 12px;border-radius:100px;cursor:pointer;transition:.15s;">✨ اكتب لي البريف</button>
+          <button type="button" id="brief-ai-btn" onclick="toggleBriefAI(this)" style="display:inline-flex;align-items:center;gap:6px;border:1px solid #E23B2E;background:#FDF0EE;color:#7E2119;font-family:inherit;font-size:12px;font-weight:700;padding:6px 12px;border-radius:100px;cursor:pointer;transition:.15s;">✨ توليد البريف</button>
         </div>
         <div id="brief-ai-panel" style="display:none;background:#FDF6F4;border:1px solid #F0C4BD;border-radius:12px;padding:13px;margin-bottom:11px;">
-          <label style="font-size:12.5px;color:#7E2119;margin-bottom:6px;">اكتب باختصار المطلوب من الإعلان والمعلومات الأساسية، ويوسّعها النظام إلى بريف احترافي:</label>
+          <label style="font-size:12.5px;color:#7E2119;margin-bottom:6px;">وصف مختصر للمطلوب من الإعلان والمعلومات الأساسية، ويوسّعها النظام إلى بريف احترافي:</label>
           <textarea id="brief-ai-note" rows="3" placeholder="مثال: عطر رجالي فاخر جديد — التركيز على ثبات الرائحة والفخامة، تصوير بإضاءة راقية، الإشارة إلى مناسبته للمناسبات والهدايا، وإرفاق رابط المتجر" style="width:100%;box-sizing:border-box;border:1px solid #F0C4BD;border-radius:9px;padding:10px;font-family:inherit;font-size:13.5px;resize:vertical;"></textarea>
           <div style="display:flex;gap:8px;margin-top:9px;">
             <button type="button" id="brief-ai-go" onclick="suggestBrief(this)" style="border:0;background:linear-gradient(135deg,#EE5A44,#C0231A);color:#fff;font-family:inherit;font-size:13px;font-weight:700;padding:9px 16px;border-radius:100px;cursor:pointer;">✨ جهّز البريف</button>
             <button type="button" onclick="toggleBriefAI(document.getElementById('brief-ai-btn'))" style="border:1px solid #d7e0dd;background:#fff;color:#5f6b66;font-family:inherit;font-size:13px;font-weight:600;padding:9px 16px;border-radius:100px;cursor:pointer;">إلغاء</button>
           </div>
         </div>
-        <textarea name="description" required rows="4" placeholder="وضّح للمعلن: المنتج، الجمهور المستهدف، المحاور والنقاط المطلوبة، نوع المحتوى، والكلمات المفتاحية. يُرسل تلقائياً للمعلن في مرحلة البريف، أو اضغط «اكتب لي البريف» أعلاه ليجهّزه النظام من فكرتك."></textarea>
+        <textarea name="description" required rows="4" placeholder="توضيح للمعلن: المنتج، الجمهور المستهدف، المحاور والنقاط المطلوبة، نوع المحتوى، والكلمات المفتاحية. يُرسل تلقائياً للمعلن في مرحلة البريف، أو بالضغط على «توليد البريف» أعلاه يجهّزه النظام من الفكرة."></textarea>
       </div>
 
       <div class="field" id="reference-field">
@@ -1887,7 +1887,7 @@ PROMO-02" style="width:100%;box-sizing:border-box;font-family:inherit;"></textar
         <input type="url" name="reference_url" id="reference-url" dir="ltr" placeholder="https://www.tiktok.com/@user/video/...">
         <div class="hint">رابط فيديو يستلهم منه المعلن أسلوب المحتوى — تيك توك أو إنستقرام أو يوتيوب.</div>
         <div style="display:flex;align-items:center;gap:10px;margin-top:9px;flex-wrap:wrap;">
-          <button type="button" onclick="document.getElementById('ref-file').click()" style="display:inline-flex;align-items:center;gap:6px;border:1px solid #d7e0dd;background:#fff;color:#33413c;font-family:inherit;font-size:12.5px;font-weight:600;padding:8px 14px;border-radius:100px;cursor:pointer;">🎬 أو ارفع فيديو من جهازك</button>
+          <button type="button" onclick="document.getElementById('ref-file').click()" style="display:inline-flex;align-items:center;gap:6px;border:1px solid #d7e0dd;background:#fff;color:#33413c;font-family:inherit;font-size:12.5px;font-weight:600;padding:8px 14px;border-radius:100px;cursor:pointer;">🎬 أو رفع فيديو من الجهاز</button>
           <span id="ref-file-name" class="hint" style="margin:0;"></span>
         </div>
         <input type="file" id="ref-file" accept="video/mp4,video/quicktime,video/webm" style="display:none;" onchange="pickReferenceVideo(this)">
@@ -1898,7 +1898,7 @@ PROMO-02" style="width:100%;box-sizing:border-box;font-family:inherit;"></textar
         <div class="field">
           <label>التصنيف</label>
           <select name="industry" required>
-            <option value="">اختر التصنيف</option>
+            <option value="">اختيار التصنيف</option>
             <option value="perfumes">عطور</option>
             <option value="fashion">موضة</option>
             <option value="beauty">جمال</option>
@@ -1918,7 +1918,7 @@ PROMO-02" style="width:100%;box-sizing:border-box;font-family:inherit;"></textar
         <div class="field">
           <label>موعد النشر المطلوب</label>
           <select name="publish_timing" id="publish-timing" required onchange="togglePublishDate()">
-            <option value="">اختر الموعد</option>
+            <option value="">اختيار الموعد</option>
             <option value="24h">مستعجل — خلال 24 ساعة</option>
             <option value="3d">خلال 3 أيام</option>
             <option value="1w">خلال أسبوع</option>
@@ -1935,20 +1935,20 @@ PROMO-02" style="width:100%;box-sizing:border-box;font-family:inherit;"></textar
 
       <div id="visit-timing-fields" style="display:none;">
         <div class="field">
-          <label>موعد الزيارة — الأيام (اختر يوم أو أكثر)</label>
+          <label>موعد الزيارة — الأيام (يوم أو أكثر)</label>
           <div id="visit-days" class="visit-days-grid"></div>
         </div>
         <div class="field-row">
-          <div class="field"><label>من الساعة</label><select name="visit_time_from"><option value="">اختر الوقت</option></select></div>
-          <div class="field"><label>إلى الساعة</label><select name="visit_time_to"><option value="">اختر الوقت</option></select></div>
+          <div class="field"><label>من الساعة</label><select name="visit_time_from"><option value="">اختيار الوقت</option></select></div>
+          <div class="field"><label>إلى الساعة</label><select name="visit_time_to"><option value="">اختيار الوقت</option></select></div>
         </div>
-        <div class="hint">اختر اليوم من القائمة (اليوم، غدًا، وحتى شهر قدام) والوقت من–إلى.</div>
+        <div class="hint">اختيار اليوم من القائمة (اليوم، غدًا، وحتى شهر قادم) والوقت من–إلى.</div>
       </div>
 
       <div class="field">
         <label>حجم الحملة (عدد المعلنين)</label>
         <select name="campaign_size" required>
-          <option value="">اختر عدد المعلنين</option>
+          <option value="">اختيار عدد المعلنين</option>
           <option value="5">5 معلنين</option>
           <option value="10">10 معلنين</option>
           <option value="20">20 معلن</option>
@@ -1970,7 +1970,7 @@ PROMO-02" style="width:100%;box-sizing:border-box;font-family:inherit;"></textar
           <button type="button" class="platform-chip" data-value="youtube" onclick="selectPlatform(this)"><span class="pf-ic" style="background:#FF0000">▶</span><span>يوتيوب</span></button>
         </div>
         <input type="hidden" name="platform" id="platform-input">
-        <div class="hint">اختر المنصة المطلوب النشر عليها</div>
+        <div class="hint">اختيار المنصة المطلوب النشر عليها</div>
       </div>
 
       <div class="field" id="creator-tier-field" style="display:none;">
@@ -1981,7 +1981,7 @@ PROMO-02" style="width:100%;box-sizing:border-box;font-family:inherit;"></textar
           <button type="button" class="platform-chip" data-value="mega" onclick="selectCreatorTier(this)"><span>Mega</span></button>
         </div>
         <input type="hidden" name="creator_tiers" id="creator-tiers-input">
-        <div class="hint">اختر تصنيفاً واحداً (إلزامي)</div>
+        <div class="hint">اختيار تصنيف واحد (إلزامي)</div>
       </div>
 
       <div class="field">
@@ -2020,9 +2020,9 @@ PROMO-02" style="width:100%;box-sizing:border-box;font-family:inherit;"></textar
       <div class="field">
         <label>مدينة المعلن المستهدف</label>
         <select name="city" id="campaign-form-city" disabled>
-          <option value="">اختر الدولة أولاً</option>
+          <option value="">اختيار الدولة أولاً</option>
         </select>
-        <div class="hint">اختر «كل المناطق» لتشمل جميع مدن الدولة المحدّدة</div>
+        <div class="hint">اختيار «كل المناطق» لتشمل جميع مدن الدولة المحدّدة</div>
       </div>
 
       <div class="field" style="grid-column: span 2;">
@@ -2073,9 +2073,9 @@ PROMO-02" style="width:100%;box-sizing:border-box;font-family:inherit;"></textar
 <div class="modal-backdrop" id="reject-modal">
   <div class="modal" style="max-width: 480px">
     <h3>استبدال المعلن</h3>
-    <p class="sub">اختر سبب الاستبدال أو اكتبه بنفسك. راح يوصل للمعلن بنبرة مهنية، ويترقّى تلقائيًا التالي من قائمة الانتظار مكانه.</p>
+    <p class="sub">اختيار سبب الاستبدال أو كتابته. يصل للمعلن بنبرة مهنية، ويترقّى تلقائيًا التالي من قائمة الانتظار مكانه.</p>
     <div class="field">
-      <label>أسباب شائعة (اختر أو عدّل)</label>
+      <label>أسباب شائعة (للاختيار أو التعديل)</label>
       <div class="reason-chips" id="reject-reasons">
         <button type="button" class="rchip" onclick="pickReason(this)">الحساب غير مناسب للحملة</button>
         <button type="button" class="rchip" onclick="pickReason(this)">المحتوى لا يناسب هوية العلامة</button>
@@ -2125,14 +2125,14 @@ PROMO-02" style="width:100%;box-sizing:border-box;font-family:inherit;"></textar
 <div class="modal-backdrop" id="brief-modal">
   <div class="modal" style="max-width: 600px">
     <h3 id="brief-modal-title">البريف الإعلاني</h3>
-    <p class="sub">نص البريف الكامل للحملة — تقدر تنسخه أو تعدّله (يُحفظ ويظهر للجميع).</p>
+    <p class="sub">نص البريف الكامل للحملة — يمكن نسخه أو تعديله (يُحفظ ويظهر للجميع).</p>
     <div class="brief-content expanded" id="brief-modal-content" style="max-height:55vh;overflow-y:auto;"></div>
     <textarea id="brief-modal-edit-text" rows="10" style="display:none;width:100%;box-sizing:border-box;max-height:55vh;"></textarea>
     <div id="brief-attach-wrap" style="margin-top:14px;border-top:1px solid #E7E9EE;padding-top:12px;">
       <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap;">
         <strong style="font-size:13px;">📎 مرفقات الحملة <span id="brief-attach-count" style="color:#6B7B74;font-weight:400;font-size:12px;"></span></strong>
         <label id="brief-attach-add" style="display:none;align-items:center;gap:6px;border:1px solid #E23B2E;background:#FDF0EE;color:#7E2119;font-size:12px;font-weight:700;padding:6px 12px;border-radius:100px;cursor:pointer;">
-          <span id="brief-attach-add-txt">＋ أضف ملف</span>
+          <span id="brief-attach-add-txt">＋ إضافة ملف</span>
           <input type="file" id="brief-attach-input" accept="image/jpeg,image/png,image/webp" multiple style="display:none;" onchange="uploadBriefAttachments(this)">
         </label>
       </div>
@@ -2216,7 +2216,7 @@ async function openAddBrand(){
   const nm = prompt('اسم العلامة التجارية الجديدة:');
   if (nm === null) return;
   const name = String(nm).trim();
-  if (name.length < 2) { showToast('اكتب اسمًا صحيحًا', 'error'); return; }
+  if (name.length < 2) { showToast('يلزم اسم صحيح', 'error'); return; }
   try {
     const { data, error } = await supabaseClient.rpc('create_sub_brand', { p_company_name: name });
     if (error) throw error;
@@ -2275,10 +2275,10 @@ async function suggestBrief(btn) {
   const g = n => { const el = form.querySelector('[name="'+n+'"]'); return el ? (el.value||'').trim() : ''; };
   const typeEl = form.querySelector('[name="campaign_type"]:checked');
   const title = g('title');
-  if (!title) { showToast('اكتب عنوان الحملة أولاً ليتم اقتراح البريف', 'error'); return; }
+  if (!title) { showToast('يلزم إدخال عنوان الحملة أولاً ليتم اقتراح البريف', 'error'); return; }
   const noteEl = document.getElementById('brief-ai-note');
   const note = noteEl ? (noteEl.value || '').trim() : '';
-  if (!note) { showToast('اكتب باختصار المطلوب من البريف ليأتي مطابقاً لتصوّرك', 'error'); if (noteEl) noteEl.focus(); return; }
+  if (!note) { showToast('وصف مختصر للمطلوب من البريف ليأتي مطابقاً للتصوّر', 'error'); if (noteEl) noteEl.focus(); return; }
   const ta = form.querySelector('[name="description"]');
   if (ta && ta.value.trim() && !confirm('يوجد بريف مكتوب — هل تريد استبداله ببريف جديد؟')) return;
   const orig = btn.innerHTML;
@@ -2423,13 +2423,13 @@ function simblPopulateCities(selected) {
   if (!countrySel || !citySel) return;
   const cc = countrySel.value;
   if (!cc) {
-    citySel.innerHTML = '<option value="">اختر الدولة أولاً</option>';
+    citySel.innerHTML = '<option value="">اختيار الدولة أولاً</option>';
     citySel.disabled = true;
     return;
   }
   citySel.disabled = false;
   const list = SIMBL_COUNTRY_CITIES[cc] || [];
-  citySel.innerHTML = ['<option value="">اختر المدينة</option>']
+  citySel.innerHTML = ['<option value="">اختيار المدينة</option>']
     .concat(list.map(([v, lbl]) => '<option value="' + v + '">' + lbl + '</option>')).join('');
   if (selected != null) citySel.value = selected;
 }
@@ -2531,7 +2531,7 @@ async function saveCampaignCodes(campaignId, rawText) {
     .insert(codes.map(code => ({ campaign_id: campaignId, code })));
   if (error) {
     if ((error.code || '') === '23505' || /duplicate/i.test(error.message || '')) {
-      throw new Error('فيه أكواد مكررة موجودة مسبقاً بنفس الحملة — احذف المكرر من القائمة وحاول.');
+      throw new Error('توجد أكواد مكررة مسبقاً بنفس الحملة — يلزم حذف المكرر من القائمة وإعادة المحاولة.');
     }
     throw error;
   }
@@ -2641,7 +2641,7 @@ function populateVisitTimes() {
   ['visit_time_from','visit_time_to'].forEach(function (name) {
     const sel = document.querySelector('[name="' + name + '"]');
     if (!sel || sel.dataset.filled) return;
-    let html = '<option value="">اختر الوقت</option>';
+    let html = '<option value="">اختيار الوقت</option>';
     for (let h = 0; h < 24; h++) {
       [0,30].forEach(function (mm) {
         const v = String(h).padStart(2,'0') + ':' + String(mm).padStart(2,'0');
@@ -2715,7 +2715,7 @@ async function renderGuestView(param) {
       data = JSON.parse(decodeURIComponent(escape(atob(s))));
     }
   } catch (e) {
-    document.body.innerHTML = '<div style="padding:80px 20px;text-align:center;color:#6f867f;font-family:Tajawal,system-ui,sans-serif;">تعذّر فتح الرابط — قد يكون منتهيًا أو غير مكتمل. اطلب رابطًا جديدًا.</div>';
+    document.body.innerHTML = '<div style="padding:80px 20px;text-align:center;color:#6f867f;font-family:Tajawal,system-ui,sans-serif;">تعذّر فتح الرابط — قد يكون منتهيًا أو غير مكتمل. يلزم طلب رابط جديد.</div>';
     return;
   }
   renderGuestData(data);
@@ -2895,7 +2895,7 @@ function payButtonHtml(campaignId, apps) {
       + `<button class="pay-now-btn soft" id="pay-btn-${campaignId}" onclick="event.stopPropagation(); startCampaignPayment('${campaignId}')">سدّد الآن مبكرًا</button>`;
   }
   const waitLine = `<div class="pay-wait">⏸️ الحملة ما انطلقت بعد — بانتظار سداد مستحقاتها.</div>`;
-  return `${waitLine}<button class="pay-now-btn" id="pay-btn-${campaignId}" onclick="event.stopPropagation(); startCampaignPayment('${campaignId}')">💳 ادفع الآن</button>`;
+  return `${waitLine}<button class="pay-now-btn" id="pay-btn-${campaignId}" onclick="event.stopPropagation(); startCampaignPayment('${campaignId}')">💳 الدفع الآن</button>`;
 }
 // فاتورة الحملة: نافذة مرتّبة داخل الصفحة بدل نافذة المتصفح الافتراضية
 function invoiceConfirm(o) {
@@ -2954,7 +2954,7 @@ async function startCampaignPayment(campaignId) {
   try {
     const { data: sess } = await supabaseClient.auth.getSession();
     const token = sess && sess.session ? sess.session.access_token : '';
-    if (!token) throw new Error('سجّل دخولك من جديد');
+    if (!token) throw new Error('تسجيل الدخول من جديد');
     const res = await fetch('/api/pay-create', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
@@ -2975,7 +2975,7 @@ async function startCampaignPayment(campaignId) {
     window.location.href = out.url; // صفحة دفع ميسر (مدى / بطاقات / Apple Pay)
   } catch (err) {
     console.error('payment start failed:', err);
-    showToast('الدفع: ' + (err.message || 'حاول مرة أخرى'), 'error');
+    showToast('الدفع: ' + (err.message || 'يُرجى المحاولة مرة أخرى'), 'error');
     if (btn) { btn.disabled = false; btn.textContent = orig2; }
   }
 }
@@ -3018,7 +3018,7 @@ async function loadData() {
         setTimeout(() => {
           openBriefModal(_oa);
           toggleBriefEdit();
-          showToast('أضف فيديوهات الحملة الآن من زر «＋ أضف ملف» 🎬');
+          showToast('إضافة فيديوهات الحملة الآن من زر «＋ إضافة ملف» 🎬');
         }, 600);
       }
     } catch (e) { console.warn(e); }
@@ -3053,7 +3053,7 @@ async function loadData() {
     renderDues();
   } catch (err) {
     console.error(err);
-    document.getElementById('campaigns-list').innerHTML = '<div style="text-align:center; padding:60px; color:var(--accent)">حصل خطأ في التحميل. حدّث الصفحة.</div>';
+    document.getElementById('campaigns-list').innerHTML = '<div style="text-align:center; padding:60px; color:var(--accent)">حصل خطأ في التحميل. يُرجى تحديث الصفحة.</div>';
   }
 }
 
@@ -3215,7 +3215,7 @@ function renderDues() {
         dateDisp = duesDateText(publishIso);
       }
     }
-    // الشركة تسدّد لفلفلونسر من زر «ادفع مستحقات الحملة»، وفلفلونسر تصرف للمعلن بعدها
+    // الشركة تسدّد لفلفلونسر من زر «دفع مستحقات الحملة»، وفلفلونسر تصرف للمعلن بعدها
     const isPaid = (a.platform_paid === true);
     if (isPaid) totalPaid += amountNum; else totalDue += amountNum;
     if (!isPaid) {
@@ -3242,7 +3242,7 @@ function renderDues() {
       : '<td class="dim">—</td>';
     // 4ب) كود الترويج (الضغط ينسخه تلقائيًا)
     const promoCell = promo
-      ? '<td class="cell" data-copy="' + escHtml(promo) + '" onclick="duesCopy(this)"><span class="dues-link">انسخ كود الترويج ⎘</span></td>'
+      ? '<td class="cell" data-copy="' + escHtml(promo) + '" onclick="duesCopy(this)"><span class="dues-link">نسخ كود الترويج ⎘</span></td>'
       : '<td class="dim">—</td>';
     // 5) المبلغ (نسخ)
     const amountCell = '<td class="cell xl-amount" data-copy="' + amountNum + '" onclick="duesCopy(this)">' + amountDisp + '</td>';
@@ -3264,7 +3264,7 @@ function renderDues() {
   host.innerHTML =
     '<div class="dues-wrap">'
     + '<div class="dues-head"><h3>📋 الحملات السابقة</h3><div class="dues-sum">' + sumChips + '</div></div>'
-    + '<p class="dues-hint">👆 اضغط أي خانة لنسخها · 🔗 اضغط «رابط الحساب» أو «رابط الفيديو» للفتح</p>'
+    + '<p class="dues-hint">👆 الضغط على أي خانة ينسخها · 🔗 «رابط الحساب» و«رابط الفيديو» يفتحان مباشرة</p>'
     + '<div class="dues-grid-wrap"><table class="xl">'
     + '<thead>'
     + '<tr><th class="xl-corner"></th>' + colLetters + '</tr>'
@@ -3367,7 +3367,7 @@ function renderCampaigns() {
       <div class="empty">
         <div class="icon">◌</div>
         <h3>لم تنشئ أي حملة بعد</h3>
-        <p>ابدأ بنشر أول حملة وستظهر فوراً للمؤثرين</p>
+        <p>بنشر أول حملة تظهر فورًا للمؤثرين</p>
         <button class="hero-cta" onclick="openCampaignModal()">+ إنشاء حملة جديدة</button>
       </div>`;
     return;
@@ -3453,7 +3453,7 @@ function fallbackCopy(text, onDone) {
     document.body.removeChild(ta);
     onDone && onDone();
   } catch (e) {
-    alert('فشل النسخ. انسخ يدويًا.');
+    alert('فشل النسخ — يمكن النسخ يدويًا.');
   }
 }
 function toggleBrief(id, btn) {
@@ -3529,7 +3529,7 @@ async function saveBriefEdit() {
     showToast('تم حفظ البريف — ظهر للجميع ✓', 'success');
   } catch (err) {
     console.error('brief save failed:', err);
-    showToast('حصل خطأ: ' + (err.message || 'حاول مرة أخرى'), 'error');
+    showToast('حصل خطأ: ' + (err.message || 'يُرجى المحاولة مرة أخرى'), 'error');
   } finally { saveBtn.disabled = false; saveBtn.textContent = orig; }
 }
 // ============ مرفقات البريف (صور تُسلَّم للمعلن المعتمد) ============
@@ -3588,7 +3588,7 @@ async function uploadBriefAttachments(input) {
     showToast('تم رفع المرفقات ✓', 'success');
   } catch (err) {
     console.error('brief attach upload failed:', err);
-    showToast('تعذّر الرفع: ' + (err.message || 'حاول مرة أخرى'), 'error');
+    showToast('تعذّر الرفع: ' + (err.message || 'يُرجى المحاولة مرة أخرى'), 'error');
   }
 }
 async function deleteBriefAttachment(idx) {
@@ -3608,7 +3608,7 @@ async function deleteBriefAttachment(idx) {
     showToast('تم حذف المرفق');
   } catch (err) {
     console.error('brief attach delete failed:', err);
-    showToast('تعذّر الحذف: ' + (err.message || 'حاول مرة أخرى'), 'error');
+    showToast('تعذّر الحذف: ' + (err.message || 'يُرجى المحاولة مرة أخرى'), 'error');
   }
 }
 async function downloadBriefAttachment(idx) {
@@ -3680,9 +3680,9 @@ async function approveDeal(applicationId) {
   } catch (err) {
     console.error('Approve error:', err);
     if (String(err.message || '').includes('NO_CODES_LEFT')) {
-      showToast('نفدت أكواد الخصم لهذه الحملة — أضف أكواداً جديدة من «تعديل الحملة» ثم أعد الاعتماد. ما ينعتمد معلن بدون كود.', 'error');
+      showToast('نفدت أكواد الخصم لهذه الحملة — تلزم إضافة أكواد جديدة من «تعديل الحملة» ثم إعادة الاعتماد. لا يُعتمد معلن بدون كود.', 'error');
     } else {
-      showToast('حصل خطأ في الاعتماد: ' + (err.message || 'حاول مرة أخرى'), 'error');
+      showToast('حصل خطأ في الاعتماد: ' + (err.message || 'يُرجى المحاولة مرة أخرى'), 'error');
     }
   }
 }
@@ -3804,7 +3804,7 @@ async function confirmDeleteApplication() {
   } catch (err) {
     console.error('Delete application error:', err);
     if (btn) { btn.disabled = false; btn.textContent = original; }
-    showToast('حصل خطأ أثناء الحذف: ' + (err.message || 'حاول مرة أخرى'), 'error');
+    showToast('حصل خطأ أثناء الحذف: ' + (err.message || 'يُرجى المحاولة مرة أخرى'), 'error');
   }
 }
 
@@ -3829,7 +3829,7 @@ async function promoteNextWaitlisted(campaignId, campaignTitle) {
     // إشعار المعلن المرقّى فورًا
     if (next.creator_id) {
       const title = '🎉 جاك دورك! تم اختيارك';
-      const body = `${campaignTitle || 'حملة'}: انفتح لك مكان في الحملة — ابدأ التفاوض مع الوكيل الحين.`;
+      const body = `${campaignTitle || 'حملة'}: انفتح لك مكان في الحملة — يمكن بدء التفاوض مع الوكيل الآن.`;
       createNotification(next.creator_id, 'waitlist_promoted', title, body, '/creator.html').catch(console.error);
       fetch('https://chpzecgpylxqsutjydkb.supabase.co/functions/v1/send-push', {
         method: 'POST',
@@ -3916,7 +3916,7 @@ async function rebalanceCampaign(campaignId, campaignTitle) {
         filled++;
         if (w.creator_id) {
           const title = '🎉 جاك دورك! تم اختيارك';
-          const body = `${campaignTitle || 'حملة'}: انفتح لك مكان في الحملة — ابدأ التفاوض مع الوكيل الحين.`;
+          const body = `${campaignTitle || 'حملة'}: انفتح لك مكان في الحملة — يمكن بدء التفاوض مع الوكيل الآن.`;
           createNotification(w.creator_id, 'waitlist_promoted', title, body, '/creator.html').catch(console.error);
           fetch('https://chpzecgpylxqsutjydkb.supabase.co/functions/v1/send-push', {
             method: 'POST',
@@ -3934,7 +3934,7 @@ async function confirmReject() {
   if (!rejectingAppId) return;
   const id = rejectingAppId;
   const reason = (document.getElementById('reject-reason')?.value || '').trim();
-  if (!reason) { showToast('اكتب سبب الاستبدال أولاً', 'error'); return; }
+  if (!reason) { showToast('يلزم كتابة سبب الاستبدال أولاً', 'error'); return; }
 
   const btn = document.getElementById('reject-confirm-btn');
   const original = btn ? btn.textContent : '';
@@ -3970,7 +3970,7 @@ async function confirmReject() {
   } catch (err) {
     console.error('Reject error:', err);
     if (btn) { btn.disabled = false; btn.textContent = original; }
-    showToast('حصل خطأ في الاستبدال: ' + (err.message || 'حاول مرة أخرى'), 'error');
+    showToast('حصل خطأ في الاستبدال: ' + (err.message || 'يُرجى المحاولة مرة أخرى'), 'error');
   }
 }
 
@@ -3988,9 +3988,9 @@ function brandStageBadge(stage) {
     1: { wait: '⏳ بانتظار عنوان المعلن' },
     2: { mine: '📦 جهّز وأكّد الشحن' },
     3: { wait: '⏳ بانتظار استلام المعلن' },
-    4: { mine: '📋 أرسل البريف' },
+    4: { mine: '📋 إرسال البريف' },
     5: { wait: '⏳ بانتظار محتوى المعلن' },
-    6: { mine: '👀 راجع المحتوى ووافق' },
+    6: { mine: '👀 مراجعة المحتوى والموافقة' },
     7: { wait: '⏳ بانتظار نشر المعلن' },
     8: { wait: '⏳ بانتظار بيانات المعلن البنكية' },
     9: { done: '✓ الصفقة مكتملة' }
@@ -4013,7 +4013,7 @@ function codesChipHtml(cid) {
   const free = b.total - b.used;
   const danger = free <= 0;
   return `· <strong style="color:${danger ? '#b32d2d' : '#7E2119'};">🎟️ الأكواد: ${free} متاح من ${b.total}</strong>` +
-         (danger ? ` <span style="color:#b32d2d;font-weight:700;">— أضف أكواداً من «تعديل الحملة» قبل أي اعتماد جديد</span>` : '');
+         (danger ? ` <span style="color:#b32d2d;font-weight:700;">— تلزم إضافة أكواد من «تعديل الحملة» قبل أي اعتماد جديد</span>` : '');
 }
 const CODE_FLOW = [{s:1,n:'الكود والطلب'},{s:5,n:'المحتوى'},{s:6,n:'الموافقة'},{s:7,n:'النشر'},{s:8,n:'البنكية'},{s:9,n:'مكتمل'}];
 const PICKUP_FLOW = [{s:1,n:'الاستلام من الفرع'},{s:5,n:'المحتوى'},{s:6,n:'الموافقة'},{s:7,n:'النشر'},{s:8,n:'البنكية'},{s:9,n:'مكتمل'}];
@@ -4135,7 +4135,7 @@ function renderDealRow(a, idx, campaignType, fulfillmentMode) {
 
   let cells = '';
   if (isRejected) {
-    cells = `<td class="mx-cell click" colspan="${NCOL}" onclick="openCell('${a.id}',0)"><div class="mx-in" style="background:rgba(201,48,48,0.08);color:#b32d2d;font-size:12px;font-weight:600;height:44px;">↔ تم الاستبدال — اضغط لعرض السبب</div></td>`;
+    cells = `<td class="mx-cell click" colspan="${NCOL}" onclick="openCell('${a.id}',0)"><div class="mx-in" style="background:rgba(201,48,48,0.08);color:#b32d2d;font-size:12px;font-weight:600;height:44px;">↔ تم الاستبدال — لعرض السبب</div></td>`;
   } else if (awaitingLaunch) {
     cells = `<td class="mx-cell" colspan="${NCOL}"><div class="mx-in" style="background:rgba(154,75,6,0.10);color:#9A4B06;font-size:12px;font-weight:600;height:44px;">💳 بانتظار السداد لانطلاق الحملة</div></td>`;
   } else if (isApproved) {
@@ -4147,7 +4147,7 @@ function renderDealRow(a, idx, campaignType, fulfillmentMode) {
         if (stageNow >= 9) {
           cells += `<td class="mx-cell"><div class="mx-in mx-final">✓</div></td>`;
         } else if (isBrandTurn(s)) {
-          cells += `<td class="mx-cell click" onclick="openCell('${a.id}',${s})"><div class="mx-in mx-act" title="اضغط للتعبئة">✎</div></td>`;
+          cells += `<td class="mx-cell click" onclick="openCell('${a.id}',${s})"><div class="mx-in mx-act" title="للتعبئة">✎</div></td>`;
         } else {
           cells += `<td class="mx-cell click" onclick="openCell('${a.id}',${s})"><div class="mx-in mx-wait" title="بانتظار المعلن">⏳</div></td>`;
         }
@@ -4175,7 +4175,7 @@ function renderDealRow(a, idx, campaignType, fulfillmentMode) {
         _cd = `<span class="cd-timer" data-deadline="${_dl}" style="display:inline-block;margin-inline-start:8px;padding:1px 7px;border-radius:20px;background:#FDECEA;color:#c0392b;font-weight:700;font-size:11px;">⏱ --:--</span>`;
       }
     }
-    cells = `<td colspan="${NCOL}" style="cursor:pointer;" onclick="event.stopPropagation(); startNegotiation('${a.id}')"><div class="mx-in" style="font-size:12px;color:var(--ink-muted);height:44px;display:flex;align-items:center;justify-content:center;gap:2px;">💬 قيد التفاوض — اضغط لعرض المفاوضة${_cd}</div></td>`;
+    cells = `<td colspan="${NCOL}" style="cursor:pointer;" onclick="event.stopPropagation(); startNegotiation('${a.id}')"><div class="mx-in" style="font-size:12px;color:var(--ink-muted);height:44px;display:flex;align-items:center;justify-content:center;gap:2px;">💬 قيد التفاوض — لعرض المفاوضة${_cd}</div></td>`;
   }
 
   const isExpanded = (expandedAppId === a.id);
@@ -4232,7 +4232,7 @@ async function downloadDeliveryExcel(campaignId) {
   const hasAny = rows.some(r => r.phone || r.national || r.map || r.address);
   if (!hasAny) { showToast('ما فيه بيانات توصيل بعد', 'error'); return; }
   try { showToast('جاري تجهيز الملف...'); await loadXLSX(); }
-  catch (e) { showToast('تعذّر تحميل أداة الإكسل — تأكّد من الاتصال', 'error'); return; }
+  catch (e) { showToast('تعذّر تحميل أداة الإكسل — يُرجى التحقق من الاتصال', 'error'); return; }
   const camp = (myCampaigns || []).find(c => c.id === campaignId);
   const campTitle = (camp && camp.title) ? camp.title : 'حملة';
   const aoa = [['#', 'اسم المستلم', 'رقم التواصل', 'العنوان الوطني', 'رابط الموقع', 'تفاصيل إضافية']];
@@ -4322,7 +4322,7 @@ function renderSingleCampaign(c) {
         <div style="margin:-2px 0 14px;display:flex;gap:10px;flex-wrap:wrap;">
           <button class="hero-cta" style="padding:10px 18px;font-size:13px;background:#0F1420;" onclick="downloadDeliveryExcel('${c.id}')">📥 الإكسل الخاص بالتوصيل</button>
           ${waitlistApps.length > 0 ? `<button class="hero-cta" style="padding:10px 18px;font-size:13px;background:#5B6B7A;" onclick="openWaitlistModal('${c.id}')">🕓 قائمة الانتظار (${toArabic(waitlistApps.length)})</button>` : ''}
-          <button class="hero-cta" style="padding:10px 18px;font-size:13px;background:#0f1512;" onclick="event.stopPropagation(); shareCampaignSnapshot('${c.id}')">🔗 شارك العرض (قراءة فقط)</button>
+          <button class="hero-cta" style="padding:10px 18px;font-size:13px;background:#0f1512;" onclick="event.stopPropagation(); shareCampaignSnapshot('${c.id}')">🔗 مشاركة العرض (قراءة فقط)</button>
         </div>
 
         ${apps.length > 0 ? `
@@ -4362,7 +4362,7 @@ async function shareCampaignSnapshot(cid) {
   try {
     const c = (typeof myCampaigns !== 'undefined' && myCampaigns ? myCampaigns : []).find(x => x.id === cid) || {};
     const table = document.getElementById('apps-' + cid);
-    if (!table) { showToast('افتح تفاصيل الحملة أولًا ثم أعد المحاولة', 'error'); return; }
+    if (!table) { showToast('يلزم فتح تفاصيل الحملة أولًا ثم إعادة المحاولة', 'error'); return; }
     // مراحل هذه الحملة بالضبط — تختلف حسب النوع وطريقة التسليم (٤ إلى ٧ أعمدة)،
     // فلا يصحّ استعمال قائمة المراحل التسع الكاملة هنا.
     const flow = flowFor(c.campaign_type, c.fulfillment_mode);
@@ -4400,7 +4400,7 @@ async function shareCampaignSnapshot(cid) {
       const b64 = btoa(unescape(encodeURIComponent(json))).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
       url = base + '?share=' + b64;                     // احتياطي: الرابط يحمل البيانات
     }
-    try { await navigator.clipboard.writeText(url); } catch (e) { window.prompt('انسخ رابط العرض:', url); }
+    try { await navigator.clipboard.writeText(url); } catch (e) { window.prompt('نسخ رابط العرض:', url); }
     showToast('تم نسخ رابط العرض — شاركه مع فريقك 🔗', 'success', 6000);
   } catch (e) {
     showToast('تعذّر إنشاء الرابط', 'error', 4000);
@@ -4434,42 +4434,42 @@ const WORKFLOW_STAGES = [
 const STAGE_ACTIONS = {
   1: {
     responsible: 'creator',
-    creator: { label: '✓ تأكيد إرسال العنوان', desc: 'عبّئ تفاصيل العنوان للشحن، ثم أكّد للانتقال للمرحلة التالية.' },
+    creator: { label: '✓ تأكيد إرسال العنوان', desc: 'تعبئة تفاصيل العنوان للشحن، ثم التأكيد للانتقال للمرحلة التالية.' },
     brand:   { desc: 'بانتظار إرسال المعلن لعنوانه.' }
   },
   2: {
     responsible: 'brand',
-    brand:   { label: '✓ تأكيد الشحن', desc: 'بعد شحن المنتج، عبّئ بيانات الشحن وأكّد.' },
+    brand:   { label: '✓ تأكيد الشحن', desc: 'بعد شحن المنتج، تُعبّأ بيانات الشحن ويتم التأكيد.' },
     creator: { desc: 'الشركة تجهّز المنتج لشحنه إليك.' }
   },
   3: {
     responsible: 'creator',
-    creator: { label: '✓ تأكيد الاستلام', desc: 'بعد وصول المنتج إليك، أكّد الاستلام.' },
+    creator: { label: '✓ تأكيد الاستلام', desc: 'بعد وصول المنتج، يتم تأكيد الاستلام.' },
     brand:   { desc: 'المنتج في الطريق إلى المعلن.' }
   },
   4: {
     responsible: 'brand',
-    brand:   { label: '✓ إرسال البريف', desc: 'اكتب نص البريف الإعلاني موضّحاً شكل الإعلان ومحتواه، فعلى أساسه يجهّز المعلن المحتوى.' },
+    brand:   { label: '✓ إرسال البريف', desc: 'نص البريف الإعلاني موضّحاً شكل الإعلان ومحتواه، فعلى أساسه يجهّز المعلن المحتوى.' },
     creator: { desc: 'الشركة تجهّز البريف الإعلاني (نص يوضّح متطلبات الإعلان).' }
   },
   5: {
     responsible: 'creator',
-    creator: { label: '✓ تأكيد إرسال المحتوى', desc: 'بناءً على البريف، أرفق رابط المحتوى للمراجعة وأكّد للمرحلة التالية.' },
+    creator: { label: '✓ تأكيد إرسال المحتوى', desc: 'بناءً على البريف، يُرفق رابط المحتوى للمراجعة ويتم التأكيد للمرحلة التالية.' },
     brand:   { desc: 'المعلن يجهّز المحتوى الإعلاني حسب البريف.' }
   },
   6: {
     responsible: 'brand',
-    brand:   { label: '✓ الموافقة على المحتوى', desc: 'بعد مراجعة المحتوى، أضف ملاحظاتك (إن وُجدت) وأكّد الموافقة.' },
+    brand:   { label: '✓ الموافقة على المحتوى', desc: 'بعد مراجعة المحتوى، تُضاف الملاحظات (إن وُجدت) ويتم تأكيد الموافقة.' },
     creator: { desc: 'الشركة تراجع المحتوى الذي أرسلته.' }
   },
   7: {
     responsible: 'creator',
-    creator: { label: '✓ تأكيد النشر', desc: 'بعد نشر المحتوى، أرفق رابط المنشور وكود الترويج وأكّد.' },
+    creator: { label: '✓ تأكيد النشر', desc: 'بعد نشر المحتوى، يُرفق رابط المنشور وكود الترويج ويتم التأكيد.' },
     brand:   { desc: 'بانتظار نشر المعلن للمحتوى المعتمد.' }
   },
   8: {
     responsible: 'creator',
-    creator: { label: '✓ إرسال البيانات البنكية', desc: 'أضف بياناتك البنكية لاستلام المبلغ المتفق عليه.' },
+    creator: { label: '✓ إرسال البيانات البنكية', desc: 'إضافة البيانات البنكية لاستلام المبلغ المتفق عليه.' },
     brand:   { desc: 'تم النشر. المعلن يضيف بياناته البنكية لاستلام المبلغ.' }
   }
 };
@@ -4642,12 +4642,12 @@ function renderBrandPaymentCard(app, campaign) {
     }
     return `<div class="stage-action complete">
       <div class="sa-title">🔒 المبلغ محفوظ لدى المنصة</div>
-      <div class="sa-desc">سدّدت ${amount} ر.س قبل انطلاق الحملة، والمنصة تتولّى صرفها للمعلن ضمن دفعة الاثنين بعد اكتمال العمل. ما تحتاج تحوّل له شيئًا.</div>
+      <div class="sa-desc">سدّدت ${amount} ر.س قبل انطلاق الحملة، والمنصة تتولّى صرفها للمعلن ضمن دفعة الاثنين بعد اكتمال العمل. لا حاجة لتحويل أي مبلغ له.</div>
     </div>`;
   }
   return `<div class="stage-action mine">
     <div class="sa-title">💳 لم تُسدَّد قيمة هذه الصفقة بعد</div>
-    <div class="sa-desc">قيمة الصفقة ${amount} ر.س تُدفع للمنصة من زر «ادفع مستحقات الحملة» في بطاقة الحملة. المنصة هي من تصرف للمعلن بعد ذلك.</div>
+    <div class="sa-desc">قيمة الصفقة ${amount} ر.س تُدفع للمنصة من زر «دفع مستحقات الحملة» في بطاقة الحملة. المنصة هي من تصرف للمعلن بعد ذلك.</div>
   </div>`;
 }
 
@@ -4669,7 +4669,7 @@ async function setBrandPaid(applicationId) {
     const { app, campaign } = findAppById(applicationId);
     if (app && app.creator_id) {
       const title = '💸 تم تحويل مستحقاتك';
-      const body = `${campaign?.title || 'صفقة'}: الشركة أبلغت بتحويل المبلغ. افتح صفقتك وأكّد الاستلام.`;
+      const body = `${campaign?.title || 'صفقة'}: الشركة أبلغت بتحويل المبلغ. بفتح الصفقة يتم تأكيد الاستلام.`;
       createNotification(app.creator_id, 'payment_marked', title, body, '/creator.html').catch(console.error);
       fetch('https://chpzecgpylxqsutjydkb.supabase.co/functions/v1/send-push', {
         method: 'POST',
@@ -4682,7 +4682,7 @@ async function setBrandPaid(applicationId) {
     showToast('تم تسجيل التحويل ✓ — بانتظار تأكيد المعلن.');
   } catch (err) {
     console.error('Brand paid error:', err);
-    showToast('حصل خطأ: ' + (err.message || 'حاول مرة أخرى'), 'error');
+    showToast('حصل خطأ: ' + (err.message || 'يُرجى المحاولة مرة أخرى'), 'error');
   }
 }
 
@@ -4711,7 +4711,7 @@ function renderStageAction(applicationId, currentStage, viewerRole) {
     return `
       <div class="stage-action mine">
         <div class="sa-title">المرحلة الحالية: ${stageName}</div>
-        <div class="sa-desc">راجع المحتوى، ثم:</div>
+        <div class="sa-desc">مراجعة المحتوى، ثم:</div>
         <div style="display:flex;gap:10px;margin-top:8px;">
           <button type="button" class="sa-btn" style="flex:1;" onclick="approveContent('${applicationId}')">✓ موافقة</button>
           <button type="button" class="sa-btn" style="flex:1;background:#fff;color:#c0392b;border:1.5px solid #e6b0aa;" onclick="rejectContent('${applicationId}')">✕ رفض</button>
@@ -4749,7 +4749,7 @@ function openContentReview(applicationId, mode) {
   _crAppId = applicationId; _crMode = mode;
   const isApprove = mode === 'approve';
   document.getElementById('cr-title').textContent = isApprove ? 'الموافقة على المحتوى' : 'رفض المحتوى';
-  document.getElementById('cr-sub').textContent = isApprove ? 'تقدر تضيف ملاحظة للمعلن (اختياري) ثم اعتمد.' : 'اكتب سبب الرفض — يظهر للمعلن ليعدّل ويعيد الرفع.';
+  document.getElementById('cr-sub').textContent = isApprove ? 'يمكن إضافة ملاحظة للمعلن (اختياري) ثم الاعتماد.' : 'سبب الرفض — يظهر للمعلن ليعدّل ويعيد الرفع.';
   document.getElementById('cr-label').textContent = isApprove ? 'ملاحظة للمعلن (اختياري)' : 'سبب الرفض';
   const ta = document.getElementById('cr-text'); ta.value = ''; ta.placeholder = isApprove ? 'أي ملاحظة...' : 'مثلًا: الإضاءة ضعيفة، أعد التصوير أوضح...';
   const btn = document.getElementById('cr-confirm');
@@ -4799,7 +4799,7 @@ async function submitContentReview() {
     await loadData();
   } catch (err) {
     console.error('review failed:', err);
-    showToast('حصل خطأ: ' + (err.message || 'حاول مرة أخرى'), 'error');
+    showToast('حصل خطأ: ' + (err.message || 'يُرجى المحاولة مرة أخرى'), 'error');
     btn.disabled = false; btn.textContent = orig;
   }
 }
@@ -4892,7 +4892,7 @@ async function submitStageForm(applicationId) {
     console.error('Failed to submit stage:', err);
     submitBtn.disabled = false;
     submitBtn.textContent = original;
-    showToast('حصل خطأ: ' + (err.message || 'حاول مرة أخرى'), 'error');
+    showToast('حصل خطأ: ' + (err.message || 'يُرجى المحاولة مرة أخرى'), 'error');
   }
 }
 
@@ -4952,7 +4952,7 @@ function setModalMode(mode, campaign) {
 
   if (mode === 'edit') {
     h3.textContent = 'تعديل الحملة';
-    sub.textContent = 'عدّل تفاصيل الحملة وسيتم تحديثها فورًا للمؤثرين.';
+    sub.textContent = 'تعديل تفاصيل الحملة، ويتم تحديثها فورًا للمؤثرين.';
     submitBtn.textContent = 'حفظ التعديلات';
 
     form.querySelector('[name="title"]').value = campaign.title || '';
@@ -5014,7 +5014,7 @@ function setModalMode(mode, campaign) {
     }
   } else {
     h3.textContent = 'إنشاء حملة جديدة';
-    sub.textContent = 'عبّئ تفاصيل الحملة وراح تظهر للمؤثرين المسجّلين في Flfluencer.';
+    sub.textContent = 'تعبئة تفاصيل الحملة لتظهر للمؤثرين المسجّلين في Flfluencer.';
     submitBtn.textContent = 'نشر الحملة';
 
     form.reset();
@@ -5191,7 +5191,7 @@ async function confirmDelete() {
     console.error('Delete error:', err);
     btn.disabled = false;
     btn.textContent = original;
-    showToast('حصل خطأ أثناء الحذف: ' + (err.message || 'حاول مرة أخرى'), 'error');
+    showToast('حصل خطأ أثناء الحذف: ' + (err.message || 'يُرجى المحاولة مرة أخرى'), 'error');
   }
 }
 
@@ -5208,12 +5208,12 @@ async function submitCampaign(event) {
 
   // تحقق من اختيار المنصة (input مخفي لا يدعم required تلقائيًا)
   if (!platform) {
-    showToast('اختر المنصة المطلوبة للحملة.', 'error');
+    showToast('اختيار المنصة المطلوبة للحملة.', 'error');
     return;
   }
   // تحقق من اختيار نطاق متابعين واحد على الأقل
   if (!followerRange) {
-    showToast('اختر نطاق متابعين واحد على الأقل.', 'error');
+    showToast('يلزم اختيار نطاق متابعين واحد على الأقل.', 'error');
     return;
   }
   // تيك توك: تصنيف المؤثرين إجباري (لأن حدود السعر تعتمد عليه)
@@ -5221,7 +5221,7 @@ async function submitCampaign(event) {
     ? String(fd.get('creator_tiers') || '').split(',').map(s => s.trim().toLowerCase()).filter(Boolean)
     : [];
   if (platform === 'tiktok' && selectedTiers.length === 0) {
-    showToast('اختر تصنيف المؤثرين (Micro / Medium / Mega).', 'error');
+    showToast('اختيار تصنيف المؤثرين (Micro / Medium / Mega).', 'error');
     return;
   }
   // سعر واحد لا نطاق: الوكيل يعرض الرقم كما هو، فلو كُتب نطاق يصير أعلاه هو المدفوع للجميع.
@@ -5231,7 +5231,7 @@ async function submitCampaign(event) {
       .replace(/[۰-۹]/g, d => '۰۱۲۳۴۵۶۷۸۹'.indexOf(d));
     const _bAll = (_bRaw.replace(/(\d)[,\.\s](?=\d{3}\b)/g, '$1').match(/\d+(?:\.\d+)?/g) || []);
     if (_bAll.length !== 1) {
-      showToast('اكتب سعراً واحداً للمعلن (مثال: 1000) — بلا نطاق.', 'error', 5000);
+      showToast('يُدخل سعر واحد للمعلن (مثال: 1000) — بلا نطاق.', 'error', 5000);
       return;
     }
   }
@@ -5244,7 +5244,7 @@ async function submitCampaign(event) {
       .replace(/[۰-۹]/g, d => '۰۱۲۳۴۵۶۷۸۹'.indexOf(d));
     const _nums = (_budStr.match(/\d+(?:\.\d+)?/g) || []).map(Number);
     if (!_nums.length) {
-      showToast('اكتب ميزانية صحيحة للمعلن الواحد.', 'error');
+      showToast('يلزم إدخال ميزانية صحيحة للمعلن الواحد.', 'error');
       return;
     }
     const _lo = Math.min(..._nums), _hi = Math.max(..._nums);
@@ -5257,7 +5257,7 @@ async function submitCampaign(event) {
   const selCountry = fd.get('country') || '';
   const selCity = fd.get('city') || '';
   if (selCountry && !selCity) {
-    showToast('اختر مدينة المعلن أو «كل المناطق».', 'error');
+    showToast('اختيار مدينة المعلن أو «كل المناطق».', 'error');
     return;
   }
 
@@ -5294,12 +5294,12 @@ async function submitCampaign(event) {
   };
   const _codesRaw = fd.get('codes_list') || '';
   if (campaign.campaign_type === 'video' && !editingCampaignId && !(window._vidFiles || []).length) {
-    showToast('أرفق فيديوهات الحملة أولاً — زر «🎬 اختر الفيديوهات من جهازك».', 'error');
+    showToast('يلزم إرفاق فيديوهات الحملة أولاً — زر «🎬 اختيار الفيديوهات من الجهاز».', 'error');
     submitBtn.disabled = false; submitBtn.textContent = original; return;
   }
   if (campaign.fulfillment_mode === 'code' && !editingCampaignId) {
     const _n = [...new Set(_codesRaw.split(/[\n,;]+/).map(x => x.trim()).filter(Boolean))].length;
-    if (!_n) { showToast('حملة الكود تحتاج أكواد خصم — الصق الأكواد (كل كود بسطر).', 'error'); submitBtn.disabled = false; submitBtn.textContent = original; return; }
+    if (!_n) { showToast('حملة الكود تحتاج أكواد خصم — تُلصق الأكواد (كل كود بسطر).', 'error'); submitBtn.disabled = false; submitBtn.textContent = original; return; }
   }
 
 
@@ -5423,7 +5423,7 @@ async function submitCampaign(event) {
     console.error(err);
     submitBtn.disabled = false;
     submitBtn.textContent = original;
-    showToast('حصل خطأ: ' + (err.message || 'حاول مرة أخرى'), 'error');
+    showToast('حصل خطأ: ' + (err.message || 'يُرجى المحاولة مرة أخرى'), 'error');
   }
 }
 
@@ -5501,7 +5501,7 @@ async function submitRebook(){
   } catch (e) { console.warn('rebook plan check skipped', e); }
   var title = document.getElementById('rb-title').value.trim();
   var brief = document.getElementById('rb-brief').value.trim();
-  if (!title || !brief) { showToast('اكتب اسم الحملة الجديد والرسالة الجديدة', 'error'); return; }
+  if (!title || !brief) { showToast('إدخال اسم الحملة الجديد والرسالة الجديدة', 'error'); return; }
   var btn = document.getElementById('rb-go');
   btn.disabled = true; var orig = btn.textContent; btn.textContent = 'جاري الإنشاء...';
   try {
@@ -5514,7 +5514,7 @@ async function submitRebook(){
       fetch('https://chpzecgpylxqsutjydkb.supabase.co/functions/v1/send-push', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + supabaseClient.supabaseKey },
-        body: JSON.stringify({ title: 'عرض جديد لك 🎬', body: 'دعوة لحملة «' + title + '» بنفس سعرك السابق وبدون شحن — افتح لوحتك للقبول.', url: '/creator.html', target_users: ids })
+        body: JSON.stringify({ title: 'عرض جديد لك 🎬', body: 'دعوة لحملة «' + title + '» بنفس السعر السابق وبدون شحن — فتح اللوحة للقبول.', url: '/creator.html', target_users: ids })
       }).catch(console.error);
     }
     closeRebookModal();

@@ -1022,7 +1022,7 @@ input:focus, textarea:focus { outline: none; border-color: var(--accent); box-sh
     <div class="user-menu" id="user-menu">
       <button class="btn-push" id="btn-push" onclick="manualEnablePush()" title="تفعيل الإشعارات">
         <span>🔔</span>
-        <span>فعّل الإشعارات</span>
+        <span>تفعيل الإشعارات</span>
       </button>
       <div class="user-pill">
         <div class="user-avatar" id="user-initial">م</div>
@@ -1303,7 +1303,7 @@ async function loadMyTrust(){
     var _pl = null;
     try { var _pr = await supabaseClient.rpc('my_plan_status'); if (_pr && _pr.data && !_pr.data.error) _pl = _pr.data; } catch (e) {}
     if (_pl && _pl.can_media_kit) {
-      box.innerHTML += '<button class="kit-share" onclick="shareMyKit()">🔗 شارك ملفي العام</button>';
+      box.innerHTML += '<button class="kit-share" onclick="shareMyKit()">🔗 مشاركة الملف العام</button>';
     } else {
       box.innerHTML += '<a class="kit-lock" href="/plans-creator.html">🔒 ملفك العام القابل للمشاركة — متاح مع Pro</a>';
     }
@@ -1315,7 +1315,7 @@ function shareMyKit(){
   var h = currentUser.handle ? String(currentUser.handle).replace(/^@/,'') : '';
   var q = h ? ('u='+encodeURIComponent(h)) : ('id='+encodeURIComponent(currentUser.id));
   var url = location.origin + '/c.html?' + q;
-  if(navigator.share){ navigator.share({title:'ملفي على Flfluencer', text:'شوف ملفي وترتيبي على Flfluencer', url:url}).catch(function(){}); return; }
+  if(navigator.share){ navigator.share({title:'ملفي على Flfluencer', text:'عرض الملف والترتيب على Flfluencer', url:url}).catch(function(){}); return; }
   if(navigator.clipboard && navigator.clipboard.writeText){
     navigator.clipboard.writeText(url).then(function(){ kitToast('✓ تم نسخ رابط ملفك'); }).catch(function(){ kitToast(url); });
   } else { kitToast(url); }
@@ -1339,7 +1339,7 @@ function showPendingScreen(status) {
       <div style="max-width:520px;margin:0 auto;text-align:center">
         <div style="width:84px;height:84px;border-radius:50%;background:rgba(210,59,59,0.1);display:flex;align-items:center;justify-content:center;margin:0 auto 24px;font-size:38px">⏸️</div>
         <h1 class="hero-title" style="font-size:30px">حسابك موقوف مؤقتًا</h1>
-        <p class="hero-sub">تم إيقاف حسابك مؤقتًا. لمعرفة السبب وتسوية الوضع، تواصل مع فريق Flfluencer عبر hello@flfluencer.com</p>
+        <p class="hero-sub">تم إيقاف حسابك مؤقتًا. لمعرفة السبب وتسوية الوضع، يمكن التواصل مع فريق Flfluencer عبر hello@flfluencer.com</p>
       </div>
     </section>`;
     return;
@@ -1350,9 +1350,9 @@ function showPendingScreen(status) {
         <div style="width:84px;height:84px;border-radius:50%;background:${rejected ? 'var(--cream-darker)' : 'rgba(226,59,46,0.12)'};display:flex;align-items:center;justify-content:center;margin:0 auto 24px;font-size:38px">${rejected ? '✕' : '🔎'}</div>
         <h1 class="hero-title" style="font-size:30px">${rejected ? 'لم يتم تفعيل حسابك' : 'حسابك قيد المراجعة'}</h1>
         <p class="hero-sub">${rejected
-          ? 'نعتذر، ما تم تفعيل حسابك حاليًا. لأي استفسار تواصل مع فريق Flfluencer عبر hello@flfluencer.com'
+          ? 'نعتذر، ما تم تفعيل حسابك حاليًا. لأي استفسار يمكن التواصل مع فريق Flfluencer عبر hello@flfluencer.com'
           : 'فريق Flfluencer يراجع حسابك الآن للتأكد منه. بمجرد التفعيل بتقدر تتصفّح الإعلانات وتتفاوض مع الوكيل. شكرًا لصبرك 🌿'}</p>
-        ${rejected ? '' : '<p style="font-size:13px;color:var(--ink-muted);margin-top:6px">تقدر ترجع لاحقًا — حسابك بيشتغل تلقائيًا فور التفعيل.</p>'}
+        ${rejected ? '' : '<p style="font-size:13px;color:var(--ink-muted);margin-top:6px">يمكن الرجوع لاحقًا — الحساب يعمل تلقائيًا فور التفعيل.</p>'}
       </div>
     </section>`;
 }
@@ -1381,7 +1381,7 @@ async function loadData() {
   try { renderUnified(); } catch (e) { console.error('renderUnified failed:', e); }
 
   if (appRes.status === 'rejected' && _ul) {
-    _ul.innerHTML = '<div style="text-align:center; padding:60px; color:var(--ink-soft)">حصل خطأ في تحميل الإعلانات. حدّث الصفحة وحاول مرة أخرى.</div>';
+    _ul.innerHTML = '<div style="text-align:center; padding:60px; color:var(--ink-soft)">حصل خطأ في تحميل الإعلانات. يُرجى تحديث الصفحة والمحاولة مرة أخرى.</div>';
   }
 }
 
@@ -1421,7 +1421,7 @@ function updateHeroStats() {
     return !isNaN(d.getTime()) && d.getFullYear()===now.getFullYear() && d.getMonth()===now.getMonth();
   });
   set('earn-total', Number(sum(monthArr)).toLocaleString('en-US'));
-  set('earn-sub', deals ? ('الإجمالي الكلي: ' + Number(earnings).toLocaleString('en-US') + ' ر.س · ' + toArabic(deals) + ' إعلان') : 'ابدأ أول صفقة');
+  set('earn-sub', deals ? ('الإجمالي الكلي: ' + Number(earnings).toLocaleString('en-US') + ' ر.س · ' + toArabic(deals) + ' إعلان') : 'بدء أول صفقة');
   set('fin-paid', sar(sum(confirmedArr)));   set('fin-paid-c', confirmedArr.length ? (confirmedArr.length + ' إعلان') : '—');
   set('fin-pending', sar(sum(pendingArr)));  set('fin-pending-c', pendingArr.length ? (pendingArr.length + ' إعلان') : '—');
 
@@ -1619,14 +1619,14 @@ function renderBrowseCard(c) {
 // نص شارة المرحلة من منظور المعلن (المطلوب منه، أو انتظار الشركة)
 function creatorStageBadge(stage) {
   const map = {
-    1: { creator: '📍 أرسل عنوانك' },
+    1: { creator: '📍 إرسال العنوان' },
     2: { brand: '⏳ بانتظار شحن المنتج لك' },
-    3: { creator: '📦 أكّد استلام المنتج' },
+    3: { creator: '📦 تأكيد استلام المنتج' },
     4: { brand: '⏳ بانتظار بريف الشركة' },
-    5: { creator: '🎬 أرسل المحتوى' },
+    5: { creator: '🎬 إرسال المحتوى' },
     6: { brand: '⏳ بانتظار مراجعة المحتوى' },
-    7: { creator: '🔗 أكّد نشر المحتوى' },
-    8: { creator: '💳 أرسل بياناتك البنكية' },
+    7: { creator: '🔗 تأكيد نشر المحتوى' },
+    8: { creator: '💳 إرسال البيانات البنكية' },
     9: { done: '✓ الصفقة مكتملة' }
   };
   const entry = map[stage] || {};
@@ -1746,42 +1746,42 @@ const WORKFLOW_STAGES = [
 const STAGE_ACTIONS = {
   1: {
     responsible: 'creator',
-    creator: { label: '✓ تأكيد إرسال العنوان', desc: 'عبّئ تفاصيل العنوان للشحن، ثم أكّد للانتقال للمرحلة التالية.' },
+    creator: { label: '✓ تأكيد إرسال العنوان', desc: 'تعبئة تفاصيل العنوان للشحن، ثم التأكيد للانتقال للمرحلة التالية.' },
     brand:   { desc: 'بانتظار إرسال المعلن لعنوانه.' }
   },
   2: {
     responsible: 'brand',
-    brand:   { label: '✓ تأكيد الشحن', desc: 'بعد شحن المنتج، عبّئ بيانات الشحن وأكّد.' },
+    brand:   { label: '✓ تأكيد الشحن', desc: 'بعد شحن المنتج، تُعبّأ بيانات الشحن ويتم التأكيد.' },
     creator: { desc: 'الشركة تجهّز المنتج لشحنه إليك.' }
   },
   3: {
     responsible: 'creator',
-    creator: { label: '✓ تأكيد الاستلام', desc: 'بعد وصول المنتج إليك، أكّد الاستلام.' },
+    creator: { label: '✓ تأكيد الاستلام', desc: 'بعد وصول المنتج، يتم تأكيد الاستلام.' },
     brand:   { desc: 'المنتج في الطريق إلى المعلن.' }
   },
   4: {
     responsible: 'brand',
-    brand:   { label: '✓ إرسال البريف', desc: 'اكتب نص البريف الإعلاني (وضّح كيف تبي يكون الإعلان ومحتواه)، على أساسه المعلن يجهّز المحتوى.' },
+    brand:   { label: '✓ إرسال البريف', desc: 'نص البريف الإعلاني (مع توضيح شكل الإعلان ومحتواه)، وعلى أساسه يجهّز المعلن المحتوى.' },
     creator: { desc: 'الشركة تجهّز البريف الإعلاني (نص يوضّح متطلبات الإعلان).' }
   },
   5: {
     responsible: 'creator',
-    creator: { label: '✓ تأكيد إرسال المحتوى', desc: 'بناءً على البريف، أرفق رابط المحتوى للمراجعة وأكّد للمرحلة التالية.' },
+    creator: { label: '✓ تأكيد إرسال المحتوى', desc: 'بناءً على البريف، يُرفق رابط المحتوى للمراجعة ويتم التأكيد للمرحلة التالية.' },
     brand:   { desc: 'المعلن يجهّز المحتوى الإعلاني حسب البريف.' }
   },
   6: {
     responsible: 'brand',
-    brand:   { label: '✓ الموافقة على المحتوى', desc: 'بعد مراجعة المحتوى، أضف ملاحظاتك (إن وُجدت) وأكّد الموافقة.' },
+    brand:   { label: '✓ الموافقة على المحتوى', desc: 'بعد مراجعة المحتوى، تُضاف الملاحظات (إن وُجدت) ويتم تأكيد الموافقة.' },
     creator: { desc: 'الشركة تراجع المحتوى الذي أرسلته.' }
   },
   7: {
     responsible: 'creator',
-    creator: { label: '✓ تأكيد النشر', desc: 'بعد نشر المحتوى، أرفق رابط المنشور وكود الترويج وأكّد.' },
+    creator: { label: '✓ تأكيد النشر', desc: 'بعد نشر المحتوى، يُرفق رابط المنشور وكود الترويج ويتم التأكيد.' },
     brand:   { desc: 'بانتظار نشر المعلن للمحتوى المعتمد.' }
   },
   8: {
     responsible: 'creator',
-    creator: { label: '✓ إرسال البيانات البنكية', desc: 'أضف بياناتك البنكية لاستلام المبلغ المتفق عليه.' },
+    creator: { label: '✓ إرسال البيانات البنكية', desc: 'إضافة البيانات البنكية لاستلام المبلغ المتفق عليه.' },
     brand:   { desc: 'تم النشر. المعلن يضيف بياناته البنكية لاستلام المبلغ.' }
   }
 };
@@ -1963,7 +1963,7 @@ function fallbackCopy(text, onDone) {
     document.body.removeChild(ta);
     onDone && onDone();
   } catch (e) {
-    alert('فشل النسخ. انسخ يدويًا.');
+    alert('فشل النسخ — يمكن النسخ يدويًا.');
   }
 }
 function toggleBrief(id, btn) {
@@ -2010,8 +2010,8 @@ function renderPaymentCard(app) {
     return `<div class="stage-action mine" onclick="event.stopPropagation()">
       <div class="sa-title">${fast ? '⚡ صرف فوري — اليوم' : '✅ مستحقك جاهز للصرف'}</div>
       <div class="sa-desc">${fast
-        ? 'باقتك Premium، فمستحقك يُحوَّل لك اليوم بلا انتظار دفعة الأسبوع. تأكّد أن الآيبان في ملفك صحيح.'
-        : 'يُحوَّل لك في دفعة الاثنين القادم. تأكّد أن الآيبان في ملفك صحيح.'}</div>
+        ? 'باقتك Premium، فمستحقك يُحوَّل لك اليوم بلا انتظار دفعة الأسبوع. يُرجى التأكد من صحة الآيبان في الملف الشخصي.'
+        : 'يُحوَّل لك في دفعة الاثنين القادم. يُرجى التأكد من صحة الآيبان في الملف الشخصي.'}</div>
       ${whenLine}${breakdown}
     </div>`;
   }
@@ -2031,7 +2031,7 @@ function renderPaymentCard(app) {
 }
 
 async function setCreatorPayment() {
-  showToast('صار الصرف عبر فلفلونسر — ما تحتاج تأكيد استلام يدوي.');
+  showToast('صار الصرف عبر فلفلونسر — لا حاجة لتأكيد استلام يدوي.');
 }
 
 function renderStageAction(applicationId, currentStage, viewerRole) {
@@ -2127,7 +2127,7 @@ async function submitStageForm(applicationId) {
     console.error('Failed to submit stage:', err);
     submitBtn.disabled = false;
     submitBtn.textContent = original;
-    showToast('حصل خطأ: ' + (err.message || 'حاول مرة أخرى'), 'error');
+    showToast('حصل خطأ: ' + (err.message || 'يُرجى المحاولة مرة أخرى'), 'error');
   }
 }
 
@@ -2186,7 +2186,7 @@ async function enterNegotiation(campaignId, btn) {
   } catch (err) {
     console.error(err);
     if (btn) { btn.disabled = false; btn.textContent = '💬 التفاوض مع الوكيل'; }
-    showToast('حصل خطأ أثناء فتح التفاوض. حاول مرة أخرى.', 'error');
+    showToast('حصل خطأ أثناء فتح التفاوض. يُرجى المحاولة مرة أخرى.', 'error');
   }
 }
 
@@ -2275,8 +2275,8 @@ function handleAvatarUpload(e) {
   var file = e.target.files && e.target.files[0];
   if (e.target) e.target.value = '';
   if (!file) return;
-  if (!/^image\//.test(file.type)) { showToast('اختر ملف صورة صحيح', 'error'); return; }
-  if (file.size > 12 * 1024 * 1024) { showToast('الصورة كبيرة جدًا، اختر أصغر', 'error'); return; }
+  if (!/^image\//.test(file.type)) { showToast('يلزم اختيار ملف صورة صحيح', 'error'); return; }
+  if (file.size > 12 * 1024 * 1024) { showToast('الصورة كبيرة جدًا — يلزم صورة أصغر', 'error'); return; }
   var reader = new FileReader();
   reader.onload = function(ev){ openCropper(ev.target.result); };
   reader.onerror = function(){ showToast('تعذّر قراءة الصورة', 'error'); };
@@ -2288,7 +2288,7 @@ function buildCropper(){
   var html = ''
     + '<div id="cropper" style="display:none;position:fixed;inset:0;z-index:9999;background:rgba(15,20,32,0.80);align-items:center;justify-content:center;padding:20px;">'
     +   '<div style="background:#fff;border-radius:20px;padding:18px;max-width:340px;width:100%;text-align:center;font-family:inherit;">'
-    +     '<div style="font-weight:600;font-size:15px;margin-bottom:14px;color:var(--ink);">عدّل صورتك</div>'
+    +     '<div style="font-weight:600;font-size:15px;margin-bottom:14px;color:var(--ink);">تعديل الصورة</div>'
     +     '<div id="cr-view" style="position:relative;width:280px;height:280px;max-width:74vw;max-height:74vw;margin:0 auto;overflow:hidden;border-radius:14px;background:#f0f0ef;touch-action:none;cursor:grab;">'
     +       '<img id="cr-img" alt="" draggable="false" style="position:absolute;left:0;top:0;-webkit-user-drag:none;user-select:none;pointer-events:none;max-width:none;">'
     +       '<div style="position:absolute;inset:0;border-radius:50%;box-shadow:0 0 0 9999px rgba(0,0,0,0.32);outline:2px solid rgba(255,255,255,0.9);pointer-events:none;"></div>'
@@ -2395,7 +2395,7 @@ async function uploadAvatarBlob(blob){
     showToast('تم تحديث صورتك ✓');
   } catch (err) {
     console.error('avatar upload error', err);
-    showToast('فشل رفع الصورة. حاول مرة ثانية.', 'error');
+    showToast('فشل رفع الصورة. يُرجى المحاولة مرة أخرى.', 'error');
   } finally {
     if (btn) { btn.disabled = false; btn.textContent = orig; }
   }
@@ -2429,12 +2429,12 @@ function buildEditProfile(){
     +     '</div>'
     +     '<label style="'+lbl+'">الاسم</label><input id="ep-name" type="text" style="'+fld+'margin-bottom:14px;">'
     +     '<label style="'+lbl+'">اسم المستخدم</label><input id="ep-handle" type="text" dir="ltr" style="'+fld+'margin-bottom:14px;text-align:right;">'
-    +     '<label style="'+lbl+'">الدولة</label><select id="ep-country" style="'+fld+'margin-bottom:14px;"><option value="">اختر الدولة</option>'+countryOpts()+'</select>'
-    +     '<label style="'+lbl+'">المدينة</label><select id="ep-city" style="'+fld+'margin-bottom:14px;"><option value="">اختر المدينة</option>'+cityOpts()+'</select>'
+    +     '<label style="'+lbl+'">الدولة</label><select id="ep-country" style="'+fld+'margin-bottom:14px;"><option value="">اختيار الدولة</option>'+countryOpts()+'</select>'
+    +     '<label style="'+lbl+'">المدينة</label><select id="ep-city" style="'+fld+'margin-bottom:14px;"><option value="">اختيار المدينة</option>'+cityOpts()+'</select>'
     +     '<label style="'+lbl+'">رابط حسابك</label><input id="ep-website" type="text" inputmode="url" dir="ltr" placeholder="https://" style="'+fld+'margin-bottom:14px;text-align:right;">'
     +     '<label style="'+lbl+'">المنصة</label><select id="ep-platform" style="'+fld+'margin-bottom:14px;">'+opts(PL)+'</select>'
     +     '<label style="'+lbl+'">التصنيف</label><select id="ep-category" style="'+fld+'margin-bottom:14px;">'+opts(CL)+'</select>'
-    +     '<label style="'+lbl+'">نطاق المتابعين</label><select id="ep-followers" style="'+fld+'margin-bottom:14px;"><option value="">اختر النطاق</option>'+selOpts(FR)+'</select>'
+    +     '<label style="'+lbl+'">نطاق المتابعين</label><select id="ep-followers" style="'+fld+'margin-bottom:14px;"><option value="">اختيار النطاق</option>'+selOpts(FR)+'</select>'
     +     '<label style="'+lbl+'">السعر المرجعي (ر.س)</label><input id="ep-price" type="text" inputmode="numeric" placeholder="مثال: 800" style="'+fld+'margin-bottom:14px;text-align:right;">'
     +     '<label style="'+lbl+'">النبذة</label><textarea id="ep-bio" rows="3" maxlength="300" style="'+fld+'resize:vertical;margin-bottom:6px;"></textarea>'
     +     '<div id="ep-bio-count" style="font-size:11px;color:var(--ink-faint);text-align:left;margin:0 2px 24px;"></div>'
@@ -2528,7 +2528,7 @@ async function saveProfile(){
     showToast('تم تحديث ملفك ✓');
   } catch (err) {
     console.error('profile save error', err);
-    showToast('تعذّر الحفظ. حاول مرة ثانية.', 'error');
+    showToast('تعذّر الحفظ. يُرجى المحاولة مرة أخرى.', 'error');
   } finally {
     btn.disabled = false; btn.textContent = orig;
   }
@@ -2546,7 +2546,7 @@ function handleTiktokReturn(){
     } else if (tk === 'denied') {
       showToast('أُلغي ربط تيك توك', 'error');
     } else {
-      showToast('تعذّر ربط تيك توك، حاول مرة ثانية', 'error');
+      showToast('تعذّر ربط تيك توك، يُرجى المحاولة مرة أخرى', 'error');
     }
     history.replaceState(null, '', window.location.pathname);
   } catch (e) { /* تجاهل */ }
@@ -2554,8 +2554,8 @@ function handleTiktokReturn(){
 
 async function connectTiktok(){
   // قيد الباقة
-  if (typeof simblGate === 'function' && !await simblGate('can_tiktok_connect', 'ربط تيك توك', 'اربط حسابك ليسحب أرقام مشاهدات وتفاعل منشوراتك تلقائيًا وتظهر للشركات — متاح مع باقة Pro فأعلى.')) return;
-  if (!currentUser || !currentUser.id) { showToast('سجّل الدخول أولاً', 'error'); return; }
+  if (typeof simblGate === 'function' && !await simblGate('can_tiktok_connect', 'ربط تيك توك', 'ربط الحساب ليسحب أرقام مشاهدات وتفاعل المنشورات تلقائيًا وتظهر للشركات — متاح مع باقة Pro فأعلى.')) return;
+  if (!currentUser || !currentUser.id) { showToast('يلزم تسجيل الدخول أولاً', 'error'); return; }
   window.location.href = 'https://chpzecgpylxqsutjydkb.supabase.co/functions/v1/tiktok-auth-start?creator=' + encodeURIComponent(currentUser.id);
 }
 
@@ -2583,7 +2583,7 @@ async function renderBankBox(){
       + '<div style="font-size:11.5px;color:var(--ink-muted);margin-top:8px;">تُعبّأ تلقائياً في صفقاتك الجديدة.</div>'
       + '<button type="button" onclick="editBank()" style="margin-top:12px;background:var(--cream-darker);border:0;color:var(--ink);font-family:inherit;font-size:12.5px;font-weight:600;padding:9px 20px;border-radius:100px;cursor:pointer;">تعديل</button>';
   } else {
-    card += '<div style="font-size:13px;color:var(--ink-soft);line-height:1.7;">احفظ بياناتك البنكية مرة وحدة، وتنطبع تلقائياً في كل صفقة — تستلم مستحقاتك أسرع وبلا أخطاء.</div>'
+    card += '<div style="font-size:13px;color:var(--ink-soft);line-height:1.7;">حفظ البيانات البنكية مرة واحدة، لتُعبّأ تلقائياً في كل صفقة — ووصول المستحقات أسرع وبلا أخطاء.</div>'
       + '<button type="button" onclick="editBank()" style="margin-top:12px;background:var(--accent);color:#fff;border:0;padding:10px 22px;border-radius:100px;font-family:inherit;font-size:13px;font-weight:600;cursor:pointer;">إضافة بياناتي البنكية</button>';
   }
   card += '</div>';
@@ -2612,7 +2612,7 @@ async function saveBank(){
   var err = document.getElementById('bk-err');
   var showErr = function(m){ if(err){ err.textContent=m; err.style.display='block'; } };
   if(err) err.style.display='none';
-  if(!holder){ showErr('اكتب اسم صاحب الحساب.'); return; }
+  if(!holder){ showErr('اسم صاحب الحساب.'); return; }
   if(!/^SA\d{22}$/.test(iban)){ showErr('رقم الآيبان غير صحيح — لازم يبدأ بـ SA ثم 22 رقم (24 خانة).'); return; }
   var btn = document.getElementById('bk-save'); if(btn){ btn.disabled=true; btn.textContent='جاري الحفظ…'; }
   try {
@@ -2623,7 +2623,7 @@ async function saveBank(){
   } catch(e){
     console.error('saveBank', e);
     if(btn){ btn.disabled=false; btn.textContent='حفظ'; }
-    showErr('تعذّر الحفظ، حاول مرة ثانية.');
+    showErr('تعذّر الحفظ، يُرجى المحاولة مرة أخرى.');
   }
 }
 function renderTiktokConnect(){
@@ -2639,8 +2639,8 @@ function renderTiktokConnect(){
     card += '<div style="font-size:13px;color:var(--ink-soft);line-height:1.7;">حسابك مربوط — نسحب أرقام منشوراتك (مشاهدات/إعجابات/تعليقات) تلقائيًا ونعرضها للشركات اللي تعاملت معها.</div>'
       + '<div style="display:inline-flex;align-items:center;gap:6px;margin-top:12px;font-size:12px;font-weight:600;color:var(--accent-ink);background:rgba(226,59,46,0.10);border:1px solid rgba(226,59,46,0.28);border-radius:100px;padding:6px 14px;"><span style="width:7px;height:7px;border-radius:50%;background:var(--accent);"></span>مربوط ✓</div>';
   } else {
-    card += '<div style="font-size:13px;color:var(--ink-soft);line-height:1.7;">اربط حسابك مرة وحدة، ونسحب أرقام منشوراتك تلقائيًا (مشاهدات/إعجابات/تعليقات) ونعرضها للشركات. ما نشوف رسائلك الخاصة ولا نقدر ننشر باسمك.</div>'
-      + '<button type="button" onclick="connectTiktok()" style="margin-top:14px;background:var(--ink);color:#fff;border:0;padding:11px 22px;border-radius:100px;font-family:var(--font-body);font-size:13px;font-weight:600;cursor:pointer;">اربط تيك توك</button>';
+    card += '<div style="font-size:13px;color:var(--ink-soft);line-height:1.7;">ربط الحساب مرة واحدة، ونسحب أرقام المنشورات تلقائيًا (مشاهدات/إعجابات/تعليقات) ونعرضها للشركات. ولا نطّلع على الرسائل الخاصة ولا يمكننا النشر بالاسم.</div>'
+      + '<button type="button" onclick="connectTiktok()" style="margin-top:14px;background:var(--ink);color:#fff;border:0;padding:11px 22px;border-radius:100px;font-family:var(--font-body);font-size:13px;font-weight:600;cursor:pointer;">ربط تيك توك</button>';
   }
   card += '</div>';
   box.innerHTML = card;
@@ -2737,7 +2737,7 @@ function feeLines(a) {
       +       '<button type="button" id="tr-send" style="background:var(--accent);border:0;color:#fff;font-family:inherit;font-size:13px;font-weight:600;padding:8px 20px;border-radius:100px;cursor:pointer;">إرسال</button>'
       +     '</div>'
       +     '<div style="background:var(--surface,#F7F4F2);border:1px solid var(--line);border-radius:12px;padding:13px;margin-bottom:18px;font-size:12.5px;color:var(--ink-muted);line-height:1.75;">'
-      +       'فئة الحساب تحدّدها المنصة بعد التحقق، ولا تُعدَّل من الملف الشخصي. أرسل طلبك مع ما يثبت بيانات حسابك، ويصلك القرار بعد المراجعة.'
+      +       'فئة الحساب تحدّدها المنصة بعد التحقق، ولا تُعدَّل من الملف الشخصي. يُرسل الطلب مع ما يثبت بيانات الحساب، ويصل القرار بعد المراجعة.'
       +     '</div>'
       +     '<label style="' + lbl + '">الفئة الحالية</label>'
       +     '<div id="tr-current" style="' + fld + 'margin-bottom:14px;background:var(--surface,#F7F4F2);color:var(--ink-muted);"></div>'
@@ -2797,8 +2797,8 @@ function feeLines(a) {
     function fail(msg) { err.textContent = msg; err.style.display = 'block'; btn.disabled = false; btn.textContent = 'إرسال'; }
 
     err.style.display = 'none';
-    if (!tier) return fail('اختر الفئة المطلوبة.');
-    if (!url) return fail('أضف رابط حسابك ليتمكّن الفريق من التحقق.');
+    if (!tier) return fail('اختيار الفئة المطلوبة.');
+    if (!url) return fail('إضافة رابط الحساب ليتمكّن الفريق من التحقق.');
     if (!/^https?:\/\//i.test(url)) url = 'https://' + url.replace(/^\/+/, '');
 
     btn.disabled = true; btn.textContent = 'جارٍ الإرسال…';
@@ -2806,12 +2806,12 @@ function feeLines(a) {
       var res = await supabaseClient.rpc('request_tier_change', {
         p_requested_tier: tier, p_followers: followers, p_evidence_url: url, p_note: note || null
       });
-      if (res.error) return fail(res.error.message || 'تعذّر إرسال الطلب، حاول مرة أخرى.');
+      if (res.error) return fail(res.error.message || 'تعذّر إرسال الطلب، يُرجى المحاولة مرة أخرى.');
       closeTierRequest();
       await loadTierRequestStatus();
       alert('وصلنا طلبك. نراجع الحساب ونبلّغك بالنتيجة.');
     } catch (e) {
-      fail('تعذّر إرسال الطلب، حاول مرة أخرى.');
+      fail('تعذّر إرسال الطلب، يُرجى المحاولة مرة أخرى.');
     }
     btn.disabled = false; btn.textContent = 'إرسال';
   }

@@ -566,7 +566,7 @@ async function init() {
     }
   } catch (err) {
     console.error(err);
-    document.getElementById('content').innerHTML = '<div class="loading">حصل خطأ. حدث الصفحة.</div>';
+    document.getElementById('content').innerHTML = '<div class="loading">حدث خطأ. يُرجى تحديث الصفحة.</div>';
   }
 }
 
@@ -635,7 +635,7 @@ function render() {
   // الدفع يمر عبر المنصة: الشركة تسدّد لفلفلونسر، وفلفلونسر تصرف للمعلن
   const pledgeBanner = isCreator
     ? `<div class="pay-pledge-banner"><span class="ppb-ic">💸</span><span>تُصرف مستحقاتك من فلفلونسر خلال أسبوع من اكتمال الصفقة، وفي نفس اليوم لمشتركي باقة Premium.</span></div>`
-    : `<div class="pay-pledge-banner"><span class="ppb-ic">💸</span><span><strong>الدفع عبر فلفلونسر:</strong> تستطيع سداد مبلغ الحملة بعد اعتماد جميع معلني الحملة.</span></div>`;
+    : `<div class="pay-pledge-banner"><span class="ppb-ic">💸</span><span><strong>الدفع عبر فلفلونسر:</strong> يمكن سداد مبلغ الحملة بعد اعتماد جميع معلني الحملة.</span></div>`;
 
   let footer;
   if (isFullyClosed) {
@@ -654,7 +654,7 @@ function render() {
     footer = `<div class="chat-foot">أنت تشاهد المفاوضة كمراقب.</div>`;
   } else {
     footer = `<div class="chat-input">
-      <textarea id="creator-input" placeholder="اكتب رسالتك..." rows="1"
+      <textarea id="creator-input" placeholder="نص الرسالة..." rows="1"
                 onkeydown="if(event.key==='Enter' && !event.shiftKey){event.preventDefault();sendCreatorMessage();}"></textarea>
       <button onclick="sendCreatorMessage()" id="send-btn" aria-label="إرسال">↑</button>
     </div>`;
@@ -678,7 +678,7 @@ function render() {
         <div class="direct-hint">تواصل مباشر بينك وبين ${escapeHtml(otherName)} — يصله إشعار بكل رسالة.</div>
         <div class="messages" id="direct-thread">${renderDirectMsgs()}</div>
         <div class="chat-input">
-          <textarea id="direct-input" placeholder="اكتب رسالتك المباشرة..." rows="1"
+          <textarea id="direct-input" placeholder="نص الرسالة المباشرة..." rows="1"
                     oninput="directDraft=this.value"
                     onkeydown="if(event.key==='Enter' && !event.shiftKey){event.preventDefault();sendDirectMessage();}"></textarea>
           <button onclick="sendDirectMessage()" id="direct-send" aria-label="إرسال">↑</button>
@@ -780,7 +780,7 @@ async function startNegotiation() {
     console.error(err);
     isAgentThinking = false;
     render();
-    alert('حصل خطأ في الاتصال بالوكيل. حدث الصفحة وحاول من جديد.');
+    alert('حدث خطأ في الاتصال بالوكيل. يُرجى تحديث الصفحة والمحاولة من جديد.');
   }
 }
 
@@ -825,7 +825,7 @@ async function sendCreatorMessage() {
     console.error(err);
     isAgentThinking = false;
     render();
-    alert('حصل خطأ. حاول مرة أخرى.');
+    alert('حصل خطأ. يُرجى المحاولة مرة أخرى.');
   }
 }
 
@@ -861,7 +861,7 @@ async function checkDirectMessages() {
 
 function renderDirectMsgs() {
   if (!directMsgs.length) {
-    return '<div class="chat-start">لا توجد رسائل بعد — ابدأ المحادثة المباشرة</div>';
+    return '<div class="chat-start">لا توجد رسائل بعد — بدء المحادثة المباشرة</div>';
   }
   return directMsgs.map(m => `
     <div class="cmsg ${m.mine ? 'user' : 'agent'}">
@@ -905,7 +905,7 @@ async function sendDirectMessage() {
     }]);
     if (error) throw error;
 
-    // إشعار + Push للطرف الآخر (يصله فقط إذا مفعّل الإشعارات)
+    // إشعار + Push للطرف الآخر (يصله فقط إذا متفعيل الإشعارات)
     const recipientId = currentUser.role === 'brand' ? application.creator_id : campaign.brand_id;
     if (recipientId) {
       const senderLabel = currentUser.role === 'brand'
@@ -919,7 +919,7 @@ async function sendDirectMessage() {
     }
   } catch (err) {
     console.error('Failed to send direct message:', err);
-    alert('تعذّر إرسال الرسالة. حاول مرة أخرى.');
+    alert('تعذّر إرسال الرسالة. يُرجى المحاولة مرة أخرى.');
     await loadDirectMessages();
     const t2 = document.getElementById('direct-thread');
     if (t2) t2.innerHTML = renderDirectMsgs();
@@ -963,7 +963,7 @@ async function approveDeal() {
     render();
   } catch (err) {
     console.error('Approve error:', err);
-    alert('حصل خطأ في الاعتماد: ' + (err.message || 'حاول مرة أخرى'));
+    alert('حصل خطأ في الاعتماد: ' + (err.message || 'يُرجى المحاولة مرة أخرى'));
     // أعد رسم السحب للحالة الأصلية
     render();
   }

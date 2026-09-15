@@ -1249,7 +1249,7 @@ async function simblExitImpersonation(){
     <h3>كمّل مدينتك</h3>
     <p>حدّد مدينتك عشان توصلك حملات منطقتك المناسبة لك.</p>
     <select id="city-select">
-      <option value="">اختر مدينتك…</option>
+      <option value="">اختيار المدينة…</option>
       <option value="riyadh">الرياض</option>
       <option value="jeddah">جدة</option>
       <option value="makkah">مكة المكرمة</option>
@@ -1315,7 +1315,7 @@ async function simblExitImpersonation(){
     <div class="user-menu" id="user-menu">
       <button class="btn-push" id="btn-push" onclick="manualEnablePush()" title="تفعيل الإشعارات">
         <span>🔔</span>
-        <span>فعّل الإشعارات</span>
+        <span>تفعيل الإشعارات</span>
       </button>
       <div class="user-pill">
         <div class="user-avatar" id="user-initial">م</div>
@@ -1580,7 +1580,7 @@ async function maybePromptCity(){
 async function saveCityChoice(){
   var sel=document.getElementById('city-select'); var v=sel?sel.value:'';
   var err=document.getElementById('city-err'); if(err){ err.style.display='none'; }
-  if(!v){ if(err){ err.textContent='اختر مدينتك أولًا.'; err.style.display='block'; } return; }
+  if(!v){ if(err){ err.textContent='يلزم اختيار المدينة أولًا.'; err.style.display='block'; } return; }
   var btn=document.getElementById('city-save-btn');
   if(btn){ btn.disabled=true; btn.textContent='جاري الحفظ…'; }
   try{
@@ -1593,7 +1593,7 @@ async function saveCityChoice(){
   }catch(e){
     console.error('save city failed:', e);
     if(btn){ btn.disabled=false; btn.textContent='حفظ'; }
-    if(err){ err.innerHTML='تعذّر الحفظ من هنا. حدّث مدينتك من <a href="/profile.html" style="color:#7E2119;font-weight:700">الملف الشخصي</a>.'; err.style.display='block'; }
+    if(err){ err.innerHTML='تعذّر الحفظ من هنا. يُرجى تحديث المدينة من <a href="/profile.html" style="color:#7E2119;font-weight:700">الملف الشخصي</a>.'; err.style.display='block'; }
   }
 }
 function skipCity(){
@@ -1617,7 +1617,7 @@ async function init() {
           + '<div style="max-width:440px;margin:0 auto;text-align:center">'
           + '<div style="width:76px;height:76px;border-radius:50%;background:rgba(226,59,46,0.12);display:flex;align-items:center;justify-content:center;margin:0 auto 22px;font-size:34px">📡</div>'
           + '<h1 class="hero-title" style="font-size:26px">جاري إعادة الاتصال...</h1>'
-          + '<p class="hero-sub">الشبكة ضعيفة الآن. حسابك محفوظ — اضغط للمحاولة من جديد.</p>'
+          + '<p class="hero-sub">الشبكة ضعيفة الآن. الحساب محفوظ — يمكن المحاولة من جديد.</p>'
           + '<button onclick="init()" style="margin-top:14px;padding:12px 30px;border-radius:100px;border:0;background:var(--accent,#E23B2E);color:#fff;font-family:inherit;font-size:14px;font-weight:600;cursor:pointer">إعادة المحاولة</button>'
           + '</div></section>';
       }
@@ -1744,7 +1744,7 @@ function showPendingScreen(status) {
       <div style="max-width:520px;margin:0 auto;text-align:center">
         <div style="width:84px;height:84px;border-radius:50%;background:rgba(210,59,59,0.1);display:flex;align-items:center;justify-content:center;margin:0 auto 24px;font-size:38px">⏸️</div>
         <h1 class="hero-title" style="font-size:30px">حسابك موقوف مؤقتًا</h1>
-        <p class="hero-sub">تم إيقاف حسابك مؤقتًا. لمعرفة السبب وتسوية الوضع، تواصل مع فريق Flfluencer عبر hello@flfluencer.com</p>
+        <p class="hero-sub">تم إيقاف حسابك مؤقتًا. لمعرفة السبب وتسوية الوضع، يمكن التواصل مع فريق Flfluencer عبر hello@flfluencer.com</p>
       </div>
     </section>`;
     return;
@@ -1755,9 +1755,9 @@ function showPendingScreen(status) {
         <div style="width:84px;height:84px;border-radius:50%;background:${rejected ? 'var(--cream-darker)' : 'rgba(226,59,46,0.12)'};display:flex;align-items:center;justify-content:center;margin:0 auto 24px;font-size:38px">${rejected ? '✕' : '🔎'}</div>
         <h1 class="hero-title" style="font-size:30px">${rejected ? 'لم يتم تفعيل حسابك' : 'حسابك قيد المراجعة'}</h1>
         <p class="hero-sub">${rejected
-          ? 'نعتذر، ما تم تفعيل حسابك حاليًا. لأي استفسار تواصل مع فريق Flfluencer عبر hello@flfluencer.com'
+          ? 'نعتذر، ما تم تفعيل حسابك حاليًا. لأي استفسار يمكن التواصل مع فريق Flfluencer عبر hello@flfluencer.com'
           : 'فريق Flfluencer يراجع حسابك الآن للتأكد منه. بمجرد التفعيل بتقدر تتصفّح الإعلانات وتتفاوض مع الوكيل. شكرًا لصبرك 🌿'}</p>
-        ${rejected ? '' : '<p style="font-size:13px;color:var(--ink-muted);margin-top:6px">تقدر ترجع لاحقًا — حسابك بيشتغل تلقائيًا فور التفعيل.</p>'}
+        ${rejected ? '' : '<p style="font-size:13px;color:var(--ink-muted);margin-top:6px">يمكن الرجوع لاحقًا — الحساب يعمل تلقائيًا فور التفعيل.</p>'}
       </div>
     </section>`;
 }
@@ -1929,9 +1929,9 @@ function renderCreatorDealCard(c, a) {
     if (a.status === 'pending' && a.pending_since && Date.now() >= new Date(a.pending_since).getTime() + 15 * 60000) {
       badge = `<span class="dc-badge" style="background:#FDECEA;color:#a93226;border:1px solid #f0b4b4;">⌛ انتهت المهلة</span>`;
     } else if (a.status === 'pending' && a.pending_since) {
-      badge = `<span class="dc-badge" style="background:#E8850C;color:#fff;cursor:pointer;" onclick="event.stopPropagation(); startNegotiation('${a.id}')">🔔 دورك الآن — افتح المحادثة</span>`;
+      badge = `<span class="dc-badge" style="background:#E8850C;color:#fff;cursor:pointer;" onclick="event.stopPropagation(); startNegotiation('${a.id}')">🔔 دورك الآن — فتح المحادثة</span>`;
     } else {
-      badge = `<span class="dc-badge neutral" style="cursor:pointer;" onclick="event.stopPropagation(); startNegotiation('${a.id}')">💬 قيد التفاوض — افتح المحادثة</span>`;
+      badge = `<span class="dc-badge neutral" style="cursor:pointer;" onclick="event.stopPropagation(); startNegotiation('${a.id}')">💬 قيد التفاوض — فتح المحادثة</span>`;
     }
   }
 
@@ -1945,7 +1945,7 @@ function renderCreatorDealCard(c, a) {
       body = `<div class="dc-note full">اكتملت مقاعد هذي الحملة وقائمة الاحتياط معها قبل ما تدخل التفاوض، فأقفل النظام الباب تلقائيًا — ما فيه خطأ في حسابك. المقاعد تُحجز بسرعة، فخلّي إشعاراتك مفتوحة وقدّم فور وصول الحملة 🌟</div>`;
     }
   } else if (didntWin) {
-    body = `<div class="dc-note full">اكتمل العدد المطلوب لهذي الحملة واعتمدت الشركة معلنيها. نشكر لك مشاركتك — تابع الحملات الجديدة وقدّم بسرعة، حظ أوفر 🌟</div>`;
+    body = `<div class="dc-note full">اكتمل العدد المطلوب لهذه الحملة واعتمدت الشركة معلنيها. شكرًا على المشاركة — متابعة الحملات الجديدة والتقديم بسرعة، حظ أوفر 🌟</div>`;
   } else if (isWaitlisted) {
     body = `<div class="dc-note" style="background:#FFF6EC;color:#9A4B06;border-right:3px solid #E8850C;">🕓 أنت في قائمة الانتظار لهذي الحملة<span data-wpos="${a.id}"></span>. العدد المطلوب اكتمل حالياً، وبمجرد ما ينفتح مكان بننبّهك فورًا ويبدأ الوكيل يفاوضك. خلّك متابع 🌿</div>`;
   } else if (awaitingLaunch) {
@@ -1971,7 +1971,7 @@ function renderCreatorDealCard(c, a) {
       : `<div class="dc-note amber">⏳ بانتظار الشركة لاعتماد الصفقة وبدء التنفيذ.</div>`;
   } else if (a.status === 'rejected') {
     const _rr = a.rejection_reason || 'انتهت مهلتك أو تم تمرير دورك لمعلن آخر في هذي الحملة.';
-    body = `<div class="dc-note" style="background:#FDECEA;color:#a93226;border-right:3px solid #c0392b;">⌛ <b>انتهت مشاركتك في هذي الحملة.</b><br>${escHtml(_rr)}<br>ما يمكن إعادة التقديم على نفس الحملة — تابع الحملات الجديدة وقدّم بسرعة 🌿</div>`;
+    body = `<div class="dc-note" style="background:#FDECEA;color:#a93226;border-right:3px solid #c0392b;">⌛ <b>انتهت مشاركتك في هذي الحملة.</b><br>${escHtml(_rr)}<br>لا يمكن إعادة التقديم على نفس الحملة — متابعة الحملات الجديدة والتقديم بسرعة 🌿</div>`;
   } else if (a.status === 'pending' && a.pending_since) {
     const _deadlineMs = new Date(a.pending_since).getTime() + 15 * 60000;
     const _expired = Date.now() >= _deadlineMs;
@@ -1980,8 +1980,8 @@ function renderCreatorDealCard(c, a) {
       body = `<div class="dc-note" style="background:#FDECEA;color:#a93226;border-right:3px solid #c0392b;">⌛ <b>انتهت مهلتك</b> (15 دقيقة) قبل ما تبدأ التفاوض، فتم تمرير دورك للتالي في قائمة الانتظار.<br>نعتذر منك، ونتمنى نشوفك في حملة قادمة 🌿</div>`;
     } else {
       const _dl = new Date(_deadlineMs).toISOString();
-      body = `<div class="dc-note" style="background:#FFF6EC;color:#9A4B06;border-right:3px solid #E8850C;">🔔 <b>جاك دورك!</b> افتح المحادثة وابدأ التفاوض مع الوكيل الآن.<br>باقي لك <span class="cd-timer" data-deadline="${_dl}" style="font-weight:700;">--:--</span> قبل ما يُلغى دورك ويُعطى للتالي في قائمة الانتظار.</div>`
-        + `<button class="btn-negotiation" onclick="startNegotiation('${a.id}')" style="margin:0 14px 14px;">💬 ابدأ التفاوض الآن</button>`;
+      body = `<div class="dc-note" style="background:#FFF6EC;color:#9A4B06;border-right:3px solid #E8850C;">🔔 <b>جاك دورك!</b> بفتح المحادثة يبدأ التفاوض مع الوكيل الآن.<br>باقي لك <span class="cd-timer" data-deadline="${_dl}" style="font-weight:700;">--:--</span> قبل ما يُلغى دورك ويُعطى للتالي في قائمة الانتظار.</div>`
+        + `<button class="btn-negotiation" onclick="startNegotiation('${a.id}')" style="margin:0 14px 14px;">💬 بدء التفاوض الآن</button>`;
     }
   } else {
     body = `<div class="dc-note">💬 الوكيل يفاوض الشركة على عرضك. بمجرد الاتفاق راح تبدأ مراحل التنفيذ.</div>`
@@ -2182,7 +2182,7 @@ function renderBrowseCard(c) {
     : isDone
       ? `<span class="full-badge">اكتمل العدد</span>`
       : waitlistMode
-        ? `<button class="ac-applybtn wl" onclick="enterNegotiation('${c.id}', this)">🕓 سجّل في قائمة الانتظار</button>`
+        ? `<button class="ac-applybtn wl" onclick="enterNegotiation('${c.id}', this)">🕓 التسجيل في قائمة الانتظار</button>`
         : `<button class="ac-applybtn" onclick="enterNegotiation('${c.id}', this)">💬 التفاوض مع الوكيل</button>`;
   return `
     <div class="ac-card no-expand${isDone ? ' campaign-full' : ''}${locked ? ' campaign-locked' : ''}">
@@ -2215,14 +2215,14 @@ function renderBrowseCard(c) {
 // نص شارة المرحلة من منظور المعلن (المطلوب منه، أو انتظار الشركة)
 function creatorStageBadge(stage) {
   const map = {
-    1: { creator: '📍 أرسل عنوانك' },
+    1: { creator: '📍 إرسال العنوان' },
     2: { brand: '⏳ بانتظار شحن المنتج لك' },
-    3: { creator: '📦 أكّد استلام المنتج' },
+    3: { creator: '📦 تأكيد استلام المنتج' },
     4: { brand: '⏳ بانتظار بريف الشركة' },
-    5: { creator: '🎬 أرسل المحتوى' },
+    5: { creator: '🎬 إرسال المحتوى' },
     6: { brand: '⏳ بانتظار مراجعة المحتوى' },
-    7: { creator: '🔗 أكّد نشر المحتوى' },
-    8: { creator: '💳 أرسل بياناتك البنكية' },
+    7: { creator: '🔗 تأكيد نشر المحتوى' },
+    8: { creator: '💳 إرسال البيانات البنكية' },
     9: { done: '✓ الصفقة مكتملة' }
   };
   const entry = map[stage] || {};
@@ -2358,42 +2358,42 @@ const WORKFLOW_STAGES = [
 const STAGE_ACTIONS = {
   1: {
     responsible: 'creator',
-    creator: { label: '✓ تأكيد إرسال العنوان', desc: 'عبّئ تفاصيل العنوان للشحن، ثم أكّد للانتقال للمرحلة التالية.' },
+    creator: { label: '✓ تأكيد إرسال العنوان', desc: 'تعبئة تفاصيل العنوان للشحن، ثم التأكيد للانتقال للمرحلة التالية.' },
     brand:   { desc: 'بانتظار إرسال المعلن لعنوانه.' }
   },
   2: {
     responsible: 'brand',
-    brand:   { label: '✓ تأكيد الشحن', desc: 'بعد شحن المنتج، عبّئ بيانات الشحن وأكّد.' },
+    brand:   { label: '✓ تأكيد الشحن', desc: 'بعد شحن المنتج، تُعبّأ بيانات الشحن ويتم التأكيد.' },
     creator: { desc: 'الشركة تجهّز المنتج لشحنه إليك.' }
   },
   3: {
     responsible: 'creator',
-    creator: { label: '✓ تأكيد الاستلام', desc: 'بعد وصول المنتج إليك، أكّد الاستلام.' },
+    creator: { label: '✓ تأكيد الاستلام', desc: 'بعد وصول المنتج، يتم تأكيد الاستلام.' },
     brand:   { desc: 'المنتج في الطريق إلى المعلن.' }
   },
   4: {
     responsible: 'brand',
-    brand:   { label: '✓ إرسال البريف', desc: 'اكتب نص البريف الإعلاني (وضّح كيف تبي يكون الإعلان ومحتواه)، على أساسه المعلن يجهّز المحتوى.' },
+    brand:   { label: '✓ إرسال البريف', desc: 'نص البريف الإعلاني (مع توضيح شكل الإعلان ومحتواه)، وعلى أساسه يجهّز المعلن المحتوى.' },
     creator: { desc: 'الشركة تجهّز البريف الإعلاني (نص يوضّح متطلبات الإعلان).' }
   },
   5: {
     responsible: 'creator',
-    creator: { label: '✓ تأكيد إرسال المحتوى', desc: 'بناءً على البريف، أرفق رابط المحتوى للمراجعة وأكّد للمرحلة التالية.' },
+    creator: { label: '✓ تأكيد إرسال المحتوى', desc: 'بناءً على البريف، يُرفق رابط المحتوى للمراجعة ويتم التأكيد للمرحلة التالية.' },
     brand:   { desc: 'المعلن يجهّز المحتوى الإعلاني حسب البريف.' }
   },
   6: {
     responsible: 'brand',
-    brand:   { label: '✓ الموافقة على المحتوى', desc: 'بعد مراجعة المحتوى، أضف ملاحظاتك (إن وُجدت) وأكّد الموافقة.' },
+    brand:   { label: '✓ الموافقة على المحتوى', desc: 'بعد مراجعة المحتوى، تُضاف الملاحظات (إن وُجدت) ويتم تأكيد الموافقة.' },
     creator: { desc: 'الشركة تراجع المحتوى الذي أرسلته.' }
   },
   7: {
     responsible: 'creator',
-    creator: { label: '✓ تأكيد النشر', desc: 'بعد نشر المحتوى، أرفق رابط المنشور وكود الترويج وأكّد.' },
+    creator: { label: '✓ تأكيد النشر', desc: 'بعد نشر المحتوى، يُرفق رابط المنشور وكود الترويج ويتم التأكيد.' },
     brand:   { desc: 'بانتظار نشر المعلن للمحتوى المعتمد.' }
   },
   8: {
     responsible: 'creator',
-    creator: { label: '✓ إرسال البيانات البنكية', desc: 'أضف بياناتك البنكية لاستلام المبلغ المتفق عليه.' },
+    creator: { label: '✓ إرسال البيانات البنكية', desc: 'إضافة البيانات البنكية لاستلام المبلغ المتفق عليه.' },
     brand:   { desc: 'تم النشر. المعلن يضيف بياناته البنكية لاستلام المبلغ.' }
   }
 };
@@ -2680,7 +2680,7 @@ function fallbackCopyBriefModal(text) {
   const ta = document.createElement('textarea');
   ta.value = text; ta.style.position = 'fixed'; ta.style.opacity = '0';
   document.body.appendChild(ta); ta.focus(); ta.select();
-  try { document.execCommand('copy'); kitToast('✓ تم نسخ البريف'); } catch (e) { kitToast('انسخ البريف يدويًا'); }
+  try { document.execCommand('copy'); kitToast('✓ تم نسخ البريف'); } catch (e) { kitToast('نسخ البريف يدويًا'); }
   document.body.removeChild(ta);
 }
 
@@ -2710,7 +2710,7 @@ function fallbackCopy(text, onDone) {
     document.body.removeChild(ta);
     onDone && onDone();
   } catch (e) {
-    alert('فشل النسخ. انسخ يدويًا.');
+    alert('فشل النسخ — يمكن النسخ يدويًا.');
   }
 }
 function toggleBrief(id, btn) {
@@ -2766,8 +2766,8 @@ function renderPaymentCard(app) {
     return `<div class="stage-action mine" onclick="event.stopPropagation()">
       <div class="sa-title">${fast ? '⚡ صرف فوري — اليوم' : '✅ مستحقك جاهز للصرف'}</div>
       <div class="sa-desc">${fast
-        ? 'باقتك Premium، فمستحقك يُحوَّل لك اليوم بلا انتظار دفعة الأسبوع. تأكّد أن الآيبان في ملفك صحيح.'
-        : 'يُحوَّل لك في دفعة الاثنين القادم. تأكّد أن الآيبان في ملفك صحيح.'}</div>
+        ? 'باقتك Premium، فمستحقك يُحوَّل لك اليوم بلا انتظار دفعة الأسبوع. يُرجى التأكد من صحة الآيبان في الملف الشخصي.'
+        : 'يُحوَّل لك في دفعة الاثنين القادم. يُرجى التأكد من صحة الآيبان في الملف الشخصي.'}</div>
       ${breakdown}
     </div>`;
   }
@@ -2787,7 +2787,7 @@ function renderPaymentCard(app) {
 }
 
 async function setCreatorPayment(applicationId, newStatus) {
-  showToast('صار الصرف عبر المنصة — ما تحتاج تأكيد استلام يدوي.');
+  showToast('صار الصرف عبر المنصة — لا حاجة لتأكيد استلام يدوي.');
   return;
   /* eslint-disable no-unreachable */
   const patch = { payment_status: newStatus };
@@ -2801,7 +2801,7 @@ async function setCreatorPayment(applicationId, newStatus) {
     showToast(newStatus === 'confirmed' ? 'تم تأكيد استلام المبلغ ✓' : 'تم إبلاغ Flfluencer بعدم الاستلام.');
   } catch (err) {
     console.error('Payment update error:', err);
-    showToast('حصل خطأ: ' + (err.message || 'حاول مرة أخرى'), 'error');
+    showToast('حصل خطأ: ' + (err.message || 'يُرجى المحاولة مرة أخرى'), 'error');
   }
 }
 
@@ -2826,7 +2826,7 @@ function renderPickupCard(app, c) {
   const addr = c.pickup_address || 'سيوافيك الفرع بالعنوان قريبًا';
   const hours = c.pickup_hours || '';
   const mapBtn = c.pickup_map_url
-    ? `<a href="${escHtml(c.pickup_map_url)}" target="_blank" rel="noopener" onclick="event.stopPropagation()" class="sa-btn" style="padding:7px 14px;font-size:12.5px;">🗺️ افتح الخريطة</a>`
+    ? `<a href="${escHtml(c.pickup_map_url)}" target="_blank" rel="noopener" onclick="event.stopPropagation()" class="sa-btn" style="padding:7px 14px;font-size:12.5px;">🗺️ فتح الخريطة</a>`
     : '';
   return `
     <div class="stage-card">
@@ -2836,7 +2836,7 @@ function renderPickupCard(app, c) {
         ${hours ? `<div style="font-size:13px;color:#5b6472;margin-top:6px;">🕓 ${escHtml(hours)}</div>` : ''}
         ${mapBtn ? `<div style="margin-top:10px;">${mapBtn}</div>` : ''}
       </div>
-      <div class="hint" style="margin:8px 0 12px;">روح الفرع في الأوقات المذكورة واستلم المنتج، وبعدها أكّد الاستلام عشان تبدأ مرحلة المحتوى.</div>
+      <div class="hint" style="margin:8px 0 12px;">التوجه للفرع في الأوقات المذكورة واستلام المنتج، ثم تأكيد الاستلام لتبدأ مرحلة المحتوى.</div>
       <div>
         <button class="sa-btn primary" onclick="event.stopPropagation(); confirmPickupReceived('${app.id}')">✓ استلمت المنتج من الفرع</button>
       </div>
@@ -2865,7 +2865,7 @@ async function confirmPickupReceived(applicationId) {
     showToast('تم التأكيد ✓ — ننتقل لمرحلة المحتوى 🎬');
   } catch (err) {
     console.error('Pickup confirm error:', err);
-    showToast('حصل خطأ: ' + (err.message || 'حاول مرة أخرى'), 'error');
+    showToast('حصل خطأ: ' + (err.message || 'يُرجى المحاولة مرة أخرى'), 'error');
   }
 }
 
@@ -2877,13 +2877,13 @@ function renderCodeCard(app, c) {
          <span dir="ltr" style="font-family:monospace;font-size:18px;font-weight:800;letter-spacing:1px;color:#0F1420;">${escHtml(code)}</span>
          <button class="sa-btn" style="padding:7px 14px;font-size:12.5px;" onclick="event.stopPropagation(); copyMyCode('${app.id}')">📋 نسخ الكود</button>
        </div>`
-    : `<div style="background:#FFF6EC;color:#9A4B06;border-radius:10px;padding:10px 12px;margin:10px 0 4px;font-size:13px;">⏳ جاري إصدار كودك الخاص — حدّث الصفحة بعد لحظات.</div>`;
+    : `<div style="background:#FFF6EC;color:#9A4B06;border-radius:10px;padding:10px 12px;margin:10px 0 4px;font-size:13px;">⏳ جاري إصدار كودك الخاص — يُرجى تحديث الصفحة بعد لحظات.</div>`;
   const linkBtn = c.product_url
-    ? `<a href="${escHtml(c.product_url)}" target="_blank" rel="noopener" onclick="event.stopPropagation()" class="sa-btn" style="text-decoration:none;display:inline-flex;align-items:center;gap:6px;">🛒 افتح صفحة المنتج</a>`
+    ? `<a href="${escHtml(c.product_url)}" target="_blank" rel="noopener" onclick="event.stopPropagation()" class="sa-btn" style="text-decoration:none;display:inline-flex;align-items:center;gap:6px;">🛒 فتح صفحة المنتج</a>`
     : '';
   return `<div class="stage-action mine" onclick="event.stopPropagation()">
     <div class="sa-title">🎟️ كودك وطلب المنتج</div>
-    <div class="sa-desc">١· افتح صفحة المنتج وأضفه للسلة.&nbsp; ٢· أدخل كودك عند إتمام الطلب ليصير الإجمالي 0 ريال.&nbsp; ٣· أكمل الطلب على عنوانك، وأول ما يوصلك المنتج أكّد هنا وننتقل للمحتوى مباشرة.</div>
+    <div class="sa-desc">١· فتح صفحة المنتج وإضافته للسلة.&nbsp; ٢· يُدخل الكود عند إتمام الطلب ليصبح الإجمالي 0 ريال.&nbsp; ٣· إكمال الطلب على العنوان، وفور وصول المنتج يتم التأكيد هنا والانتقال للمحتوى مباشرة.</div>
     ${codeHtml}
     <div class="pay-actions" style="margin-top:10px;display:flex;gap:8px;flex-wrap:wrap;">
       ${linkBtn}
@@ -2895,7 +2895,7 @@ function renderCodeCard(app, c) {
 function copyMyCode(appId) {
   const code = (window.MY_CODES || {})[appId];
   if (!code) return;
-  const done = () => showToast('انسخ الكود ✓ — الصقه عند إتمام الطلب');
+  const done = () => showToast('نسخ الكود ✓ — الصقه عند إتمام الطلب');
   if (navigator.clipboard && navigator.clipboard.writeText) {
     navigator.clipboard.writeText(code).then(done).catch(() => fallbackCopyCode(code, done));
   } else { fallbackCopyCode(code, done); }
@@ -2935,7 +2935,7 @@ async function confirmCodeReceived(applicationId) {
     showToast('تم التأكيد ✓ — ننتقل لمرحلة المحتوى 🎬');
   } catch (err) {
     console.error('Code confirm error:', err);
-    showToast('حصل خطأ: ' + (err.message || 'حاول مرة أخرى'), 'error');
+    showToast('حصل خطأ: ' + (err.message || 'يُرجى المحاولة مرة أخرى'), 'error');
   }
 }
 
@@ -2968,23 +2968,23 @@ function renderStageAction(applicationId, currentStage, viewerRole) {
     const _app5 = myApplications.find(a => a.id === applicationId);
     const _rej = (_app5 && _app5.stage_data && _app5.stage_data[5] && _app5.stage_data[5]._rejected) ? _app5.stage_data[5]._reject_reason : null;
     const _fix5 = (_app5 && _app5.stage_data && _app5.stage_data[5] && _app5.stage_data[5]._fix_requested) ? (_app5.stage_data[5]._fix_note || '') : null;
-    const _rejBanner = _rej ? `<div style="background:#fdecea;border:1px solid #f5c6c0;color:#a93226;border-radius:10px;padding:11px 13px;margin-bottom:12px;font-size:13px;line-height:1.6;">✕ المحتوى السابق مرفوض من الشركة.<br><b>السبب:</b> ${escHtml(_rej)}<br>عدّل الفيديو وارفعه من جديد.</div>`
-      : (_fix5 !== null ? `<div style="background:#fdecea;border:1px solid #f5c6c0;color:#a93226;border-radius:10px;padding:11px 13px;margin-bottom:12px;font-size:13px;line-height:1.6;">⚠︎ الشركة تطلب تصحيح المحتوى.${_fix5 ? '<br><b>الملاحظة:</b> ' + escHtml(_fix5) : ''}<br>ارفع الفيديو الصحيح — والباقي يكمل تلقائيًا.</div>` : '');
+    const _rejBanner = _rej ? `<div style="background:#fdecea;border:1px solid #f5c6c0;color:#a93226;border-radius:10px;padding:11px 13px;margin-bottom:12px;font-size:13px;line-height:1.6;">✕ المحتوى السابق مرفوض من الشركة.<br><b>السبب:</b> ${escHtml(_rej)}<br>تعديل الفيديو ورفعه من جديد.</div>`
+      : (_fix5 !== null ? `<div style="background:#fdecea;border:1px solid #f5c6c0;color:#a93226;border-radius:10px;padding:11px 13px;margin-bottom:12px;font-size:13px;line-height:1.6;">⚠︎ الشركة تطلب تصحيح المحتوى.${_fix5 ? '<br><b>الملاحظة:</b> ' + escHtml(_fix5) : ''}<br>رفع الفيديو الصحيح — والباقي يكمل تلقائيًا.</div>` : '');
     return `
       <div class="stage-action mine" onclick="event.stopPropagation()">
         <div class="sa-title">المرحلة الحالية: ${_isVidCamp ? 'تجهيز الفيديو' : stageName}</div>
-        <div class="sa-desc">${_isVidCamp ? 'حمّل فيديوهات الشركة من زر 📎 المرفقات في بطاقة الحملة، عدّلها ورتّبها حسب البريف بالضبط، ثم ارفع النسخة النهائية هنا وأرسلها لتعميد الشركة. بعد موافقتها تنشرها بنفسك في المرحلة التالية.' : (myInfo.desc || '')}</div>
+        <div class="sa-desc">${_isVidCamp ? 'تحميل فيديوهات الشركة من زر 📎 المرفقات في بطاقة الحملة — تُعدّل وتُرتّب حسب البريف بالضبط، ثم تُرفع النسخة النهائية هنا وتُرسل لتعميد الشركة. وبعد الموافقة يتم نشرها في المرحلة التالية.' : (myInfo.desc || '')}</div>
         ${_rejBanner}
         <form class="sa-form" id="stage-form-${applicationId}" onclick="event.stopPropagation()" onsubmit="event.preventDefault(); event.stopPropagation(); submitStageForm('${applicationId}')">
           <input type="hidden" id="sf-${applicationId}-content_link" name="content_link">
           <input type="hidden" id="sf-${applicationId}-_video_path" name="_video_path">
           <input type="file" id="vid-input-${applicationId}" accept="video/*" style="display:none" onchange="handleVideoUpload(this,'${applicationId}')">
-          <button type="button" id="vid-btn-${applicationId}" class="sa-btn" style="background:#fff;color:var(--accent);border:1.5px solid var(--accent);margin-bottom:10px;" onclick="event.stopPropagation(); document.getElementById('vid-input-${applicationId}').click()">🎬 اختر الفيديو من جهازك</button>
+          <button type="button" id="vid-btn-${applicationId}" class="sa-btn" style="background:#fff;color:var(--accent);border:1.5px solid var(--accent);margin-bottom:10px;" onclick="event.stopPropagation(); document.getElementById('vid-input-${applicationId}').click()">🎬 اختيار الفيديو من الجهاز</button>
           <div id="vid-wrap-${applicationId}" style="margin-bottom:10px;"></div>
           <div class="sa-field"><label for="sf-${applicationId}-note">ملاحظة (اختياري)</label><input type="text" id="sf-${applicationId}-note" name="note" placeholder="تفاصيل أو ملاحظات للشركة" onclick="event.stopPropagation()"></div>
           <button type="submit" class="sa-btn" disabled onclick="event.stopPropagation()">${_isVidCamp ? '✓ إرسال الفيديو للتعميد' : myInfo.label}</button>
         </form>
-        <div style="font-size:11px;color:var(--ink-muted);margin-top:8px;">📹 ارفع الفيديو مباشرة من جهازك. يُحذف تلقائيًا من سيرفرنا بعد موافقة الشركة.</div>
+        <div style="font-size:11px;color:var(--ink-muted);margin-top:8px;">📹 رفع الفيديو مباشرة من الجهاز. ويُحذف تلقائيًا من سيرفرنا بعد موافقة الشركة.</div>
       </div>
     `;
   }
@@ -3071,7 +3071,7 @@ async function submitStageForm(applicationId) {
     }
     data.iban = ib;
     if (!String(data.account_holder || '').trim()) {
-      showToast('اكتب اسم صاحب الحساب كما هو مسجّل في البنك.', 'error');
+      showToast('اسم صاحب الحساب كما هو مسجّل في البنك.', 'error');
       return;
     }
     // اسم البنك يُستنتج من رمز البنك داخل الآيبان لو المعلن ما كتبه
@@ -3092,7 +3092,7 @@ async function submitStageForm(applicationId) {
     delete existing[5]._rejected; delete existing[5]._reject_reason; delete existing[5]._reject_at;
   }
   if (_fixPending) {
-    // نُبقي أثر طلب التصحيح (محفوظ بالدمج) ونضيف إشارة الإنجاز → الشركة تشوف «عُدّل — جاهز للمراجعة»
+    // نُبقي أثر طلب التصحيح (محفوظ بالدمج) ونضيف إشارة الإنجاز → الشركة ترى «عُدّل — جاهز للمراجعة»
     existing[oldStage]._fix_requested = true;
     existing[oldStage]._fix_done = true;
     existing[oldStage]._fix_done_at = new Date().toISOString();
@@ -3141,7 +3141,7 @@ async function submitStageForm(applicationId) {
     console.error('Failed to submit stage:', err);
     submitBtn.disabled = false;
     submitBtn.textContent = original;
-    showToast('حصل خطأ: ' + (err.message || 'حاول مرة أخرى'), 'error');
+    showToast('حصل خطأ: ' + (err.message || 'يُرجى المحاولة مرة أخرى'), 'error');
   }
 }
 
@@ -3184,8 +3184,8 @@ async function registerWaitlist(campaign, btn) {
     await loadData();
   } catch (err) {
     console.error('registerWaitlist failed:', err);
-    if (btn) { btn.disabled = false; btn.textContent = '🕓 سجّل في قائمة الانتظار'; }
-    showToast('حصل خطأ أثناء التسجيل، حاول مرة أخرى 🙏', 'error');
+    if (btn) { btn.disabled = false; btn.textContent = '🕓 التسجيل في قائمة الانتظار'; }
+    showToast('حصل خطأ أثناء التسجيل، يُرجى المحاولة مرة أخرى 🙏', 'error');
   }
 }
 
@@ -3217,7 +3217,7 @@ async function enterNegotiation(campaignId, btn) {
         .eq('campaigns.brand_id', campaign.brand_id)
         .limit(1);
       if (sameBrand && sameBrand.length > 0) {
-        showToast('قدّمت على حملة لنفس الشركة خلال آخر 24 ساعة. تقدر تقدّم على حملة ثانية لهم بعد يوم 🌿', 'error');
+        showToast('تم التقديم على حملة لنفس الشركة خلال آخر 24 ساعة. ويمكن التقديم على حملة أخرى لهم بعد يوم 🌿', 'error');
         return;
       }
     } catch (e) { /* لو تعذّر التحقق نكمل — القيود الأخرى تبقى تحمي */ }
@@ -3303,7 +3303,7 @@ async function enterNegotiation(campaignId, btn) {
   } catch (err) {
     console.error(err);
     if (btn) { btn.disabled = false; btn.textContent = '💬 التفاوض مع الوكيل'; }
-    showToast('حصل خطأ أثناء فتح التفاوض. حاول مرة أخرى.', 'error');
+    showToast('حصل خطأ أثناء فتح التفاوض. يُرجى المحاولة مرة أخرى.', 'error');
   }
 }
 
@@ -3434,8 +3434,8 @@ function handleAvatarUpload(e) {
   var file = e.target.files && e.target.files[0];
   if (e.target) e.target.value = '';
   if (!file) return;
-  if (!/^image\//.test(file.type)) { showToast('اختر ملف صورة صحيح', 'error'); return; }
-  if (file.size > 12 * 1024 * 1024) { showToast('الصورة كبيرة جدًا، اختر أصغر', 'error'); return; }
+  if (!/^image\//.test(file.type)) { showToast('يلزم اختيار ملف صورة صحيح', 'error'); return; }
+  if (file.size > 12 * 1024 * 1024) { showToast('الصورة كبيرة جدًا — يلزم صورة أصغر', 'error'); return; }
   var reader = new FileReader();
   reader.onload = function(ev){ openCropper(ev.target.result); };
   reader.onerror = function(){ showToast('تعذّر قراءة الصورة', 'error'); };
@@ -3447,7 +3447,7 @@ function buildCropper(){
   var html = ''
     + '<div id="cropper" style="display:none;position:fixed;inset:0;z-index:9999;background:rgba(15,20,32,0.80);align-items:center;justify-content:center;padding:20px;">'
     +   '<div style="background:#fff;border-radius:20px;padding:18px;max-width:340px;width:100%;text-align:center;font-family:inherit;">'
-    +     '<div style="font-weight:600;font-size:15px;margin-bottom:14px;color:var(--ink);">عدّل صورتك</div>'
+    +     '<div style="font-weight:600;font-size:15px;margin-bottom:14px;color:var(--ink);">تعديل الصورة</div>'
     +     '<div id="cr-view" style="position:relative;width:280px;height:280px;max-width:74vw;max-height:74vw;margin:0 auto;overflow:hidden;border-radius:14px;background:#f0f0ef;touch-action:none;cursor:grab;">'
     +       '<img id="cr-img" alt="" draggable="false" style="position:absolute;left:0;top:0;-webkit-user-drag:none;user-select:none;pointer-events:none;max-width:none;">'
     +       '<div style="position:absolute;inset:0;border-radius:50%;box-shadow:0 0 0 9999px rgba(0,0,0,0.32);outline:2px solid rgba(255,255,255,0.9);pointer-events:none;"></div>'
@@ -3607,7 +3607,7 @@ function flfAttachUploaded(appId, url, path, wrap, btn, submitB) {
   if (pathEl) pathEl.value = path;
   if (wrap) wrap.innerHTML = '<video src="' + url + '" controls playsinline style="width:100%;border-radius:10px;max-height:260px;background:#000;"></video>'
     + '<div style="font-size:12.5px;color:#177245;margin-top:6px;font-weight:600;">✓ تم رفع الفيديو</div>'
-    + '<div style="font-size:12.5px;color:#B02A20;margin-top:4px;font-weight:600;">تبقّت خطوة واحدة: اضغطي «إرسال الفيديو للتعميد» تحت 👇</div>';
+    + '<div style="font-size:12.5px;color:#B02A20;margin-top:4px;font-weight:600;">تبقّت خطوة واحدة: الضغط على «إرسال الفيديو للتعميد» في الأسفل 👇</div>';
   if (btn) { btn.textContent = '🎬 تغيير الفيديو'; btn.disabled = false; }
   if (submitB) {
     submitB.disabled = false;
@@ -3622,7 +3622,7 @@ async function handleVideoUpload(input, appId) {
   var maxMB = null;
   try { var _lm = (typeof simblLimit === 'function') ? await simblLimit('max_video_mb') : null; if (_lm != null) maxMB = _lm; } catch (e) {}
   if (maxMB != null && file.size > maxMB * 1024 * 1024) {
-    showToast(`حجم الفيديو أكبر من ${maxMB} ميجا. اختر فيديو أصغر أو اضغطه.`, 'error');
+    showToast(`حجم الفيديو أكبر من ${maxMB} ميجا. يلزم فيديو أصغر أو ضغط الملف.`, 'error');
     input.value = '';
     return;
   }
@@ -3655,9 +3655,9 @@ async function handleVideoUpload(input, appId) {
   } catch (e) {
     console.error('video upload failed:', e);
     // التحقق من وصول الملف يتم داخل uploadContentVideo — الوصول هنا يعني أنه فعلًا لم يصل
-    showToast('تعذّر إكمال الرفع: ' + (e.message || 'حاول مرة أخرى') + ' — جرّبي من جديد وما راح تخسري شي.', 'error', 6000);
+    showToast('تعذّر إكمال الرفع: ' + (e.message || 'يُرجى المحاولة مرة أخرى') + '  — يمكن إعادة المحاولة بلا فقدان أي شيء.', 'error', 6000);
     if (wrap) wrap.innerHTML = '';
-    btn.textContent = '🎬 اختر الفيديو من جهازك'; btn.disabled = false;
+    btn.textContent = '🎬 اختيار الفيديو من الجهاز'; btn.disabled = false;
     input.value = '';
   }
 }
@@ -3681,7 +3681,7 @@ async function uploadAvatarBlob(blob){
     showToast('تم تحديث صورتك ✓');
   } catch (err) {
     console.error('avatar upload error', err);
-    showToast('فشل رفع الصورة. حاول مرة ثانية.', 'error');
+    showToast('فشل رفع الصورة. يُرجى المحاولة مرة أخرى.', 'error');
   } finally {
     if (btn) { btn.disabled = false; btn.textContent = orig; }
   }
@@ -3778,7 +3778,7 @@ async function saveProfile(){
     showToast('تم تحديث ملفك ✓');
   } catch (err) {
     console.error('profile save error', err);
-    showToast('تعذّر الحفظ. حاول مرة ثانية.', 'error');
+    showToast('تعذّر الحفظ. يُرجى المحاولة مرة أخرى.', 'error');
   } finally {
     btn.disabled = false; btn.textContent = orig;
   }
@@ -3874,7 +3874,7 @@ function renderWallet() {
     if (bank && String(bank.iban || '').trim()) hasIban = true;
   });
   const warn = (!hasIban && (way > 0 || hold > 0))
-    ? '<div class="wal-warn">⚠️ ما وصلنا آيبانك بعد. افتح الصفقة من «صفقاتي» وأرسل بياناتك البنكية في المرحلة البنكية عشان ما يتأخر تحويلك.</div>'
+    ? '<div class="wal-warn">⚠️ لم يصلنا الآيبان بعد. يلزم فتح الصفقة من «صفقاتي» وإرسال البيانات البنكية في المرحلة البنكية حتى لا يتأخر التحويل.</div>'
     : '';
 
   box.innerHTML =

@@ -265,7 +265,7 @@ input::placeholder { color: var(--ink-faint); }
   <div class="login-card">
     <div class="eyebrow" data-i18n="login_eyebrow">تسجيل دخول</div>
     <h1><span data-i18n="login_h1">أهلاً بعودتك إلى</span> <img src="/brand/logo-nav.svg?v=2" alt="Flfluencer" style="height:2.4em;vertical-align:middle;display:inline-block"></h1>
-    <p class="subtitle" data-i18n="login_subtitle">اختر طريقة الدخول إلى حسابك.</p>
+    <p class="subtitle" data-i18n="login_subtitle">اختيار طريقة الدخول إلى الحساب.</p>
 
     <div class="error-box" id="error-box"></div>
 
@@ -335,7 +335,7 @@ input::placeholder { color: var(--ink-faint); }
       </form>
     </div>
 
-    <p class="bottom-link"><span data-i18n="login_no_account">ما عندك حساب بعد؟</span> <a href="/signup.html" data-i18n="login_register">سجل الآن</a></p>
+    <p class="bottom-link"><span data-i18n="login_no_account">ما عندك حساب بعد؟</span> <a href="/signup.html" data-i18n="login_register">التسجيل الآن</a></p>
   </div>
 </main>
 
@@ -429,7 +429,7 @@ async function loginWithPassword(event) {
       if ((error.message || '').toLowerCase().includes('invalid')) {
         showError('البريد الإلكتروني أو كلمة السر غير صحيحة.');
       } else {
-        showError('حصل خطأ. حاول مرة أخرى.');
+        showError('حصل خطأ. يُرجى المحاولة مرة أخرى.');
       }
       btn.disabled = false; btn.textContent = 'دخول';
       return;
@@ -437,7 +437,7 @@ async function loginWithPassword(event) {
     await finishLogin(email, data.user);
   } catch (err) {
     console.error(err);
-    showError('حصل خطأ. حاول مرة أخرى.');
+    showError('حصل خطأ. يُرجى المحاولة مرة أخرى.');
     btn.disabled = false; btn.textContent = 'دخول';
   }
 }
@@ -461,9 +461,9 @@ async function sendOtp(event) {
     if (error) {
       const m = (error.message || '').toLowerCase();
       if (m.includes('not') && (m.includes('found') || m.includes('exist') || m.includes('signups'))) {
-        showError('لا يوجد حساب بهذا البريد. <a href="/signup.html">سجل حساب جديد</a>');
+        showError('لا يوجد حساب بهذا البريد. <a href="/signup.html">تسجيل حساب جديد</a>');
       } else {
-        showError('تعذّر إرسال الكود. تأكد من البريد وحاول مرة أخرى.');
+        showError('تعذّر إرسال الكود. يُرجى التحقق من البريد والمحاولة مرة أخرى.');
       }
       btn.disabled = false; btn.textContent = 'إرسال الكود';
       return;
@@ -475,7 +475,7 @@ async function sendOtp(event) {
     btn.disabled = false; btn.textContent = 'إرسال الكود';
   } catch (err) {
     console.error(err);
-    showError('حصل خطأ. حاول مرة أخرى.');
+    showError('حصل خطأ. يُرجى المحاولة مرة أخرى.');
     btn.disabled = false; btn.textContent = 'إرسال الكود';
   }
 }
@@ -599,7 +599,7 @@ async function verifyOtp(event) {
     await finishLogin(otpEmail, data.user);
   } catch (err) {
     console.error(err);
-    showError('حصل خطأ. حاول مرة أخرى.');
+    showError('حصل خطأ. يُرجى المحاولة مرة أخرى.');
     btn.disabled = false; btn.textContent = 'تأكيد ودخول';
   }
 }

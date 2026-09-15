@@ -1,4 +1,4 @@
-/* نافذة التواصل مع فلفلونسر — تُحقن في صفحات المعلن والشركة
+/* نافذة الالتواصل مع فلفلونسر — تُحقن في صفحات المعلن والشركة
    تعتمد على supabaseClient و getCurrentUser() من supabase-config.js */
 (function () {
   if (window.__flfSupportLoaded) return;
@@ -97,9 +97,9 @@
   function build() {
     var st = el('style'); st.textContent = CSS; document.head.appendChild(st);
 
-    btn = el('button', 'flfs-btn', '<span class="flfs-dot"></span>💬 تواصل معنا');
+    btn = el('button', 'flfs-btn', '<span class="flfs-dot"></span>💬 للتواصل معنا');
     btn.type = 'button';
-    btn.setAttribute('aria-label', 'تواصل مع فلفلونسر');
+    btn.setAttribute('aria-label', 'التواصل مع فلفلونسر');
     btn.onclick = open;
     document.body.appendChild(btn);
 
@@ -107,8 +107,8 @@
     ov.addEventListener('click', function (e) { if (e.target === ov) close(); });
     panel = el('div', 'flfs-panel');
     panel.innerHTML =
-      '<div class="flfs-hd"><div><h4>تواصل مع فلفلونسر</h4>'
-      + '<p>اكتب لنا مشكلتك أو استفسارك، ويوصلك الرد هنا داخل المنصة.</p></div>'
+      '<div class="flfs-hd"><div><h4>التواصل مع فلفلونسر</h4>'
+      + '<p>كتابة المشكلة أو الاستفسار، ويصل الرد هنا داخل المنصة.</p></div>'
       + '<button class="flfs-x" type="button" aria-label="إغلاق">×</button></div>'
       + '<div class="flfs-tabs"><button class="flfs-tab on" data-t="new" type="button">رسالة جديدة</button>'
       + '<button class="flfs-tab" data-t="mine" type="button">رسائلي</button></div>'
@@ -138,13 +138,13 @@
   function renderNew() {
     var u = me();
     if (!u) {
-      bodyBox.innerHTML = '<div class="flfs-empty">سجّل دخولك أولًا حتى نعرف كيف نرد عليك 🌿</div>';
+      bodyBox.innerHTML = '<div class="flfs-empty">تسجيل الدخول أولًا حتى نعرف كيف نرد عليك 🌿</div>';
       return;
     }
     bodyBox.innerHTML =
       statusStrip(u)
       + '<div class="flfs-f"><label for="flfs-cat">نوع المشكلة</label><select id="flfs-cat">'
-      + '<option value="" selected>— اختر نوع المشكلة —</option>'
+      + '<option value="" selected>— اختيار نوع المشكلة —</option>'
       + CATS.map(function (c) { return '<option value="' + c[0] + '">' + c[1] + '</option>'; }).join('')
       + '</select></div>'
       + '<div class="flfs-f"><label for="flfs-msg">اشرح لنا بالتفصيل</label>'
@@ -166,13 +166,13 @@
   function statusStrip(u) {
     var st = u && u.approval_status;
     if (st === 'approved') {
-      return '<div class="flfs-st ok">✅ حسابك مُفعّل — تقدر تقدّم على أي حملة تناسبك من صفحة الحملات.</div>';
+      return '<div class="flfs-st ok">✅ الحساب مُفعّل — ويمكن التقديم على أي حملة مناسبة من صفحة الحملات.</div>';
     }
     if (st === 'pending') {
-      return '<div class="flfs-st wait">⏳ حسابك قيد المراجعة. ما تحتاج ترسل لنا عن التفعيل — يوصلك إشعار أول ما يُعتمد.</div>';
+      return '<div class="flfs-st wait">⏳ الحساب قيد المراجعة. لا حاجة لمراسلتنا عن التفعيل — ويصل إشعار فور الاعتماد.</div>';
     }
     if (st === 'rejected') {
-      return '<div class="flfs-st no">حسابك غير مُعتمد حاليًا. لو تشوف أن فيه خطأ، اكتب لنا وسنراجعه.</div>';
+      return '<div class="flfs-st no">الحساب غير مُعتمد حاليًا. في حال وجود خطأ، يمكن مراسلتنا وسنراجعه.</div>';
     }
     return '';
   }
@@ -182,8 +182,8 @@
     var b = document.getElementById('flfs-send');
     var msg = (document.getElementById('flfs-msg').value || '').trim();
     var cat = document.getElementById('flfs-cat').value;
-    if (!cat) { alertish('اختر نوع المشكلة أولًا حتى توصل لفريقها الصح.'); return; }
-    if (msg.length < 10) { alertish('اكتب لنا تفاصيل أكثر حتى نقدر نساعدك.'); return; }
+    if (!cat) { alertish('يلزم اختيار نوع المشكلة أولًا لتصل للفريق المختص.'); return; }
+    if (msg.length < 10) { alertish('يلزم تفاصيل أكثر حتى نتمكن من المساعدة.'); return; }
     b.disabled = true; b.textContent = 'جاري الإرسال...';
     try {
       var r = await supabaseClient.from('support_tickets').insert([{
@@ -196,7 +196,7 @@
     } catch (e) {
       console.error('support send failed:', e);
       b.disabled = false; b.textContent = 'إرسال';
-      alertish('تعذّر الإرسال، حاول مرة أخرى.');
+      alertish('تعذّر الإرسال، يُرجى المحاولة مرة أخرى.');
     }
   }
   function alertish(t) {
@@ -207,7 +207,7 @@
 
   async function renderMine() {
     var u = me();
-    if (!u) { bodyBox.innerHTML = '<div class="flfs-empty">سجّل دخولك أولًا 🌿</div>'; return; }
+    if (!u) { bodyBox.innerHTML = '<div class="flfs-empty">تسجيل الدخول أولًا 🌿</div>'; return; }
     bodyBox.innerHTML = '<div class="flfs-empty">جاري التحميل…</div>';
     try {
       var t = await supabaseClient.from('support_tickets').select('*')
@@ -232,7 +232,7 @@
           + '<span class="flfs-ts ' + esc(x.status) + '">' + esc(ST_AR[x.status] || x.status) + '</span></div>'
           + '<div class="flfs-tm">' + esc(x.message) + '</div>' + reps
           + (x.status === 'closed' ? ''
-            : '<div class="flfs-rep"><input type="text" placeholder="أضف ردًا…"><button type="button">إرسال</button></div>')
+            : '<div class="flfs-rep"><input type="text" placeholder="إضافة رد…"><button type="button">إرسال</button></div>')
           + '<p class="flfs-note" style="text-align:start;margin-top:8px">' + ago(x.created_at) + '</p></div>';
       }).join('');
 

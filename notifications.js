@@ -613,8 +613,8 @@ if (isIOS() && !isStandalone() && !localStorage.getItem('simbl_ios_dismissed')) 
     banner.className = 'install-banner show';
     banner.innerHTML = `
       <div class="text">
-        <h4>📱 أضيفي Flfluencer لشاشتك</h4>
-        <p>اضغطي زر المشاركة ⬆ ثم "Add to Home Screen"</p>
+        <h4>📱 إضافة Flfluencer للشاشة الرئيسية</h4>
+        <p>الضغط على زر المشاركة ⬆ ثم "Add to Home Screen"</p>
       </div>
       <button class="close-btn" onclick="this.parentElement.remove(); localStorage.setItem('simbl_ios_dismissed', 'true')" aria-label="إغلاق">×</button>
     `;

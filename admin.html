@@ -394,7 +394,7 @@ pre.json{background:var(--bg);border:1px solid var(--line);border-radius:9px;pad
     <div class="kpi-row" id="co-kpis" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-bottom:16px"></div>
     <div class="section">
       <h2><i class="ti ti-building-store"></i> الشركات — الوضع المالي وحقوق المؤثرين</h2>
-      <div class="search" style="margin-bottom:12px"><input id="co-search" placeholder="ابحث باسم الشركة…"><i class="ti ti-search"></i></div>
+      <div class="search" style="margin-bottom:12px"><input id="co-search" placeholder="بحث باسم الشركة…"><i class="ti ti-search"></i></div>
       <div class="tbl-wrap">
         <table>
           <thead><tr>
@@ -404,7 +404,7 @@ pre.json{background:var(--bg);border:1px solid var(--line);border-radius:9px;pad
           <tbody id="companies-rows"></tbody>
         </table>
       </div>
-      <div class="hint" style="font-size:12px;color:var(--muted);margin-top:10px">اضغط على أي شركة لعرض المستحقات غير المدفوعة (المؤثر + المبلغ + التأخّر). مرتّبة بالأكثر استحقاقًا أولًا.</div>
+      <div class="hint" style="font-size:12px;color:var(--muted);margin-top:10px">الضغط على أي شركة يعرض المستحقات غير المدفوعة (المؤثر + المبلغ + التأخّر). مرتّبة بالأكثر استحقاقًا أولًا.</div>
     </div>
   </div>
 
@@ -517,7 +517,7 @@ pre.json{background:var(--bg);border:1px solid var(--line);border-radius:9px;pad
     </div>
     <div class="section">
       <h2><i class="ti ti-download"></i> نسخة احتياطية لمستندات السجل التجاري</h2>
-      <p class="dim" style="font-size:13px;margin-bottom:14px;line-height:1.7">مستندات السجل المرفوعة <b>لا تُحفظ</b> ضمن النسخ الاحتياطية التلقائية. اضغط الزر لتنزيل كل المستندات على جهازك كنسخة احتياطية مستقلة (يُفضّل أسبوعيًا).</p>
+      <p class="dim" style="font-size:13px;margin-bottom:14px;line-height:1.7">مستندات السجل المرفوعة <b>لا تُحفظ</b> ضمن النسخ الاحتياطية التلقائية. والضغط على الزر ينزّل كل المستندات على الجهاز كنسخة احتياطية مستقلة (يُفضّل أسبوعيًا).</p>
       <button class="btn btn-primary" id="cr-backup-btn" onclick="backupCrDocs()"><i class="ti ti-download"></i> تنزيل كل مستندات السجل</button>
       <div id="cr-backup-status" class="dim" style="font-size:13px;margin-top:12px"></div>
     </div>
@@ -544,7 +544,7 @@ pre.json{background:var(--bg);border:1px solid var(--line);border-radius:9px;pad
   <div class="panel" id="panel-overdue">
     <div class="section">
       <h2><i class="ti ti-alarm"></i> متأخرات الدفع</h2>
-      <p class="dim" style="font-size:13px;margin-bottom:14px;line-height:1.7">صفقات اكتملت وعدّت مهلة الدفع بدون تأكيد استلام من المعلن، أو المعلن أبلغ بعدم الاستلام. تقدر توقف حساب الشركة لحين تسوية المستحقات، وتعيد تفعيله بعد التسوية.</p>
+      <p class="dim" style="font-size:13px;margin-bottom:14px;line-height:1.7">صفقات اكتملت وعدّت مهلة الدفع بدون تأكيد استلام من المعلن، أو المعلن أبلغ بعدم الاستلام. ويمكن إيقاف حساب الشركة لحين تسوية المستحقات، وإعادة تفعيله بعد التسوية.</p>
       <div id="overdue-list"></div>
     </div>
   </div>
@@ -552,7 +552,7 @@ pre.json{background:var(--bg);border:1px solid var(--line);border-radius:9px;pad
   <!-- users -->
   <div class="panel" id="panel-users">
     <div class="toolbar">
-      <div class="search"><i class="ti ti-search"></i><input id="u-search" placeholder="ابحث بالاسم، الإيميل، الجوال…"></div>
+      <div class="search"><i class="ti ti-search"></i><input id="u-search" placeholder="بحث بالاسم، الإيميل، الجوال…"></div>
       <select class="filter" id="u-role"><option value="">كل الأنواع</option><option value="brand">شركات</option><option value="creator">معلنون</option></select>
       <select class="filter" id="u-tier"><option value="">كل التصنيفات</option><option value="micro">Micro</option><option value="medium">Medium</option><option value="mega">Mega</option><option value="__none">بلا تصنيف</option></select>
       <span class="count-tag" id="u-count"></span>
@@ -567,17 +567,17 @@ pre.json{background:var(--bg);border:1px solid var(--line);border-radius:9px;pad
   <!-- photos -->
   <div class="panel" id="panel-photos">
     <div class="toolbar">
-      <div class="search"><i class="ti ti-search"></i><input id="ph-search" placeholder="ابحث بالاسم أو المعرّف…"></div>
+      <div class="search"><i class="ti ti-search"></i><input id="ph-search" placeholder="بحث بالاسم أو المعرّف…"></div>
       <span class="count-tag" id="ph-count"></span>
     </div>
-    <p style="color:var(--muted);font-size:13px;margin:0 0 14px">كل مؤثر في بطاقة فيها صورته ومعلوماته. اضغط «رفع/تغيير الصورة» — تُحفظ فورًا وتظهر في «تصفّح المعلنين». أو «حذف الحساب» لإزالته نهائيًا ومنعه من الدخول.</p>
-    <div id="ph-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:12px"><p style="color:var(--muted)">افتح التبويب لتحميل المؤثرين…</p></div>
+    <p style="color:var(--muted);font-size:13px;margin:0 0 14px">كل مؤثر في بطاقة فيها صورته ومعلوماته. والضغط على «رفع/تغيير الصورة» يحفظها فورًا وتظهر في «تصفّح المعلنين». و«حذف الحساب» يزيله نهائيًا ويمنعه من الدخول.</p>
+    <div id="ph-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:12px"><p style="color:var(--muted)">بفتح التبويب يتم تحميل المؤثرين…</p></div>
   </div>
 
   <!-- campaigns -->
   <div class="panel" id="panel-campaigns">
     <div class="toolbar">
-      <div class="search"><i class="ti ti-search"></i><input id="c-search" placeholder="ابحث بعنوان الحملة أو الشركة…"></div>
+      <div class="search"><i class="ti ti-search"></i><input id="c-search" placeholder="بحث بعنوان الحملة أو الشركة…"></div>
       <select class="filter" id="c-status"><option value="">كل الحالات</option><option value="active">نشطة</option><option value="hidden">مخفية</option></select>
       <span class="count-tag" id="c-count"></span>
     </div>
@@ -590,7 +590,7 @@ pre.json{background:var(--bg);border:1px solid var(--line);border-radius:9px;pad
   <!-- deals -->
   <div class="panel" id="panel-deals">
     <div class="toolbar">
-      <div class="search"><i class="ti ti-search"></i><input id="d-search" placeholder="ابحث بالمعلن، الشركة، الحملة…"></div>
+      <div class="search"><i class="ti ti-search"></i><input id="d-search" placeholder="بحث بالمعلن، الشركة، الحملة…"></div>
       <select class="filter" id="d-status"><option value="">كل العروض</option><option value="closed">صفقات مقفلة</option><option value="open">قيد التفاوض</option></select>
       <span class="count-tag" id="d-count"></span>
     </div>
@@ -598,7 +598,7 @@ pre.json{background:var(--bg);border:1px solid var(--line);border-radius:9px;pad
       <table><thead><tr><th>المعلن</th><th>الشركة</th><th>الحملة</th><th>المبدئي</th><th>النهائي</th><th>المرحلة</th><th>الحالة</th><th>التاريخ</th></tr></thead>
       <tbody id="deals-tbody"></tbody></table>
     </div>
-    <p class="dim" style="font-size:12px;margin-top:10px"><i class="ti ti-info-circle"></i> اضغط أي صفقة لعرض سجل التفاوض الكامل وبيانات الشحن/البنك.</p>
+    <p class="dim" style="font-size:12px;margin-top:10px"><i class="ti ti-info-circle"></i> الضغط على أي صفقة يعرض سجل التفاوض الكامل وبيانات الشحن/البنك.</p>
   </div>
 </div>
 
@@ -684,7 +684,7 @@ function syncTestBtn(){
   const b = document.getElementById('btn-test');
   if(!b) return;
   b.textContent = SHOW_TEST ? '🧪 التجارب ظاهرة' : '🧪 التجارب مخفيّة';
-  b.title = SHOW_TEST ? 'اضغط لإخفاء بيانات التجارب' : 'اضغط لإظهار بيانات التجارب';
+  b.title = SHOW_TEST ? 'إخفاء بيانات التجارب' : 'إظهار بيانات التجارب';
 }
 let usersById={}, campsById={};
 
@@ -710,10 +710,10 @@ let usersById={}, campsById={};
 function showGate(state, email){
   const body = $('#gate-body');
   if(state==='login'){
-    body.innerHTML = '<h1>لوحة الأدمن</h1><p>تحتاج تسجّل دخول بحساب الأدمن للوصول.</p>'+
+    body.innerHTML = '<h1>لوحة الأدمن</h1><p>يلزم تسجيل الدخول بحساب الأدمن للوصول.</p>'+
       '<a class="btn btn-primary" href="/login.html">تسجيل الدخول</a>';
   } else if(state==='denied'){
-    body.innerHTML = '<h1>غير مصرّح</h1><p>هذا الحساب ('+esc(email)+') لا يملك صلاحية الأدمن. سجّل دخول بحساب الأدمن.</p>'+
+    body.innerHTML = '<h1>غير مصرّح</h1><p>هذا الحساب ('+esc(email)+') لا يملك صلاحية الأدمن. يلزم تسجيل الدخول بحساب الأدمن.</p>'+
       '<a class="btn" href="/login.html">تبديل الحساب</a>';
   }
   $('#gate').style.display='flex'; $('#dash').style.display='none';
@@ -778,7 +778,7 @@ async function loadAll(silent){
     if(!silent){
       $('#gate').style.display='none'; $('#dash').style.display='block';
       const box=$('#err-box'); box.style.display='block';
-      box.innerHTML='تعذّر تحميل البيانات: '+esc(err.message||err)+'<br>تأكد إنك مسجّل دخول بحساب الأدمن وإن سياسات الأدمن مفعّلة في Supabase.';
+      box.innerHTML='تعذّر تحميل البيانات: '+esc(err.message||err)+'<br>يلزم التأكد من تسجيل الدخول بحساب الأدمن ومن تفعيل سياسات الأدمن في Supabase.';
     }
   }
 }
@@ -1170,7 +1170,7 @@ function renderInsights(){
   const campsZero=Math.max(0,CAMPAIGNS.length-campsWithApps);
   const ins=[];
   if(startedApps.length>=3 && abandonRate>40)
-    ins.push(['warn','ti-alert-triangle','هجر التفاوض مرتفع: '+abandonRate+'% من التفاوضات ما تُقفل. راجع تسعير الوكيل أو طول المحادثة.']);
+    ins.push(['warn','ti-alert-triangle','هجر التفاوض مرتفع: '+abandonRate+'% من التفاوضات ما تُقفل. يلزم مراجعة تسعير الوكيل أو طول المحادثة.']);
   const prog={}; for(let s=1;s<=8;s++) prog[s]=stageCounts[s]||0;
   const stalled=Object.entries(prog).sort((a,b)=>b[1]-a[1])[0];
   if(stalled && stalled[1]>0)
@@ -1179,7 +1179,7 @@ function renderInsights(){
   if(pr.length)
     ins.push(['good','ti-trophy','أعلى تحويل من منصة «'+pr[0][0].split(' (')[0]+'» ('+Math.round(pr[0][1])+'%). ركّز استقطاب معلنين منها.']);
   if(campsZero>0)
-    ins.push(['warn','ti-mood-empty',num(campsZero)+' حملة بدون أي عرض. راجع وضوح عناوينها وميزانيتها.']);
+    ins.push(['warn','ti-mood-empty',num(campsZero)+' حملة بدون أي عرض. يلزم مراجعة وضوح عناوينها وميزانيتها.']);
   if(actCreators>=3)
     ins.push([repCreatorPct>=30?'good':'info','ti-repeat','تكرار المعلنين '+repCreatorPct+'%'+(repCreatorPct>=30?' — ممتاز، فيه ولاء.':' — اشتغل على إبقائهم يرجعون.')]);
   ins.push(['info','ti-target-arrow','نسبة الإغلاق العامة '+closeRate+'%، ومتوسط زمن الإغلاق '+fmtDur(avgCloseH)+'.']);
@@ -1479,7 +1479,7 @@ function renderSupport(){
       + (t.page_url?'<div class="dim" style="font-size:11px;margin-top:4px">من صفحة '+esc(t.page_url)+'</div>':'')
       + reps
       + (t.status==='closed' ? ''
-         : '<div class="sp-rep"><textarea placeholder="اكتب الرد للعميل…" rows="2"></textarea>'
+         : '<div class="sp-rep"><textarea placeholder="نص الرد للعميل…" rows="2"></textarea>'
            + '<div class="sp-acts"><button class="btn btn-primary" data-a="reply">إرسال الرد</button>'
            + '<button class="btn" data-a="close">إغلاق التذكرة</button></div></div>')
       + '</div>';
@@ -1562,7 +1562,7 @@ async function setBrandApproval(brandId,status,confirmMsg){
     await loadAll(true);
   }catch(e){ alert('تعذّر تحديث حالة الحساب: '+(e.message||e)); }
 }
-function suspendBrand(id){ setBrandApproval(id,'suspended','إيقاف حساب هذه الشركة؟ ما راح تقدر تستخدم المنصة حتى تسوية المستحقات.'); }
+function suspendBrand(id){ setBrandApproval(id,'suspended','إيقاف حساب هذه الشركة؟ لن تتمكن من استخدام المنصة حتى تسوية المستحقات.'); }
 function reactivateBrand(id){ setBrandApproval(id,'approved','إعادة تفعيل حساب الشركة؟'); }
 
 // ===== derived per-campaign / per-app =====
@@ -1818,7 +1818,7 @@ function renderLiveOps(){
     push(a.closed_at, 'الوكيل أقفل الصفقة مع ' + esc(who), 'close');
     push(a.brand_approved_at, esc(bn) + ' عمّدت ' + esc(who), 'appr');
     push(a.platform_paid_at, esc(bn) + ' سدّدت للمنصة', 'pay');
-    push(a.received_confirmed_at, esc(who) + ' أكّد استلام مستحقاته', 'pay');
+    push(a.received_confirmed_at, esc(who) + ' تأكيد استلام مستحقاته', 'pay');
     push(a.rejected_at, 'خرج ' + esc(who), 'out');
   });
   CAMPAIGNS.forEach(c => {
@@ -1953,7 +1953,7 @@ function renderOverview(){
   +   (feed.length?feed.map(e=>'<div class="fi"><div class="fic"><i class="ti '+e.ic+'"></i></div><div class="ft">'+e.txt+'</div><div class="fw">'+ago(e.t)+'</div></div>').join(''):'<div class="hint">لا نشاط</div>')
   + '</div></div>'
   // ALERT
-  + (owed>0?'<div class="dsh-alert"><div class="ic">⚠️</div><div class="tx">فيه <b>'+money(owed)+' مستحقة للمؤثرين</b> غير مدفوعة'+(topOwed[0]&&topOwed[0].owed>0?' — أعلاها «'+esc(compName(topOwed[0].b.company_name))+'» ('+num(topOwed[0].owed)+')':'')+'. راجع تبويب «الشركات» لمتابعة الحقوق.</div></div>':'');
+  + (owed>0?'<div class="dsh-alert"><div class="ic">⚠️</div><div class="tx">فيه <b>'+money(owed)+' مستحقة للمؤثرين</b> غير مدفوعة'+(topOwed[0]&&topOwed[0].owed>0?' — أعلاها «'+esc(compName(topOwed[0].b.company_name))+'» ('+num(topOwed[0].owed)+')':'')+'. مراجعة تبويب «الشركات» لمتابعة الحقوق.</div></div>':'');
 }
 
 // ===== users =====
@@ -1967,7 +1967,7 @@ async function startImpersonation(userId){
   showImpOverlay('جاري الدخول كـ '+name+'…');
   try{
     const { data:{ session } } = await sb.auth.getSession();
-    if(!session){ hideImpOverlay(); alert('انتهت جلسة الأدمن — سجّل دخول من جديد.'); return; }
+    if(!session){ hideImpOverlay(); alert('انتهت جلسة الأدمن — يُرجى تسجيل الدخول من جديد.'); return; }
     const res = await fetch(IMPERSONATE_URL, {
       method:'POST',
       headers:{ 'Content-Type':'application/json', 'Authorization':'Bearer '+session.access_token, 'apikey':SUPABASE_ANON_KEY },
@@ -2062,7 +2062,7 @@ function renderUsers(){
     const socialBtn = (!isB && socialUrl(u))
       ? '<button onclick="openSocial(\''+u.id+'\',event)" title="فتح حساب المعلن في تبويب جديد" style="padding:5px 10px;border:1px solid #d7dde3;background:#fff;color:#16110F;border-radius:7px;font-size:12px;font-weight:700;cursor:pointer;margin-inline-end:6px">حساب المعلن</button>'
       : (!isB ? '<span class="dim" style="font-size:11.5px;margin-inline-end:6px">معرّف غير صالح</span>' : '');
-    return '<tr class="u-imp-row" onclick="startImpersonation(\''+u.id+'\')" title="اضغط للدخول كهذا المستخدم ومعاينة شاشته"><td><span class="imp-eye">👁</span> '+esc(name)+'</td><td>'+badge+'</td><td>'+tierCell+'</td><td class="dim">'+esc(seg)+'</td><td class="mono">'+sizeF+'</td><td class="dim">'+contact+'</td><td class="dim">'+fmtDate(u.created_at)+'</td><td style="white-space:nowrap">'+socialBtn+'<button onclick="event.stopPropagation(); adminDeleteUser(\''+u.id+'\')" style="padding:5px 10px;border:1px solid #e6bcbc;background:#fff;color:#c93030;border-radius:7px;font-size:12px;cursor:pointer">حذف</button></td></tr>';
+    return '<tr class="u-imp-row" onclick="startImpersonation(\''+u.id+'\')" title="للدخول كهذا المستخدم ومعاينة شاشته"><td><span class="imp-eye">👁</span> '+esc(name)+'</td><td>'+badge+'</td><td>'+tierCell+'</td><td class="dim">'+esc(seg)+'</td><td class="mono">'+sizeF+'</td><td class="dim">'+contact+'</td><td class="dim">'+fmtDate(u.created_at)+'</td><td style="white-space:nowrap">'+socialBtn+'<button onclick="event.stopPropagation(); adminDeleteUser(\''+u.id+'\')" style="padding:5px 10px;border:1px solid #e6bcbc;background:#fff;color:#c93030;border-radius:7px;font-size:12px;cursor:pointer">حذف</button></td></tr>';
   }).join('') : '<tr><td colspan="8" class="empty">لا نتائج</td></tr>';
   renderTierChips();
 }
@@ -2095,7 +2095,7 @@ async function adminToggleHide(id){
   try{
     const {data,error}=await sb.from('campaigns').update({status:newStatus}).eq('id',id).select();
     if(error) throw error;
-    if(!data||!data.length) throw new Error('لم يتم التغيير — تأكد من صلاحية الأدمن (RLS).');
+    if(!data||!data.length) throw new Error('لم يتم التغيير — يُرجى التحقق من صلاحية الأدمن (RLS).');
     await loadAll(true);
   }catch(e){ alert('تعذّر التغيير: '+(e.message||e)); }
 }
@@ -2111,7 +2111,7 @@ async function adminDeleteCampaign(id){
     }
     const {data:del,error}=await sb.from('campaigns').delete().eq('id',id).select();
     if(error) throw error;
-    if(!del||!del.length) throw new Error('لم يتم الحذف — تأكد من صلاحية الأدمن (RLS).');
+    if(!del||!del.length) throw new Error('لم يتم الحذف — يُرجى التحقق من صلاحية الأدمن (RLS).');
     await loadAll(true);
   }catch(e){ alert('تعذّر الحذف: '+(e.message||e)); }
 }
@@ -2121,7 +2121,7 @@ async function adminDeleteUser(id){
   const u = usersById[id];
   const nm = u ? (u.company_name || u.name || 'هذا الحساب') : 'هذا الحساب';
   if(!confirm('حذف نهائي للحساب «'+nm+'»؟\n\nراح يُمسح من المنصة ويُمنع من الدخول نهائيًا (بأي طريقة) — ولا يمكن التراجع.')) return;
-  if(!confirm('تأكيد أخير: احذف «'+nm+'» نهائيًا؟')) return;
+  if(!confirm('تأكيد أخير: حذف «'+nm+'» نهائيًا؟')) return;
   try{
     const { error } = await sb.rpc('admin_delete_user', { target_id: id });
     if(error) throw error;
@@ -2231,8 +2231,8 @@ function renderPhotos(){
 async function uploadCreatorPhoto(id, input){
   const file=input.files&&input.files[0];
   if(!file) return;
-  if(!/^image\//.test(file.type)){ alert('اختر ملف صورة صحيح'); return; }
-  if(file.size>5*1024*1024){ alert('الصورة أكبر من 5 ميجا، اختر أصغر'); return; }
+  if(!/^image\//.test(file.type)){ alert('يلزم اختيار ملف صورة صحيح'); return; }
+  if(file.size>5*1024*1024){ alert('الصورة أكبر من 5 ميجا — يلزم صورة أصغر'); return; }
   const label=input.parentElement;
   if(label&&label.childNodes[0]) label.childNodes[0].textContent='جارٍ الرفع…';
   try{

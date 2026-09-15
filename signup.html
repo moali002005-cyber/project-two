@@ -330,7 +330,7 @@ textarea { resize: vertical; min-height: 80px; }
       <div class="field">
         <label>صورة الحساب</label>
         <input type="file" name="avatar_file" accept="image/*" required>
-        <div class="hint">مطلوبة — اختر صورة واضحة لحسابك، تظهر للشركات في دليل المؤثرين.</div>
+        <div class="hint">مطلوبة — صورة واضحة للحساب، تظهر للشركات في دليل المؤثرين.</div>
       </div>
 
       <div class="field">
@@ -341,7 +341,7 @@ textarea { resize: vertical; min-height: 80px; }
       <div class="field">
         <label>الدولة</label>
         <select name="country" required>
-            <option value="" disabled selected>اختر الدولة</option>
+            <option value="" disabled selected>اختيار الدولة</option>
             <option value="SA">السعودية</option>
             <option value="AE">الإمارات</option>
             <option value="QA">قطر</option>
@@ -539,7 +539,7 @@ textarea { resize: vertical; min-height: 80px; }
       <div class="field">
         <label>المدينة</label>
         <select name="city" required>
-            <option value="" disabled selected>اختر المدينة</option>
+            <option value="" disabled selected>اختيار المدينة</option>
             <option value="riyadh">الرياض</option>
             <option value="jeddah">جدة</option>
             <option value="makkah">مكة المكرمة</option>
@@ -570,7 +570,7 @@ textarea { resize: vertical; min-height: 80px; }
         <div class="field">
           <label>المنصة الأساسية</label>
           <select name="platform" required onchange="simblToggleTierField(this.value)">
-            <option value="">اختر المنصة</option>
+            <option value="">اختيار المنصة</option>
             <option value="tiktok">تيك توك</option>
             <option value="instagram">انستغرام</option>
             <option value="snapchat">سناب شات</option>
@@ -587,14 +587,14 @@ textarea { resize: vertical; min-height: 80px; }
       <div class="field">
         <label>رابط حسابك في وسائل التواصل الاجتماعي</label>
         <input type="text" name="tiktok_url" required placeholder="رابط أو اسم حسابك (تيك توك، سناب شات، انستقرام...)" dir="ltr">
-        <div class="hint">ألصق رابط حسابك في أي منصة تواصل. نراجع الحساب من خلال الرابط لتأكيد التفعيل.</div>
+        <div class="hint">رابط الحساب في أي منصة تواصل. يُراجَع الحساب من خلال الرابط لتأكيد التفعيل.</div>
       </div>
 
       <div class="field-row">
         <div class="field">
           <label>عدد المتابعين</label>
           <select name="followers" required>
-            <option value="" disabled selected>اختر النطاق</option>
+            <option value="" disabled selected>اختيار النطاق</option>
             <option value="10000">من 10 آلاف إلى 20 ألف</option>
             <option value="20000">من 20 ألف إلى 50 ألف</option>
             <option value="50000">من 50 ألف إلى 100 ألف</option>
@@ -608,12 +608,12 @@ textarea { resize: vertical; min-height: 80px; }
             <option value="3000000">فوق 3 مليون</option>
             <option value="4000000">فوق 4 مليون</option>
           </select>
-          <div class="hint">اختر نطاق عدد متابعينك.</div>
+          <div class="hint">اختيار نطاق عدد المتابعين.</div>
         </div>
         <div class="field">
           <label>التصنيف</label>
           <select name="category" required>
-            <option value="">اختر التصنيف</option>
+            <option value="">اختيار التصنيف</option>
             <option value="lifestyle">لايف ستايل</option>
             <option value="beauty">جمال وعناية</option>
             <option value="fashion">موضة</option>
@@ -630,7 +630,7 @@ textarea { resize: vertical; min-height: 80px; }
       <div class="field">
         <label>السعر المرجعي (ر.س)</label>
         <input type="number" name="price" required placeholder="مثال: 800">
-        <div class="hint">هذا سعرك التقريبي. تقدرين تتفاوضين على كل حملة بشكل منفصل.</div>
+        <div class="hint">هذا السعر التقريبي، ويمكن التفاوض على كل حملة بشكل منفصل.</div>
       </div>
 
       <div class="field-row">
@@ -675,7 +675,7 @@ textarea { resize: vertical; min-height: 80px; }
         <div class="field">
           <label>القطاع</label>
           <select name="industry" required>
-            <option value="">اختر القطاع</option>
+            <option value="">اختيار القطاع</option>
             <option value="perfumes">عطور</option>
             <option value="fashion">أزياء</option>
             <option value="beauty">جمال وعناية</option>
@@ -689,7 +689,7 @@ textarea { resize: vertical; min-height: 80px; }
         <div class="field">
           <label>حجم الشركة</label>
           <select name="size" required>
-            <option value="">اختر الحجم</option>
+            <option value="">اختيار الحجم</option>
             <option value="startup">ناشئة (أقل من 10 موظفين)</option>
             <option value="small">صغيرة (10-50)</option>
             <option value="medium">متوسطة (50-200)</option>
@@ -701,7 +701,7 @@ textarea { resize: vertical; min-height: 80px; }
       <div class="field">
         <label>مستند السجل التجاري</label>
         <input type="file" name="cr_file" accept="image/*,application/pdf" required>
-        <div class="hint">ارفع صورة أو ملف PDF للسجل التجاري (من المعرض أو الكاميرا). نتحقق منه لتأكيد التفعيل.</div>
+        <div class="hint">رفع صورة أو ملف PDF للسجل التجاري (من المعرض أو الكاميرا). نتحقق منه لتأكيد التفعيل.</div>
       </div>
 
       <div class="field">
@@ -747,21 +747,21 @@ textarea { resize: vertical; min-height: 80px; }
       <button type="submit" class="btn-submit">إنشاء حساب الشركة</button>
     </form>
 
-    <p class="bottom-link">عندك حساب بالفعل؟ <a href="/login.html">سجل دخولك</a></p>
+    <p class="bottom-link">عندك حساب بالفعل؟ <a href="/login.html">تسجيل الدخول</a></p>
   </div>
 
   <div class="success-screen" id="success-creator">
     <div class="success-icon">✓</div>
     <h2>تم استلام طلبك!</h2>
-    <p id="success-creator-msg">أرسلنا رابط تأكيد إلى بريدك الإلكتروني. افتح الرسالة واضغط الرابط لتأكيد حسابك، ثم سيراجعه فريق Flfluencer ويفعّله.</p>
-    <button class="btn-submit" style="max-width:300px;margin:0 auto" onclick="goToDashboard('creator')">فهمت، تابع</button>
+    <p id="success-creator-msg">أرسلنا رابط تأكيد إلى بريدك الإلكتروني. بفتح الرسالة والضغط على الرابط يتم تأكيد الحساب، ثم سيراجعه فريق Flfluencer ويفعّله.</p>
+    <button class="btn-submit" style="max-width:300px;margin:0 auto" onclick="goToDashboard('creator')">حسنًا، متابعة</button>
   </div>
 
   <div class="success-screen" id="success-brand">
     <div class="success-icon">✓</div>
     <h2>تم استلام طلبكم!</h2>
     <p id="success-brand-msg">أرسلنا رابط تأكيد إلى بريدكم الإلكتروني. افتحوا الرسالة واضغطوا الرابط لتأكيد الحساب، ثم سيراجعه فريق Flfluencer ويفعّله.</p>
-    <button class="btn-submit" style="max-width:300px;margin:0 auto" onclick="goToDashboard('brand')">فهمت، تابع</button>
+    <button class="btn-submit" style="max-width:300px;margin:0 auto" onclick="goToDashboard('brand')">حسنًا، متابعة</button>
   </div>
 </main>
 
@@ -832,9 +832,9 @@ async function submitForm(event, role) {
     userData.website = normalizeUrlInput(fd.get('tiktok_url')) || null;
     userData.approval_status = 'pending';
     const avatarFileChk = fd.get('avatar_file');
-    if (!avatarFileChk || avatarFileChk.size === 0) { alert('صورة الحساب مطلوبة — اختر صورة لمتابعة التسجيل.'); submitBtn.disabled = false; submitBtn.textContent = originalText; return; }
+    if (!avatarFileChk || avatarFileChk.size === 0) { alert('صورة الحساب مطلوبة — يلزم اختيار صورة لمتابعة التسجيل.'); submitBtn.disabled = false; submitBtn.textContent = originalText; return; }
     if (!/^image\//.test(avatarFileChk.type)) { alert('الملف المختار ليس صورة صحيحة.'); submitBtn.disabled = false; submitBtn.textContent = originalText; return; }
-    if (avatarFileChk.size > 5 * 1024 * 1024) { alert('الصورة أكبر من 5 ميجا، اختر صورة أصغر.'); submitBtn.disabled = false; submitBtn.textContent = originalText; return; }
+    if (avatarFileChk.size > 5 * 1024 * 1024) { alert('الصورة أكبر من 5 ميجا — يلزم صورة أصغر.'); submitBtn.disabled = false; submitBtn.textContent = originalText; return; }
   } else {
     userData.company_name = fd.get('company_name');
     userData.industry = fd.get('industry');
@@ -912,7 +912,7 @@ async function submitForm(event, role) {
       const crFile = fd.get('cr_file');
       if (crFile && crFile.size > 0) {
         const okType = /^(image\/(png|jpe?g|webp)|application\/pdf)$/.test(crFile.type || '');
-        if (!okType) throw new Error('صيغة مستند السجل التجاري غير مدعومة — أرفق PDF أو صورة.');
+        if (!okType) throw new Error('صيغة مستند السجل التجاري غير مدعومة — يلزم إرفاق PDF أو صورة.');
         if (crFile.size > 10 * 1024 * 1024) throw new Error('حجم مستند السجل التجاري أكبر من 10 ميجابايت.');
         try {
           const ext = (crFile.name.split('.').pop() || 'dat').toLowerCase().replace(/[^a-z0-9]/g, '');
@@ -973,22 +973,22 @@ async function submitForm(event, role) {
     const msg = rawMsg.toLowerCase();
 
     if (rawMsg === 'CR_UPLOAD_FAILED') {
-      alert('تعذّر رفع مستند السجل التجاري. تأكد من الملف وحاول مرة أخرى، أو جرّب من جهاز آخر / بعد تسجيل الدخول.');
+      alert('تعذّر رفع مستند السجل التجاري. يُرجى التحقق من الملف والمحاولة مرة أخرى، أو المحاولة من جهاز آخر / بعد تسجيل الدخول.');
     } else if (rawMsg === 'AVATAR_UPLOAD_FAILED') {
-      alert('تعذّر رفع صورة الحساب. تأكد من الصورة وحاول مرة أخرى.');
+      alert('تعذّر رفع صورة الحساب. يُرجى التحقق من الصورة والمحاولة مرة أخرى.');
     } else if (rawMsg === 'EMAIL_EXISTS'
         || msg.includes('already registered')
         || msg.includes('already been registered')
         || msg.includes('user already registered')) {
-      alert('هذا البريد الإلكتروني مسجل مسبقاً في Flfluencer. سجّل الدخول أو استخدم بريداً آخر.');
+      alert('هذا البريد الإلكتروني مسجل مسبقاً في Flfluencer. يُرجى تسجيل الدخول أو استخدام بريد آخر.');
     } else if (msg.includes('duplicate') && msg.includes('email')) {
-      alert('هذا البريد الإلكتروني مسجل مسبقاً. سجّل الدخول أو استخدم بريداً آخر.');
+      alert('هذا البريد الإلكتروني مسجل مسبقاً. يُرجى تسجيل الدخول أو استخدام بريد آخر.');
     } else if (msg.includes('password')) {
-      alert('كلمة السر ضعيفة. استخدم 6 أحرف على الأقل.');
+      alert('كلمة السر ضعيفة — يلزم 6 أحرف على الأقل.');
     } else if (msg.includes('rate limit') || msg.includes('too many')) {
-      alert('تم تجاوز عدد المحاولات. انتظر دقيقة وحاول مرة أخرى.');
+      alert('تم تجاوز عدد المحاولات. يُرجى الانتظار دقيقة ثم المحاولة مرة أخرى.');
     } else if (msg.includes('network') || msg.includes('failed to fetch')) {
-      alert('مشكلة في الاتصال بالإنترنت. تأكد من الشبكة وحاول مرة أخرى.');
+      alert('مشكلة في الاتصال بالإنترنت. يُرجى التحقق من الشبكة والمحاولة مرة أخرى.');
     } else {
       alert('حصل خطأ أثناء التسجيل: ' + (rawMsg || 'يرجى المحاولة مرة أخرى. تفقد الـ Console لمزيد من التفاصيل.'));
     }
@@ -1034,7 +1034,7 @@ function enterResumeMode(email) {
     const b = document.createElement('div');
     b.id = 'resume-banner';
     b.style.cssText = 'background:#e3f6f1;border:1px solid #b8e6dd;color:#7E2119;border-radius:12px;padding:14px 16px;margin:0 0 18px;font-weight:600;line-height:1.7;';
-    b.innerHTML = 'حسابك شبه جاهز — بس ناقص ملفك. اختر نوع حسابك وكمّل بياناتك مرة وحدة عشان نفعّله (ما نطلب كلمة سر جديدة).';
+    b.innerHTML = 'الحساب شبه جاهز — ينقصه الملف الشخصي. اختيار نوع الحساب وإكمال البيانات مرة واحدة لتفعيله (بلا كلمة سر جديدة).';
     host.insertBefore(b, host.firstChild);
   }
 }

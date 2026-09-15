@@ -359,7 +359,7 @@ function clearCurrentUser() {
 // ============ كشف الجلسة الميتة وإعادة المصادقة تلقائيًا ============
 // المشكلة: الهوية المخزّنة (simbl_current_user) تبقى حتى لو ماتت جلسة Auth،
 // فالصفحة تحسبك "داخل" وتحمّل بيانات فاضية (RLS يرفض بلا جلسة) → تبان الحملات/الأسماء اختفت.
-// الحل: نتأكد إن الجلسة حيّة فعلًا؛ لو ماتت نعرض "انتهت جلستك — سجّل دخول" (يؤتمت خطوة الخروج/الدخول اليدوية).
+// الحل: نتأكد إن الجلسة حيّة فعلًا؛ لو ماتت نعرض "انتهت الجلسة — يُرجى تسجيل الدخول" (يؤتمت خطوة الخروج/الدخول اليدوية).
 function simblOnLoginPage() {
   const p = (location.pathname || '').toLowerCase();
   return p === '/' || p === '' || p.indexOf('signup') >= 0 || p.indexOf('login') >= 0 || p.indexOf('index') >= 0;
@@ -384,8 +384,8 @@ function simblShowSessionExpired() {
     o.innerHTML = '<div style="max-width:420px;text-align:center;">'
       + '<div style="width:76px;height:76px;border-radius:50%;background:rgba(226,59,46,0.12);display:flex;align-items:center;justify-content:center;margin:0 auto 22px;font-size:34px;">\uD83D\uDD12</div>'
       + '<h2 style="font-size:24px;margin:0 0 10px;color:#0F1420;font-weight:700;">انتهت جلستك</h2>'
-      + '<p style="font-size:15px;color:#8A93A6;line-height:1.8;margin:0 0 22px;">حسابك سليم، بس الجلسة انتهت. سجّل دخول من جديد وترجع بياناتك مباشرة.</p>'
-      + '<button id="simbl-relogin-btn" style="padding:13px 34px;border-radius:100px;border:0;background:#E23B2E;color:#fff;font-family:inherit;font-size:15px;font-weight:700;cursor:pointer;">سجّل دخول</button>'
+      + '<p style="font-size:15px;color:#8A93A6;line-height:1.8;margin:0 0 22px;">الحساب سليم، لكن الجلسة انتهت. بتسجيل الدخول من جديد ترجع البيانات مباشرة.</p>'
+      + '<button id="simbl-relogin-btn" style="padding:13px 34px;border-radius:100px;border:0;background:#E23B2E;color:#fff;font-family:inherit;font-size:15px;font-weight:700;cursor:pointer;">تسجيل الدخول</button>'
       + '<div style="margin-top:14px;"><span id="simbl-retry-link" style="font-size:13px;color:#8A93A6;cursor:pointer;text-decoration:underline;">إعادة المحاولة</span></div>'
       + '</div>';
     document.body.appendChild(o);
@@ -620,7 +620,7 @@ function simblUpgradeCard(title, body, planName, url) {
   cur.textContent = planName ? ('باقتك الحالية: ' + planName) : '';
   var go = document.createElement('a');
   go.href = url;
-  go.textContent = 'شوف الباقات ←';
+  go.textContent = 'عرض الباقات ←';
   go.style.cssText = 'display:block;background:#E23B2E;color:#fff;text-decoration:none;font-weight:700;font-size:15px;padding:13px;border-radius:12px;margin-bottom:10px';
   var no = document.createElement('button');
   no.type = 'button';
@@ -775,7 +775,7 @@ try { simblPlan(); } catch (e) {}
 
   function failBody(m, d) {
     if (d && d.error === 'plan') return '<div class="flf-empty">هذه الميزة غير متاحة في باقتك الحالية.</div>';
-    m.body.innerHTML = '<div class="flf-empty">تعذّر تحميل البيانات. حاول مرة ثانية.</div>';
+    m.body.innerHTML = '<div class="flf-empty">تعذّر تحميل البيانات. يُرجى المحاولة مرة أخرى.</div>';
     return null;
   }
 
@@ -974,7 +974,7 @@ try { simblPlan(); } catch (e) {}
       'نزّل قائمة أفضل المعلنين ملف CSV تشتغل عليه في إكسل وتشاركه مع فريقك.'))) return;
     var rows = [];
     try { if (typeof RANKED !== 'undefined' && RANKED && RANKED.length) rows = RANKED; } catch (e) { rows = []; }
-    if (!rows.length) { alert('القائمة لسه ما حمّلت. انتظر ثانية وأعد المحاولة.'); return; }
+    if (!rows.length) { alert('القائمة لم تُحمّل بعد. يُرجى الانتظار ثانية ثم إعادة المحاولة.'); return; }
     var NL = String.fromCharCode(10);
     var head = ['الترتيب', 'الاسم', 'المعرّف', 'المنصة', 'التصنيف', 'المتابعون', 'الدولة', 'درجة الثقة', 'الصفقات', 'التقييم'];
     function cell(v) {
@@ -1158,7 +1158,7 @@ try { simblPlan(); } catch (e) {}
             if (el.getAttribute('data-flf-lock')) return;
             el.setAttribute('data-flf-lock', '1');
             el.innerHTML = '<div class="flf-lockcard">🔒 سجل نشاط الفريق متاح في باقة أعلى<br>'
-              + '<a href="/plans.html">شوف الباقات</a></div>';
+              + '<a href="/plans.html">عرض الباقات</a></div>';
           });
         };
         css(); hideFeed();

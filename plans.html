@@ -141,7 +141,7 @@ function featureList(p){
 
 function renderPlans(){
   var g = document.getElementById('plans-grid');
-  if (!PLANS.length){ g.innerHTML = '<div class="loading">تعذّر تحميل الباقات، حدّث الصفحة.</div>'; return; }
+  if (!PLANS.length){ g.innerHTML = '<div class="loading">تعذّر تحميل الباقات، يُرجى تحديث الصفحة.</div>'; return; }
   var cur = STATUS && STATUS.code;
   g.innerHTML = PLANS.map(function(p){
     var price = PERIOD === 'yearly' ? p.price_yearly : p.price_monthly;
@@ -155,8 +155,8 @@ function renderPlans(){
     var btn;
     if (isCur) btn = '<button class="cta cur" disabled>باقتك الحالية</button>';
     else if (!(Number(price) > 0)) btn = '<button class="cta cur" disabled>الباقة الأساسية</button>';
-    else if (p.is_custom_price) btn = '<a class="cta ghost" href="mailto:flfluencerai@gmail.com">تواصل معنا</a>';
-    else btn = '<button class="cta" onclick="subscribe(\'' + p.code + '\')">اشترك الآن</button>';
+    else if (p.is_custom_price) btn = '<a class="cta ghost" href="mailto:flfluencerai@gmail.com">للتواصل معنا</a>';
+    else btn = '<button class="cta" onclick="subscribe(\'' + p.code + '\')">الاشتراك الآن</button>';
     return '<div class="plan' + (FEAT(p) ? ' feat' : '') + (isCur ? ' mine' : '') + '">'
       + (FEAT(p) ? '<div class="ribbon">الأقوى</div>' : '')
       + '<div class="picon">' + esc(p.icon || '') + '</div>'
@@ -269,7 +269,7 @@ async function subscribe(code){
     if (!res.ok || !out.url) throw new Error(out.error || 'تعذّر تجهيز الدفع');
     location.href = out.url;
   } catch (e){
-    alert(e.message || 'صار خطأ، جرّب مرة ثانية');
+    alert(e.message || 'حدث خطأ — يُرجى المحاولة مرة أخرى');
   }
 }
 
@@ -282,7 +282,7 @@ async function checkReturn(){
     var box = document.getElementById('my-plan');
     box.hidden = false;
     box.className = 'myplan ' + (o.status === 'paid' ? 'good' : 'bad');
-    box.innerHTML = o.status === 'paid' ? '✅ تم تفعيل باقتك بنجاح' : '⚠️ لم تكتمل عملية الدفع — تقدر تحاول مرة ثانية';
+    box.innerHTML = o.status === 'paid' ? '✅ تم تفعيل باقتك بنجاح' : '⚠️ لم تكتمل عملية الدفع — يُرجى المحاولة مرة أخرى';
     history.replaceState({}, '', '/plans.html');
   } catch (e){}
 }

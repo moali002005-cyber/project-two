@@ -156,8 +156,8 @@ body{background:var(--cream);color:var(--ink);font-family:var(--font-body);font-
 <main class="container">
   <section class="hero">
     <h1 class="hero-title">تصفّح المعلنين</h1>
-    <p class="hero-sub">اكتشف المؤثرين المسجّلين في Flfluencer واختر الأنسب لحملتك.</p>
-    <div class="search-wrap"><input type="text" class="search-input" id="search" placeholder="ابحث بالاسم أو الحساب..." oninput="applyFilters()"></div>
+    <p class="hero-sub">اكتشف المؤثرين المسجّلين في Flfluencer واختيار الأنسب للحملة.</p>
+    <div class="search-wrap"><input type="text" class="search-input" id="search" placeholder="بحث بالاسم أو الحساب..." oninput="applyFilters()"></div>
   </section>
   <div class="ptabs" id="ptabs"></div>
   <section class="filters">
@@ -327,7 +327,7 @@ function currentFiltered(){
 function applyFilters(){ renderGrid(currentFiltered()); }
 function renderGrid(list){
   var grid=document.getElementById('grid');
-  if(!list.length){ grid.innerHTML='<div class="empty"><div class="ic">○</div><h3>لا يوجد مؤثرون مطابقون</h3><p>جرّب تغيير الفلاتر أو البحث</p></div>'; return; }
+  if(!list.length){ grid.innerHTML='<div class="empty"><div class="ic">○</div><h3>لا يوجد مؤثرون مطابقون</h3><p>يمكن تغيير الفلاتر أو البحث</p></div>'; return; }
   grid.innerHTML=list.map((c,i)=>{
     var catLabel=CAT[c.category]||c.category||''; var platLabel=PLAT[c.platform]||c.platform||'';
     return '<div class="vcard" onclick="openProfile('+i+')">'
@@ -339,7 +339,7 @@ function renderGrid(list){
       + '<div class="vfoll">'+fmtFollowers(c.followers)+'</div><div class="vfoll-lbl"><span>متابع</span></div>'
       + '<div style="display:flex;gap:6px;justify-content:center;flex-wrap:wrap"><span class="tag">'+escHtml(platLabel)+'</span>'+(catLabel?'<span class="tag">'+escHtml(catLabel)+'</span>':'')+'</div>'
       + '<div class="vtrust">'+tStarsLine(c)+'</div>'
-      + '<button data-cart-id="'+escHtml(c.id)+'" class="cart-btn'+(inCart(c.id)?' in':'')+'" onclick="toggleCart(\''+escHtml(c.id)+'\',event)"><span class="cart-lbl">'+(inCart(c.id)?'في السلة ✓':'أضف للسلة')+'</span></button>'
+      + '<button data-cart-id="'+escHtml(c.id)+'" class="cart-btn'+(inCart(c.id)?' in':'')+'" onclick="toggleCart(\''+escHtml(c.id)+'\',event)"><span class="cart-lbl">'+(inCart(c.id)?'في السلة ✓':'إضافة للسلة')+'</span></button>'
       + '</div></div>';
   }).join('');
   if(window.simblI18n && document.documentElement.lang==='en') simblI18n.apply();
@@ -365,12 +365,12 @@ function openProfile(idx){
     + '</div>'
     + (c.bio?'<div class="m-bio">'+escHtml(c.bio)+'</div>':'')
     + '<div class="m-trust"><div class="m-trust-top"><div class="m-trust-score"><span class="mts-num">'+Math.round(tTrustScore(c))+'</span><span class="mts-lbl">درجة الثقة</span></div><div class="m-trust-stars">'+tStarsLine(c)+'</div></div>'+tCritBars(c)+'<div id="m-reviews" class="m-reviews"></div></div>'
-    + '<div style="padding:0 18px;margin-bottom:10px"><button data-cart-id="'+escHtml(c.id)+'" class="cart-btn'+(inCart(c.id)?' in':'')+'" onclick="toggleCart(\''+escHtml(c.id)+'\',event)" style="margin-top:0"><span class="cart-lbl">'+(inCart(c.id)?'في السلة ✓':'أضف للسلة')+'</span></button></div>'
+    + '<div style="padding:0 18px;margin-bottom:10px"><button data-cart-id="'+escHtml(c.id)+'" class="cart-btn'+(inCart(c.id)?' in':'')+'" onclick="toggleCart(\''+escHtml(c.id)+'\',event)" style="margin-top:0"><span class="cart-lbl">'+(inCart(c.id)?'في السلة ✓':'إضافة للسلة')+'</span></button></div>'
     + '<div class="m-actions">'
     +   (c.website?'<a class="m-btn primary" href="'+escHtml(c.website)+'" target="_blank" rel="noopener"><span>زيارة الحساب</span> ↗</a>':'')
     +   '<button class="m-btn ghost" onclick="copyHandle(\''+escHtml(c.handle||'')+'\')"><span>نسخ المعرّف</span></button>'
     + '</div>'
-    + (c.website?'<a class="m-watch" href="'+escHtml(c.website)+'" target="_blank" rel="noopener" style="text-decoration:none"><div class="m-watch-ic">▶</div><div style="font-size:12px"><span>'+(isTT?'شاهد فيديوهاته على تيك توك':'افتح حسابه')+'</span> ↗</div></a>':'');
+    + (c.website?'<a class="m-watch" href="'+escHtml(c.website)+'" target="_blank" rel="noopener" style="text-decoration:none"><div class="m-watch-ic">▶</div><div style="font-size:12px"><span>'+(isTT?'شاهد فيديوهاته على تيك توك':'فتح الحساب')+'</span> ↗</div></a>':'');
   document.getElementById('modal').classList.add('show');
   loadReviews(c.id);
   if(window.simblI18n && document.documentElement.lang==='en') simblI18n.apply();
@@ -379,7 +379,7 @@ function closeProfile(){ document.getElementById('modal').classList.remove('show
 function getCart(){ try{ return JSON.parse(localStorage.getItem('simbl_cart')||'[]'); }catch(e){ return []; } }
 function inCart(id){ return getCart().indexOf(id)>=0; }
 function updateCartBadge(){ var n=getCart().length; var b=document.getElementById('cart-badge'); if(b){ b.textContent=n; b.style.display=n?'inline-flex':'none'; } }
-function toggleCart(id, ev){ if(ev){ ev.stopPropagation(); } var a=getCart(); var i=a.indexOf(id); var nowIn; if(i>=0){ a.splice(i,1); nowIn=false; } else { a.push(id); nowIn=true; } localStorage.setItem('simbl_cart', JSON.stringify(a)); updateCartBadge(); showToast(nowIn?'أُضيف للسلة ✓':'أُزيل من السلة'); document.querySelectorAll('[data-cart-id="'+id+'"]').forEach(function(btn){ btn.classList.toggle('in',nowIn); var lbl=btn.querySelector('.cart-lbl'); if(lbl) lbl.textContent=nowIn?'في السلة ✓':'أضف للسلة'; }); if(window.simblI18n && document.documentElement.lang==='en') simblI18n.apply(); }
+function toggleCart(id, ev){ if(ev){ ev.stopPropagation(); } var a=getCart(); var i=a.indexOf(id); var nowIn; if(i>=0){ a.splice(i,1); nowIn=false; } else { a.push(id); nowIn=true; } localStorage.setItem('simbl_cart', JSON.stringify(a)); updateCartBadge(); showToast(nowIn?'أُضيف للسلة ✓':'أُزيل من السلة'); document.querySelectorAll('[data-cart-id="'+id+'"]').forEach(function(btn){ btn.classList.toggle('in',nowIn); var lbl=btn.querySelector('.cart-lbl'); if(lbl) lbl.textContent=nowIn?'في السلة ✓':'إضافة للسلة'; }); if(window.simblI18n && document.documentElement.lang==='en') simblI18n.apply(); }
 document.addEventListener('DOMContentLoaded', updateCartBadge);
 function copyHandle(h){ if(!h) return; var done=()=>showToast('تم نسخ المعرّف ✓'); if(navigator.clipboard&&navigator.clipboard.writeText) navigator.clipboard.writeText(h).then(done).catch(done); else done(); }
 async function init(){
@@ -416,7 +416,7 @@ async function init(){
     if(window.simblI18n && document.documentElement.lang==='en') simblI18n.apply();
   }catch(err){
     console.error(err);
-    document.getElementById('grid').innerHTML='<div class="empty"><div class="ic">!</div><h3>حصل خطأ في تحميل المعلنين.</h3><p>حدّث الصفحة وحاول مرة أخرى.</p></div>';
+    document.getElementById('grid').innerHTML='<div class="empty"><div class="ic">!</div><h3>حصل خطأ في تحميل المعلنين.</h3><p>يُرجى تحديث الصفحة والمحاولة مرة أخرى.</p></div>';
   }
 }
 document.addEventListener('keydown',e=>{ if(e.key==='Escape') closeProfile(); });
