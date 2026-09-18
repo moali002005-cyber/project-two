@@ -2374,7 +2374,7 @@ function updateBudgetBounds() {
   if (b) {
     const names = tiers.map(t => TIER_LABEL[t] || t).join('، ');
     // سعر واحد لا نطاق — الحدّان هنا مجال مسموح، مو دعوة لكتابة نطاق
-    if (hint) hint.textContent = 'لتصنيف ' + names + ': السعر لازم بين ' + b[0].toLocaleString('en-US') + ' و ' + b[1].toLocaleString('en-US') + ' ر.س. ' + 'يعرض الوكيل هذا المبلغ على كل معلن ويقفل الاتفاق عليه.';
+    if (hint) hint.textContent = 'السعر المقترح لتصنيف ' + names + ': من ' + b[0].toLocaleString('en-US') + ' إلى ' + b[1].toLocaleString('en-US') + ' ر.س — وبالإمكان إدخال أي مبلغ أقل. ' + 'يعرض الوكيل هذا المبلغ على كل معلن ويقفل الاتفاق عليه.';
     if (inp) inp.placeholder = 'مثل: ' + b[0];
   } else {
     if (hint) hint.textContent = 'يعرض الوكيل هذا المبلغ على كل معلن ويقفل الاتفاق عليه.';
@@ -3891,8 +3891,13 @@ async function submitCampaign(event) {
       return;
     }
     const _lo = Math.min(..._nums), _hi = Math.max(..._nums);
-    if (_lo < _bnds[0] || _hi > _bnds[1]) {
-      showToast('لتصنيف المؤثرين المختار، السعر لازم يكون بين ' + _bnds[0].toLocaleString('en-US') + ' و ' + _bnds[1].toLocaleString('en-US') + ' ر.س.', 'error');
+    // لا حدّ أدنى إجباري — السعر مفتوح للأسفل، ويبقى سقف أعلى كحماية من الخطأ المطبعي
+    if (_lo <= 0) {
+      showToast('يلزم إدخال مبلغ أكبر من صفر للمعلن الواحد.', 'error');
+      return;
+    }
+    if (_hi > _bnds[1]) {
+      showToast('السعر أعلى من الحد المسموح لتصنيف المؤثرين المختار (' + _bnds[1].toLocaleString('en-US') + ' ر.س).', 'error');
       return;
     }
   }

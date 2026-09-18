@@ -5248,8 +5248,13 @@ async function submitCampaign(event) {
       return;
     }
     const _lo = Math.min(..._nums), _hi = Math.max(..._nums);
-    if (_lo < _bnds[0] || _hi > _bnds[1]) {
-      showToast('لتصنيف المؤثرين المختار، السعر لازم يكون بين ' + _bnds[0].toLocaleString('en-US') + ' و ' + _bnds[1].toLocaleString('en-US') + ' ر.س.', 'error');
+    // لا حدّ أدنى إجباري — السعر مفتوح للأسفل، ويبقى سقف أعلى كحماية من الخطأ المطبعي
+    if (_lo <= 0) {
+      showToast('يلزم إدخال مبلغ أكبر من صفر للمعلن الواحد.', 'error');
+      return;
+    }
+    if (_hi > _bnds[1]) {
+      showToast('السعر أعلى من الحد المسموح لتصنيف المؤثرين المختار (' + _bnds[1].toLocaleString('en-US') + ' ر.س).', 'error');
       return;
     }
   }
