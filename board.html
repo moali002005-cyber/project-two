@@ -48,6 +48,8 @@
        background-size:cover;background-position:center}
   .who{flex:1 1 170px;min-width:0}
   .who .n{font-size:15px;font-weight:700;line-height:1.4}
+  .who .n a.acct{color:var(--accent);text-decoration:none}
+  .who .n a.acct:hover{text-decoration:underline}
   .who .m{font-size:12.5px;color:var(--dim);direction:ltr;text-align:right}
   .price{font-size:15px;font-weight:700;white-space:nowrap}
   .price small{font-weight:400;color:var(--dim);font-size:12px}
@@ -121,8 +123,13 @@ function rowHtml(it, mode) {
   const av = it.avatar
     ? '<div class="ava" style="background-image:url(' + esc(it.avatar) + ')"></div>'
     : '<div class="ava">' + initial + '</div>';
-  const meta = [it.handle ? '@' + it.handle : '', it.followers ? shortN(it.followers) + ' متابع' : '',
+  const meta = [it.handle ? '@' + String(it.handle).replace(/^@/, '') : '',
+                it.followers ? shortN(it.followers) + ' متابع' : '',
                 CITY[it.city] || it.city || ''].filter(Boolean).join(' · ');
+  const acct = (it.account && /^https?:\/\//i.test(it.account)) ? it.account : '';
+  const nameHtml = acct
+    ? '<a class="acct" href="' + esc(acct) + '" target="_blank" rel="noopener">' + esc(it.name || 'معلن') + ' ↗</a>'
+    : esc(it.name || 'معلن');
   let right = '';
   if (mode === 'approve') {
     right = '<div class="price"><span class="num">' + num(it.price) + '</span> <small>ر.س</small></div>'
@@ -141,8 +148,10 @@ function rowHtml(it, mode) {
       ? ' <a class="watch" href="' + esc(it.publish_link) + '" target="_blank" rel="noopener">▶ الفيديو</a>' : '';
     right = '<span class="tag ' + t[0] + '">' + t[1] + '</span>' + pub;
   }
-  return '<div class="row" id="r-' + it.id + '">' + av
-       + '<div class="who"><div class="n">' + esc(it.name || 'معلن') + '</div>'
+  const avWrap = acct
+    ? '<a href="' + esc(acct) + '" target="_blank" rel="noopener" style="flex:none">' + av + '</a>' : av;
+  return '<div class="row" id="r-' + it.id + '">' + avWrap
+       + '<div class="who"><div class="n">' + nameHtml + '</div>'
        + '<div class="m">' + esc(meta) + '</div></div>' + right + '</div>';
 }
 
@@ -161,7 +170,7 @@ function render(d) {
   $('#app').innerHTML =
       '<div class="mast"><div class="kk">' + esc(d.brand || '') + '</div>'
     + '<h1>' + esc(c.title || 'الحملة') + '</h1>'
-    + '<p class="sub">اعتماد المعلنين والموافقة على المحتوى — بلا حاجة لحساب.</p></div>'
+    + '<p class="sub">اعتماد المعلنين والموافقة على المحتوى — بلا حاجة لحساب. اضغط اسم المعلن لفتح حسابه ومعاينته قبل القرار.</p></div>'
     + '<div class="band">'
     + '<div><div class="v"><span class="num">' + num(c.approved_count) + '</span></div><div class="l">معلن معتمد</div></div>'
     + '<div><div class="v"><span class="num">' + num(c.size) + '</span></div><div class="l">المقاعد المطلوبة</div></div>'
