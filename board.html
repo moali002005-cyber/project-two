@@ -1,0 +1,231 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<title>اعتماد المعلنين — Flfluencer</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap">
+<style>
+  :root{
+    --ground:#FBF8F6; --card:#FFFFFF; --ink:#16110F; --dim:#8A807B;
+    --line:#EFE8E4; --line2:#E2D9D4; --accent:#E23B2E; --accent-soft:#FDF1F0;
+    --good:#1D8F6B; --good-soft:#E8F5F0; --warn:#9A4B06; --warn-soft:#FBF0E4;
+    --bad:#C0392B; --shadow:0 1px 2px rgba(22,17,15,.05), 0 8px 26px rgba(22,17,15,.05);
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--ground);color:var(--ink);
+       font-family:"IBM Plex Sans Arabic","Segoe UI",Tahoma,sans-serif;
+       font-size:15px;line-height:1.8;padding:24px 16px 64px}
+  .wrap{max-width:820px;margin:0 auto}
+  .num{font-variant-numeric:tabular-nums;direction:ltr;display:inline-block;unicode-bidi:isolate}
+
+  .mast{border-bottom:2px solid var(--ink);padding-bottom:18px;margin-bottom:22px}
+  .kk{font-size:11.5px;font-weight:600;letter-spacing:2.4px;color:var(--accent);margin-bottom:8px}
+  h1{font-size:clamp(21px,4.6vw,28px);font-weight:700;margin:0 0 8px;line-height:1.4;text-wrap:balance}
+  .sub{font-size:14px;color:var(--dim);margin:0;line-height:1.9}
+
+  .band{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--line2);
+        border:1px solid var(--line2);border-radius:13px;overflow:hidden;margin:18px 0 8px}
+  .band>div{background:var(--card);padding:13px 12px}
+  .band .v{font-size:21px;font-weight:700;letter-spacing:-.5px}
+  .band .l{font-size:11.5px;color:var(--dim);margin-top:2px;line-height:1.5}
+
+  .brief{background:var(--card);border:1px solid var(--line);border-radius:13px;
+         padding:14px 16px;font-size:13.5px;line-height:1.95;color:#4a423f;margin-bottom:22px}
+  .brief b{color:var(--ink);display:block;font-size:12.5px;margin-bottom:5px}
+
+  h2{font-size:15.5px;font-weight:700;margin:26px 0 12px;display:flex;align-items:center;gap:9px;flex-wrap:wrap}
+  h2 .cnt{font-size:12px;font-weight:600;background:var(--accent-soft);color:var(--accent);
+          border-radius:99px;padding:2px 10px}
+  h2.ok .cnt{background:var(--good-soft);color:var(--good)}
+
+  .row{background:var(--card);border:1px solid var(--line);border-radius:14px;
+       padding:14px 16px;margin-bottom:10px;box-shadow:var(--shadow);
+       display:flex;gap:13px;align-items:center;flex-wrap:wrap}
+  .ava{width:40px;height:40px;border-radius:50%;flex:none;background:var(--accent);color:#fff;
+       display:flex;align-items:center;justify-content:center;font-weight:700;font-size:15px;
+       background-size:cover;background-position:center}
+  .who{flex:1 1 170px;min-width:0}
+  .who .n{font-size:15px;font-weight:700;line-height:1.4}
+  .who .m{font-size:12.5px;color:var(--dim);direction:ltr;text-align:right}
+  .price{font-size:15px;font-weight:700;white-space:nowrap}
+  .price small{font-weight:400;color:var(--dim);font-size:12px}
+  .acts{display:flex;gap:8px;flex:0 0 auto;flex-wrap:wrap}
+  button{font-family:inherit;cursor:pointer;border:0;border-radius:10px;
+         font-size:13.5px;font-weight:600;padding:9px 16px}
+  .ok{background:var(--accent);color:#fff}
+  .no{background:#fff;color:var(--bad);border:1px solid var(--line2)}
+  .watch{background:var(--warn-soft);color:var(--warn);text-decoration:none;
+         display:inline-block;padding:9px 14px;border-radius:10px;font-size:13.5px;font-weight:600}
+  button:disabled{opacity:.5;cursor:default}
+  .tag{font-size:11.5px;font-weight:600;padding:3px 10px;border-radius:7px;white-space:nowrap}
+  .tag.g{background:var(--good-soft);color:var(--good)}
+  .tag.w{background:var(--warn-soft);color:var(--warn)}
+  .tag.n{background:var(--line);color:var(--dim)}
+
+  .empty{background:var(--card);border:1px dashed var(--line2);border-radius:13px;
+         padding:22px;text-align:center;color:var(--dim);font-size:13.5px}
+  .foot{margin-top:34px;padding-top:16px;border-top:1px solid var(--line);
+        font-size:12.5px;color:var(--dim);line-height:1.9}
+  .err{background:var(--card);border:1px solid var(--line);border-radius:14px;
+       padding:30px 22px;text-align:center;box-shadow:var(--shadow)}
+  .err .ic{font-size:34px;margin-bottom:10px}
+  .err h3{margin:0 0 8px;font-size:18px}
+  .err p{margin:0;color:var(--dim);font-size:14px;line-height:1.9}
+
+  #toast{position:fixed;inset-inline:16px;bottom:18px;max-width:420px;margin:0 auto;
+         background:var(--ink);color:#fff;border-radius:12px;padding:13px 16px;
+         font-size:13.5px;display:none;z-index:99;text-align:center;box-shadow:0 10px 30px rgba(0,0,0,.25)}
+  @media (max-width:560px){ .band{grid-template-columns:repeat(2,1fr)} .acts{width:100%} .acts button{flex:1} }
+</style>
+</head>
+<body>
+<div class="wrap" id="app">
+  <div class="err"><div class="ic">⏳</div><h3>جارٍ التحميل…</h3><p></p></div>
+</div>
+<div id="toast"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+const SB_URL = 'https://chpzecgpylxqsutjydkb.supabase.co';
+const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNocHplY2dweWx4cXN1dGp5ZGtiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQyODgxNzQsImV4cCI6MjA5OTg2NDE3NH0.q4wmWKtJ5IPx8AgzMkp3SuFLZL9F10qKc3qiX5LB7kI';
+const sb = window.supabase.createClient(SB_URL, SB_KEY, { auth: { persistSession: false, autoRefreshToken: false } });
+
+const TOKEN = new URLSearchParams(location.search).get('t') || '';
+const $ = s => document.querySelector(s);
+const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const num = n => { const v = Number(n); return isFinite(v) ? Math.round(v).toLocaleString('en-US') : '—'; };
+const shortN = n => { const v = Number(n)||0; return v>=1000000 ? (v/1000000).toFixed(1).replace('.0','')+'M'
+                    : v>=1000 ? (v/1000).toFixed(0)+'K' : String(v); };
+const CITY = { riyadh:'الرياض', jeddah:'جدة', dammam:'الدمام', khobar:'الخبر', makkah:'مكة',
+               madinah:'المدينة', qassim:'القصيم', abha:'أبها', khamis:'خميس مشيط', taif:'الطائف', all:'كل المناطق' };
+const ERRS = {
+  bad_token:  ['🔗','رابط غير صالح','تأكد من نسخ الرابط كاملًا كما وصلك.'],
+  expired:    ['⌛','انتهت صلاحية الرابط','هذا الرابط مؤقت وانتهت مدته. اطلب رابطًا جديدًا من فلفلونسر.'],
+  revoked:    ['🚫','الرابط ملغى','تم إيقاف هذا الرابط. اطلب رابطًا جديدًا من فلفلونسر.'],
+  no_campaign:['❔','الحملة غير موجودة','يبدو أن الحملة حُذفت.']
+};
+
+function toast(msg, ms) {
+  const t = $('#toast'); t.textContent = msg; t.style.display = 'block';
+  clearTimeout(window.__tt); window.__tt = setTimeout(() => { t.style.display = 'none'; }, ms || 3200);
+}
+function showErr(code) {
+  const e = ERRS[code] || ['⚠️','تعذّر فتح الصفحة','يُرجى المحاولة مرة أخرى بعد قليل.'];
+  $('#app').innerHTML = '<div class="err"><div class="ic">' + e[0] + '</div><h3>' + esc(e[1]) + '</h3><p>' + esc(e[2]) + '</p></div>';
+}
+
+function rowHtml(it, mode) {
+  const initial = esc((it.name || '؟').trim().charAt(0));
+  const av = it.avatar
+    ? '<div class="ava" style="background-image:url(' + esc(it.avatar) + ')"></div>'
+    : '<div class="ava">' + initial + '</div>';
+  const meta = [it.handle ? '@' + it.handle : '', it.followers ? shortN(it.followers) + ' متابع' : '',
+                CITY[it.city] || it.city || ''].filter(Boolean).join(' · ');
+  let right = '';
+  if (mode === 'approve') {
+    right = '<div class="price"><span class="num">' + num(it.price) + '</span> <small>ر.س</small></div>'
+          + '<div class="acts">'
+          + '<button class="ok" onclick="decide(\'' + it.id + '\',\'approve\',this)">✓ اعتماد</button>'
+          + '<button class="no" onclick="decide(\'' + it.id + '\',\'reject\',this)">استبعاد</button></div>';
+  } else if (mode === 'content') {
+    const link = it.content_link
+      ? '<a class="watch" href="' + esc(it.content_link) + '" target="_blank" rel="noopener">▶ مشاهدة الفيديو</a>' : '';
+    right = '<div class="acts">' + link
+          + '<button class="ok" onclick="decide(\'' + it.id + '\',\'approve_content\',this)">✓ موافقة على المحتوى</button></div>';
+  } else {
+    const t = it.stage >= 9 ? ['g','مكتملة'] : it.stage >= 7 ? ['g','نُشر']
+            : it.approved ? ['w','قيد التنفيذ'] : ['n','قيد التفاوض'];
+    const pub = it.publish_link
+      ? ' <a class="watch" href="' + esc(it.publish_link) + '" target="_blank" rel="noopener">▶ الفيديو</a>' : '';
+    right = '<span class="tag ' + t[0] + '">' + t[1] + '</span>' + pub;
+  }
+  return '<div class="row" id="r-' + it.id + '">' + av
+       + '<div class="who"><div class="n">' + esc(it.name || 'معلن') + '</div>'
+       + '<div class="m">' + esc(meta) + '</div></div>' + right + '</div>';
+}
+
+function render(d) {
+  const c = d.campaign || {};
+  const items = d.items || [];
+  const waiting = items.filter(x => x.status === 'closed' && !x.approved);
+  const content = items.filter(x => x.approved && x.stage === 6);
+  const rest    = items.filter(x => !waiting.includes(x) && !content.includes(x));
+  const visit = c.type === 'visit' && c.visit_dates
+    ? '<div class="brief"><b>موعد الزيارة</b><span class="num">' + esc(c.visit_dates) + '</span>'
+      + (c.visit_from ? ' · من <span class="num">' + esc(c.visit_from) + '</span> إلى <span class="num">' + esc(c.visit_to || '') + '</span>' : '')
+      + (c.visit_location ? '<br><a href="' + esc(c.visit_location) + '" target="_blank" rel="noopener">الموقع على الخريطة ↗</a>' : '')
+      + '</div>' : '';
+
+  $('#app').innerHTML =
+      '<div class="mast"><div class="kk">' + esc(d.brand || '') + '</div>'
+    + '<h1>' + esc(c.title || 'الحملة') + '</h1>'
+    + '<p class="sub">اعتماد المعلنين والموافقة على المحتوى — بلا حاجة لحساب.</p></div>'
+    + '<div class="band">'
+    + '<div><div class="v"><span class="num">' + num(c.approved_count) + '</span></div><div class="l">معلن معتمد</div></div>'
+    + '<div><div class="v"><span class="num">' + num(c.size) + '</span></div><div class="l">المقاعد المطلوبة</div></div>'
+    + '<div><div class="v"><span class="num">' + num(waiting.length) + '</span></div><div class="l">ينتظر قرارك</div></div>'
+    + '<div><div class="v"><span class="num">' + num(content.length) + '</span></div><div class="l">محتوى للمراجعة</div></div>'
+    + '</div>'
+    + (c.brief ? '<div class="brief"><b>البريف</b>' + esc(c.brief) + '</div>' : '')
+    + visit
+    + (content.length
+        ? '<h2>محتوى ينتظر موافقتك <span class="cnt num">' + content.length + '</span></h2>'
+          + content.map(x => rowHtml(x, 'content')).join('') : '')
+    + '<h2>معلنون ينتظرون الاعتماد <span class="cnt num">' + waiting.length + '</span></h2>'
+    + (waiting.length ? waiting.map(x => rowHtml(x, 'approve')).join('')
+                      : '<div class="empty">ما فيه معلن ينتظر قرارًا الآن.</div>')
+    + (rest.length ? '<h2 class="ok">بقية المعلنين <span class="cnt num">' + rest.length + '</span></h2>'
+                     + rest.map(x => rowHtml(x, 'view')).join('') : '')
+    + '<div class="foot">هذا رابط خاص ومؤقت من <b>Flfluencer</b>، تنتهي صلاحيته في '
+    + '<span class="num">' + esc(String(d.expires_at || '').slice(0, 10)) + '</span>. '
+    + 'يُرجى عدم مشاركته — كل من يفتحه يقدر يعتمد المعلنين.</div>';
+}
+
+window.decide = async function (appId, action, btn) {
+  let reason = null;
+  if (action === 'reject') {
+    reason = window.prompt('سبب الاستبعاد (يصل للمعلن):', 'ما ناسب متطلبات الحملة');
+    if (reason === null) return;
+    if (!reason.trim()) { toast('يلزم كتابة سبب'); return; }
+  }
+  const row = document.getElementById('r-' + appId);
+  if (row) row.querySelectorAll('button').forEach(b => b.disabled = true);
+  if (btn) btn.textContent = '…';
+  try {
+    const { data, error } = await sb.rpc('board_decide',
+      { p_token: TOKEN, p_app: appId, p_action: action, p_reason: reason });
+    if (error) throw error;
+    if (data && data.error) {
+      const m = { not_closed:'الصفقة ما وصلت مرحلة الاتفاق بعد.',
+                  reason_required:'يلزم كتابة سبب.',
+                  not_stage_6:'المحتوى مو في مرحلة المراجعة.',
+                  expired:'انتهت صلاحية الرابط.', revoked:'الرابط ملغى.',
+                  bad_token:'رابط غير صالح.', not_in_campaign:'هذي الصفقة مو ضمن هذي الحملة.' };
+      throw new Error(m[data.error] || 'تعذّر تنفيذ الطلب.');
+    }
+    toast(action === 'reject' ? 'تم الاستبعاد ووصل إشعار للمعلن.'
+        : action === 'approve_content' ? 'تمت الموافقة على المحتوى — الصفقة انتقلت للنشر.'
+        : 'تم الاعتماد ووصل إشعار للمعلن.');
+    await load();
+  } catch (e) {
+    if (row) row.querySelectorAll('button').forEach(b => b.disabled = false);
+    toast(e.message || 'تعذّر تنفيذ الطلب — يُرجى المحاولة مرة أخرى.', 4200);
+    console.error(e);
+  }
+};
+
+async function load() {
+  if (!TOKEN) { showErr('bad_token'); return; }
+  try {
+    const { data, error } = await sb.rpc('board_view', { p_token: TOKEN });
+    if (error) throw error;
+    if (!data || data.error) { showErr(data && data.error); return; }
+    render(data);
+  } catch (e) { console.error(e); showErr('net'); }
+}
+load();
+</script>
+</body>
+</html>
