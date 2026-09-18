@@ -31,6 +31,9 @@
   .band .v{font-size:21px;font-weight:700;letter-spacing:-.5px}
   .band .l{font-size:11.5px;color:var(--dim);margin-top:2px;line-height:1.5}
 
+  .reach{background:var(--accent-soft);border:1px solid rgba(226,59,46,.18);border-radius:13px;
+         padding:13px 16px;font-size:14px;line-height:1.9;color:#6b2f28;margin:14px 0 18px}
+  .reach b{color:var(--accent);font-weight:700}
   .brief{background:var(--card);border:1px solid var(--line);border-radius:13px;
          padding:14px 16px;font-size:13.5px;line-height:1.95;color:#4a423f;margin-bottom:22px}
   .brief b{color:var(--ink);display:block;font-size:12.5px;margin-bottom:5px}
@@ -186,6 +189,10 @@ function render(d) {
     + '<div><div class="v"><span class="num">' + num(waiting.length) + '</span></div><div class="l">ينتظر قرارك</div></div>'
     + '<div><div class="v"><span class="num">' + num(content.length) + '</span></div><div class="l">محتوى للمراجعة</div></div>'
     + '</div>'
+    + '<div class="reach"><b><span class="num">' + num(c.total_apps) + '</span> معلنًا</b> تفاعلوا مع هذي الحملة'
+    + (c.agreed_count ? ' — <b><span class="num">' + num(c.agreed_count) + '</span></b> منهم وصلوا لاتفاق على السعر' : '')
+    + (c.waitlist_count ? '، و<b><span class="num">' + num(c.waitlist_count) + '</span></b> على قائمة الانتظار' : '')
+    + '.</div>'
     + (c.brief ? '<div class="brief"><b>البريف</b>' + esc(c.brief) + '</div>' : '')
     + visit
     + (content.length
@@ -194,7 +201,7 @@ function render(d) {
     + '<h2>معلنون ينتظرون الاعتماد <span class="cnt num">' + waiting.length + '</span></h2>'
     + (waiting.length ? waiting.map(x => rowHtml(x, 'approve')).join('')
                       : '<div class="empty">ما فيه معلن ينتظر قرارًا الآن.</div>')
-    + (rest.length ? '<h2 class="ok">بقية المعلنين <span class="cnt num">' + rest.length + '</span></h2>'
+    + (rest.length ? '<h2 class="ok">قيد التفاوض الآن <span class="cnt num">' + rest.length + '</span></h2>'
                      + rest.map(x => rowHtml(x, 'view')).join('') : '')
     + '<div class="foot">هذا رابط خاص ومؤقت من <b>Flfluencer</b>، تنتهي صلاحيته في '
     + '<span class="num">' + esc(String(d.expires_at || '').slice(0, 10)) + '</span>. '
