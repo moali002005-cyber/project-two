@@ -4375,9 +4375,62 @@ function renderSingleCampaign(c) {
 // رابط الحملة للمعلنين — يُنشر في قروب الواتساب، يفتح هذي الحملة وحدها داخل حساب المعلن
 async function copyCampaignLink(cid) {
   const url = location.origin + '/creator.html?c=' + cid;
-  try { await navigator.clipboard.writeText(url); }
-  catch (e) { window.prompt('نسخ رابط الحملة:', url); }
-  showToast('تم نسخ رابط الحملة — انشره بقروب المعلنين. يفتح الحملة مباشرة للمعلن المسجّل.', 'success', 7000);
+  try {
+    await navigator.clipboard.writeText(url);
+    showToast('تم نسخ رابط الحملة — انشره بقروب المعلنين. يفتح الحملة مباشرة للمعلن المسجّل.', 'success', 7000);
+  } catch (e) {
+    flfLinkBox('رابط الحملة للمعلنين', url, 'انشره بقروب المعلنين — يفتح هذي الحملة مباشرة للمعلن المسجّل.');
+  }
+}
+
+// صندوق الرابط — المتصفح يرفض النسخ التلقائي بعد أي انتظار للخادم (النسخ لازم يكون
+// داخل نفس نقرة المستخدم)، فنعرض الرابط جاهزًا مع زر نسخ يشتغل بنقرة جديدة.
+function flfLinkBox(title, url, note) {
+  const old = document.getElementById('flf-linkbox');
+  if (old) old.remove();
+  const esc = (t) => String(t).replace(/[&<>"]/g, c => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;' }[c]));
+  const wrap = document.createElement('div');
+  wrap.id = 'flf-linkbox';
+  wrap.style.cssText = 'position:fixed;inset:0;z-index:99999;background:rgba(22,17,15,.55);'
+    + 'display:flex;align-items:center;justify-content:center;padding:20px;direction:rtl';
+  wrap.innerHTML =
+      '<div style="background:#fff;border-radius:18px;max-width:520px;width:100%;padding:24px;'
+    + 'box-shadow:0 24px 60px rgba(0,0,0,.25);font-family:inherit">'
+    + '<div style="font-size:17px;font-weight:700;color:#16110F;margin:0 0 6px">' + esc(title) + '</div>'
+    + (note ? '<div style="font-size:13px;line-height:1.85;color:#8A807B;margin:0 0 14px">' + esc(note) + '</div>' : '')
+    + '<input id="flf-linkbox-input" readonly value="' + esc(url) + '" '
+    + 'style="width:100%;box-sizing:border-box;padding:12px 14px;border:1px solid #EFE8E4;border-radius:12px;'
+    + 'font-family:inherit;font-size:13px;direction:ltr;text-align:left;background:#FBF8F6;color:#16110F">'
+    + '<div style="display:flex;gap:10px;margin-top:14px;flex-wrap:wrap">'
+    + '<button id="flf-linkbox-copy" style="flex:1;min-width:130px;padding:12px;border:0;border-radius:100px;'
+    + 'background:#E23B2E;color:#fff;font-family:inherit;font-size:14px;font-weight:700;cursor:pointer">نسخ الرابط</button>'
+    + '<a href="https://wa.me/?text=' + encodeURIComponent(url) + '" target="_blank" rel="noopener" '
+    + 'style="flex:1;min-width:130px;padding:12px;border:1px solid #EFE8E4;border-radius:100px;background:#fff;'
+    + 'color:#16110F;font-size:14px;font-weight:600;text-decoration:none;text-align:center">إرسال بواتساب</a>'
+    + '<button id="flf-linkbox-close" style="padding:12px 18px;border:1px solid #EFE8E4;border-radius:100px;'
+    + 'background:#fff;color:#8A807B;font-family:inherit;font-size:14px;cursor:pointer">إغلاق</button>'
+    + '</div></div>';
+  document.body.appendChild(wrap);
+
+  const inp   = wrap.querySelector('#flf-linkbox-input');
+  const btn   = wrap.querySelector('#flf-linkbox-copy');
+  const close = () => wrap.remove();
+  wrap.querySelector('#flf-linkbox-close').onclick = close;
+  wrap.addEventListener('click', (e) => { if (e.target === wrap) close(); });
+
+  btn.onclick = async function () {
+    let ok = false;
+    try { await navigator.clipboard.writeText(url); ok = true; } catch (e) { /* نجرّب الطريقة القديمة */ }
+    if (!ok) {
+      try { inp.focus(); inp.select(); inp.setSelectionRange(0, url.length); ok = document.execCommand('copy'); }
+      catch (e) { ok = false; }
+    }
+    btn.textContent = ok ? '✓ تم النسخ' : 'انسخه يدويًا من الأعلى';
+    btn.style.background = ok ? '#1F9D55' : '#8A807B';
+    if (!ok) { inp.focus(); inp.select(); }
+  };
+
+  setTimeout(() => { try { inp.focus(); inp.select(); } catch (e) {} }, 60);
 }
 
 async function createBoardLink(cid) {
@@ -4388,9 +4441,8 @@ async function createBoardLink(cid) {
     if (d.error === 'not_owner') { showToast('هذي الحملة ليست ضمن حسابك', 'error'); return; }
     if (!d.ok || !d.token) throw new Error('no-token');
     const url = location.origin + '/board.html?t=' + d.token;
-    try { await navigator.clipboard.writeText(url); }
-    catch (e) { window.prompt('نسخ رابط الاعتماد:', url); }
-    showToast('تم نسخ رابط الاعتماد — صالح 7 أيام. أي أحد يفتحه يقدر يعتمد، فشاركه مع العميل فقط.', 'success', 8000);
+    flfLinkBox('رابط اعتماد العميل', url,
+      'صالح 7 أيام. يفتح بلا تسجيل دخول ويقدر صاحبه يعتمد ويستبعد ويوافق على المحتوى — ولا يعرض أي أسعار. شاركه مع العميل فقط.');
   } catch (e) {
     console.error('board link error:', e);
     showToast('تعذّر إنشاء رابط الاعتماد', 'error', 4000);

@@ -1425,6 +1425,7 @@ async function simblExitImpersonation(){
 <script>
 let currentUser = null;
 let allCampaigns = [];
+let myQuota = null; // حصة باقة المعلن (حد الحملات مدى الحياة) — تُقرأ من flf_my_campaign_quota
 let myApplications = [];
 let currentFilter = 'all';
 let expandedAppId = null;
@@ -1856,6 +1857,7 @@ async function loadData() {
       ]);
       await loadCampaignApprovedCounts();
       await loadMyCodes();
+      await loadMyQuota();
       // رسوم المعلن — جدول منفصل محمي بـ RLS، لا يصل الشركة إطلاقاً
       await loadCreatorFees(myApplications.map(function (a) { return a.id; }));
       updateHeroStats();
@@ -2202,7 +2204,7 @@ function renderUnified() {
   }
 
   if (myDeals) myDeals.innerHTML = matrixHtml;
-  list.innerHTML = focusBanner + openHtml;
+  list.innerHTML = focusBanner + quotaNoticeHtml() + openHtml;
   try { renderWallet(); } catch (e) { console.error('renderWallet:', e); }
   // بعد رسم النماذج: استرجع أي مسودّات محفوظة + فعّل الحفظ التلقائي
   try { restoreStageDrafts(); } catch (e) { console.warn('restoreStageDrafts:', e); }
@@ -2296,6 +2298,8 @@ function renderBrowseCard(c) {
     ? `<span class="lock-badge">🔒 غير متاح لك</span>`
     : isDone
       ? `<span class="full-badge">اكتمل العدد</span>`
+      : quotaExhausted()
+      ? `<a class="ac-applybtn" href="/plans-creator.html" style="text-decoration:none;display:inline-block">🔓 رقِّ باقتك للمشاركة</a>`
       : waitlistMode
         ? `<button class="ac-applybtn wl" onclick="enterNegotiation('${c.id}', this)">🕓 التسجيل في قائمة الانتظار</button>`
         : `<button class="ac-applybtn" onclick="enterNegotiation('${c.id}', this)">💬 التفاوض مع الوكيل</button>`;
@@ -3284,6 +3288,54 @@ function initialPriceFromBudget(campaign) {
 
 // دخول التفاوض مباشرة: ينشئ العرض (بدون سعر من المعلن)، يشغّل أول رسالة للوكيل، ثم يفتح المحادثة
 // تسجيل مباشر في قائمة الانتظار: ينشئ صفقة بحالة waitlisted ويعطي تأكيدًا + الترتيب، بلا محادثة
+// ====== حصة الباقة (حد الحملات) ======
+// الباقة المجانية تسمح بعدد محدود من الحملات مدى الحياة. نقرأ الحصة من الخادم
+// (نفس منطق التريقر) عشان نوضّح السبب للمعلن قبل ما يضغط، بدل رسالة خطأ عامة.
+async function loadMyQuota() {
+  myQuota = null;
+  try {
+    const { data, error } = await supabaseClient.rpc('flf_my_campaign_quota');
+    if (!error && Array.isArray(data) && data.length) myQuota = data[0];
+  } catch (e) { /* أفضل جهد — لو تعذّر نكمل عادي */ }
+}
+
+function quotaExhausted() {
+  return !!(myQuota && myQuota.lifetime_limit != null && Number(myQuota.remaining) <= 0);
+}
+
+function quotaNoticeHtml() {
+  if (!quotaExhausted()) return '';
+  return '<div style="max-width:760px;margin:0 auto 18px;padding:14px 16px;border:1px solid var(--line);'
+    + 'border-radius:14px;background:#FFF6F5;display:flex;align-items:center;gap:12px;flex-wrap:wrap">'
+    + '<span style="font-size:20px">🔓</span>'
+    + '<div style="flex:1;min-width:220px;font-size:14px;line-height:1.85;color:var(--ink)">'
+    + '<b>اكتملت حملات باقتك المجانية (' + toArabic(myQuota.lifetime_limit) + ' حملات).</b><br>'
+    + 'رقِّ باقتك للمشاركة في الحملات الجديدة — بدون حد على عدد الحملات.'
+    + '</div>'
+    + '<a href="/plans-creator.html" style="padding:10px 20px;border-radius:100px;background:var(--accent,#E23B2E);'
+    + 'color:#fff;text-decoration:none;font-weight:700;font-size:13.5px">عرض الباقات ←</a>'
+    + '</div>';
+}
+
+// يستخرج السبب الحقيقي من خطأ قاعدة البيانات بدل رسالة عامة تضيّع المعلن
+function applyErrorToast(err, fallback, btn, btnText) {
+  if (btn) { btn.disabled = false; btn.textContent = btnText; }
+  const msg  = String((err && (err.message || err.details || err.hint)) || '').trim();
+  const code = String((err && err.code) || '');
+  const esc  = (t) => String(t).replace(/[&<>"]/g, c => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;' }[c]));
+
+  // حد الباقة المجانية — نوضّحه مع طريق الترقية
+  if (/باقتك المجانية/.test(msg) || (code === '23514' && /حملات|اشترك/.test(msg))) {
+    loadMyQuota().then(renderUnified).catch(() => {});
+    showToast(esc(msg) + ' <a href="/plans-creator.html" style="color:inherit;text-decoration:underline;'
+      + 'font-weight:700;white-space:nowrap">عرض الباقات ←</a>', 'error', 12000);
+    return;
+  }
+  // أي رسالة عربية واضحة من الخادم (قيود أخرى) — اعرضها كما هي
+  if (/[؀-ۿ]/.test(msg)) { showToast(esc(msg), 'error', 8000); return; }
+  showToast(fallback, 'error');
+}
+
 async function registerWaitlist(campaign, btn) {
   if (btn) { btn.disabled = true; btn.textContent = 'جاري التسجيل...'; }
   try {
@@ -3308,8 +3360,7 @@ async function registerWaitlist(campaign, btn) {
     await loadData();
   } catch (err) {
     console.error('registerWaitlist failed:', err);
-    if (btn) { btn.disabled = false; btn.textContent = '🕓 التسجيل في قائمة الانتظار'; }
-    showToast('حصل خطأ أثناء التسجيل، يُرجى المحاولة مرة أخرى 🙏', 'error');
+    applyErrorToast(err, 'حصل خطأ أثناء التسجيل، يُرجى المحاولة مرة أخرى 🙏', btn, '🕓 التسجيل في قائمة الانتظار');
   }
 }
 
@@ -3426,8 +3477,7 @@ async function enterNegotiation(campaignId, btn) {
     startNegotiation(savedApplication.id);
   } catch (err) {
     console.error(err);
-    if (btn) { btn.disabled = false; btn.textContent = '💬 التفاوض مع الوكيل'; }
-    showToast('حصل خطأ أثناء فتح التفاوض. يُرجى المحاولة مرة أخرى.', 'error');
+    applyErrorToast(err, 'حصل خطأ أثناء فتح التفاوض. يُرجى المحاولة مرة أخرى.', btn, '💬 التفاوض مع الوكيل');
   }
 }
 

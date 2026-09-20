@@ -56,8 +56,6 @@
   .who .m{font-size:12.5px;color:var(--dim);direction:ltr;text-align:right;
           overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
   .who .n{overflow-wrap:anywhere}
-  .price{font-size:15px;font-weight:700;white-space:nowrap}
-  .price small{font-weight:400;color:var(--dim);font-size:12px}
   .acts{display:flex;gap:8px;flex:0 0 auto;flex-wrap:wrap}
   button{font-family:inherit;cursor:pointer;border:0;border-radius:10px;
          font-size:13.5px;font-weight:600;padding:9px 16px}
@@ -144,8 +142,7 @@ function rowHtml(it, mode) {
     : esc(clamp(it.name || 'معلن', 60));
   let right = '';
   if (mode === 'approve') {
-    right = '<div class="price"><span class="num">' + num(it.price) + '</span> <small>ر.س</small></div>'
-          + '<div class="acts">'
+    right = '<div class="acts">'
           + '<button class="ok" onclick="decide(\'' + it.id + '\',\'approve\',this)">✓ اعتماد</button>'
           + '<button class="no" onclick="decide(\'' + it.id + '\',\'reject\',this)">استبعاد</button></div>';
   } else if (mode === 'content') {
@@ -168,33 +165,15 @@ function rowHtml(it, mode) {
 }
 
 function render(d) {
-  const c = d.campaign || {};
-  const items = d.items || [];
+  const items   = d.items || [];
   const waiting = items.filter(x => x.status === 'closed' && !x.approved);
   const content = items.filter(x => x.approved && x.stage === 6);
   const rest    = items.filter(x => !waiting.includes(x) && !content.includes(x));
-  const visit = c.type === 'visit' && c.visit_dates
-    ? '<div class="brief"><b>موعد الزيارة</b><span class="num">' + esc(c.visit_dates) + '</span>'
-      + (c.visit_from ? ' · من <span class="num">' + esc(c.visit_from) + '</span> إلى <span class="num">' + esc(c.visit_to || '') + '</span>' : '')
-      + (c.visit_location ? '<br><a href="' + esc(c.visit_location) + '" target="_blank" rel="noopener">الموقع على الخريطة ↗</a>' : '')
-      + '</div>' : '';
 
+  // الصفحة مقصورة على المعلنين والقرار فقط — بلا اسم حملة ولا أرقام ولا بريف ولا أسعار.
   $('#app').innerHTML =
-      '<div class="mast"><div class="kk">' + esc(d.brand || '') + '</div>'
-    + '<h1>' + esc(c.title || 'الحملة') + '</h1>'
-    + '<p class="sub">اعتماد المعلنين والموافقة على المحتوى — بلا حاجة لحساب. اضغط اسم المعلن لفتح حسابه ومعاينته قبل القرار.</p></div>'
-    + '<div class="band">'
-    + '<div><div class="v"><span class="num">' + num(c.approved_count) + '</span></div><div class="l">معلن معتمد</div></div>'
-    + '<div><div class="v"><span class="num">' + num(c.size) + '</span></div><div class="l">المقاعد المطلوبة</div></div>'
-    + '<div><div class="v"><span class="num">' + num(waiting.length) + '</span></div><div class="l">ينتظر قرارك</div></div>'
-    + '<div><div class="v"><span class="num">' + num(content.length) + '</span></div><div class="l">محتوى للمراجعة</div></div>'
-    + '</div>'
-    + '<div class="reach"><b><span class="num">' + num(c.total_apps) + '</span> معلنًا</b> تفاعلوا مع هذي الحملة'
-    + (c.agreed_count ? ' — <b><span class="num">' + num(c.agreed_count) + '</span></b> منهم وصلوا لاتفاق على السعر' : '')
-    + (c.waitlist_count ? '، و<b><span class="num">' + num(c.waitlist_count) + '</span></b> على قائمة الانتظار' : '')
-    + '.</div>'
-    + (c.brief ? '<div class="brief"><b>البريف</b>' + esc(c.brief) + '</div>' : '')
-    + visit
+      '<div class="mast"><h1>اعتماد المعلنين</h1>'
+    + '<p class="sub">اضغط اسم المعلن لفتح حسابه ومعاينته، ثم اعتمد أو استبعد.</p></div>'
     + (content.length
         ? '<h2>محتوى ينتظر موافقتك <span class="cnt num">' + content.length + '</span></h2>'
           + content.map(x => rowHtml(x, 'content')).join('') : '')
@@ -203,7 +182,7 @@ function render(d) {
                       : '<div class="empty">ما فيه معلن ينتظر قرارًا الآن.</div>')
     + (rest.length ? '<h2 class="ok">قيد التفاوض الآن <span class="cnt num">' + rest.length + '</span></h2>'
                      + rest.map(x => rowHtml(x, 'view')).join('') : '')
-    + '<div class="foot">هذا رابط خاص ومؤقت من <b>Flfluencer</b>، تنتهي صلاحيته في '
+    + '<div class="foot">رابط خاص ومؤقت، تنتهي صلاحيته في '
     + '<span class="num">' + esc(String(d.expires_at || '').slice(0, 10)) + '</span>. '
     + 'يُرجى عدم مشاركته — كل من يفتحه يقدر يعتمد المعلنين.</div>';
 }
