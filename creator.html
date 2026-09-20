@@ -1529,6 +1529,19 @@ function isAdsView() {
   return new URLSearchParams(location.search).get('view') === 'ads';
 }
 
+// ===== رابط حملة محدّدة: /creator.html?c=<id> — يُرسل بقروب الواتساب =====
+function focusedCampaignId() {
+  try {
+    const v = new URLSearchParams(location.search).get('c') || '';
+    return /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(v) ? v : '';
+  } catch (e) { return ''; }
+}
+function clearCampaignFocus() {
+  try { history.replaceState(null, '', '/creator.html'); } catch (e) { /* تجاهل */ }
+  try { renderUnified(); } catch (e) { location.href = '/creator.html'; }
+  try { window.scrollTo({ top: 0, behavior: 'smooth' }); } catch (e) { /* تجاهل */ }
+}
+
 function applyAdsView() {
   const hero = document.querySelector('.hero'); if (hero) hero.style.display = 'none';
   const d = document.getElementById('my-deals'); if (d) d.style.display = 'none';
@@ -1670,7 +1683,11 @@ async function init() {
       }
       return;
     }
-    // لا cookie ولا مستخدم → غير مسجّل فعلاً
+    // لا cookie ولا مستخدم → غير مسجّل فعلاً.
+    // نحفظ وجهته (مثلاً رابط حملة من القروب) ليرجع لها بعد التسجيل/الدخول.
+    try {
+      if (focusedCampaignId()) localStorage.setItem('flf_after_login', '/creator.html' + location.search);
+    } catch (e) { /* تجاهل */ }
     window.location.href = '/signup.html';
     return;
   }
@@ -2081,7 +2098,7 @@ function renderUnified() {
                  (new Date(a.created_at || 0) - new Date(prev.myApp.created_at || 0));
     if (diff > 0) bestByCampaign.set(key, { c, myApp: a });
   });
-  const appliedItems = Array.from(bestByCampaign.values());
+  let appliedItems = Array.from(bestByCampaign.values());
 
   // ===== عروض متاحة: حسب التصنيف، وما قدّمت عليها =====
   const filtered = currentFilter === 'all'
@@ -2095,9 +2112,40 @@ function renderUnified() {
     return 0;                                                                 // مفتوحة → الأعلى
   };
   openAll.sort((a, b) => browseRank(a) - browseRank(b));
-  const openItems = openAll.map(c => ({ c }));
+  let openItems = openAll.map(c => ({ c }));
 
   const myDeals = document.getElementById('my-deals');
+
+  // ===== وضع «حملة محدّدة»: الرابط يحمل ?c=<id> فنعرضها وحدها =====
+  let focusItems = null, focusBanner = '';
+  const _focusId = focusedCampaignId();
+  if (_focusId) {
+    const _fc = allCampaigns.find(x => x.id === _focusId)
+             || ((bestByCampaign.get(_focusId) || {}).c);
+    focusItems = {
+      applied: appliedItems.filter(i => i.c && i.c.id === _focusId),
+      open:    openItems.filter(i => i.c && i.c.id === _focusId)
+    };
+    focusBanner =
+      '<div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;background:#FDF1F0;'
+      + 'border:1px solid #F6D9D6;border-radius:14px;padding:12px 14px;margin:0 0 14px;">'
+      + '<span style="flex:1;min-width:180px;font-size:13.5px;line-height:1.75;color:#7E2119;">'
+      + (_fc && _fc.title ? 'حملة: <b>' + escHtml(_fc.title) + '</b>' : 'حملة محدّدة')
+      + '</span>'
+      + '<button onclick="clearCampaignFocus()" style="padding:9px 16px;border:0;border-radius:100px;'
+      + 'background:#E23B2E;color:#fff;font-family:inherit;font-size:12.5px;font-weight:600;cursor:pointer;">'
+      + 'عرض كل الحملات</button></div>';
+
+    if (!focusItems.applied.length && !focusItems.open.length) {
+      if (myDeals) myDeals.innerHTML = '';
+      list.innerHTML = focusBanner
+        + '<div class="empty"><div class="icon">○</div><h3>هذي الحملة غير متاحة لك</h3>'
+        + '<p>يمكن اكتمل عددها، أو انتهت، أو استهدافها لمدينة أو تصنيف مختلف عن ملفك.</p></div>';
+      return;
+    }
+    appliedItems = focusItems.applied;
+    openItems    = focusItems.open;
+  }
 
   if (appliedItems.length === 0 && openItems.length === 0) {
     if (myDeals) myDeals.innerHTML = '';
@@ -2135,7 +2183,7 @@ function renderUnified() {
   }
 
   if (myDeals) myDeals.innerHTML = matrixHtml;
-  list.innerHTML = openHtml;
+  list.innerHTML = focusBanner + openHtml;
   try { renderWallet(); } catch (e) { console.error('renderWallet:', e); }
   // بعد رسم النماذج: استرجع أي مسودّات محفوظة + فعّل الحفظ التلقائي
   try { restoreStageDrafts(); } catch (e) { console.warn('restoreStageDrafts:', e); }

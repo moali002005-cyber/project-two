@@ -995,9 +995,19 @@ async function submitForm(event, role) {
   }
 }
 
+// وجهة ما بعد التسجيل: رابط حملة حُفظ قبل التحويل — مسارات داخلية فقط
+function flfAfterLogin(def) {
+  try {
+    const t = localStorage.getItem('flf_after_login') || '';
+    localStorage.removeItem('flf_after_login');
+    if (/^\/creator\.html(\?[^\s]*)?$/.test(t)) return t;
+  } catch (e) { /* تجاهل */ }
+  return def;
+}
+
 function goToDashboard(role) {
   if (role === 'creator') {
-    window.location.href = '/creator.html';
+    window.location.href = flfAfterLogin('/creator.html');
   } else {
     window.location.href = '/brand.html';
   }

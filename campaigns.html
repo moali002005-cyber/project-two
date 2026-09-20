@@ -4324,6 +4324,7 @@ function renderSingleCampaign(c) {
           ${waitlistApps.length > 0 ? `<button class="hero-cta" style="padding:10px 18px;font-size:13px;background:#5B6B7A;" onclick="openWaitlistModal('${c.id}')">🕓 قائمة الانتظار (${toArabic(waitlistApps.length)})</button>` : ''}
           <button class="hero-cta" style="padding:10px 18px;font-size:13px;background:#0f1512;" onclick="event.stopPropagation(); shareCampaignSnapshot('${c.id}')">🔗 مشاركة العرض (قراءة فقط)</button>
           <button class="hero-cta" style="padding:10px 18px;font-size:13px;background:#E23B2E;" onclick="event.stopPropagation(); createBoardLink('${c.id}')">✅ رابط اعتماد للعميل</button>
+          <button class="hero-cta" style="padding:10px 18px;font-size:13px;background:#25D366;color:#0b3b22;" onclick="event.stopPropagation(); copyCampaignLink('${c.id}')">📣 رابط الحملة للمعلنين</button>
         </div>
 
         ${apps.length > 0 ? `
@@ -4357,6 +4358,14 @@ function renderSingleCampaign(c) {
 }
 
 // ============ رابط اعتماد للعميل (بلا تسجيل دخول — صلاحية اعتماد ورفض ومراجعة محتوى) ============
+// رابط الحملة للمعلنين — يُنشر في قروب الواتساب، يفتح هذي الحملة وحدها داخل حساب المعلن
+async function copyCampaignLink(cid) {
+  const url = location.origin + '/creator.html?c=' + cid;
+  try { await navigator.clipboard.writeText(url); }
+  catch (e) { window.prompt('نسخ رابط الحملة:', url); }
+  showToast('تم نسخ رابط الحملة — انشره بقروب المعلنين. يفتح الحملة مباشرة للمعلن المسجّل.', 'success', 7000);
+}
+
 async function createBoardLink(cid) {
   try {
     const r = await supabaseClient.rpc('board_create', { p_campaign: cid, p_days: 7, p_label: 'رابط العميل' });

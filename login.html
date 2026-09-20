@@ -360,6 +360,17 @@ function hideError() {
 }
 
 // بعد نجاح المصادقة: نجيب ملف المستخدم من جدول users ونوجّهه
+
+// وجهة ما بعد الدخول: رابط حملة حُفظ قبل التحويل — مسارات داخلية فقط، بلا إعادة توجيه خارجية
+function flfAfterLogin(def) {
+  try {
+    const t = localStorage.getItem('flf_after_login') || '';
+    localStorage.removeItem('flf_after_login');
+    if (/^\/creator\.html(\?[^\s]*)?$/.test(t)) return t;
+  } catch (e) { /* تجاهل */ }
+  return def;
+}
+
 async function finishLogin(email, authUser) {
   let profile = null;
 
@@ -389,7 +400,7 @@ async function finishLogin(email, authUser) {
 
   saveCurrentUser(profile);
   if (profile.role === 'creator') {
-    window.location.href = '/creator.html';
+    window.location.href = flfAfterLogin('/creator.html');
   } else if (profile.role === 'brand') {
     window.location.href = '/brand.html';
   } else {
