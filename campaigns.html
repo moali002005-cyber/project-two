@@ -2169,6 +2169,9 @@ PROMO-02" style="width:100%;box-sizing:border-box;font-family:inherit;"></textar
     <p class="sub">لكل معلن معتمد فيديو خاص به — أرفق له الفيديو اللي تبيه، وهو الوحيد اللي يشوفه. ما فيه تكرار بين المعلنين.</p>
     <div id="clips-stats" style="background:#FBF8F6;border:1px solid #EFE8E4;border-radius:12px;padding:12px 14px;font-size:13px;line-height:1.95;color:#16110F"></div>
     <div id="clips-bulkbar" style="margin-top:14px"></div>
+    <div id="clips-progress" style="display:none;margin-top:12px;border:1px solid #E2DAFB;background:#F6F3FF;
+         border-radius:12px;padding:12px 14px;font-size:12.5px;line-height:1.9;color:#3B2E7A;
+         max-height:22vh;overflow:auto"></div>
     <div id="clips-list" style="max-height:46vh;overflow:auto;margin-top:12px"></div>
     <div class="modal-actions">
       <button type="button" class="btn-secondary" onclick="closeClipsModal()">إغلاق</button>
@@ -4456,10 +4459,13 @@ function clipsRender() {
     ? '<label style="display:inline-flex;align-items:center;gap:8px;border:0;background:#6B4EE6;color:#fff;'
       + 'font-size:13px;font-weight:700;padding:11px 20px;border-radius:100px;cursor:pointer">'
       + '<span id="clips-bulk-txt">⬆ رفع الفيديوهات دفعة واحدة</span>'
-      + '<input type="file" id="clips-bulk-input" accept="video/*,.mov,.MOV,.mp4,.m4v,.webm" multiple'
+      + '<input type="file" id="clips-bulk-input" multiple'
       + ' style="display:none" onchange="clipsBulkUpload(this)"></label>'
       + '<span style="font-size:11.5px;color:#8A807B;margin-inline-start:10px">'
       + 'حدّدها كلها مرة وحدة — يرفعها ويعطي كل معلن فيديو يخصّه بالترتيب، بلا تكرار.</span>'
+      + '<div style="font-size:11.5px;color:#8A807B;margin-top:8px;line-height:1.8">'
+      + 'على الآيفون: لو ملفاتك نزّلتها من واتساب اختر <b>«تصفّح»</b> أو تطبيق <b>«الملفات»</b> — '
+      + 'مكتبة الصور ما تعرضها. وخلّ الشاشة مفتوحة أثناء الرفع.</div>'
       + (spare
           ? '<div style="margin-top:10px;font-size:12.5px;color:#6B4EE6">'
             + '<b>' + toArabic(spare) + '</b> فيديو مرفوع بلا صاحب '
@@ -4487,7 +4493,7 @@ function clipsRender() {
         + 'font-family:inherit;font-size:11.5px;cursor:pointer">▶ معاينة</button>'
         + '<label style="border:1px solid #EFE8E4;background:#fff;border-radius:9px;padding:6px 11px;'
         + 'font-size:11.5px;cursor:pointer;white-space:nowrap">استبدال'
-        + '<input type="file" accept="video/*,.mov,.MOV,.mp4,.m4v,.webm" style="display:none"'
+        + '<input type="file" style="display:none"'
         + ' onchange="clipsAttach(\'' + a.id + '\', this)"></label>'
         + '<button onclick="clipsDetach(\'' + a.id + '\')" title="إزالة"'
         + ' style="border:0;background:none;color:#E23B2E;font-size:17px;cursor:pointer;padding:0 4px">×</button>'
@@ -4495,7 +4501,7 @@ function clipsRender() {
       : '<label style="display:inline-flex;align-items:center;gap:6px;border:1px solid #E23B2E;background:#FDF0EE;'
         + 'color:#7E2119;font-size:12px;font-weight:700;padding:8px 14px;border-radius:100px;cursor:pointer;white-space:nowrap">'
         + '＋ إرفاق فيديو'
-        + '<input type="file" accept="video/*,.mov,.MOV,.mp4,.m4v,.webm" style="display:none"'
+        + '<input type="file" style="display:none"'
         + ' onchange="clipsAttach(\'' + a.id + '\', this)"></label>';
 
     return '<div id="cliprow-' + a.id + '" style="display:flex;gap:10px;align-items:center;padding:10px 4px;'
@@ -4518,11 +4524,24 @@ function clipsRender() {
 async function clipsBulkUpload(input) {
   const files = Array.prototype.slice.call(input.files || []);
   input.value = '';
-  if (!files.length || !_clipsCid || _clipsBusy) return;
+  if (!_clipsCid || _clipsBusy) return;
+  if (!files.length) {
+    // صمت المنتقي أكثر ما يحيّر: قل له وين ملفاته بدل ما يظن إن الزر خربان
+    showToast('ما وصلني أي ملف. لو نزّلت الفيديوهات من واتساب، اختر «تصفّح» أو تطبيق «الملفات» — مكتبة الصور ما تعرضها.', 'error', 9000);
+    return;
+  }
   _clipsBusy = true;
 
-  const txt = document.getElementById('clips-bulk-txt');
   const setTxt = (t) => { const e = document.getElementById('clips-bulk-txt'); if (e) e.textContent = t; };
+  const box = document.getElementById('clips-progress');
+  const log = [];
+  const paint = (head) => {
+    if (!box) return;
+    box.style.display = 'block';
+    box.innerHTML = '<b>' + escHtml(head) + '</b><br>' + log.slice(-12).join('<br>');
+    box.scrollTop = box.scrollHeight;
+  };
+  paint('بدأ الرفع — ' + toArabic(files.length) + ' ملف. لا تغلق الصفحة.');
 
   // المعلنون بلا فيديو، بالأقدمية — هم الطابور
   let queue = _clipsApproved.filter(a => !_clipsByApp[a.id]).map(a => a.id);
@@ -4533,9 +4552,16 @@ async function clipsBulkUpload(input) {
 
   for (let i = 0; i < files.length; i++) {
     const f = files[i];
+    const mb = Math.round((f.size || 0) / 1048576);
     setTxt('جاري الرفع ' + toArabic(i + 1) + ' من ' + toArabic(files.length) + '...');
+    paint('جاري الرفع ' + toArabic(i + 1) + ' من ' + toArabic(files.length)
+          + ' — ' + toArabic(mb) + ' ميجا');
 
-    if (known.has(f.name)) { skipped++; continue; }   // مرفوع من قبل → تخطَّ
+    if (known.has(f.name)) {
+      skipped++;
+      log.push('↪︎ ' + escHtml(String(f.name).slice(-24)) + ' — مرفوع من قبل، تخطّيناه');
+      continue;
+    }
 
     try {
       const meta = await simblBriefUpload(_clipsCid, f, true);
@@ -4551,17 +4577,25 @@ async function clipsBulkUpload(input) {
           { p_campaign: _clipsCid, p_packs: [{ application_id: appId, clips: [ins.data.id] }] });
         if (r.error) throw r.error;
         if (r.data && r.data.error) throw new Error(r.data.error);
-        if (r.data && r.data.written) ok++; else { queue.unshift(appId); spare++; }
+        if (r.data && r.data.written) {
+          ok++;
+          const who = (_clipsApproved.find(x => x.id === appId) || {}).users || {};
+          log.push('✅ ' + escHtml(String(f.name).slice(-20)) + ' ← ' + escHtml(who.name || 'معلن'));
+        } else { queue.unshift(appId); spare++; log.push('📦 ' + escHtml(String(f.name).slice(-20)) + ' — محفوظ بلا صاحب'); }
       } else {
         spare++;   // ما بقي معلن ينتظر — يبقى في البنك لمن تعتمد غيرهم
+        log.push('📦 ' + escHtml(String(f.name).slice(-20)) + ' — محفوظ بلا صاحب');
       }
     } catch (e) {
       console.error('bulk upload failed:', f.name, e);
       failures.push((f.name || 'ملف') + ': ' + (e.message || ''));
+      log.push('❌ ' + escHtml(String(f.name).slice(-20)) + ' — ' + escHtml(e.message || 'فشل'));
     }
   }
 
   setTxt('⬆ رفع الفيديوهات دفعة واحدة');
+  paint('انتهى: وصل ' + toArabic(ok) + ' · محفوظ ' + toArabic(spare)
+        + ' · متخطّى ' + toArabic(skipped) + ' · فشل ' + toArabic(failures.length));
   _clipsBusy = false;
 
   let msg = 'وصل الفيديو لـ' + toArabic(ok) + ' معلن';
