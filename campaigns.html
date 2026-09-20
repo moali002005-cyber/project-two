@@ -4469,7 +4469,7 @@ async function clipsLoad() {
         .select('application_id, clip_id, campaign_clips(name, path)')
         .eq('campaign_id', _clipsCid),
       supabaseClient.from('campaign_clips')
-        .select('id, name, path, size_bytes').eq('campaign_id', _clipsCid).order('created_at')
+        .select('id, name, path, size_bytes, kind').eq('campaign_id', _clipsCid).order('created_at')
     ]);
     const data = asg.data; const error = asg.error || all.error;
     if (error) throw error;
@@ -4505,10 +4505,11 @@ function clipsRender() {
         ? '<br><span style="color:#8A807B;font-size:12.5px">المعلن اللي ما أرفقت له بعد يشوف في حسابه: «بانتظار إرفاق الشركة للفيديو».</span>'
         : '<br><span style="color:#1F9D55;font-size:12.5px">كل معلن معتمد عنده فيديوه 🌿</span>');
 
-  const spare = _clipsAll.filter(c => !Object.values(_clipsByApp).some(v => v.clip_id === c.id)).length;
+  const spare = _clipsAll.filter(c => (c.kind || 'raw') !== 'raw'
+                                   && !Object.values(_clipsByApp).some(v => v.clip_id === c.id)).length;
   const spareCount = spare;
   const pendingCount = left;
-  const bankCount = _clipsAll.length;
+  const bankCount = _clipsAll.filter(function (c) { return (c.kind || 'raw') === 'raw'; }).length;
   document.getElementById('clips-bulkbar').innerHTML = total
     ? '<label for="clips-bulk-input" style="display:inline-flex;align-items:center;gap:8px;border:0;'
       + 'background:#6B4EE6;color:#fff;'
@@ -4639,7 +4640,7 @@ async function clipsBulkUpload(input) {
     try {
       const meta = await simblBriefUpload(_clipsCid, f, true);
       const ins = await supabaseClient.from('campaign_clips')
-        .insert({ campaign_id: _clipsCid, path: meta.path, name: meta.name, quota: 1, size_bytes: f.size })
+        .insert({ campaign_id: _clipsCid, path: meta.path, name: meta.name, quota: 1, size_bytes: f.size, kind: 'final' })
         .select('id').single();
       if (ins.error) throw ins.error;
       known.add(fkey(f.name, f.size));
@@ -4696,7 +4697,7 @@ async function clipsBulkUpload(input) {
 async function clipsAssignSpare() {
   if (!_clipsCid || _clipsBusy) return;
   const taken = new Set(Object.values(_clipsByApp).map(v => v.clip_id));
-  const spare = _clipsAll.filter(c => !taken.has(c.id));
+  const spare = _clipsAll.filter(c => (c.kind || 'raw') !== 'raw' && !taken.has(c.id));
   const queue = _clipsApproved.filter(a => !_clipsByApp[a.id]).map(a => a.id);
   if (!spare.length || !queue.length) { showToast('ما فيه شي يُوزّع'); return; }
 
@@ -4804,7 +4805,7 @@ async function clipsPackUpload(input) {
       try {
         const meta = await simblBriefUpload(_clipsCid, f, true);
         const ins = await supabaseClient.from('campaign_clips')
-          .insert({ campaign_id: _clipsCid, path: meta.path, name: meta.name, quota: 1, size_bytes: f.size })
+          .insert({ campaign_id: _clipsCid, path: meta.path, name: meta.name, quota: 1, size_bytes: f.size, kind: 'raw' })
           .select('id').single();
         if (ins.error) throw ins.error;
         known.add(fkey(f.name, f.size)); ok++;
@@ -4895,7 +4896,7 @@ async function clipsAttach(appId, input) {
 
     const meta = await simblBriefUpload(_clipsCid, f, true);
     const ins = await supabaseClient.from('campaign_clips')
-      .insert({ campaign_id: _clipsCid, path: meta.path, name: meta.name, quota: 1, size_bytes: f.size })
+      .insert({ campaign_id: _clipsCid, path: meta.path, name: meta.name, quota: 1, size_bytes: f.size, kind: 'final' })
       .select('id').single();
     if (ins.error) throw ins.error;
 
