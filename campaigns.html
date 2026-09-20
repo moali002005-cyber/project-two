@@ -4583,14 +4583,13 @@ function flfBuildClipPacks(clips, creatorIds, k) {
   const pickOne = (pool, taken) => {
     const avail = pool.filter(id => left.get(id) > 0 && !taken.has(id));
     if (!avail.length) return null;
-    // الأعلى رصيدًا أولًا، مع عشوائية للتفريق بين المتساويات
-    let bestScore = -1, bucket = [];
-    for (const id of avail) {
-      const s = left.get(id);
-      if (s > bestScore) { bestScore = s; bucket = [id]; }
-      else if (s === bestScore) bucket.push(id);
-    }
-    return bucket[Math.floor(Math.random() * bucket.length)];
+    // نوازن بين شيئين: توزيع الحِمل (الأعلى رصيدًا أولًا) وبين العشوائية.
+    // اختيار «الأعلى رصيدًا» وحده يخلي الحزم الأولى متشابهة، فنسحب عشوائيًا
+    // من الشريحة الأعلى رصيدًا بدل ما نأخذ الأول دائمًا.
+    avail.sort((a, b) => left.get(b) - left.get(a));
+    const span = Math.max(3, Math.ceil(avail.length * 0.45));
+    const top = avail.slice(0, span);
+    return top[Math.floor(Math.random() * top.length)];
   };
 
   const draw = () => {
