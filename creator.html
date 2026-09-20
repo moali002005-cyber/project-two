@@ -2058,7 +2058,7 @@ function renderCreatorDealCard(c, a) {
       }
       strip += `<div class="dc-step"><div class="dc-box ${cls}">${ic}</div><div class="dc-lbl${s === stageNow ? ' on' : ''}">${st.n}</div></div>`;
     });
-    body = `${isCompleted ? '<div class="dc-done-banner">🎉 تمّت الحملة بنجاح — شكرًا لجهودك!</div>' : ''}<div class="dc-strip">${strip}</div><div class="dc-action">${renderStageAction(a.id, stageNow, 'creator')}</div>`;
+    body = `${isCompleted ? '<div class="dc-done-banner">🎉 تمّت الحملة بنجاح — شكرًا لجهودك!</div>' : ''}${isCompleted ? '' : flfMyVideoBlock(a)}<div class="dc-strip">${strip}</div><div class="dc-action">${renderStageAction(a.id, stageNow, 'creator')}</div>`;
   } else if (awaitingApproval) {
     body = a.is_reserve
       ? `<div class="dc-note" style="background:#FFF6EC;color:#9A4B06;border-right:3px solid #E8850C;">🕓 أنت ضمن قائمة الاحتياط الجاهزة لهذي الحملة. اكتمل العدد المطلوب حاليًا، وبمجرد ما ينفتح مكان بنرقّيك للتعميد فورًا 🌿</div>`
@@ -2071,7 +2071,7 @@ function renderCreatorDealCard(c, a) {
     const _expired = Date.now() >= _deadlineMs;
     if (_expired) {
       // انتهت المهلة — يُمنع الدخول، ويُعطى السبب (بيُستبدل تلقائيًا)
-      body = `<div class="dc-note" style="background:#FDECEA;color:#a93226;border-right:3px solid #c0392b;">⌛ <b>انتهت مهلتك</b> (15 دقيقة) قبل ما تبدأ التفاوض، فتم تمرير دورك للتالي في قائمة الانتظار.<br>نعتذر منك، ونتمنى نشوفك في حملة قادمة 🌿</div>`;
+      body = `<div class="dc-note" style="background:#FDECEA;color:#a93226;border-right:3px solid #c0392b;">⌛ <b>انتهت مهلتك</b> قبل ما تبدأ التفاوض، فتم تمرير دورك للتالي في قائمة الانتظار.<br>نعتذر منك، ونتمنى نشوفك في حملة قادمة 🌿</div>`;
     } else {
       const _dl = new Date(_deadlineMs).toISOString();
       body = `<div class="dc-note" style="background:#FFF6EC;color:#9A4B06;border-right:3px solid #E8850C;">🔔 <b>جاك دورك!</b> بفتح المحادثة يبدأ التفاوض مع الوكيل الآن.<br>باقي لك <span class="cd-timer" data-deadline="${_dl}" style="font-weight:700;">--:--</span> قبل ما يُلغى دورك ويُعطى للتالي في قائمة الانتظار.</div>`
@@ -2758,18 +2758,51 @@ async function renderBriefReference(body, c) {
 window.__clipCounts = {};
 let _clipPack = [];
 
+window.__clipPacks = {};
 async function loadMyClipCounts(appIds) {
   window.__clipCounts = {};
-  if (!window.supabaseClient || !appIds || !appIds.length) return;
+  window.__clipPacks = {};
+  if (!window.supabaseClient) return;
   try {
-    const { data } = await supabaseClient
-      .from('campaign_clip_assignments')
-      .select('application_id')
-      .in('application_id', appIds);
+    // استدعاء واحد يرجّع كل ما خُصّص لي في كل صفقاتي (جدول اللقطات محمي، فالدالة هي الباب)
+    const { data, error } = await supabaseClient.rpc('flf_my_clip_packs');
+    if (error) throw error;
     (data || []).forEach(function (r) {
+      (window.__clipPacks[r.application_id] = window.__clipPacks[r.application_id] || []).push(r);
       window.__clipCounts[r.application_id] = (window.__clipCounts[r.application_id] || 0) + 1;
     });
   } catch (e) { console.error('loadMyClipCounts:', e); }
+}
+
+// بطاقة بارزة داخل الصفقة: الفيديو الجاهز + تحميله بضغطة، بلا ما يدوّر في المرفقات
+function flfMyVideoBlock(a) {
+  const pack = (window.__clipPacks || {})[a.id] || [];
+  if (!pack.length) return '';
+  const one = pack.length === 1;
+  const btns = pack.map(function (r, i) {
+    return '<button onclick="event.stopPropagation(); downloadMyClip(\'' + a.id + '\',' + i + ')" '
+      + 'style="flex:1;min-width:150px;border:0;border-radius:12px;background:#6B4EE6;color:#fff;'
+      + 'font-family:inherit;font-size:14px;font-weight:700;padding:13px 16px;cursor:pointer">'
+      + '⬇ ' + (one ? 'تحميل الفيديو' : 'تحميل ' + toArabic(i + 1)) + '</button>';
+  }).join('');
+  return '<div style="background:#F6F3FF;border:1px solid #E2DAFB;border-radius:14px;padding:14px 16px;margin:0 0 12px;">'
+    + '<div style="font-size:14.5px;font-weight:700;color:#3B2E7A;margin-bottom:5px;">🎬 '
+    + (one ? 'فيديوك الجاهز وصل' : 'لقطاتك وصلت') + '</div>'
+    + '<div style="font-size:12.5px;color:#5B4FA0;line-height:1.85;margin-bottom:11px;">'
+    + (one ? 'هذا الفيديو مخصّص لك وحدك وما راح يتكرر مع أي معلن ثاني. اقرأ البريف، نزّله، وانشره حسب المطلوب.'
+           : 'هذي اللقطات مخصّصة لك — ركّبها بفيديو واحد حسب البريف.')
+    + '</div>'
+    + '<div style="display:flex;gap:9px;flex-wrap:wrap">' + btns + '</div></div>';
+}
+
+async function downloadMyClip(appId, idx) {
+  const pack = (window.__clipPacks || {})[appId] || [];
+  const item = pack[idx];
+  if (!item) return;
+  const url = await simblBriefSignedUrl(item.clip_path, 600, item.clip_name || true);
+  if (!url) { kitToast('تعذّر تجهيز رابط التحميل'); return; }
+  window.location.href = url;
+  kitToast('بدأ التحميل ⬇');
 }
 
 async function loadMyClipPack(appId) {
