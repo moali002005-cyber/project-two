@@ -477,21 +477,39 @@ async function simblBriefSignedUrl(path, seconds, downloadName) {
 // المسار لازم يبدأ بـ<campaign_id>/ لأن سياسات RLS تقرأ اسم المجلد الأول
 const SIMBL_VIDEO_TYPES = ['video/mp4', 'video/quicktime', 'video/webm'];
 const SIMBL_VIDEO_MAX_BYTES = 50 * 1024 * 1024;
+
+// بعض الأجهزة (آيفون خصوصًا، ومقاطع واتساب) ترسل الملف بلا نوع أو بنوع غريب.
+// نستنتج النوع من الامتداد بدل ما نرفض ملفًا سليمًا — وسلة التخزين ترفض ما لا نوع له.
+function simblFileType(file) {
+  const t = String((file && file.type) || '').toLowerCase();
+  if (SIMBL_VIDEO_TYPES.indexOf(t) >= 0 || SIMBL_BRIEF_TYPES.indexOf(t) >= 0) return t;
+  const n = String((file && file.name) || '').toLowerCase();
+  if (/\.(mov|qt)$/.test(n))   return 'video/quicktime';
+  if (/\.(mp4|m4v)$/.test(n))  return 'video/mp4';
+  if (/\.webm$/.test(n))       return 'video/webm';
+  if (/\.(jpg|jpeg)$/.test(n)) return 'image/jpeg';
+  if (/\.png$/.test(n))        return 'image/png';
+  if (/\.webp$/.test(n))       return 'image/webp';
+  return t;
+}
+
 async function simblBriefUpload(campaignId, file, allowVideo) {
   if (!campaignId) throw new Error('حملة غير معروفة');
-  const isVideo = SIMBL_VIDEO_TYPES.indexOf(file.type) >= 0;
+  const ftype = simblFileType(file);
+  const isVideo = SIMBL_VIDEO_TYPES.indexOf(ftype) >= 0;
   if (isVideo && !allowVideo) throw new Error('الفيديو مسموح في حملات «الفيديو الجاهز» فقط');
-  if (!isVideo && SIMBL_BRIEF_TYPES.indexOf(file.type) < 0) {
+  if (!isVideo && SIMBL_BRIEF_TYPES.indexOf(ftype) < 0) {
     throw new Error('الصيغة غير مدعومة — صور (JPG / PNG / WebP)' + (allowVideo ? ' أو فيديو (MP4 / MOV / WebM)' : ' فقط'));
   }
   const maxBytes = isVideo ? SIMBL_VIDEO_MAX_BYTES : SIMBL_BRIEF_MAX_BYTES;
   if (file.size > maxBytes) throw new Error('حجم «' + (file.name || 'الملف') + '» أكبر من ' + (isVideo ? '٥٠' : '١٠') + ' ميجا');
   const safe = (file.name || (isVideo ? 'video' : 'image')).replace(/[^\w.\-]+/g, '_').slice(-60);
-  const path = campaignId + '/' + Date.now() + '_' + safe;
+  // اسم فريد لكل ملف حتى لو رُفعت دفعتان في نفس المللي ثانية
+  const path = campaignId + '/' + Date.now() + '_' + Math.random().toString(36).slice(2, 8) + '_' + safe;
   const { error } = await supabaseClient.storage
-    .from(SIMBL_BRIEF_BUCKET).upload(path, file, { contentType: file.type, upsert: false });
+    .from(SIMBL_BRIEF_BUCKET).upload(path, file, { contentType: ftype, upsert: false });
   if (error) throw error;
-  return { path: path, name: file.name || safe, size: file.size, type: file.type, uploaded_at: new Date().toISOString() };
+  return { path: path, name: file.name || safe, size: file.size, type: ftype, uploaded_at: new Date().toISOString() };
 }
 
 async function simblBriefRemove(path) {
