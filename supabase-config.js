@@ -476,7 +476,9 @@ async function simblBriefSignedUrl(path, seconds, downloadName) {
 
 // المسار لازم يبدأ بـ<campaign_id>/ لأن سياسات RLS تقرأ اسم المجلد الأول
 const SIMBL_VIDEO_TYPES = ['video/mp4', 'video/quicktime', 'video/webm'];
-const SIMBL_VIDEO_MAX_BYTES = 50 * 1024 * 1024;
+// سلة التخزين تقبل حتى ٥١٢ ميجا. كان الحد ٥٠ ميجا فكان يرفض فيديوهات الجوال
+// الأصلية (٤٥-٩٠ ميجا) بصمت وسط زحمة الرفع. صار ٣٠٠ ميجا.
+const SIMBL_VIDEO_MAX_BYTES = 300 * 1024 * 1024;
 
 // بعض الأجهزة (آيفون خصوصًا، ومقاطع واتساب) ترسل الملف بلا نوع أو بنوع غريب.
 // نستنتج النوع من الامتداد بدل ما نرفض ملفًا سليمًا — وسلة التخزين ترفض ما لا نوع له.
@@ -502,7 +504,7 @@ async function simblBriefUpload(campaignId, file, allowVideo) {
     throw new Error('الصيغة غير مدعومة — صور (JPG / PNG / WebP)' + (allowVideo ? ' أو فيديو (MP4 / MOV / WebM)' : ' فقط'));
   }
   const maxBytes = isVideo ? SIMBL_VIDEO_MAX_BYTES : SIMBL_BRIEF_MAX_BYTES;
-  if (file.size > maxBytes) throw new Error('حجم «' + (file.name || 'الملف') + '» أكبر من ' + (isVideo ? '٥٠' : '١٠') + ' ميجا');
+  if (file.size > maxBytes) throw new Error('حجم «' + (file.name || 'الملف') + '» (' + Math.round(file.size/1048576) + ' ميجا) أكبر من الحد ' + (isVideo ? '٣٠٠' : '١٠') + ' ميجا');
   const safe = (file.name || (isVideo ? 'video' : 'image')).replace(/[^\w.\-]+/g, '_').slice(-60);
   // اسم فريد لكل ملف حتى لو رُفعت دفعتان في نفس المللي ثانية
   const path = campaignId + '/' + Date.now() + '_' + Math.random().toString(36).slice(2, 8) + '_' + safe;

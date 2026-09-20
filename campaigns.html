@@ -4500,6 +4500,13 @@ async function clipsAttach(appId, input) {
     + escHtml(String(f.name || '').slice(-30)) + '»... لا تغلق الصفحة</div>';
 
   try {
+    // نفس الملف لا يُرفق لمعلنَين — هذا جوهر الفكرة، فنمنعه قبل ما يُرفع
+    const dup = Object.keys(_clipsByApp).find(k => k !== appId && _clipsByApp[k].name === f.name);
+    if (dup) {
+      const who = (_clipsApproved.find(x => x.id === dup) || {}).users || {};
+      throw new Error('هذا الملف مُرفق مسبقًا لـ«' + (who.name || 'معلن آخر') + '» — اختر ملفًا غيره');
+    }
+
     // لو عنده فيديو سابق، نفكّ ارتباطه أولًا ثم نحذفه بعد نجاح الجديد
     const prev = _clipsByApp[appId];
     if (prev) {
