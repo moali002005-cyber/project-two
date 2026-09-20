@@ -1821,10 +1821,19 @@ PROMO-02" style="width:100%;box-sizing:border-box;font-family:inherit;"></textar
           <option value="15">15 معلن</option>
           <option value="20">20 معلن</option>
           <option value="30">30 معلن</option>
+          <option value="40">40 معلن</option>
           <option value="50">50 معلن</option>
+          <option value="60">60 معلن</option>
+          <option value="75">75 معلن</option>
           <option value="100">100 معلن</option>
+          <option value="120">120 معلن</option>
+          <option value="150">150 معلن</option>
           <option value="200">200 معلن</option>
+          <option value="250">250 معلن</option>
+          <option value="300">300 معلن</option>
+          <option value="custom">عدد آخر — أكتبه بنفسي</option>
         </select>
+        <input type="number" id="campaign-size-custom" min="1" max="1000" step="1" inputmode="numeric" placeholder="اكتب عدد المعلنين" style="display:none;margin-top:10px;">
         <div class="hint">عدد المعلنين المطلوب للحملة — يتوقّف التفاوض تلقائياً عند اكتمال العدد</div>
       </div>
 
@@ -3237,6 +3246,43 @@ const STAGE_NOTIFICATIONS = {
   9: { title: '🎉 صفقة مكتملة', body: 'تم استلام البيانات، الصفقة مكتملة بنجاح' }
 };
 
+
+// ===== حجم الحملة: «عدد آخر» يفتح حقل رقم حر (أي عدد من 1 إلى 1000) =====
+function flfSizeCustomSync() {
+  const sel = document.querySelector('[name="campaign_size"]');
+  const inp = document.getElementById('campaign-size-custom');
+  if (!sel || !inp) return;
+  const on = sel.value === 'custom';
+  inp.style.display = on ? '' : 'none';
+  inp.required = on;
+  if (!on) inp.value = '';
+}
+document.addEventListener('DOMContentLoaded', function () {
+  const sel = document.querySelector('[name="campaign_size"]');
+  // addEventListener مو onchange — عشان ما يدوسها منطق حملات «مقابل منتج»
+  if (sel) sel.addEventListener('change', flfSizeCustomSync);
+});
+// العدد النهائي: من القائمة أو من الحقل الحر
+function flfCampaignSize(fd) {
+  const raw = String(fd.get('campaign_size') || '');
+  if (raw === 'custom') {
+    const el = document.getElementById('campaign-size-custom');
+    const v = parseInt(el && el.value, 10);
+    return (v > 0 && v <= 1000) ? v : null;
+  }
+  return parseInt(raw, 10) || null;
+}
+// وضع التعديل: أي عدد محفوظ خارج القائمة يفتح «عدد آخر» بدل ما تطلع الخانة فاضية
+function flfSetSizeValue(form, val) {
+  const sel = (form || document).querySelector('[name="campaign_size"]');
+  const inp = document.getElementById('campaign-size-custom');
+  if (!sel) return;
+  const v = val ? String(val) : '';
+  sel.value = v;
+  if (v && sel.value !== v) { sel.value = 'custom'; if (inp) inp.value = v; }
+  flfSizeCustomSync();
+}
+
 function escHtml(s) {
   return String(s || '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 }
@@ -3602,7 +3648,7 @@ function setModalMode(mode, campaign) {
     form.querySelector('[name="publish_timing"]').value = campaign.publish_timing || '';
     togglePublishDate();
     if (campaign.publish_date) form.querySelector('[name="publish_date"]').value = campaign.publish_date;
-    form.querySelector('[name="campaign_size"]').value = campaign.campaign_size || '';
+    flfSetSizeValue(form, campaign.campaign_size);
     { const _ru = form.querySelector('[name="reference_url"]'); if (_ru) _ru.value = campaign.reference_url || ''; }
     { const _rn = form.querySelector('[name="reference_note"]'); if (_rn) _rn.value = campaign.reference_note || ''; }
     clearReferenceVideo();
@@ -3909,6 +3955,14 @@ async function submitCampaign(event) {
     return;
   }
 
+  // حجم الحملة: لو اختار «عدد آخر» لازم رقم صالح
+  if (!flfCampaignSize(fd)) {
+    showToast('اكتب عدد المعلنين — رقم من 1 إلى 1000.', 'error');
+    const _si = document.getElementById('campaign-size-custom');
+    if (_si && _si.style.display !== 'none') _si.focus();
+    return;
+  }
+
   submitBtn.disabled = true;
   submitBtn.textContent = editingCampaignId ? 'جاري الحفظ...' : 'جاري النشر...';
 
@@ -3922,7 +3976,7 @@ async function submitCampaign(event) {
     platform: platform,
     follower_range: fd.get('follower_range') || null,
     creator_tiers: (platform === 'tiktok' ? (fd.get('creator_tiers') || null) : null),
-    campaign_size: parseInt(fd.get('campaign_size')) || null,
+    campaign_size: flfCampaignSize(fd),
     campaign_type: fd.get('campaign_type') || 'home',
     visit_location: fd.get('visit_location') || null,
     visit_dates: (function () { const ds = Array.from(document.querySelectorAll('.visit-day-cb:checked')).map(c => c.value).sort(); return ds.length ? ds.join(',') : null; })(),
