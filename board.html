@@ -133,9 +133,9 @@ function rowHtml(it, mode) {
     ? '<div class="ava" style="background-image:url(' + esc(it.avatar) + ')"></div>'
     : '<div class="ava">' + initial + '</div>';
   const hnd = clamp(String(it.handle || '').replace(/^@/, ''), 28);
+  // بلا مدينة — صفحة الاعتماد مقصورة على ما يحتاجه القرار: الاسم والحساب والمتابعون
   const meta = [hnd ? '@' + hnd : '',
-                it.followers ? shortN(it.followers) + ' متابع' : '',
-                CITY[it.city] || it.city || ''].filter(Boolean).join(' · ');
+                it.followers ? shortN(it.followers) + ' متابع' : ''].filter(Boolean).join(' · ');
   const acct = (it.account && /^https?:\/\//i.test(it.account)) ? it.account : '';
   const nameHtml = acct
     ? '<a class="acct" href="' + esc(acct) + '" target="_blank" rel="noopener">' + esc(clamp(it.name || 'معلن', 60)) + ' ↗</a>'

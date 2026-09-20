@@ -2188,7 +2188,8 @@ PROMO-02" style="width:100%;box-sizing:border-box;font-family:inherit;"></textar
     </div>
     <p style="font-size:11.5px;color:#8A807B;margin:8px 0 0;line-height:1.7">
       MP4 / MOV / WebM — ٥٠ ميجا للملف كحد أقصى، وتقدر ترفع على دفعات (الجديد يُضاف للقديم).<br>
-      <b>التصنيف اختياري</b> — اتركه فاضيًا والتوزيع يطلع عشوائيًا بالكامل.</p>
+      <b>التصنيف اختياري</b> — اتركه فاضيًا والتوزيع يطلع عشوائيًا بالكامل.<br>
+      التوزيع <b>بالأقدمية</b>: الأسبق اعتمادًا يأخذ أولًا، ومن لم يكفه ملف ينتظر الدفعة الجاية.</p>
 
     <div id="clips-list" style="max-height:42vh;overflow:auto;margin-top:12px"></div>
 
@@ -4682,7 +4683,18 @@ async function clipsDistribute() {
   if (!_clipsCid) return;
   const btn = document.getElementById('clips-go');
   const k = Math.max(2, parseInt(document.getElementById('clips-k').value, 10) || 7);
-  const pending = _clipsApproved.filter(a => !_clipsAssigned[a.id]).map(a => a.id);
+  // بالأقدمية: الأسبق اعتمادًا يأخذ أولًا (ثم الأسبق تقديمًا عند التساوي).
+  // مهم لأن الملفات قد لا تكفي الجميع — فالترتيب هو العدل.
+  const pending = _clipsApproved
+    .filter(a => !_clipsAssigned[a.id])
+    .slice()
+    .sort((x, y) => {
+      const kx = new Date(x.brand_approved_at || x.closed_at || x.created_at).getTime();
+      const ky = new Date(y.brand_approved_at || y.closed_at || y.created_at).getTime();
+      if (kx !== ky) return kx - ky;
+      return new Date(x.created_at) - new Date(y.created_at);
+    })
+    .map(a => a.id);
   if (!pending.length) { showToast('كل المعلنين المعتمدين عندهم حزم أصلًا 🌿'); return; }
   if (_clipsRows.length < k) { showToast('اللقطات أقل من عدد اللقطات المطلوبة لكل معلن', 'error'); return; }
 

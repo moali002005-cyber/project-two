@@ -1546,6 +1546,8 @@ function flfPendingBits(c, appId) {
 function flfPendingLabel(c, appId) {
   const b = flfPendingBits(c, appId);
   if (!b.any) return '';
+  // معلن معتمد على حملة فيديو وما وصله نصيبه بعد → السبب واضح: الشركة ما أرفقت فيديوه.
+  if (appId && b.noFiles) return 'بانتظار إرفاق الشركة للفيديو';
   if (b.noBrief && b.noFiles) return 'البريف والمحتوى قيد التجهيز';
   if (b.noFiles) return 'المحتوى قيد التجهيز';
   return 'البريف قيد التجهيز';
@@ -2831,10 +2833,10 @@ async function openAttachModal(appId) {
   document.getElementById('attachModalTitle').textContent = 'مرفقات: ' + (c.title || a.title || 'الحملة');
   const body = document.getElementById('attachModalBody');
   if (!_attachList.length) {
-    const _lbl = flfPendingLabel(c);
+    const _lbl = flfPendingLabel(c, appId);
     body.innerHTML = _lbl
       ? '<div style="background:#FDF1F0;border:1px solid #F6D9D6;border-radius:12px;padding:14px 16px;color:#7E2119;font-size:13px;line-height:1.95;">'
-        + '⏳ <b>' + _lbl + '</b><br>الشركة ما أضافتها بعد. أول ما تضيفها يوصلك إشعار وتلقاها هنا مباشرة — ما يلزمك تتابع الصفحة.'
+        + '⏳ <b>' + _lbl + '</b><br>الشركة ما أرفقته بعد. أول ما ترفقه يوصلك إشعار وتلقاه هنا مباشرة — ما يلزمك تتابع الصفحة.'
         + '</div>'
       : 'ما فيه مرفقات لهذه الحملة.';
   } else {
