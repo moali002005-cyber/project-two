@@ -2058,7 +2058,12 @@ function renderCreatorDealCard(c, a) {
       }
       strip += `<div class="dc-step"><div class="dc-box ${cls}">${ic}</div><div class="dc-lbl${s === stageNow ? ' on' : ''}">${st.n}</div></div>`;
     });
-    body = `${isCompleted ? '<div class="dc-done-banner">🎉 تمّت الحملة بنجاح — شكرًا لجهودك!</div>' : ''}${isCompleted ? '' : flfMyVideoBlock(a)}<div class="dc-strip">${strip}</div><div class="dc-action">${renderStageAction(a.id, stageNow, 'creator')}</div>`;
+    // من وصله نصيبه من الشركة (الفيديو الجاهز) ما نعرض له البنك — لا نشتّته عن مهمته
+    const _hasMine = ((window.__clipCounts || {})[a.id] || 0) > 0;
+    const _bankBtn = (!isCompleted && !_hasMine && c.campaign_type === 'video')
+      ? `<div style="margin:0 0 12px"><button onclick="event.stopPropagation(); openBankModal('${a.id}')" style="width:100%;border:1px solid #6B4EE6;background:#fff;color:#6B4EE6;font-family:inherit;font-size:13.5px;font-weight:700;padding:12px;border-radius:12px;cursor:pointer">🗂 تصفّح محتوى الحملة واختر اللي يعجبك</button></div>`
+      : '';
+    body = `${isCompleted ? '<div class="dc-done-banner">🎉 تمّت الحملة بنجاح — شكرًا لجهودك!</div>' : ''}${isCompleted ? '' : flfMyVideoBlock(a)}${_bankBtn}<div class="dc-strip">${strip}</div><div class="dc-action">${renderStageAction(a.id, stageNow, 'creator')}</div>`;
   } else if (awaitingApproval) {
     body = a.is_reserve
       ? `<div class="dc-note" style="background:#FFF6EC;color:#9A4B06;border-right:3px solid #E8850C;">🕓 أنت ضمن قائمة الاحتياط الجاهزة لهذي الحملة. اكتمل العدد المطلوب حاليًا، وبمجرد ما ينفتح مكان بنرقّيك للتعميد فورًا 🌿</div>`
@@ -2793,6 +2798,101 @@ function flfMyVideoBlock(a) {
            : 'هذي اللقطات مخصّصة لك — ركّبها بفيديو واحد حسب البريف.')
     + '</div>'
     + '<div style="display:flex;gap:9px;flex-wrap:wrap">' + btns + '</div></div>';
+}
+
+// ====== تصفّح محتوى الحملة واختيار ما يعجب المعلن ======
+// المعلن يشوف كل اللقطات ويختار بنفسه. عدّاد «مأخوذة N مرة» ظاهر عمدًا:
+// يخلي الاختيار يتوزّع طبيعيًا فتقلّ الفيديوهات المتشابهة، بلا ما نفرض عليه حزمة.
+let _bankAppId = null, _bank = [];
+
+async function openBankModal(appId) {
+  _bankAppId = appId;
+  document.getElementById('bankModalBody').innerHTML =
+    '<div style="padding:22px;text-align:center;color:#6B7B74;font-size:13px">جاري التحميل...</div>';
+  document.getElementById('bankModal').classList.add('show');
+  await loadBank();
+}
+function closeBankModal() {
+  document.getElementById('bankModal').classList.remove('show');
+  _bankAppId = null;
+}
+
+async function loadBank() {
+  try {
+    const { data, error } = await supabaseClient.rpc('flf_clip_bank', { p_application: _bankAppId });
+    if (error) throw error;
+    _bank = Array.isArray(data) ? data : [];
+    renderBank();
+  } catch (e) {
+    document.getElementById('bankModalBody').innerHTML =
+      '<div style="padding:18px;color:#c0392b;font-size:13px">تعذّر التحميل — ' + escAtt(e.message || '') + '</div>';
+  }
+}
+
+function renderBank() {
+  const body = document.getElementById('bankModalBody');
+  if (!_bank.length) {
+    body.innerHTML = '<div style="padding:22px;text-align:center;color:#6B7B74;font-size:13px">'
+      + 'الشركة ما أضافت محتوى بعد. أول ما تضيفه يوصلك إشعار.</div>';
+    return;
+  }
+  const mine = _bank.filter(function (c) { return c.mine; }).length;
+  // الأقل استخدامًا أولًا: نوجّه الاختيار بلطف بدل ما يتكدّس الجميع على أول لقطة
+  const items = _bank.slice().sort(function (a, b) { return (a.taken_by - b.taken_by); });
+
+  body.innerHTML =
+      '<div style="background:#F6F3FF;border:1px solid #E2DAFB;border-radius:12px;padding:11px 14px;'
+    + 'font-size:12.5px;line-height:1.85;color:#3B2E7A;margin-bottom:12px">'
+    + 'اختر اللي يعجبك وركّبه بفيديو واحد. <b>اخترت ' + toArabic(mine) + ' من ١٢.</b><br>'
+    + '<span style="color:#6B5FA8">الرقم تحت كل لقطة يقول كم معلن أخذها — اختيار الأقل استخدامًا يخلي فيديوك مميزًا وما يشبه غيرك.</span>'
+    + '</div>'
+    + '<div style="display:flex;flex-wrap:wrap;gap:11px">'
+    + items.map(function (c) {
+        const hot = c.taken_by >= 8;
+        return '<div style="width:142px;border:1px solid ' + (c.mine ? '#6B4EE6' : '#E7E9EE') + ';'
+          + 'border-radius:12px;overflow:hidden;background:#fff">'
+          + '<div style="height:64px;background:' + (c.mine ? '#EFEAFD' : '#F1F2F5') + ';display:flex;'
+          + 'align-items:center;justify-content:center;font-size:21px">🎬</div>'
+          + '<div style="padding:6px 7px 2px;font-size:10.5px;color:#4A5A53;line-height:1.4;'
+          + 'height:28px;overflow:hidden">' + escAtt(c.clip_category || c.clip_name || 'لقطة') + '</div>'
+          + '<div style="padding:0 7px 5px;font-size:10px;color:' + (hot ? '#c0392b' : '#8A807B') + '">'
+          + 'مأخوذة ' + toArabic(c.taken_by) + ' مرة' + (hot ? ' · كثيرة' : '') + '</div>'
+          + '<div style="padding:0 6px 7px;display:flex;gap:5px">'
+          + '<button onclick="toggleBankClip(\'' + c.clip_id + '\',' + (c.mine ? 'false' : 'true') + ')" '
+          + 'style="flex:1;font-family:inherit;font-size:10.5px;font-weight:700;border:0;border-radius:8px;'
+          + 'padding:6px 0;cursor:pointer;background:' + (c.mine ? '#6B4EE6' : '#EFEAFD') + ';'
+          + 'color:' + (c.mine ? '#fff' : '#3B2E7A') + '">' + (c.mine ? '✓ اخترتها' : 'اختيار') + '</button>'
+          + '<button onclick="downloadBankClip(\'' + c.clip_id + '\')" title="تحميل" '
+          + 'style="font-family:inherit;font-size:11px;border:1px solid #E7E9EE;background:#fff;'
+          + 'border-radius:8px;padding:6px 9px;cursor:pointer">⬇</button>'
+          + '</div></div>';
+      }).join('')
+    + '</div>';
+}
+
+async function toggleBankClip(clipId, take) {
+  try {
+    const { data, error } = await supabaseClient.rpc('flf_clip_take',
+      { p_application: _bankAppId, p_clip: clipId, p_take: take });
+    if (error) throw error;
+    if (data && data.error === 'max_reached') {
+      kitToast('وصلت الحد الأقصى (' + toArabic(data.max) + ' لقطات). شِل وحدة قبل ما تضيف غيرها.');
+      return;
+    }
+    if (data && data.error) throw new Error(data.error);
+    await loadBank();
+    await loadMyClipCounts();
+    renderUnified();
+  } catch (e) { kitToast('تعذّر: ' + (e.message || '')); }
+}
+
+async function downloadBankClip(clipId) {
+  const c = _bank.find(function (x) { return x.clip_id === clipId; });
+  if (!c) return;
+  const url = await simblBriefSignedUrl(c.clip_path, 600, c.clip_name || true);
+  if (!url) { kitToast('تعذّر تجهيز رابط التحميل'); return; }
+  window.location.href = url;
+  kitToast('بدأ التحميل ⬇');
 }
 
 async function downloadMyClip(appId, idx) {
@@ -4266,6 +4366,15 @@ function feeLines(a) {
 </div>
 
 <!-- مودال مرفقات الحملة (يفتحه زر «📎 المرفقات» — للمعلن المعتمد فقط) -->
+<div class="brief-modal" id="bankModal" onclick="if(event.target===this)closeBankModal()">
+  <div class="brief-modal-card">
+    <div class="brief-modal-head">
+      <strong>🗂 محتوى الحملة</strong>
+      <button class="brief-modal-x" onclick="closeBankModal()" aria-label="إغلاق">×</button>
+    </div>
+    <div class="brief-modal-body" id="bankModalBody"></div>
+  </div>
+</div>
 <div class="brief-modal" id="attachModal" onclick="if(event.target===this)closeAttachModal()">
   <div class="brief-modal-card">
     <div class="brief-modal-head">
