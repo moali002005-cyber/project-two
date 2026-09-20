@@ -1552,6 +1552,9 @@ table.xl td.cell.copied .dp, table.xl td.cell.copied .dues-link { color:#fff; }
 .mx-final { background: #0F1420; color: #fff; }
 .mx-ord { font-style: normal; opacity: .7; }
 .mx-act { background: var(--accent); color: #fff; font-size: 13px; }
+/* صفقة علّمتها الشركة بـ★ — الزر يصير ذهبيًا فتميّزها بنظرة واحدة وسط الجدول */
+tr.flagged .mx-in.mx-act { background: #E8C547; color: #16110F; }
+tr.flagged .mx-name::before { content: '★ '; color: #C9A227; font-size: 12px; }
 .mx-wait { background: #FBF3E2; color: #854F0B; }
 .mx-future { color: #cfcfca; }
 .mx-cell.click:hover .mx-in { filter: brightness(0.96); }
@@ -4262,7 +4265,7 @@ function renderDealRow(a, idx, campaignType, fulfillmentMode) {
     : '';
 
   return `
-    <tr id="ac-${a.id}">
+    <tr id="ac-${a.id}"${(window.BRAND_FLAGS || {})[a.id] ? ' class="flagged"' : ''}>
       <td class="mx-idx">${toArabic(idx + 1)}</td>
       <td class="mx-name"><div style="display:flex;align-items:center;gap:8px;"><span class="mx-av">${escHtml(initial)}</span><span style="font-weight:600;color:var(--ink);flex:1;min-width:0;">${nameHtml}</span><button class="app-chat-btn" title="محادثة مباشرة مع المعلن" onclick="event.stopPropagation(); openDirectChat('${a.id}')">💬 محادثة</button>${awaitingApproval ? '' : `<button class="app-swap-btn" title="استبدال هذا المعلن بالتالي من قائمة الانتظار" onclick="event.stopPropagation(); openRejectModal('${a.id}')">↔ استبدال</button>`}</div></td>
       ${cells}
