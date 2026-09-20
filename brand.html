@@ -1726,6 +1726,10 @@ PROMO-02" style="width:100%;box-sizing:border-box;font-family:inherit;"></textar
         </label>
         <div id="video-files-list" style="margin-top:9px;display:flex;flex-direction:column;gap:6px;"></div>
         <div class="hint">MP4 / MOV / WebM بحجم أقصى ٥٠ ميجابايت للملف، وحتى ١٥ ملفاً للحملة، مع إمكانية إضافة صور حتى ١٠ ميجابايت. تُرفع مع نشر الحملة وتظهر للمعلن المعتمد فقط.</div>
+        <label style="display:flex;align-items:flex-start;gap:9px;margin-top:12px;padding:11px 13px;border:1px solid #EFE8E4;border-radius:12px;background:#FBF8F6;font-size:12.5px;color:#4a423f;line-height:1.85;cursor:pointer;">
+          <input type="checkbox" id="content-pending-cb" style="margin-top:4px;flex-shrink:0;width:16px;height:16px;accent-color:#E23B2E;">
+          <span><b>البريف والمحتوى قيد التجهيز</b> — انشر الحملة الآن وأضِف البريف والفيديوهات لاحقًا. يظهر للمعلن المعتمد أنها قيد التجهيز، ويصله إشعار فور اكتمالها.</span>
+        </label>
       </div>
 
 
@@ -3283,6 +3287,25 @@ function flfSetSizeValue(form, val) {
   flfSizeCustomSync();
 }
 
+
+// «البريف والمحتوى قيد التجهيز»: يرفع إلزام البريف ويسمح بالنشر بلا فيديوهات
+function flfPendingToggle() {
+  const cb = document.getElementById('content-pending-cb');
+  const ta = document.querySelector('[name="description"]');
+  if (!ta) return;
+  const on = !!(cb && cb.checked);
+  ta.required = !on;
+  ta.placeholder = on
+    ? 'بالإمكان تركه فارغًا الآن — يُضاف البريف لاحقًا ويصل المعلنين المعتمدين إشعار.'
+    : ta.dataset.ph || ta.placeholder;
+}
+document.addEventListener('DOMContentLoaded', function () {
+  const ta = document.querySelector('[name="description"]');
+  if (ta) ta.dataset.ph = ta.placeholder;
+  const cb = document.getElementById('content-pending-cb');
+  if (cb) cb.addEventListener('change', flfPendingToggle);
+});
+
 function escHtml(s) {
   return String(s || '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 }
@@ -3995,8 +4018,12 @@ async function submitCampaign(event) {
     tags: [industry]
   };
   const _codesRaw = fd.get('codes_list') || '';
-  if (campaign.campaign_type === 'video' && !editingCampaignId && !(window._vidFiles || []).length) {
-    showToast('يلزم إرفاق فيديوهات الحملة أولاً — زر «🎬 اختيار الفيديوهات من الجهاز».', 'error');
+  // المحتوى قيد التجهيز: يُسمح بالنشر بلا فيديوهات، والمعلن يشوف حالة واضحة
+  const _pendingCb = document.getElementById('content-pending-cb');
+  const _contentPending = !!(_pendingCb && _pendingCb.checked);
+  if (campaign.campaign_type === 'video' && !editingCampaignId
+      && !(window._vidFiles || []).length && !_contentPending) {
+    showToast('يلزم إرفاق فيديوهات الحملة أولاً — أو تحديد «البريف والمحتوى قيد التجهيز» للنشر الآن والإضافة لاحقًا.', 'error');
     submitBtn.disabled = false; submitBtn.textContent = original; return;
   }
   if (campaign.fulfillment_mode === 'code' && !editingCampaignId) {
@@ -4029,15 +4056,43 @@ async function submitCampaign(event) {
   try {
     if (editingCampaignId) {
       // وضع التعديل
+      const _prevCamp = (typeof myCampaigns !== 'undefined' ? (myCampaigns || []) : []).find(x => x.id === editingCampaignId);
+      const _briefWasEmpty = !String((_prevCamp && _prevCamp.description) || '').trim();
       const { error } = await supabaseClient
         .from('campaigns')
         .update(campaign)
         .eq('id', editingCampaignId);
       if (error) throw error;
 
+      // البريف كان فاضي وانضاف الآن → إشعار المعلنين المعتمدين
+      if (_briefWasEmpty && String(campaign.description || '').trim()) {
+        try {
+          const _rb = await supabaseClient.rpc('flf_notify_content_ready', { p_campaign: editingCampaignId, p_kind: 'brief' });
+          const _cb = Number(_rb && _rb.data) || 0;
+          if (_cb) showToast('وصل إشعار «البريف جاهز» لـ ' + _cb + ' معلن معتمد 🔔', 'success', 6000);
+        } catch (nErr) { console.warn('notify brief ready:', nErr); }
+      }
+
       if (window._refFile) {
         try { await uploadReferenceVideo(editingCampaignId); }
         catch (refErr) { console.error('reference upload failed:', refErr); showToast('حُفظت التعديلات، لكن الفيديو المرجعي لم يُرفع: ' + (refErr.message || ''), 'error'); }
+      }
+
+      // رفع فيديوهات متأخرة لحملة كانت «قيد التجهيز» + إشعار المعلنين المعتمدين
+      if (campaign.campaign_type === 'video' && (window._vidFiles || []).length) {
+        try {
+          const _ecamp = (typeof myCampaigns !== 'undefined' ? (myCampaigns || []) : []).find(x => x.id === editingCampaignId);
+          const _prev = simblBriefList(_ecamp);
+          const _nv = await uploadPickedVideos(editingCampaignId, _prev, submitBtn);
+          if (_nv) showToast('انضاف ' + _nv + ' ملف لمرفقات الحملة 🎬', 'success');
+          if (_nv && _prev.length === 0) {
+            try {
+              const _r = await supabaseClient.rpc('flf_notify_content_ready', { p_campaign: editingCampaignId, p_kind: 'content' });
+              const _c = Number(_r && _r.data) || 0;
+              if (_c) showToast('وصل إشعار «المحتوى جاهز» لـ ' + _c + ' معلن معتمد 🔔', 'success', 6000);
+            } catch (nErr) { console.warn('notify content ready:', nErr); }
+          }
+        } catch (upErr) { showToast('بعض الملفات ما انرفعت: ' + (upErr.message || ''), 'error'); }
       }
 
       const editedId = editingCampaignId;

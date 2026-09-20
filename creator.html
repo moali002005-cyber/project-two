@@ -1529,6 +1529,22 @@ function isAdsView() {
   return new URLSearchParams(location.search).get('view') === 'ads';
 }
 
+// ===== حالة «قيد التجهيز»: الشركة نشرت الحملة والبريف/المحتوى ما انضافوا بعد =====
+function flfPendingBits(c) {
+  const noBrief = !String((c && (c.description || c.brief)) || '').trim();
+  let noFiles = false;
+  try { noFiles = !!(c && c.campaign_type === 'video') && simblBriefList(c).length === 0; }
+  catch (e) { noFiles = false; }
+  return { noBrief: noBrief, noFiles: noFiles, any: noBrief || noFiles };
+}
+function flfPendingLabel(c) {
+  const b = flfPendingBits(c);
+  if (!b.any) return '';
+  if (b.noBrief && b.noFiles) return 'البريف والمحتوى قيد التجهيز';
+  if (b.noFiles) return 'المحتوى قيد التجهيز';
+  return 'البريف قيد التجهيز';
+}
+
 // ===== رابط حملة محدّدة: /creator.html?c=<id> — يُرسل بقروب الواتساب =====
 function focusedCampaignId() {
   try {
@@ -1966,7 +1982,10 @@ function renderCreatorDealCard(c, a) {
   const briefBtnHtml = briefText ? `<button class="brief-pill" onclick="event.stopPropagation(); openBriefModal('${a.id}')">📋 البريف</button>` : '';
   // المرفقات تظهر بعد اعتماد الصفقة فقط (نفس شرط سياسة القراءة في التخزين)
   const attachCount = isApproved ? simblBriefList(a.campaigns).length : 0;
-  const attachBtnHtml = attachCount ? `<button class="brief-pill" onclick="event.stopPropagation(); openAttachModal('${a.id}')">📎 المرفقات (${attachCount})</button>` : '';
+  const _pendLbl = isApproved ? flfPendingLabel(a.campaigns) : '';
+  const attachBtnHtml = attachCount
+    ? `<button class="brief-pill" onclick="event.stopPropagation(); openAttachModal('${a.id}')">📎 المرفقات (${attachCount})</button>`
+    : (_pendLbl ? `<span class="brief-pill" style="background:#FDF1F0;color:#7E2119;border-color:#F6D9D6;cursor:default;">⏳ ${_pendLbl}</span>` : '');
 
   let badge;
   const isCompleted = isApproved && !awaitingLaunch && stageNow >= 9;
@@ -2295,6 +2314,7 @@ function renderBrowseCard(c) {
       <div class="ac-metarow">
         ${isDone ? '<span class="meta-item">✓ اكتمل العدد المطلوب لهذي الحملة</span>' : `
         ${c.campaign_type === 'video' ? `<span class="meta-item">🎬 فيديو جاهز من الشركة</span>` : c.campaign_type === 'visit' ? `<span class="meta-item">📍 زيارة</span>` : ''}
+        ${flfPendingLabel(c) ? `<span class="meta-item" style="background:#FDF1F0;color:#7E2119;border-color:#F6D9D6;">⏳ ${flfPendingLabel(c)}</span>` : ''}
         ${c.publish_timing ? `<span class="meta-item">⏱ ${publishTimingText(c)}</span>` : ''}
         ${c.platform ? `<span class="meta-item">◇ ${PLATFORM_LABELS[c.platform] || c.platform}</span>` : ''}
         ${c.follower_range ? `<span class="meta-item">◯ ${followerRangeText(c)}</span>` : ''}
@@ -2353,7 +2373,10 @@ function renderOfferCard(c, a) {
   const briefBtnHtml = briefText ? `<button class="brief-pill" onclick="event.stopPropagation(); openBriefModal('${a.id}')">📋 البريف</button>` : '';
   // المرفقات تظهر بعد اعتماد الصفقة فقط (نفس شرط سياسة القراءة في التخزين)
   const attachCount = isApproved ? simblBriefList(a.campaigns).length : 0;
-  const attachBtnHtml = attachCount ? `<button class="brief-pill" onclick="event.stopPropagation(); openAttachModal('${a.id}')">📎 المرفقات (${attachCount})</button>` : '';
+  const _pendLbl = isApproved ? flfPendingLabel(a.campaigns) : '';
+  const attachBtnHtml = attachCount
+    ? `<button class="brief-pill" onclick="event.stopPropagation(); openAttachModal('${a.id}')">📎 المرفقات (${attachCount})</button>`
+    : (_pendLbl ? `<span class="brief-pill" style="background:#FDF1F0;color:#7E2119;border-color:#F6D9D6;cursor:default;">⏳ ${_pendLbl}</span>` : '');
 
   // الشارة على اليمين: تفاوض=زر، بانتظار التعميد=شارة، معمّدة=المطلوب الحالي
   let headRight;
@@ -2732,7 +2755,12 @@ function openAttachModal(appId) {
   document.getElementById('attachModalTitle').textContent = 'مرفقات: ' + (c.title || a.title || 'الحملة');
   const body = document.getElementById('attachModalBody');
   if (!_attachList.length) {
-    body.textContent = 'ما فيه مرفقات لهذه الحملة.';
+    const _lbl = flfPendingLabel(c);
+    body.innerHTML = _lbl
+      ? '<div style="background:#FDF1F0;border:1px solid #F6D9D6;border-radius:12px;padding:14px 16px;color:#7E2119;font-size:13px;line-height:1.95;">'
+        + '⏳ <b>' + _lbl + '</b><br>الشركة ما أضافتها بعد. أول ما تضيفها يوصلك إشعار وتلقاها هنا مباشرة — ما يلزمك تتابع الصفحة.'
+        + '</div>'
+      : 'ما فيه مرفقات لهذه الحملة.';
   } else {
     body.innerHTML = '<p style="margin:0 0 10px;font-size:12px;color:#6B7B74;line-height:1.7;">صور من الشركة — نزّلها واستخدمها في الفيديو حسب البريف.</p>'
       + '<div style="display:flex;flex-wrap:wrap;gap:12px;">'
