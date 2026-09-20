@@ -4418,7 +4418,7 @@ async function clipsLoad() {
         .select('application_id, clip_id, campaign_clips(name, path)')
         .eq('campaign_id', _clipsCid),
       supabaseClient.from('campaign_clips')
-        .select('id, name, path').eq('campaign_id', _clipsCid).order('created_at')
+        .select('id, name, path, size_bytes').eq('campaign_id', _clipsCid).order('created_at')
     ]);
     const data = asg.data; const error = asg.error || all.error;
     if (error) throw error;
@@ -4545,7 +4545,10 @@ async function clipsBulkUpload(input) {
 
   // المعلنون بلا فيديو، بالأقدمية — هم الطابور
   let queue = _clipsApproved.filter(a => !_clipsByApp[a.id]).map(a => a.id);
-  const known = new Set(_clipsAll.map(c => c.name));
+  // المفتاح = الاسم + الحجم. الاسم وحده يخدع: ملفان مختلفان قد يتشاركان الاسم
+  // (مكتبة الصور تعطي IMG_0001.MOV لأكثر من مقطع)، فنضيف الحجم للتمييز.
+  const fkey = (n, sz) => String(n || '') + '|' + (sz || 0);
+  const known = new Set(_clipsAll.map(c => fkey(c.name, c.size_bytes)));
 
   let ok = 0, skipped = 0, spare = 0;
   const failures = [];
@@ -4557,7 +4560,7 @@ async function clipsBulkUpload(input) {
     paint('جاري الرفع ' + toArabic(i + 1) + ' من ' + toArabic(files.length)
           + ' — ' + toArabic(mb) + ' ميجا');
 
-    if (known.has(f.name)) {
+    if (known.has(fkey(f.name, f.size))) {
       skipped++;
       log.push('↪︎ ' + escHtml(String(f.name).slice(-24)) + ' — مرفوع من قبل، تخطّيناه');
       continue;
@@ -4566,10 +4569,10 @@ async function clipsBulkUpload(input) {
     try {
       const meta = await simblBriefUpload(_clipsCid, f, true);
       const ins = await supabaseClient.from('campaign_clips')
-        .insert({ campaign_id: _clipsCid, path: meta.path, name: meta.name, quota: 1 })
+        .insert({ campaign_id: _clipsCid, path: meta.path, name: meta.name, quota: 1, size_bytes: f.size })
         .select('id').single();
       if (ins.error) throw ins.error;
-      known.add(f.name);
+      known.add(fkey(f.name, f.size));
 
       const appId = queue.shift();
       if (appId) {
@@ -4649,7 +4652,7 @@ async function clipsAttach(appId, input) {
       const who = (_clipsApproved.find(x => x.id === dupApp) || {}).users || {};
       throw new Error('هذا الملف مُرفق مسبقًا لـ«' + (who.name || 'معلن آخر') + '» — اختر ملفًا غيره');
     }
-    if (_clipsAll.some(c => c.name === f.name)) {
+    if (_clipsAll.some(c => c.name === f.name && Number(c.size_bytes || 0) === Number(f.size || 0))) {
       throw new Error('هذا الملف مرفوع مسبقًا في هذي الحملة — اختر ملفًا غيره');
     }
 
@@ -4663,7 +4666,7 @@ async function clipsAttach(appId, input) {
 
     const meta = await simblBriefUpload(_clipsCid, f, true);
     const ins = await supabaseClient.from('campaign_clips')
-      .insert({ campaign_id: _clipsCid, path: meta.path, name: meta.name, quota: 1 })
+      .insert({ campaign_id: _clipsCid, path: meta.path, name: meta.name, quota: 1, size_bytes: f.size })
       .select('id').single();
     if (ins.error) throw ins.error;
 
