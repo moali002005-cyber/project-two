@@ -2168,7 +2168,8 @@ PROMO-02" style="width:100%;box-sizing:border-box;font-family:inherit;"></textar
     <h3>🎬 فيديوهات المعلنين</h3>
     <p class="sub">لكل معلن معتمد فيديو خاص به — أرفق له الفيديو اللي تبيه، وهو الوحيد اللي يشوفه. ما فيه تكرار بين المعلنين.</p>
     <div id="clips-stats" style="background:#FBF8F6;border:1px solid #EFE8E4;border-radius:12px;padding:12px 14px;font-size:13px;line-height:1.95;color:#16110F"></div>
-    <div id="clips-list" style="max-height:52vh;overflow:auto;margin-top:12px"></div>
+    <div id="clips-bulkbar" style="margin-top:14px"></div>
+    <div id="clips-list" style="max-height:46vh;overflow:auto;margin-top:12px"></div>
     <div class="modal-actions">
       <button type="button" class="btn-secondary" onclick="closeClipsModal()">إغلاق</button>
     </div>
@@ -4388,7 +4389,7 @@ function renderSingleCampaign(c) {
 // ============ فيديوهات المعلنين: فيديو خاص لكل معلن معتمد ============
 // حملة «الفيديو الجاهز»: الشركة تجهّز فيديو مختلفًا لكل معلن، فتُرفقه له هنا بنفسها.
 // المعلن ما يشوف إلا فيديوه (تضمنه سياسة التخزين، لا الواجهة وحدها).
-let _clipsCid = null, _clipsApproved = [], _clipsByApp = {};
+let _clipsCid = null, _clipsApproved = [], _clipsByApp = {}, _clipsAll = [], _clipsBusy = false;
 
 function clipsApprovalKey(a) {
   return new Date(a.brand_approved_at || a.closed_at || a.created_at).getTime();
@@ -4409,11 +4410,16 @@ function closeClipsModal() {
 async function clipsLoad() {
   if (!_clipsCid) return;
   try {
-    const { data, error } = await supabaseClient
-      .from('campaign_clip_assignments')
-      .select('application_id, clip_id, campaign_clips(name, path)')
-      .eq('campaign_id', _clipsCid);
+    const [asg, all] = await Promise.all([
+      supabaseClient.from('campaign_clip_assignments')
+        .select('application_id, clip_id, campaign_clips(name, path)')
+        .eq('campaign_id', _clipsCid),
+      supabaseClient.from('campaign_clips')
+        .select('id, name, path').eq('campaign_id', _clipsCid).order('created_at')
+    ]);
+    const data = asg.data; const error = asg.error || all.error;
     if (error) throw error;
+    _clipsAll = all.data || [];
     _clipsByApp = {};
     (data || []).forEach(function (r) {
       const c = r.campaign_clips || {};
@@ -4444,6 +4450,24 @@ function clipsRender() {
     + (left
         ? '<br><span style="color:#8A807B;font-size:12.5px">المعلن اللي ما أرفقت له بعد يشوف في حسابه: «بانتظار إرفاق الشركة للفيديو».</span>'
         : '<br><span style="color:#1F9D55;font-size:12.5px">كل معلن معتمد عنده فيديوه 🌿</span>');
+
+  const spare = _clipsAll.filter(c => !Object.values(_clipsByApp).some(v => v.clip_id === c.id)).length;
+  document.getElementById('clips-bulkbar').innerHTML = total
+    ? '<label style="display:inline-flex;align-items:center;gap:8px;border:0;background:#6B4EE6;color:#fff;'
+      + 'font-size:13px;font-weight:700;padding:11px 20px;border-radius:100px;cursor:pointer">'
+      + '<span id="clips-bulk-txt">⬆ رفع الفيديوهات دفعة واحدة</span>'
+      + '<input type="file" id="clips-bulk-input" accept="video/*,.mov,.MOV,.mp4,.m4v,.webm" multiple'
+      + ' style="display:none" onchange="clipsBulkUpload(this)"></label>'
+      + '<span style="font-size:11.5px;color:#8A807B;margin-inline-start:10px">'
+      + 'حدّدها كلها مرة وحدة — يرفعها ويعطي كل معلن فيديو يخصّه بالترتيب، بلا تكرار.</span>'
+      + (spare
+          ? '<div style="margin-top:10px;font-size:12.5px;color:#6B4EE6">'
+            + '<b>' + toArabic(spare) + '</b> فيديو مرفوع بلا صاحب '
+            + '<button onclick="clipsAssignSpare()" style="border:1px solid #6B4EE6;background:#fff;color:#6B4EE6;'
+            + 'border-radius:9px;padding:5px 12px;font-family:inherit;font-size:12px;cursor:pointer;margin-inline-start:6px">'
+            + 'وزّعها على الباقين</button></div>'
+          : '')
+    : '';
 
   if (!total) {
     document.getElementById('clips-list').innerHTML =
@@ -4488,6 +4512,91 @@ function clipsRender() {
   }).join('');
 }
 
+// رفع دفعة واحدة ثم التوزيع فورًا: كل ملف يُربط بمعلن بمجرد نجاح رفعه.
+// الربط الفوري (لا في النهاية) يخلي العملية قابلة للاستئناف: لو انقطع الرفع،
+// اللي وصل مربوط، وإعادة اختيار الملفات نفسها تتخطّى المرفوع وتكمل الباقي.
+async function clipsBulkUpload(input) {
+  const files = Array.prototype.slice.call(input.files || []);
+  input.value = '';
+  if (!files.length || !_clipsCid || _clipsBusy) return;
+  _clipsBusy = true;
+
+  const txt = document.getElementById('clips-bulk-txt');
+  const setTxt = (t) => { const e = document.getElementById('clips-bulk-txt'); if (e) e.textContent = t; };
+
+  // المعلنون بلا فيديو، بالأقدمية — هم الطابور
+  let queue = _clipsApproved.filter(a => !_clipsByApp[a.id]).map(a => a.id);
+  const known = new Set(_clipsAll.map(c => c.name));
+
+  let ok = 0, skipped = 0, spare = 0;
+  const failures = [];
+
+  for (let i = 0; i < files.length; i++) {
+    const f = files[i];
+    setTxt('جاري الرفع ' + toArabic(i + 1) + ' من ' + toArabic(files.length) + '...');
+
+    if (known.has(f.name)) { skipped++; continue; }   // مرفوع من قبل → تخطَّ
+
+    try {
+      const meta = await simblBriefUpload(_clipsCid, f, true);
+      const ins = await supabaseClient.from('campaign_clips')
+        .insert({ campaign_id: _clipsCid, path: meta.path, name: meta.name, quota: 1 })
+        .select('id').single();
+      if (ins.error) throw ins.error;
+      known.add(f.name);
+
+      const appId = queue.shift();
+      if (appId) {
+        const r = await supabaseClient.rpc('flf_clip_packs_apply',
+          { p_campaign: _clipsCid, p_packs: [{ application_id: appId, clips: [ins.data.id] }] });
+        if (r.error) throw r.error;
+        if (r.data && r.data.error) throw new Error(r.data.error);
+        if (r.data && r.data.written) ok++; else { queue.unshift(appId); spare++; }
+      } else {
+        spare++;   // ما بقي معلن ينتظر — يبقى في البنك لمن تعتمد غيرهم
+      }
+    } catch (e) {
+      console.error('bulk upload failed:', f.name, e);
+      failures.push((f.name || 'ملف') + ': ' + (e.message || ''));
+    }
+  }
+
+  setTxt('⬆ رفع الفيديوهات دفعة واحدة');
+  _clipsBusy = false;
+
+  let msg = 'وصل الفيديو لـ' + toArabic(ok) + ' معلن';
+  if (spare)    msg += ' · ' + toArabic(spare) + ' فيديو محفوظ بلا صاحب';
+  if (skipped)  msg += ' · ' + toArabic(skipped) + ' متخطّى (مرفوع من قبل)';
+  if (failures.length) msg += ' · ' + toArabic(failures.length) + ' فشل';
+  showToast(msg, failures.length ? 'error' : 'success', 11000);
+  if (failures.length) console.warn('فشل رفع:', failures);
+
+  await clipsLoad();
+}
+
+// توزيع الفيديوهات المرفوعة بلا صاحب على المعلنين المنتظرين، بالأقدمية
+async function clipsAssignSpare() {
+  if (!_clipsCid || _clipsBusy) return;
+  const taken = new Set(Object.values(_clipsByApp).map(v => v.clip_id));
+  const spare = _clipsAll.filter(c => !taken.has(c.id));
+  const queue = _clipsApproved.filter(a => !_clipsByApp[a.id]).map(a => a.id);
+  if (!spare.length || !queue.length) { showToast('ما فيه شي يُوزّع'); return; }
+
+  const packs = [];
+  for (let i = 0; i < Math.min(spare.length, queue.length); i++) {
+    packs.push({ application_id: queue[i], clips: [spare[i].id] });
+  }
+  try {
+    const r = await supabaseClient.rpc('flf_clip_packs_apply', { p_campaign: _clipsCid, p_packs: packs });
+    if (r.error) throw r.error;
+    if (r.data && r.data.error) throw new Error(r.data.error);
+    showToast('وصل الفيديو لـ' + toArabic(r.data.written || packs.length) + ' معلن', 'success', 7000);
+  } catch (e) {
+    showToast('تعذّر التوزيع: ' + (e.message || ''), 'error', 6000);
+  }
+  await clipsLoad();
+}
+
 // إرفاق (أو استبدال) فيديو معلن واحد: رفع الملف ← تسجيله ← ربطه بصفقته
 async function clipsAttach(appId, input) {
   const f = (input.files || [])[0];
@@ -4501,10 +4610,13 @@ async function clipsAttach(appId, input) {
 
   try {
     // نفس الملف لا يُرفق لمعلنَين — هذا جوهر الفكرة، فنمنعه قبل ما يُرفع
-    const dup = Object.keys(_clipsByApp).find(k => k !== appId && _clipsByApp[k].name === f.name);
-    if (dup) {
-      const who = (_clipsApproved.find(x => x.id === dup) || {}).users || {};
+    const dupApp = Object.keys(_clipsByApp).find(k => k !== appId && _clipsByApp[k].name === f.name);
+    if (dupApp) {
+      const who = (_clipsApproved.find(x => x.id === dupApp) || {}).users || {};
       throw new Error('هذا الملف مُرفق مسبقًا لـ«' + (who.name || 'معلن آخر') + '» — اختر ملفًا غيره');
+    }
+    if (_clipsAll.some(c => c.name === f.name)) {
+      throw new Error('هذا الملف مرفوع مسبقًا في هذي الحملة — اختر ملفًا غيره');
     }
 
     // لو عنده فيديو سابق، نفكّ ارتباطه أولًا ثم نحذفه بعد نجاح الجديد
