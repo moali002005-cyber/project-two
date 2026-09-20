@@ -2803,7 +2803,7 @@ function flfMyVideoBlock(a) {
 // ====== تصفّح محتوى الحملة واختيار ما يعجب المعلن ======
 // المعلن يشوف كل اللقطات ويختار بنفسه. عدّاد «مأخوذة N مرة» ظاهر عمدًا:
 // يخلي الاختيار يتوزّع طبيعيًا فتقلّ الفيديوهات المتشابهة، بلا ما نفرض عليه حزمة.
-let _bankAppId = null, _bank = [];
+let _bankAppId = null, _bank = [], _bankUrls = {}, _bankIO = null;
 
 async function openBankModal(appId) {
   _bankAppId = appId;
@@ -2814,6 +2814,7 @@ async function openBankModal(appId) {
 }
 function closeBankModal() {
   document.getElementById('bankModal').classList.remove('show');
+  if (_bankIO) { _bankIO.disconnect(); _bankIO = null; }
   _bankAppId = null;
 }
 
@@ -2822,6 +2823,13 @@ async function loadBank() {
     const { data, error } = await supabaseClient.rpc('flf_clip_bank', { p_application: _bankAppId });
     if (error) throw error;
     _bank = Array.isArray(data) ? data : [];
+    // روابط المعاينة لكل المكتبة بطلب واحد — عشان يشوف المقاطع نفسها لا مربعات سوداء
+    const need = _bank.map(function (c) { return c.clip_path; })
+                      .filter(function (p) { return p && !_bankUrls[p]; });
+    if (need.length) {
+      const got = await simblBriefSignedUrls(need, 3600);
+      Object.keys(got).forEach(function (k) { _bankUrls[k] = got[k]; });
+    }
     renderBank();
   } catch (e) {
     document.getElementById('bankModalBody').innerHTML =
@@ -2843,20 +2851,27 @@ function renderBank() {
   body.innerHTML =
       '<div style="background:#F6F3FF;border:1px solid #E2DAFB;border-radius:12px;padding:11px 14px;'
     + 'font-size:12.5px;line-height:1.85;color:#3B2E7A;margin-bottom:12px">'
-    + 'شغّل أي مقطع وشوفه قبل ما تقرّر، واختر اللي يناسب فيديوك. <b>اخترت ' + toArabic(mine) + ' من ١٢.</b><br>'
+    + 'كل المقاطع معروضة أمامك — اضغط أي مقطع يشتغل هنا مباشرة قبل ما تقرّر، وبعدين اختر اللي يناسب فيديوك. '
+    + '<b>اخترت ' + toArabic(mine) + ' من ١٢.</b><br>'
     + '<span style="color:#6B5FA8">الرقم تحت كل مقطع يقول كم معلن أخذه — اختيار الأقل استخدامًا يخلي فيديوك مميزًا وما يشبه غيرك.</span>'
     + '</div>'
     + '<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px">'
     + items.map(function (c) {
         const hot = c.taken_by >= 8;
+        const url = _bankUrls[c.clip_path] || '';
         return '<div style="border:2px solid ' + (c.mine ? '#6B4EE6' : '#E7E9EE') + ';'
           + 'border-radius:14px;overflow:hidden;background:#fff">'
           + '<div id="bk-' + c.clip_id + '" style="position:relative;aspect-ratio:9/16;max-height:210px;'
-          + 'background:#0F0B14;display:flex;align-items:center;justify-content:center;cursor:pointer" '
-          + 'onclick="playBankClip(\'' + c.clip_id + '\')">'
+          + 'background:#0F0B14;cursor:pointer" onclick="playBankClip(\'' + c.clip_id + '\')">'
+          + (url
+              ? '<video class="bk-v" data-src="' + escAtt(url) + '#t=0.1" muted playsinline '
+                + 'preload="none" style="width:100%;height:100%;object-fit:cover;background:#000;display:block"></video>'
+              : '')
+          + '<div class="bk-play" style="position:absolute;inset:0;display:flex;align-items:center;'
+          + 'justify-content:center;pointer-events:none">'
           + '<div style="width:46px;height:46px;border-radius:50%;background:rgba(255,255,255,.92);'
           + 'display:flex;align-items:center;justify-content:center;font-size:19px;color:#3B2E7A">▶</div>'
-          + '</div>'
+          + '</div></div>'
           + '<div style="padding:7px 8px 2px;font-size:10.5px;color:#4A5A53;line-height:1.4;'
           + 'height:28px;overflow:hidden">' + escAtt(c.clip_category || c.clip_name || 'مقطع') + '</div>'
           + '<div style="padding:0 8px 6px;font-size:10px;color:' + (hot ? '#c0392b' : '#8A807B') + '">'
@@ -2872,19 +2887,69 @@ function renderBank() {
           + '</div></div>';
       }).join('')
     + '</div>';
+
+  bankLazyFrames();
 }
 
-// المعاينة عند الطلب فقط: رابط موقّت لكل مقطع لحظة الضغط، لا مئة رابط دفعة وحدة
+// الصورة الأولى لكل مقطع تُجلب فقط لما يقرب من الشاشة — مكتبة مئة مقطع ما تخنق الجوال
+function bankLazyFrames() {
+  const vids = Array.prototype.slice.call(document.querySelectorAll('#bankModalBody video.bk-v'));
+  if (!vids.length) return;
+  if (_bankIO) _bankIO.disconnect();
+  if (!('IntersectionObserver' in window)) {
+    vids.slice(0, 12).forEach(function (v) { v.preload = 'metadata'; v.src = v.dataset.src; });
+    return;
+  }
+  _bankIO = new IntersectionObserver(function (entries) {
+    entries.forEach(function (en) {
+      if (!en.isIntersecting) return;
+      const v = en.target;
+      _bankIO.unobserve(v);
+      if (v.dataset.src && !v.src) { v.preload = 'metadata'; v.src = v.dataset.src; }
+    });
+  }, { root: document.getElementById('bankModalBody'), rootMargin: '400px 0px' });
+  vids.forEach(function (v) { _bankIO.observe(v); });
+}
+
+// الضغط يشغّل المقطع بصوته داخل نفس المربع، ويوقف أي مقطع ثاني شغّال
 async function playBankClip(clipId) {
   const box = document.getElementById('bk-' + clipId);
   const c = _bank.find(function (x) { return x.clip_id === clipId; });
-  if (!box || !c || box.dataset.loaded) return;
-  box.dataset.loaded = '1';
-  box.innerHTML = '<div style="color:#fff;font-size:11px">جاري الفتح...</div>';
-  const url = await simblBriefSignedUrl(c.clip_path, 1800);
-  if (!url) { box.innerHTML = '<div style="color:#fff;font-size:11px">تعذّر الفتح</div>'; box.dataset.loaded=''; return; }
-  box.innerHTML = '<video src="' + escAtt(url) + '" controls autoplay playsinline preload="metadata" '
-    + 'style="width:100%;height:100%;object-fit:cover;background:#000"></video>';
+  if (!box || !c) return;
+
+  document.querySelectorAll('#bankModalBody video.bk-v').forEach(function (o) {
+    if (o !== box.querySelector('video')) { try { o.pause(); o.controls = false; o.muted = true; } catch (e) {} }
+  });
+  document.querySelectorAll('#bankModalBody .bk-play').forEach(function (p) { p.style.display = 'flex'; });
+
+  let v = box.querySelector('video');
+  if (!v) {
+    let url = _bankUrls[c.clip_path];
+    if (!url) {
+      box.innerHTML = '<div style="color:#fff;font-size:11px;display:flex;align-items:center;'
+        + 'justify-content:center;height:100%">جاري الفتح...</div>';
+      url = await simblBriefSignedUrl(c.clip_path, 3600);
+      if (!url) { box.innerHTML = '<div style="color:#fff;font-size:11px;display:flex;align-items:center;'
+        + 'justify-content:center;height:100%">تعذّر الفتح</div>'; return; }
+      _bankUrls[c.clip_path] = url;
+    }
+    box.innerHTML = '<video class="bk-v" playsinline style="width:100%;height:100%;object-fit:cover;'
+      + 'background:#000;display:block"></video>';
+    v = box.querySelector('video');
+    v.src = url;
+  }
+  const ov = box.querySelector('.bk-play');
+  if (ov) ov.style.display = 'none';
+  v.controls = true;
+  v.muted = false;
+  v.currentTime = 0;
+  try { await v.play(); } catch (e) { v.muted = true; try { await v.play(); } catch (e2) {} }
+  v.onended = function () { if (ov) ov.style.display = 'flex'; };
+  v.onerror = function () {
+    box.innerHTML = '<div style="color:#fff;font-size:10.5px;line-height:1.7;padding:10px;text-align:center;'
+      + 'display:flex;align-items:center;justify-content:center;height:100%">'
+      + 'متصفحك ما يشغّل صيغة هذا المقطع — نزّله بالزر ⬇ وشوفه على جهازك</div>';
+  };
 }
 
 async function toggleBankClip(clipId, take) {

@@ -4508,7 +4508,7 @@ function clipsRender() {
   const spare = _clipsAll.filter(c => !Object.values(_clipsByApp).some(v => v.clip_id === c.id)).length;
   const spareCount = spare;
   const pendingCount = left;
-  const k0 = Math.max(2, parseInt((document.getElementById('clips-perk') || {}).value, 10) || 6);
+  const bankCount = _clipsAll.length;
   document.getElementById('clips-bulkbar').innerHTML = total
     ? '<label for="clips-bulk-input" style="display:inline-flex;align-items:center;gap:8px;border:0;'
       + 'background:#6B4EE6;color:#fff;'
@@ -4521,24 +4521,20 @@ function clipsRender() {
       + 'مكتبة الصور ما تعرضها. وخلّ الشاشة مفتوحة أثناء الرفع.</div>'
       + '<div style="margin-top:14px;padding-top:13px;border-top:1px dashed #E2DAFB">'
       + '<div style="font-size:12.5px;color:#3B2E7A;font-weight:700;margin-bottom:7px">'
-      + 'أو: لقطات خام يركّبها المعلن بنفسه</div>'
+      + 'أو: مكتبة لقطات خام يتصفّحها المعلن ويختار منها</div>'
       + '<div style="display:flex;gap:9px;flex-wrap:wrap;align-items:center">'
       + '<label for="clips-pack-input" style="border:1px solid #6B4EE6;background:#fff;color:#6B4EE6;'
       + 'font-size:12.5px;font-weight:700;padding:9px 16px;border-radius:100px;cursor:pointer">'
       + '<span id="clips-pack-txt">⬆ رفع لقطات خام</span></label>'
-      + '<label style="font-size:11.5px;color:#6B7B74">لقطات لكل معلن '
-      + '<input id="clips-perk" type="number" min="2" max="12" value="6" '
-      + 'style="width:58px;padding:6px 8px;border:1px solid #EFE8E4;border-radius:9px;font-family:inherit;font-size:12px"></label>'
-      + '<button id="clips-pack-go" onclick="clipsDistributePacks()" style="border:0;background:#6B4EE6;color:#fff;'
-      + 'font-size:12.5px;font-weight:700;padding:9px 18px;border-radius:100px;cursor:pointer">📦 وزّع الحزم</button>'
+      + (bankCount
+          ? '<span style="font-size:11.5px;color:#6B4EE6;font-weight:700">'
+            + toArabic(bankCount) + ' لقطة متاحة للجميع في المكتبة</span>'
+          : '')
       + '</div>'
       + '<div style="font-size:11.5px;color:#8A807B;margin-top:7px;line-height:1.8">'
-      + 'ارفع اللقطات أولًا ثم اضغط «وزّع الحزم» — كل معلن ياخذ لقطات مختلفة بترتيب مختلف، '
-      + 'وأصحاب الفيديوهات الجاهزة ما يتأثرون.'
-      + (spareCount > 0 && pendingCount > 0
-          ? '<br><b style="color:#6B4EE6">عندك ' + toArabic(spareCount) + ' لقطة بالبنك و' + toArabic(pendingCount)
-            + ' معلن بانتظار نصيبه — للحد الأدنى من التشابه يُفضّل ' + toArabic(Math.max(k0 * 10, Math.ceil(pendingCount * 0.7))) + ' لقطة أو أكثر.</b>'
-          : '')
+      + 'ما فيه توزيع ولا حصص — كل لقطة ترفعها تظهر فورًا لكل معلن معتمد، '
+      + 'يشغّلها ويشوفها داخل المنصة ويختار اللي يناسب فيديوه (حتى ١٢ لقطة لكل معلن). '
+      + 'وأصحاب الفيديوهات الجاهزة ما تظهر لهم المكتبة أصلًا.'
       + '</div></div>'
       + (spare
           ? '<div style="margin-top:10px;font-size:12.5px;color:#6B4EE6">'
@@ -4820,7 +4816,7 @@ async function clipsPackUpload(input) {
     showToast('انضاف ' + toArabic(ok) + ' لقطة للبنك'
       + (skipped ? ' · ' + toArabic(skipped) + ' متخطّى' : '')
       + (failures.length ? ' · ' + toArabic(failures.length) + ' فشل' : '')
-      + '. الحين اضغط «وزّع الحزم».', failures.length ? 'error' : 'success', 10000);
+      + '. صارت متاحة لكل معلن معتمد في المكتبة.', failures.length ? 'error' : 'success', 10000);
   } catch (e) {
     showToast('توقّف الرفع: ' + (e && e.message || e), 'error', 8000);
   } finally {

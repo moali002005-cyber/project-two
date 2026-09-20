@@ -474,6 +474,27 @@ async function simblBriefSignedUrl(path, seconds, downloadName) {
   return (data && data.signedUrl) || '';
 }
 
+// روابط موقّتة لعدة مسارات بطلب واحد — بدل مئة طلب منفصل لمكتبة فيها مئة مقطع.
+// ترجع خريطة { path: url }. المسارات اللي تفشل تُترك بلا مفتاح.
+async function simblBriefSignedUrls(paths, seconds) {
+  const list = (paths || []).filter(Boolean);
+  const out = {};
+  if (!list.length) return out;
+  const CHUNK = 60;
+  for (let i = 0; i < list.length; i += CHUNK) {
+    const part = list.slice(i, i + CHUNK);
+    try {
+      const { data, error } = await supabaseClient.storage
+        .from(SIMBL_BRIEF_BUCKET).createSignedUrls(part, seconds || 3600);
+      if (error) throw error;
+      (data || []).forEach(function (row) {
+        if (row && row.signedUrl && !row.error) out[row.path] = row.signedUrl;
+      });
+    } catch (e) { console.error('brief signed urls failed:', e); }
+  }
+  return out;
+}
+
 // المسار لازم يبدأ بـ<campaign_id>/ لأن سياسات RLS تقرأ اسم المجلد الأول
 const SIMBL_VIDEO_TYPES = ['video/mp4', 'video/quicktime', 'video/webm'];
 // سلة التخزين تقبل حتى ٥١٢ ميجا. كان الحد ٥٠ ميجا فكان يرفض فيديوهات الجوال
@@ -555,6 +576,7 @@ async function dbGetAppsForCampaigns(campIds, selectStr) {
 }
 window.simblBriefList = simblBriefList;
 window.simblBriefSignedUrl = simblBriefSignedUrl;
+window.simblBriefSignedUrls = simblBriefSignedUrls;
 window.SIMBL_BRIEF_MAX_FILES = SIMBL_BRIEF_MAX_FILES;
 window.simblArNum = simblArNum;
 window.simblBriefUpload = simblBriefUpload;
