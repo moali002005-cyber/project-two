@@ -2168,6 +2168,7 @@ PROMO-02" style="width:100%;box-sizing:border-box;font-family:inherit;"></textar
     <h3>🎬 فيديوهات المعلنين</h3>
     <p class="sub">لكل معلن معتمد فيديو خاص به — أرفق له الفيديو اللي تبيه، وهو الوحيد اللي يشوفه. ما فيه تكرار بين المعلنين.</p>
     <div id="clips-stats" style="background:#FBF8F6;border:1px solid #EFE8E4;border-radius:12px;padding:12px 14px;font-size:13px;line-height:1.95;color:#16110F"></div>
+    <input type="file" id="clips-bulk-input" multiple style="display:none" onchange="clipsBulkUpload(this)">
     <div id="clips-bulkbar" style="margin-top:14px"></div>
     <div id="clips-progress" style="display:none;margin-top:12px;border:1px solid #E2DAFB;background:#F6F3FF;
          border-radius:12px;padding:12px 14px;font-size:12.5px;line-height:1.9;color:#3B2E7A;
@@ -4456,11 +4457,10 @@ function clipsRender() {
 
   const spare = _clipsAll.filter(c => !Object.values(_clipsByApp).some(v => v.clip_id === c.id)).length;
   document.getElementById('clips-bulkbar').innerHTML = total
-    ? '<label style="display:inline-flex;align-items:center;gap:8px;border:0;background:#6B4EE6;color:#fff;'
+    ? '<label for="clips-bulk-input" style="display:inline-flex;align-items:center;gap:8px;border:0;'
+      + 'background:#6B4EE6;color:#fff;'
       + 'font-size:13px;font-weight:700;padding:11px 20px;border-radius:100px;cursor:pointer">'
-      + '<span id="clips-bulk-txt">⬆ رفع الفيديوهات دفعة واحدة</span>'
-      + '<input type="file" id="clips-bulk-input" multiple'
-      + ' style="display:none" onchange="clipsBulkUpload(this)"></label>'
+      + '<span id="clips-bulk-txt">⬆ رفع الفيديوهات دفعة واحدة</span></label>'
       + '<span style="font-size:11.5px;color:#8A807B;margin-inline-start:10px">'
       + 'حدّدها كلها مرة وحدة — يرفعها ويعطي كل معلن فيديو يخصّه بالترتيب، بلا تكرار.</span>'
       + '<div style="font-size:11.5px;color:#8A807B;margin-top:8px;line-height:1.8">'
@@ -4531,7 +4531,7 @@ async function clipsBulkUpload(input) {
     return;
   }
   _clipsBusy = true;
-
+  try {
   const setTxt = (t) => { const e = document.getElementById('clips-bulk-txt'); if (e) e.textContent = t; };
   const box = document.getElementById('clips-progress');
   const log = [];
@@ -4607,6 +4607,17 @@ async function clipsBulkUpload(input) {
   if (failures.length) msg += ' · ' + toArabic(failures.length) + ' فشل';
   showToast(msg, failures.length ? 'error' : 'success', 11000);
   if (failures.length) console.warn('فشل رفع:', failures);
+  } catch (e) {
+    // أي خطأ خارج حلقة الملفات كان يخلي الزر ميتًا بصمت — الآن يُعرض ويُفَك القفل
+    console.error('clipsBulkUpload:', e);
+    showToast('توقّف الرفع: ' + (e && e.message || e), 'error', 9000);
+    const b = document.getElementById('clips-progress');
+    if (b) { b.style.display = 'block'; b.innerHTML = '<b>توقّف الرفع</b><br>' + escHtml(String(e && e.message || e)); }
+  } finally {
+    _clipsBusy = false;
+    const t = document.getElementById('clips-bulk-txt');
+    if (t) t.textContent = '⬆ رفع الفيديوهات دفعة واحدة';
+  }
 
   await clipsLoad();
 }
