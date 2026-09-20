@@ -2212,7 +2212,7 @@ function renderUnified() {
   }
 
   if (myDeals) myDeals.innerHTML = matrixHtml;
-  list.innerHTML = focusBanner + quotaNoticeHtml() + openHtml;
+  list.innerHTML = focusBanner + featuredBannerHtml() + quotaNoticeHtml() + openHtml;
   try { renderWallet(); } catch (e) { console.error('renderWallet:', e); }
   // بعد رسم النماذج: استرجع أي مسودّات محفوظة + فعّل الحفظ التلقائي
   try { restoreStageDrafts(); } catch (e) { console.warn('restoreStageDrafts:', e); }
@@ -3411,6 +3411,54 @@ async function loadMyQuota() {
 
 function quotaExhausted() {
   return !!(myQuota && myQuota.lifetime_limit != null && Number(myQuota.remaining) <= 0);
+}
+
+// ====== إعلان حملة مثبّت ======
+// الشركة تقدر تثبّت حملة واحدة (featured_until) فتظهر لكل معلن مؤهّل أول ما يدخل.
+// شروط الظهور: الحملة نشطة، ومطابقة لاستهدافه، وما قدّم عليها، وما أخفاها اليوم.
+function featuredDismissKey(id) { return 'flf_feat_hide_' + id; }
+function featuredBannerHtml() {
+  try {
+    const now = Date.now();
+    const c = (allCampaigns || []).find(function (x) {
+      if (!x || x.status !== 'active' || !x.featured_until) return false;
+      if (new Date(x.featured_until).getTime() < now) return false;
+      if (x._targetMatch === false) return false;
+      if (campaignIsFull(x)) return false;
+      if ((myApplications || []).some(function (a) { return a.campaign_id === x.id; })) return false;
+      try {
+        const until = parseInt(localStorage.getItem(featuredDismissKey(x.id)) || '0', 10);
+        if (until && now < until) return false;
+      } catch (e) {}
+      return true;
+    });
+    if (!c) return '';
+
+    const brand = c.brand || (c.users && c.users.company_name) || 'الشركة';
+    const price = (typeof initialPriceFromBudget === 'function') ? initialPriceFromBudget(c) : 0;
+    const ready = c.campaign_type === 'video';
+    const line = ready
+      ? 'فيديو <b>جاهز</b> يوصلك تنشره فقط — بلا تصوير ولا مونتاج.'
+      : 'حملة متاحة لك الآن.';
+
+    return '<div style="position:relative;background:linear-gradient(135deg,#E23B2E,#B02A20);color:#fff;'
+      + 'border-radius:16px;padding:18px 18px 16px;margin:0 0 16px;box-shadow:0 8px 22px rgba(226,59,46,.22)">'
+      + '<button onclick="dismissFeatured(\'' + c.id + '\')" aria-label="إخفاء" '
+      + 'style="position:absolute;inset-inline-end:10px;top:8px;border:0;background:rgba(255,255,255,.18);'
+      + 'color:#fff;width:26px;height:26px;border-radius:50%;font-size:15px;cursor:pointer;line-height:1">×</button>'
+      + '<div style="font-size:11.5px;font-weight:700;letter-spacing:1.6px;opacity:.9;margin-bottom:6px">الحق على الفرصة</div>'
+      + '<div style="font-size:17px;font-weight:700;line-height:1.5;margin-bottom:6px">'
+      + escHtml(brand) + ' — مقاعد محدودة</div>'
+      + '<div style="font-size:13.5px;line-height:1.9;opacity:.96;margin-bottom:13px">' + line
+      + (price ? ' والمبلغ <b>' + toArabic(price) + ' ريال</b>.' : '') + '</div>'
+      + '<a href="/creator.html?c=' + c.id + '" style="display:inline-block;background:#fff;color:#B02A20;'
+      + 'text-decoration:none;font-weight:700;font-size:14px;padding:11px 24px;border-radius:100px">'
+      + 'شوف الحملة وقدّم ←</a></div>';
+  } catch (e) { console.error('featuredBanner:', e); return ''; }
+}
+function dismissFeatured(id) {
+  try { localStorage.setItem(featuredDismissKey(id), String(Date.now() + 12 * 3600 * 1000)); } catch (e) {}
+  renderUnified();
 }
 
 function quotaNoticeHtml() {
