@@ -1531,15 +1531,20 @@ function isAdsView() {
 }
 
 // ===== حالة «قيد التجهيز»: الشركة نشرت الحملة والبريف/المحتوى ما انضافوا بعد =====
-function flfPendingBits(c) {
+// appId اختياري: لو وصلت المعلن حزمة لقطاته، فالمحتوى جاهز حتى لو ما فيه مرفقات عامة
+function flfPendingBits(c, appId) {
+  if (appId && ((window.__clipCounts || {})[appId] || 0) > 0) {
+    const noBriefOnly = !String((c && (c.description || c.brief)) || '').trim();
+    return { noBrief: noBriefOnly, noFiles: false, any: noBriefOnly };
+  }
   const noBrief = !String((c && (c.description || c.brief)) || '').trim();
   let noFiles = false;
   try { noFiles = !!(c && c.campaign_type === 'video') && simblBriefList(c).length === 0; }
   catch (e) { noFiles = false; }
   return { noBrief: noBrief, noFiles: noFiles, any: noBrief || noFiles };
 }
-function flfPendingLabel(c) {
-  const b = flfPendingBits(c);
+function flfPendingLabel(c, appId) {
+  const b = flfPendingBits(c, appId);
   if (!b.any) return '';
   if (b.noBrief && b.noFiles) return 'البريف والمحتوى قيد التجهيز';
   if (b.noFiles) return 'المحتوى قيد التجهيز';
@@ -1860,6 +1865,7 @@ async function loadData() {
       await loadMyQuota();
       // رسوم المعلن — جدول منفصل محمي بـ RLS، لا يصل الشركة إطلاقاً
       await loadCreatorFees(myApplications.map(function (a) { return a.id; }));
+      await loadMyClipCounts(myApplications.map(function (a) { return a.id; }));
       updateHeroStats();
       renderUnified();
       _lastLoadAt = Date.now();
@@ -1983,8 +1989,8 @@ function renderCreatorDealCard(c, a) {
   const briefText = getBriefText(a);
   const briefBtnHtml = briefText ? `<button class="brief-pill" onclick="event.stopPropagation(); openBriefModal('${a.id}')">📋 البريف</button>` : '';
   // المرفقات تظهر بعد اعتماد الصفقة فقط (نفس شرط سياسة القراءة في التخزين)
-  const attachCount = isApproved ? simblBriefList(a.campaigns).length : 0;
-  const _pendLbl = isApproved ? flfPendingLabel(a.campaigns) : '';
+  const attachCount = isApproved ? (simblBriefList(a.campaigns).length + ((window.__clipCounts || {})[a.id] || 0)) : 0;
+  const _pendLbl = isApproved ? flfPendingLabel(a.campaigns, a.id) : '';
   const attachBtnHtml = attachCount
     ? `<button class="brief-pill" onclick="event.stopPropagation(); openAttachModal('${a.id}')">📎 المرفقات (${attachCount})</button>`
     : (_pendLbl ? `<span class="brief-pill" style="background:#FDF1F0;color:#7E2119;border-color:#F6D9D6;cursor:default;">⏳ ${_pendLbl}</span>` : '');
@@ -2376,8 +2382,8 @@ function renderOfferCard(c, a) {
   const briefText = getBriefText(a);
   const briefBtnHtml = briefText ? `<button class="brief-pill" onclick="event.stopPropagation(); openBriefModal('${a.id}')">📋 البريف</button>` : '';
   // المرفقات تظهر بعد اعتماد الصفقة فقط (نفس شرط سياسة القراءة في التخزين)
-  const attachCount = isApproved ? simblBriefList(a.campaigns).length : 0;
-  const _pendLbl = isApproved ? flfPendingLabel(a.campaigns) : '';
+  const attachCount = isApproved ? (simblBriefList(a.campaigns).length + ((window.__clipCounts || {})[a.id] || 0)) : 0;
+  const _pendLbl = isApproved ? flfPendingLabel(a.campaigns, a.id) : '';
   const attachBtnHtml = attachCount
     ? `<button class="brief-pill" onclick="event.stopPropagation(); openAttachModal('${a.id}')">📎 المرفقات (${attachCount})</button>`
     : (_pendLbl ? `<span class="brief-pill" style="background:#FDF1F0;color:#7E2119;border-color:#F6D9D6;cursor:default;">⏳ ${_pendLbl}</span>` : '');
@@ -2744,6 +2750,66 @@ async function renderBriefReference(body, c) {
     'font-size:12.5px;font-weight:700;color:#33413c;text-decoration:none;">فتح الفيديو المرجعي ↗</a>';
   body.appendChild(box);
 }
+// ===== لقطاتي من بنك الحملة =====
+// حملات «الفيديو الجاهز» تعتمد لقطات مشتركة. لو شاف كل معلن كل اللقطات طلعت الفيديوهات
+// متشابهة واعتبرها تيك توك محتوى مكرّر — فالشركة توزّع لكل معلن حزمة خاصة، وهذي هي.
+window.__clipCounts = {};
+let _clipPack = [];
+
+async function loadMyClipCounts(appIds) {
+  window.__clipCounts = {};
+  if (!window.supabaseClient || !appIds || !appIds.length) return;
+  try {
+    const { data } = await supabaseClient
+      .from('campaign_clip_assignments')
+      .select('application_id')
+      .in('application_id', appIds);
+    (data || []).forEach(function (r) {
+      window.__clipCounts[r.application_id] = (window.__clipCounts[r.application_id] || 0) + 1;
+    });
+  } catch (e) { console.error('loadMyClipCounts:', e); }
+}
+
+async function loadMyClipPack(appId) {
+  try {
+    const { data, error } = await supabaseClient.rpc('flf_my_clip_pack', { p_application: appId });
+    if (error) throw error;
+    return Array.isArray(data) ? data : [];
+  } catch (e) { console.error('loadMyClipPack:', e); return []; }
+}
+
+function clipPackHtml(pack) {
+  if (!pack.length) return '';
+  return '<div style="background:#F6F3FF;border:1px solid #E2DAFB;border-radius:14px;padding:14px 16px;margin:0 0 16px;">'
+    + '<div style="font-size:14px;font-weight:700;color:#3B2E7A;margin-bottom:4px;">🎞 لقطاتك الخاصة '
+    + '<span style="font-weight:400;color:#6B5FA8;">(' + toArabic(pack.length) + ')</span></div>'
+    + '<div style="font-size:12.5px;color:#5B4FA0;line-height:1.85;margin-bottom:10px;">'
+    + 'هذي اللقطات مخصّصة لك أنت بالذات وبترتيبها — ركّبها بفيديو واحد. '
+    + 'كل معلن عنده لقطات مختلفة، عشان ما تطلع فيديوهاتكم متشابهة ويخنقها تيك توك.</div>'
+    + '<div style="display:flex;flex-wrap:wrap;gap:10px;">'
+    + pack.map(function (c, i) {
+        return '<div style="width:132px;border:1px solid #E2DAFB;border-radius:12px;overflow:hidden;background:#fff;">'
+          + '<div style="height:70px;background:#EFEAFD;display:flex;align-items:center;justify-content:center;font-size:20px;">'
+          + '🎬 <span style="font-size:12px;font-weight:700;color:#3B2E7A;margin-inline-start:4px;">' + toArabic(i + 1) + '</span></div>'
+          + '<div style="padding:6px;font-size:10px;color:#4A4460;word-break:break-all;line-height:1.35;">'
+          + escAtt(c.clip_category || c.clip_name || ('لقطة ' + toArabic(i + 1))) + '</div>'
+          + '<div style="padding:0 6px 8px;"><button style="width:100%;font-family:inherit;font-size:11px;font-weight:700;'
+          + 'border:0;background:#6B4EE6;color:#fff;border-radius:8px;padding:6px 0;cursor:pointer;" '
+          + 'onclick="downloadClip(' + i + ')">⬇ تنزيل</button></div>'
+          + '</div>';
+      }).join('')
+    + '</div></div>';
+}
+
+async function downloadClip(idx) {
+  const item = _clipPack[idx];
+  if (!item) return;
+  const url = await simblBriefSignedUrl(item.clip_path, 300, item.clip_name || true);
+  if (!url) { kitToast('تعذّر تجهيز رابط التنزيل'); return; }
+  window.location.href = url;
+  kitToast('بدأ تنزيل اللقطة ⬇');
+}
+
 // ===== مرفقات الحملة (صور من الشركة) =====
 let _attachList = [];
 function escAtt(s) {
@@ -2751,7 +2817,7 @@ function escAtt(s) {
     return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[m];
   });
 }
-function openAttachModal(appId) {
+async function openAttachModal(appId) {
   const a = (Array.isArray(myApplications) ? myApplications : []).find(x => x.id === appId);
   if (!a) return;
   const c = a.campaigns || {};
@@ -2784,6 +2850,9 @@ function openAttachModal(appId) {
       });
     });
   }
+  // الحزمة الخاصة بهذا المعلن تُعرض فوق المرفقات العامة
+  _clipPack = await loadMyClipPack(appId);
+  if (_clipPack.length) body.innerHTML = clipPackHtml(_clipPack) + body.innerHTML;
   document.getElementById('attachModal').classList.add('show');
 }
 function closeAttachModal() { document.getElementById('attachModal').classList.remove('show'); }
