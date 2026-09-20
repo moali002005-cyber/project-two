@@ -560,6 +560,12 @@ export default async function handler(req, res) {
   const timingLabel = publishTimingTextSrv(campaign);
   // ---- سياق الزيارة (يُطبّق فقط لو campaign_type = visit) ----
   const isVisit = campaign.campaign_type === 'visit';
+  // حملة «فيديو جاهز»: الشركة ترسل الفيديو مركّبًا والمؤثرة تنشره فقط.
+  // هذي أقوى ورقة بيد الوكيل — بدونها يظن الطرف الآخر أن عليه تصوير ومونتاج فيرى المبلغ قليلاً.
+  const isReadyVideo = campaign.campaign_type === 'video';
+  const readyVideoLine = isReadyVideo
+    ? '\n- **نوع التعاون: فيديو جاهز** — الشركة ترسل الفيديو مركّبًا داخل المنصة، ودور المؤثرة النشر فقط: بلا تصوير، بلا مونتاج، بلا ظهور، بلا شراء منتج.'
+    : '';
   const _visitDays = campaign.visit_dates ? String(campaign.visit_dates).split(',').filter(Boolean) : (campaign.visit_date ? [campaign.visit_date] : []);
   const _daysTxt = _visitDays.length === 0 ? 'يُحدَّد داخل المنصة'
     : (_visitDays.length === 1 ? _visitDays[0] : ('أحد هذي الأيام: ' + _visitDays.join('، ')));
@@ -647,7 +653,7 @@ ${voiceInstructions}
 ## تفاصيل الإعلان:
 - العنوان: ${campaign.title}
 - الوصف: ${campaign.description}
-- المنصة: ${platformLabel} · ${timingDesc} · المتابعين: ${followerLabel} · المدينة: ${cityLabel} · الدفع: ${paymentLabel}${visitLocLine}
+- المنصة: ${platformLabel} · ${timingDesc} · المتابعين: ${followerLabel} · المدينة: ${cityLabel} · الدفع: ${paymentLabel}${visitLocLine}${readyVideoLine}
 
 ## عرض المؤثرة:
 - الاسم: ${application.creator_name} · المنصة: ${application.platform || 'غير محدد'} · المتابعين: ${application.followers ? application.followers.toLocaleString('en-US') : 'غير محدد'}
@@ -683,6 +689,7 @@ ${voiceInstructions}
 ## مقاومة الضغط (لا ترفع السعر مهما كان):
 اعترف بشعورها ثم اثبت. أمثلة للنبرة (نوّع، لا تكرّر حرفياً):
 - "محتاجة الفلوس/تعبت" → "أقدّر وضعك، بس الميزانية محدّدة من الشركة."
+${isReadyVideo ? `- "المبلغ قليل" → **ابدأ دائمًا بتذكيرها أن الفيديو جاهز**: "أقدّر رأيك، بس الفيديو يوصلك جاهز — ما فيه تصوير ولا مونتاج، بس تنشرينه. شرايك؟" هذي أقوى نقطة عندك، استعملها قبل أي إقناع ثاني ونوّع صياغتها.` : ''}
 - "بنسحب" → "أحترم قرارك، وهذا أقصى عرض نقدر عليه."
 - "غيركم دفع أكثر" → "كل حملة وميزانيتها، وعرضنا حسب هذي الحملة."
 - إصرار متكرر → كرّر عرضك النهائي بهدوء.
@@ -694,7 +701,9 @@ ${voiceInstructions}
 - استعمل "شرايك" (مو "شو/ايش/ما رأيك") و"وش اسمك".
 
 ## الرسالة الأولى فقط:
-سطران كحد أقصى (بدون قوائم/إيموجي): تحية باسمها، المطلوب باختصار على ${platformLabel}، ${isVisit ? `موعد الزيارة (${visitWhen})` : `موعد النشر (${timingLabel})`}، والمبلغ ${finalCap} ر.س، ثم دعوة قصيرة. مثال: "أهلاً ريم، معك وكيل ${campaign.brand_name || 'الشركة'}. عندنا فيديو على ${platformLabel} ${isVisit ? `وموعد الزيارة ${visitWhen}` : `والنشر ${timingLabel}`}، والمبلغ ${finalCap} ريال. شرايك؟" لا تزيد على هذا.
+سطران كحد أقصى (بدون قوائم/إيموجي): تحية باسمها، المطلوب باختصار على ${platformLabel}، ${isVisit ? `موعد الزيارة (${visitWhen})` : `موعد النشر (${timingLabel})`}، والمبلغ ${finalCap} ر.س، ثم دعوة قصيرة.${isReadyVideo ? ' **إلزامي**: وضّح في الرسالة الأولى أن الفيديو جاهز ودورها النشر فقط — هذي أهم معلومة تقرّر قبولها.' : ''} مثال: ${isReadyVideo
+  ? `"أهلاً ريم، معك وكيل ${campaign.brand_name || 'الشركة'}. عندنا فيديو **جاهز** تنشرينه على ${platformLabel} ${timingLabel} — ما يحتاج تصوير ولا مونتاج، والمبلغ ${finalCap} ريال. شرايك؟"`
+  : `"أهلاً ريم، معك وكيل ${campaign.brand_name || 'الشركة'}. عندنا فيديو على ${platformLabel} ${isVisit ? `وموعد الزيارة ${visitWhen}` : `والنشر ${timingLabel}`}، والمبلغ ${finalCap} ريال. شرايك؟"`} لا تزيد على هذا.
 
 ## الإقفال:
 أول ما توافق المؤثرة صراحةً (مثل "موافق"، "تمام"، "أوكي"، "ماشي") على سعر أقل من أو يساوي ${finalCap}: **اقفل فوراً في نفس الرد**. لا تسأل أسئلة إضافية، لا تطلب تأكيد ثاني، لا تفتح مواضيع شحن/تواصل/تنفيذ. فقط اشكرها بسطر، وأكّد المبلغ، ثم اكتب في آخر ردّك حرفياً:
