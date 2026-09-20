@@ -2175,7 +2175,7 @@ PROMO-02" style="width:100%;box-sizing:border-box;font-family:inherit;"></textar
         <input id="clips-k" type="number" min="1" max="20" value="1"
                style="width:90px;padding:8px 10px;border:1px solid #EFE8E4;border-radius:10px;font-family:inherit"
                onchange="clipsRender()"></label>
-      <label style="font-size:12px;color:#6B7B74">كم معلن يستخدم نفس الملف<br>
+      <label style="font-size:12px;color:#6B7B74" id="clips-quota-wrap">كم معلن يستخدم نفس الملف<br>
         <input id="clips-quota" type="number" min="1" max="500" value="1"
                style="width:90px;padding:8px 10px;border:1px solid #EFE8E4;border-radius:10px;font-family:inherit"
                onchange="clipsRender()"></label>
@@ -4478,16 +4478,26 @@ function clipsRender() {
   // الحد الأدنى الفعلي من الملفات بهذي الإعدادات
   const quotaSet = Math.max(1, parseInt(document.getElementById('clips-quota').value, 10) || 1);
   const advise = Math.ceil(creators * k / quotaSet);
+  const usedFiles = _clipsRows.filter(c => c.used_count > 0).length;   // ملفات انصرفت
+  const freeFiles = Math.max(0, n - usedFiles);                        // ملفات لم تُوزَّع بعد
+  const pendingCreators = Math.max(0, creators - withPack);            // معلنون بلا نصيب
+  const short = (k === 1) ? Math.max(0, pendingCreators - freeFiles) : 0;
 
   document.getElementById('clips-stats').innerHTML =
       '<b>' + toArabic(n) + '</b> لقطة · <b>' + toArabic(creators) + '</b> معلن معتمد · '
     + '<b>' + toArabic(withPack) + '</b> عنده حزمة'
     + '<br>الحصص المتبقية: <b>' + toArabic(capacity) + '</b> استخدام — والمطلوب لتغطية الباقين: <b>'
     + toArabic(need) + '</b>'
-    + (n && n < advise
-        ? '<br><span style="color:#E23B2E">بهذي الإعدادات تحتاج ' + toArabic(advise)
-          + ' ملف لتغطية ' + toArabic(creators) + ' معلن — عندك ' + toArabic(n) + '.</span>'
-        : '')
+    + (k === 1
+        ? '<br>صفر تكرار: كل فيديو لمعلن واحد فقط.'
+          + (short > 0
+              ? ' <span style="color:#E23B2E"><b>' + toArabic(Math.min(freeFiles, pendingCreators)) + '</b> معلن بياخذون الحين، و<b>'
+                + toArabic(short) + '</b> ينتظرون رفع فيديوهات إضافية.</span>'
+              : ' يكفي الجميع 🌿')
+        : (n && n < advise
+            ? '<br><span style="color:#E23B2E">بهذي الإعدادات تحتاج ' + toArabic(advise)
+              + ' ملف لتغطية ' + toArabic(creators) + ' معلن — عندك ' + toArabic(n) + '.</span>'
+            : ''))
     + (capacity < need
         ? '<br><span style="color:#E23B2E">الحصص ما تكفي — ارفع لقطات أكثر أو ارفع حصة اللقطة.</span>'
         : '');
@@ -4625,9 +4635,12 @@ function flfBuildClipPacks(clips, creatorIds, k) {
   let worst = 0;
   for (const app of creatorIds) {
     let chosen = null;
-    // مع «ملف واحد لكل معلن» أي تداخل = نسختان متطابقتان، فنبدأ من صفر.
+    // «ملف واحد لكل معلن» = صفر تكرار قطعًا: الحد يبقى صفرًا ولا يُرفع أبدًا.
+    // لو خلصت الملفات، من لم يلحق يبقى بلا نصيب وينتظر رفع المزيد — ولا يأخذ نسخة مكرّرة.
     // ومع الحزم نبدأ من ١ لأن صفرًا شبه مستحيل ويضيّع الوقت بلا فايدة.
-    for (let limit = (k === 1 ? 0 : 1); limit <= k && !chosen; limit++) {
+    const LIM_MIN = (k === 1 ? 0 : 1);
+    const LIM_MAX = (k === 1 ? 0 : k);
+    for (let limit = LIM_MIN; limit <= LIM_MAX && !chosen; limit++) {
       for (let t = 0; t < 160 && !chosen; t++) {
         const pack = draw();
         if (!pack) break;
@@ -4681,11 +4694,16 @@ async function clipsDistribute() {
       { p_campaign: _clipsCid, p_packs: packs });
     if (error) throw error;
     if (data && data.error) throw new Error(data.error);
-    const short = packs.length < pending.length
-      ? ' — وبقي ' + toArabic(pending.length - packs.length) + ' بلا حزمة لنفاد الحصص'
-      : '';
-    showToast('وُزّعت الحزم على ' + toArabic(data.written || packs.length) + ' معلن. '
-      + 'أقصى تشابه بين أي معلنين: ' + toArabic(maxShared) + ' من ' + toArabic(k) + short, 'success', 9000);
+    const left = pending.length - packs.length;
+    if (k === 1) {
+      showToast('وصل الفيديو لـ' + toArabic(data.written || packs.length) + ' معلن — كل واحد فيديو يخصّه، صفر تكرار.'
+        + (left > 0 ? ' و' + toArabic(left) + ' معلن ينتظرون: ارفع فيديوهات إضافية ثم اضغط «وزّع» مرة ثانية.' : ''),
+        'success', 10000);
+    } else {
+      showToast('وُزّعت الحزم على ' + toArabic(data.written || packs.length) + ' معلن. '
+        + 'أقصى تشابه بين أي معلنين: ' + toArabic(maxShared) + ' من ' + toArabic(k)
+        + (left > 0 ? ' — وبقي ' + toArabic(left) + ' بلا حزمة لنفاد الحصص' : ''), 'success', 9000);
+    }
     await clipsLoad();
   } catch (e) {
     console.error('clipsDistribute:', e);
