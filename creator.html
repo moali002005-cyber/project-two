@@ -2061,7 +2061,7 @@ function renderCreatorDealCard(c, a) {
     // من وصله نصيبه من الشركة (الفيديو الجاهز) ما نعرض له البنك — لا نشتّته عن مهمته
     const _hasMine = ((window.__clipCounts || {})[a.id] || 0) > 0;
     const _bankBtn = (!isCompleted && !_hasMine && c.campaign_type === 'video')
-      ? `<div style="margin:0 0 12px"><button onclick="event.stopPropagation(); openBankModal('${a.id}')" style="width:100%;border:1px solid #6B4EE6;background:#fff;color:#6B4EE6;font-family:inherit;font-size:13.5px;font-weight:700;padding:12px;border-radius:12px;cursor:pointer">🗂 تصفّح محتوى الحملة واختر اللي يعجبك</button></div>`
+      ? `<div style="margin:0 0 12px"><button onclick="event.stopPropagation(); openBankModal('${a.id}')" style="width:100%;border:1px solid #6B4EE6;background:#fff;color:#6B4EE6;font-family:inherit;font-size:13.5px;font-weight:700;padding:12px;border-radius:12px;cursor:pointer">🎞 مكتبة محتوى الحملة — تصفّح واختر</button></div>`
       : '';
     body = `${isCompleted ? '<div class="dc-done-banner">🎉 تمّت الحملة بنجاح — شكرًا لجهودك!</div>' : ''}${isCompleted ? '' : flfMyVideoBlock(a)}${_bankBtn}<div class="dc-strip">${strip}</div><div class="dc-action">${renderStageAction(a.id, stageNow, 'creator')}</div>`;
   } else if (awaitingApproval) {
@@ -2843,31 +2843,48 @@ function renderBank() {
   body.innerHTML =
       '<div style="background:#F6F3FF;border:1px solid #E2DAFB;border-radius:12px;padding:11px 14px;'
     + 'font-size:12.5px;line-height:1.85;color:#3B2E7A;margin-bottom:12px">'
-    + 'اختر اللي يعجبك وركّبه بفيديو واحد. <b>اخترت ' + toArabic(mine) + ' من ١٢.</b><br>'
-    + '<span style="color:#6B5FA8">الرقم تحت كل لقطة يقول كم معلن أخذها — اختيار الأقل استخدامًا يخلي فيديوك مميزًا وما يشبه غيرك.</span>'
+    + 'شغّل أي مقطع وشوفه قبل ما تقرّر، واختر اللي يناسب فيديوك. <b>اخترت ' + toArabic(mine) + ' من ١٢.</b><br>'
+    + '<span style="color:#6B5FA8">الرقم تحت كل مقطع يقول كم معلن أخذه — اختيار الأقل استخدامًا يخلي فيديوك مميزًا وما يشبه غيرك.</span>'
     + '</div>'
-    + '<div style="display:flex;flex-wrap:wrap;gap:11px">'
+    + '<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px">'
     + items.map(function (c) {
         const hot = c.taken_by >= 8;
-        return '<div style="width:142px;border:1px solid ' + (c.mine ? '#6B4EE6' : '#E7E9EE') + ';'
-          + 'border-radius:12px;overflow:hidden;background:#fff">'
-          + '<div style="height:64px;background:' + (c.mine ? '#EFEAFD' : '#F1F2F5') + ';display:flex;'
-          + 'align-items:center;justify-content:center;font-size:21px">🎬</div>'
-          + '<div style="padding:6px 7px 2px;font-size:10.5px;color:#4A5A53;line-height:1.4;'
-          + 'height:28px;overflow:hidden">' + escAtt(c.clip_category || c.clip_name || 'لقطة') + '</div>'
-          + '<div style="padding:0 7px 5px;font-size:10px;color:' + (hot ? '#c0392b' : '#8A807B') + '">'
-          + 'مأخوذة ' + toArabic(c.taken_by) + ' مرة' + (hot ? ' · كثيرة' : '') + '</div>'
-          + '<div style="padding:0 6px 7px;display:flex;gap:5px">'
-          + '<button onclick="toggleBankClip(\'' + c.clip_id + '\',' + (c.mine ? 'false' : 'true') + ')" '
-          + 'style="flex:1;font-family:inherit;font-size:10.5px;font-weight:700;border:0;border-radius:8px;'
-          + 'padding:6px 0;cursor:pointer;background:' + (c.mine ? '#6B4EE6' : '#EFEAFD') + ';'
-          + 'color:' + (c.mine ? '#fff' : '#3B2E7A') + '">' + (c.mine ? '✓ اخترتها' : 'اختيار') + '</button>'
-          + '<button onclick="downloadBankClip(\'' + c.clip_id + '\')" title="تحميل" '
+        return '<div style="border:2px solid ' + (c.mine ? '#6B4EE6' : '#E7E9EE') + ';'
+          + 'border-radius:14px;overflow:hidden;background:#fff">'
+          + '<div id="bk-' + c.clip_id + '" style="position:relative;aspect-ratio:9/16;max-height:210px;'
+          + 'background:#0F0B14;display:flex;align-items:center;justify-content:center;cursor:pointer" '
+          + 'onclick="playBankClip(\'' + c.clip_id + '\')">'
+          + '<div style="width:46px;height:46px;border-radius:50%;background:rgba(255,255,255,.92);'
+          + 'display:flex;align-items:center;justify-content:center;font-size:19px;color:#3B2E7A">▶</div>'
+          + '</div>'
+          + '<div style="padding:7px 8px 2px;font-size:10.5px;color:#4A5A53;line-height:1.4;'
+          + 'height:28px;overflow:hidden">' + escAtt(c.clip_category || c.clip_name || 'مقطع') + '</div>'
+          + '<div style="padding:0 8px 6px;font-size:10px;color:' + (hot ? '#c0392b' : '#8A807B') + '">'
+          + 'أخذه ' + toArabic(c.taken_by) + ' معلن' + (hot ? ' · كثير' : '') + '</div>'
+          + '<div style="padding:0 7px 8px;display:flex;gap:5px">'
+          + '<button onclick="event.stopPropagation(); toggleBankClip(\'' + c.clip_id + '\',' + (c.mine ? 'false' : 'true') + ')" '
+          + 'style="flex:1;font-family:inherit;font-size:11px;font-weight:700;border:0;border-radius:9px;'
+          + 'padding:7px 0;cursor:pointer;background:' + (c.mine ? '#6B4EE6' : '#EFEAFD') + ';'
+          + 'color:' + (c.mine ? '#fff' : '#3B2E7A') + '">' + (c.mine ? '✓ اخترته' : '+ اختيار') + '</button>'
+          + '<button onclick="event.stopPropagation(); downloadBankClip(\'' + c.clip_id + '\')" title="تحميل" '
           + 'style="font-family:inherit;font-size:11px;border:1px solid #E7E9EE;background:#fff;'
-          + 'border-radius:8px;padding:6px 9px;cursor:pointer">⬇</button>'
+          + 'border-radius:9px;padding:7px 10px;cursor:pointer">⬇</button>'
           + '</div></div>';
       }).join('')
     + '</div>';
+}
+
+// المعاينة عند الطلب فقط: رابط موقّت لكل مقطع لحظة الضغط، لا مئة رابط دفعة وحدة
+async function playBankClip(clipId) {
+  const box = document.getElementById('bk-' + clipId);
+  const c = _bank.find(function (x) { return x.clip_id === clipId; });
+  if (!box || !c || box.dataset.loaded) return;
+  box.dataset.loaded = '1';
+  box.innerHTML = '<div style="color:#fff;font-size:11px">جاري الفتح...</div>';
+  const url = await simblBriefSignedUrl(c.clip_path, 1800);
+  if (!url) { box.innerHTML = '<div style="color:#fff;font-size:11px">تعذّر الفتح</div>'; box.dataset.loaded=''; return; }
+  box.innerHTML = '<video src="' + escAtt(url) + '" controls autoplay playsinline preload="metadata" '
+    + 'style="width:100%;height:100%;object-fit:cover;background:#000"></video>';
 }
 
 async function toggleBankClip(clipId, take) {
