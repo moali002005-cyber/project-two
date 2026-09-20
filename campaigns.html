@@ -2165,18 +2165,18 @@ PROMO-02" style="width:100%;box-sizing:border-box;font-family:inherit;"></textar
 <!-- نافذة بنك اللقطات — رفع اللقطات وتوزيعها حزمًا على المعلنين المعتمدين -->
 <div class="modal-backdrop" id="clips-modal">
   <div class="modal" style="max-width:780px">
-    <h3>🎞 بنك اللقطات</h3>
-    <p class="sub">ارفع لقطات الفرع، والنظام يبني لكل معلن معتمد حزمته الخاصة بترتيب مختلف — ما يشوف غيرها، وما يتشارك مع أي معلن ثاني إلا أقل عدد ممكن من اللقطات.</p>
+    <h3>🎞 بنك المحتوى</h3>
+    <p class="sub">ارفع الفيديوهات الجاهزة (أو اللقطات)، والنظام يعطي كل معلن معتمد نصيبه — ما يشوف غيره، وما يتكرر مع أي معلن ثاني.<br><b>الوضع الافتراضي:</b> فيديو واحد جاهز لكل معلن، لا يتكرر مع أحد. ولو بتوزّع لقطات خام، ارفع «ملفات لكل معلن» لـ٦ أو ٧.</p>
 
     <div id="clips-stats" style="background:#FBF8F6;border:1px solid #EFE8E4;border-radius:12px;padding:12px 14px;font-size:13px;line-height:1.9;color:#16110F"></div>
 
     <div style="display:flex;gap:12px;flex-wrap:wrap;align-items:flex-end;margin-top:14px">
-      <label style="font-size:12px;color:#6B7B74">لقطات لكل معلن<br>
-        <input id="clips-k" type="number" min="2" max="20" value="7"
+      <label style="font-size:12px;color:#6B7B74">ملفات لكل معلن<br>
+        <input id="clips-k" type="number" min="1" max="20" value="1"
                style="width:90px;padding:8px 10px;border:1px solid #EFE8E4;border-radius:10px;font-family:inherit"
                onchange="clipsRender()"></label>
-      <label style="font-size:12px;color:#6B7B74">حصة اللقطة الواحدة<br>
-        <input id="clips-quota" type="number" min="1" max="500" value="7"
+      <label style="font-size:12px;color:#6B7B74">كم معلن يستخدم نفس الملف<br>
+        <input id="clips-quota" type="number" min="1" max="500" value="1"
                style="width:90px;padding:8px 10px;border:1px solid #EFE8E4;border-radius:10px;font-family:inherit"
                onchange="clipsRender()"></label>
       <label style="display:inline-flex;align-items:center;gap:6px;border:1px solid #E23B2E;background:#FDF0EE;
@@ -2187,9 +2187,8 @@ PROMO-02" style="width:100%;box-sizing:border-box;font-family:inherit;"></textar
       </label>
     </div>
     <p style="font-size:11.5px;color:#8A807B;margin:8px 0 0;line-height:1.7">
-      MP4 / MOV / WebM — ٥٠ ميجا للقطة كحد أقصى، وتقدر ترفع على دفعات (الجديد يُضاف للقديم).<br>
-      <b>التصنيف اختياري:</b> اتركه فاضيًا وتطلع الحزم عشوائية بالكامل — لقطات عشوائية بترتيب عشوائي.
-      وعبّيه لو تبي كل حزمة تكون قصة مكتملة: لقطة من كل نوع.</p>
+      MP4 / MOV / WebM — ٥٠ ميجا للملف كحد أقصى، وتقدر ترفع على دفعات (الجديد يُضاف للقديم).<br>
+      <b>التصنيف اختياري</b> — اتركه فاضيًا والتوزيع يطلع عشوائيًا بالكامل.</p>
 
     <div id="clips-list" style="max-height:42vh;overflow:auto;margin-top:12px"></div>
 
@@ -4476,8 +4475,9 @@ function clipsRender() {
   const capacity = _clipsRows.reduce((s, c) => s + Math.max(0, c.quota - c.used_count), 0);
   const need = Math.max(0, creators - withPack) * k;
 
-  // كم لقطة يحتاج عشان يطلع توزيع مريح (تداخل ≤ لقطتين) — من المحاكاة: ≈ ٠٫٧ لقطة لكل معلن
-  const advise = Math.ceil(creators * 0.7);
+  // الحد الأدنى الفعلي من الملفات بهذي الإعدادات
+  const quotaSet = Math.max(1, parseInt(document.getElementById('clips-quota').value, 10) || 1);
+  const advise = Math.ceil(creators * k / quotaSet);
 
   document.getElementById('clips-stats').innerHTML =
       '<b>' + toArabic(n) + '</b> لقطة · <b>' + toArabic(creators) + '</b> معلن معتمد · '
@@ -4485,8 +4485,8 @@ function clipsRender() {
     + '<br>الحصص المتبقية: <b>' + toArabic(capacity) + '</b> استخدام — والمطلوب لتغطية الباقين: <b>'
     + toArabic(need) + '</b>'
     + (n && n < advise
-        ? '<br><span style="color:#E23B2E">للوصول لأقل تشابه ممكن مع ' + toArabic(creators)
-          + ' معلن، يُفضّل ' + toArabic(advise) + ' لقطة أو أكثر.</span>'
+        ? '<br><span style="color:#E23B2E">بهذي الإعدادات تحتاج ' + toArabic(advise)
+          + ' ملف لتغطية ' + toArabic(creators) + ' معلن — عندك ' + toArabic(n) + '.</span>'
         : '')
     + (capacity < need
         ? '<br><span style="color:#E23B2E">الحصص ما تكفي — ارفع لقطات أكثر أو ارفع حصة اللقطة.</span>'
@@ -4625,7 +4625,9 @@ function flfBuildClipPacks(clips, creatorIds, k) {
   let worst = 0;
   for (const app of creatorIds) {
     let chosen = null;
-    for (let limit = 1; limit <= k && !chosen; limit++) {
+    // مع «ملف واحد لكل معلن» أي تداخل = نسختان متطابقتان، فنبدأ من صفر.
+    // ومع الحزم نبدأ من ١ لأن صفرًا شبه مستحيل ويضيّع الوقت بلا فايدة.
+    for (let limit = (k === 1 ? 0 : 1); limit <= k && !chosen; limit++) {
       for (let t = 0; t < 160 && !chosen; t++) {
         const pack = draw();
         if (!pack) break;

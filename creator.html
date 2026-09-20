@@ -2780,12 +2780,18 @@ async function loadMyClipPack(appId) {
 
 function clipPackHtml(pack) {
   if (!pack.length) return '';
+  const one = pack.length === 1;
   return '<div style="background:#F6F3FF;border:1px solid #E2DAFB;border-radius:14px;padding:14px 16px;margin:0 0 16px;">'
-    + '<div style="font-size:14px;font-weight:700;color:#3B2E7A;margin-bottom:4px;">🎞 لقطاتك الخاصة '
-    + '<span style="font-weight:400;color:#6B5FA8;">(' + toArabic(pack.length) + ')</span></div>'
+    + '<div style="font-size:14px;font-weight:700;color:#3B2E7A;margin-bottom:4px;">'
+    + (one ? '🎬 الفيديو الخاص بك'
+           : '🎞 لقطاتك الخاصة <span style="font-weight:400;color:#6B5FA8;">(' + toArabic(pack.length) + ')</span>')
+    + '</div>'
     + '<div style="font-size:12.5px;color:#5B4FA0;line-height:1.85;margin-bottom:10px;">'
-    + 'هذي اللقطات مخصّصة لك أنت بالذات وبترتيبها — ركّبها بفيديو واحد. '
-    + 'كل معلن عنده لقطات مختلفة، عشان ما تطلع فيديوهاتكم متشابهة ويخنقها تيك توك.</div>'
+    + (one
+        ? 'هذا الفيديو مخصّص لك أنت بالذات وما راح يتكرر مع أي معلن ثاني — نزّله وانشره حسب البريف.'
+        : 'هذي اللقطات مخصّصة لك أنت بالذات وبترتيبها — ركّبها بفيديو واحد. '
+          + 'كل معلن عنده لقطات مختلفة، عشان ما تطلع فيديوهاتكم متشابهة ويخنقها تيك توك.')
+    + '</div>'
     + '<div style="display:flex;flex-wrap:wrap;gap:10px;">'
     + pack.map(function (c, i) {
         return '<div style="width:132px;border:1px solid #E2DAFB;border-radius:12px;overflow:hidden;background:#fff;">'
