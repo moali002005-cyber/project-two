@@ -4407,6 +4407,7 @@ function renderSingleCampaign(c) {
           ${c.campaign_type === 'video' ? `<button class="hero-cta" style="padding:10px 18px;font-size:13px;background:#6B4EE6;" onclick="event.stopPropagation(); openClipsModal('${c.id}')">🎬 فيديوهات المعلنين</button>` : ''}
           <button class="hero-cta" style="padding:10px 18px;font-size:13px;background:#E23B2E;" onclick="event.stopPropagation(); createBoardLink('${c.id}')">✅ رابط اعتماد للعميل</button>
           <button class="hero-cta" style="padding:10px 18px;font-size:13px;background:#E8C547;color:#16110F;" onclick="event.stopPropagation(); createBoardLink('${c.id}', true)">★ رابط اعتماد — المختارة فقط</button>
+          <button class="hero-cta" style="padding:10px 18px;font-size:13px;background:#1D8F6B;" onclick="event.stopPropagation(); createPublishedLink('${c.id}')">🎬 رابط المنشور للعميل</button>
           <button class="hero-cta" style="padding:10px 18px;font-size:13px;background:#25D366;color:#0b3b22;" onclick="event.stopPropagation(); copyCampaignLink('${c.id}')">📣 رابط الحملة للمعلنين</button>
         </div>
 
@@ -5025,6 +5026,22 @@ async function createBoardLink(cid, onlyFlagged) {
   } catch (e) {
     console.error('board link error:', e);
     showToast('تعذّر إنشاء رابط الاعتماد', 'error', 4000);
+  }
+}
+
+// رابط «الفيديوهات المنشورة» للعميل: كل من ينشر يظهر تلقائيًا + خانة «تم الترويج ✓/✕»
+async function createPublishedLink(cid) {
+  try {
+    const r = await supabaseClient.rpc('board_create', { p_campaign: cid, p_days: 60, p_label: 'رابط المنشور', p_only_flagged: false });
+    if (r.error) throw r.error;
+    const d = r.data || {};
+    if (d.error === 'not_owner') { showToast('هذي الحملة ليست ضمن حسابك', 'error'); return; }
+    if (!d.ok || !d.token) throw new Error('no-token');
+    flfLinkBox('رابط الفيديوهات المنشورة 🎬', location.origin + '/published.html?t=' + d.token,
+      'صالح 60 يومًا ويفتح بلا تسجيل دخول. يعرض كل معلن نشر مع رابط فيديوه ويتحدّث تلقائيًا، والعميل يعلّم «تم الترويج ✓ / ✕». بلا أي أسعار.');
+  } catch (e) {
+    console.error('published link error:', e);
+    showToast('تعذّر إنشاء الرابط', 'error', 4000);
   }
 }
 
