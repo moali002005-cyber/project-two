@@ -146,7 +146,7 @@ function rowHtml(it, i){
     '<td class="rn">'+(i+1)+'</td>'+
     '<td class="nm"><span class="cp" style="cursor:copy" title="اضغط للنسخ" onclick="copyKey(\'n'+i+'\', this)">'+esc(it.name||'—')+'</span></td>'+
     '<td>'+(acct ? '<a class="lnk" href="'+esc(acct)+'" target="_blank" rel="noopener">رابط الحساب ↗</a><span class="sep">|</span>'+cpBtn('a'+i,'نسخ ⧉') : '<span class="dash">—</span>')+'</td>'+
-    '<td class="num">'+(it.published_at ? esc(fmtD(it.published_at)) : '<span class="dash">—</span>')+'</td>'+
+    '<td>'+(it.published_at ? '<span class="num">'+esc(fmtD(it.published_at))+'</span>' : '<span class="dash">—</span>')+'</td>'+
     '<td>'+(vid ? '<a class="lnk" href="'+esc(vid)+'" target="_blank" rel="noopener">فتح ↗</a><span class="sep">|</span>'+cpBtn('v'+i,'نسخ ⧉') : '<span class="dash">—</span>')+'</td>'+
     '<td>'+(code ? cpBtn('c'+i,'⧉ انسخ كود الترويج') : '<span class="dash">—</span>')+'</td>'+
     '<td><div class="pm2">'+
