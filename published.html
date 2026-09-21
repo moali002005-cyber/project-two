@@ -166,24 +166,19 @@ function render(){
   const d = DATA, items = d.items || [];
   const yes = items.filter(i=>i.promoted===true).length, no = items.filter(i=>i.promoted===false).length;
   const brand = d.brand || '';
+  const AR = { 'prime scent':'برايم سنت' };
+  const bn = AR[String(brand).trim().toLowerCase()] || brand;
   $('#app').innerHTML =
-    '<div class="mast"><div class="kk">FLFLUENCER · '+esc(brand)+'</div>'+
-    '<h1>الفيديوهات المنشورة · '+esc(d.campaign && d.campaign.title || '')+'</h1>'+
-    '<p class="sub">كل معلن ينشر يظهر هنا تلقائيًا. انسخ رابط الفيديو وكود الترويج، وبعد ما تروّج علّم ✓ في عمود «تم الترويج».</p></div>'+
-    '<div class="band">'+
-      '<div><div class="v num">'+items.length+'</div><div class="l">نُشر</div></div>'+
-      '<div><div class="v num">'+(d.awaiting_publish||0)+'</div><div class="l">وافقتم على المحتوى · بانتظار النشر</div></div>'+
-      '<div><div class="v num" style="color:var(--good)">'+yes+'</div><div class="l">تم الترويج ✓</div></div>'+
-      '<div><div class="v num" style="color:var(--bad)">'+no+'</div><div class="l">لم يتم الترويج ✕</div></div>'+
+    '<div class="mast" style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap">'+
+      '<h1 style="margin:0">حملة '+esc(bn)+'</h1>'+
+      (items.length ? '<button class="btn2" onclick="copyAll()">⧉ نسخ الجدول كامل</button>' : '')+
     '</div>'+
     (items.length
-      ? '<div class="tools"><span class="hint">اضغط على اسم المعلن لفتح حسابه، و«نسخ» لنسخ الرابط أو الكود.</span><button class="btn2" onclick="copyAll()">⧉ نسخ الجدول كامل</button></div>'+
-        '<div class="sheet-wrap"><table class="sheet"><thead>'+
+      ? '<div class="sheet-wrap"><table class="sheet"><thead>'+
           '<tr class="let"><th class="rn"></th><th>A</th><th>B</th><th>C</th><th>D</th></tr>'+
           '<tr class="hd"><th class="rn"></th><th>الاسم</th><th>رابط الفيديو</th><th>كود الترويج</th><th>تم الترويج</th></tr>'+
         '</thead><tbody>'+items.map(rowHtml).join('')+'</tbody></table></div>'
-      : '<div class="empty">ما نشر أحد إلى الآن.<br>أول ما يرفع المعلن رابط النشر يظهر هنا مباشرة.</div>')+
-    '<div class="foot">الصفحة تتحدّث تلقائيًا كل دقيقة. من إجمالي <span class="num">'+(d.approved_count||0)+'</span> معلن معتمد في الحملة.</div>';
+      : '<div class="empty">ما نشر أحد إلى الآن.<br>أول ما يرفع المعلن رابط النشر يظهر هنا مباشرة.</div>');
 }
 
 async function mark(id, val, btn){
