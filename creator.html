@@ -1533,7 +1533,8 @@ function isAdsView() {
 // ===== حالة «قيد التجهيز»: الشركة نشرت الحملة والبريف/المحتوى ما انضافوا بعد =====
 // appId اختياري: لو وصلت المعلن حزمة لقطاته، فالمحتوى جاهز حتى لو ما فيه مرفقات عامة
 function flfPendingBits(c, appId) {
-  if (appId && ((window.__clipCounts || {})[appId] || 0) > 0) {
+  const _bk = appId ? (window.__bankCounts || {})[appId] : null;
+  if (appId && ((((window.__clipCounts || {})[appId] || 0) > 0) || (_bk && _bk.raw > 0))) {
     const noBriefOnly = !String((c && (c.description || c.brief)) || '').trim();
     return { noBrief: noBriefOnly, noFiles: false, any: noBriefOnly };
   }
@@ -2060,8 +2061,18 @@ function renderCreatorDealCard(c, a) {
     });
     // من وصله نصيبه من الشركة (الفيديو الجاهز) ما نعرض له البنك — لا نشتّته عن مهمته
     const _hasMine = ((window.__clipCounts || {})[a.id] || 0) > 0;
-    const _bankBtn = (!isCompleted && !_hasMine && c.campaign_type === 'video')
-      ? `<div style="margin:0 0 12px"><button onclick="event.stopPropagation(); openBankModal('${a.id}')" style="width:100%;border:1px solid #6B4EE6;background:#fff;color:#6B4EE6;font-family:inherit;font-size:13.5px;font-weight:700;padding:12px;border-radius:12px;cursor:pointer">🎞 مكتبة محتوى الحملة — تصفّح واختر</button></div>`
+    const _bk = (window.__bankCounts || {})[a.id] || { raw: 0, picked: 0 };
+    const _bankBtn = (!isCompleted && !_hasMine && c.campaign_type === 'video' && _bk.raw > 0)
+      ? `<div onclick="event.stopPropagation()" style="margin:0 0 12px;border:1px solid #E2DAFB;background:#F8F6FF;border-radius:14px;padding:14px 16px">
+           <div style="font-size:14px;font-weight:800;color:#3B2E7A;margin-bottom:6px">🎯 مهمتك: فيديو واحد لعروض برايم سنت</div>
+           <div style="font-size:12.8px;color:#4A3F7A;line-height:1.95">
+             <b>١.</b> افتح المكتبة وشغّل اللقطات — كلها مصوّرة في الفرع وجاهزة.<br>
+             <b>٢.</b> نزّل اللقطات اللي تناسب فيديوك (العدد على راحتك).<br>
+             <b>٣.</b> ركّبها في فيديو واحد بالترتيب اللي يطلبه <b>البريف</b> — افتح زر «📋 البريف» فوق.<br>
+             <b>٤.</b> ارفع الفيديو النهائي هنا تحت «تجهيز الفيديو»، وبعد موافقة الشركة تنشره.
+           </div>
+           <button onclick="event.stopPropagation(); openBankModal('${a.id}')" style="margin-top:11px;width:100%;border:0;background:#6B4EE6;color:#fff;font-family:inherit;font-size:14px;font-weight:700;padding:12px;border-radius:12px;cursor:pointer">🎞 افتح مكتبة اللقطات (${toArabic(_bk.raw)} لقطة)</button>
+         </div>`
       : '';
     body = `${isCompleted ? '<div class="dc-done-banner">🎉 تمّت الحملة بنجاح — شكرًا لجهودك!</div>' : ''}${isCompleted ? '' : flfMyVideoBlock(a)}${_bankBtn}<div class="dc-strip">${strip}</div><div class="dc-action">${renderStageAction(a.id, stageNow, 'creator')}</div>`;
   } else if (awaitingApproval) {
@@ -2777,6 +2788,15 @@ async function loadMyClipCounts(appIds) {
       window.__clipCounts[r.application_id] = (window.__clipCounts[r.application_id] || 0) + 1;
     });
   } catch (e) { console.error('loadMyClipCounts:', e); }
+  // مكتبة اللقطات الخام: كم لقطة متاحة وكم اخترت، لكل صفقة معتمدة
+  window.__bankCounts = {};
+  try {
+    const r2 = await supabaseClient.rpc('flf_my_bank_counts');
+    if (r2.error) throw r2.error;
+    (r2.data || []).forEach(function (r) {
+      window.__bankCounts[r.application_id] = { raw: r.raw_count || 0, picked: r.picked || 0 };
+    });
+  } catch (e) { console.error('bank counts:', e); }
 }
 
 // بطاقة بارزة داخل الصفقة: الفيديو الجاهز + تحميله بضغطة، بلا ما يدوّر في المرفقات
@@ -2837,6 +2857,27 @@ async function loadBank() {
   }
 }
 
+// ترتيب مختلف لكل معلن (ثابت له بين الزيارات): كل واحد يشوف لقطات مختلفة في أول الصفحة
+function bankSeedOrder(items, key) {
+  let h = 2166136261;
+  const k = String(key || '');
+  for (let i = 0; i < k.length; i++) { h ^= k.charCodeAt(i); h = Math.imul(h, 16777619); }
+  let a = h >>> 0;
+  const rnd = function () {
+    a = (a + 0x6D2B79F5) >>> 0;
+    let t = a;
+    t = Math.imul(t ^ (t >>> 15), t | 1);
+    t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+  const out = items.slice();
+  for (let i = out.length - 1; i > 0; i--) {
+    const j = Math.floor(rnd() * (i + 1));
+    const tmp = out[i]; out[i] = out[j]; out[j] = tmp;
+  }
+  return out;
+}
+
 function renderBank() {
   const body = document.getElementById('bankModalBody');
   if (!_bank.length) {
@@ -2844,23 +2885,19 @@ function renderBank() {
       + 'الشركة ما أضافت محتوى بعد. أول ما تضيفه يوصلك إشعار.</div>';
     return;
   }
-  const mine = _bank.filter(function (c) { return c.mine; }).length;
-  // الأقل استخدامًا أولًا: نوجّه الاختيار بلطف بدل ما يتكدّس الجميع على أول لقطة
-  const items = _bank.slice().sort(function (a, b) { return (a.taken_by - b.taken_by); });
+  const items = bankSeedOrder(_bank, _bankAppId);
 
   body.innerHTML =
       '<div style="background:#F6F3FF;border:1px solid #E2DAFB;border-radius:12px;padding:11px 14px;'
-    + 'font-size:12.5px;line-height:1.85;color:#3B2E7A;margin-bottom:12px">'
-    + 'كل المقاطع معروضة أمامك — اضغط أي مقطع يشتغل هنا مباشرة قبل ما تقرّر، وبعدين اختر اللي يناسب فيديوك. '
-    + '<b>اخترت ' + toArabic(mine) + ' من ١٢.</b><br>'
-    + '<span style="color:#6B5FA8">الرقم تحت كل مقطع يقول كم معلن أخذه — اختيار الأقل استخدامًا يخلي فيديوك مميزًا وما يشبه غيرك.</span>'
+    + 'font-size:12.8px;line-height:1.9;color:#3B2E7A;margin-bottom:12px">'
+    + '<b>الهدف:</b> فيديو واحد لعروض برايم سنت تركّبه من هذي اللقطات حسب البريف.<br>'
+    + 'اضغط أي مقطع يشتغل هنا مباشرة ← نزّل اللي يناسب فيديوك بزر «⬇ تحميل» ← ركّبها بالترتيب اللي في البريف ← ارفع الفيديو النهائي في صفقتك.<br>'
+    + '<span style="color:#6B5FA8">عندك ' + toArabic(items.length) + ' لقطة — الترتيب هنا خاص فيك، فابدأ من فوق عشان يطلع فيديوك مختلف عن غيرك.</span>'
     + '</div>'
     + '<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px">'
     + items.map(function (c) {
-        const hot = c.taken_by >= 8;
         const url = _bankUrls[c.clip_path] || '';
-        return '<div style="border:2px solid ' + (c.mine ? '#6B4EE6' : '#E7E9EE') + ';'
-          + 'border-radius:14px;overflow:hidden;background:#fff">'
+        return '<div style="border:1px solid #E7E9EE;border-radius:14px;overflow:hidden;background:#fff">'
           + '<div id="bk-' + c.clip_id + '" style="position:relative;aspect-ratio:9/16;max-height:210px;'
           + 'background:#0F0B14;cursor:pointer" onclick="playBankClip(\'' + c.clip_id + '\')">'
           + (url
@@ -2872,18 +2909,10 @@ function renderBank() {
           + '<div style="width:46px;height:46px;border-radius:50%;background:rgba(255,255,255,.92);'
           + 'display:flex;align-items:center;justify-content:center;font-size:19px;color:#3B2E7A">▶</div>'
           + '</div></div>'
-          + '<div style="padding:7px 8px 2px;font-size:10.5px;color:#4A5A53;line-height:1.4;'
-          + 'height:28px;overflow:hidden">' + escAtt(c.clip_category || c.clip_name || 'مقطع') + '</div>'
-          + '<div style="padding:0 8px 6px;font-size:10px;color:' + (hot ? '#c0392b' : '#8A807B') + '">'
-          + 'أخذه ' + toArabic(c.taken_by) + ' معلن' + (hot ? ' · كثير' : '') + '</div>'
-          + '<div style="padding:0 7px 8px;display:flex;gap:5px">'
-          + '<button onclick="event.stopPropagation(); toggleBankClip(\'' + c.clip_id + '\',' + (c.mine ? 'false' : 'true') + ')" '
-          + 'style="flex:1;font-family:inherit;font-size:11px;font-weight:700;border:0;border-radius:9px;'
-          + 'padding:7px 0;cursor:pointer;background:' + (c.mine ? '#6B4EE6' : '#EFEAFD') + ';'
-          + 'color:' + (c.mine ? '#fff' : '#3B2E7A') + '">' + (c.mine ? '✓ اخترته' : '+ اختيار') + '</button>'
-          + '<button onclick="event.stopPropagation(); downloadBankClip(\'' + c.clip_id + '\')" title="تحميل" '
-          + 'style="font-family:inherit;font-size:11px;border:1px solid #E7E9EE;background:#fff;'
-          + 'border-radius:9px;padding:7px 10px;cursor:pointer">⬇</button>'
+          + '<div style="padding:8px">'
+          + '<button onclick="event.stopPropagation(); downloadBankClip(\'' + c.clip_id + '\')" '
+          + 'style="width:100%;font-family:inherit;font-size:12px;font-weight:700;border:0;border-radius:9px;'
+          + 'padding:8px 0;cursor:pointer;background:#6B4EE6;color:#fff">⬇ تحميل</button>'
           + '</div></div>';
       }).join('')
     + '</div>';
@@ -3393,7 +3422,10 @@ function renderStageAction(applicationId, currentStage, viewerRole) {
     return `
       <div class="stage-action mine" onclick="event.stopPropagation()">
         <div class="sa-title">المرحلة الحالية: ${_isVidCamp ? 'تجهيز الفيديو' : stageName}</div>
-        <div class="sa-desc">${_isVidCamp ? 'تحميل فيديوهات الشركة من زر 📎 المرفقات في بطاقة الحملة — تُعدّل وتُرتّب حسب البريف بالضبط، ثم تُرفع النسخة النهائية هنا وتُرسل لتعميد الشركة. وبعد الموافقة يتم نشرها في المرحلة التالية.' : (myInfo.desc || '')}</div>
+        <div class="sa-desc">${_isVidCamp ? (((window.__clipCounts || {})[applicationId] || 0) > 0
+            ? 'فيديوك الجاهز فوق — نزّله وراجعه مع البريف، ثم ارفع النسخة النهائية هنا وتُرسل لتعميد الشركة. وبعد الموافقة تنشره في المرحلة التالية.'
+            : 'نزّل لقطاتك من «مكتبة اللقطات» فوق، ركّبها في فيديو واحد بالترتيب اللي يطلبه البريف، ثم ارفع الفيديو النهائي هنا ويُرسل لتعميد الشركة. وبعد الموافقة تنشره في المرحلة التالية.')
+          : (myInfo.desc || '')}</div>
         ${_rejBanner}
         <form class="sa-form" id="stage-form-${applicationId}" onclick="event.stopPropagation()" onsubmit="event.preventDefault(); event.stopPropagation(); submitStageForm('${applicationId}')">
           <input type="hidden" id="sf-${applicationId}-content_link" name="content_link">
