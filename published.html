@@ -68,7 +68,7 @@
         border-radius:9px;padding:7px 13px;font-size:13px;font-weight:600}
   .btn2:hover{border-color:var(--ink)}
   .sheet-wrap{overflow-x:auto;background:var(--card);border:1px solid var(--line2);border-radius:12px;box-shadow:var(--shadow)}
-  table.sheet{border-collapse:collapse;width:100%;min-width:860px;font-size:14px}
+  table.sheet{border-collapse:collapse;width:100%;min-width:640px;font-size:14px}
   .sheet th,.sheet td{border:1px solid #E3E3E3;padding:10px 12px;text-align:center;vertical-align:middle;white-space:nowrap}
   .sheet thead tr.let th{background:#F3F4F4;color:#8A8F93;font-weight:500;font-size:12px;padding:6px}
   .sheet thead tr.hd th{background:#E9EDEE;color:#2B2F31;font-weight:700;font-size:13.5px}
@@ -144,9 +144,7 @@ function rowHtml(it, i){
   const p = it.promoted;
   return '<tr>'+
     '<td class="rn">'+(i+1)+'</td>'+
-    '<td class="nm"><span class="cp" style="cursor:copy" title="اضغط للنسخ" onclick="copyKey(\'n'+i+'\', this)">'+esc(it.name||'—')+'</span></td>'+
-    '<td>'+(acct ? '<a class="lnk" href="'+esc(acct)+'" target="_blank" rel="noopener">رابط الحساب ↗</a><span class="sep">|</span>'+cpBtn('a'+i,'نسخ ⧉') : '<span class="dash">—</span>')+'</td>'+
-    '<td>'+(it.published_at ? '<span class="num">'+esc(fmtD(it.published_at))+'</span>' : '<span class="dash">—</span>')+'</td>'+
+    '<td class="nm">'+(acct ? '<a class="lnk" style="color:var(--ink);font-size:14px" href="'+esc(acct)+'" target="_blank" rel="noopener" title="فتح الحساب">'+esc(it.name||'—')+' ↗</a>' : esc(it.name||'—'))+'</td>'+
     '<td>'+(vid ? '<a class="lnk" href="'+esc(vid)+'" target="_blank" rel="noopener">فتح ↗</a><span class="sep">|</span>'+cpBtn('v'+i,'نسخ ⧉') : '<span class="dash">—</span>')+'</td>'+
     '<td>'+(code ? cpBtn('c'+i,'⧉ انسخ كود الترويج') : '<span class="dash">—</span>')+'</td>'+
     '<td><div class="pm2">'+
@@ -158,8 +156,8 @@ function rowHtml(it, i){
 
 function copyAll(){
   const items = (DATA && DATA.items) || [];
-  const head = ['الاسم','رابط الحساب','تاريخ النشر','رابط الفيديو','كود الترويج','تم الترويج'];
-  const rows = items.map(it => [it.name||'', safeUrl(it.account), fmtD(it.published_at), safeUrl(it.publish_link), String(it.promo_code||'').trim(),
+  const head = ['الاسم','رابط الحساب','رابط الفيديو','كود الترويج','تم الترويج'];
+  const rows = items.map(it => [it.name||'', safeUrl(it.account), safeUrl(it.publish_link), String(it.promo_code||'').trim(),
                                 it.promoted===true?'نعم':it.promoted===false?'لا':''].map(x=>String(x).replace(/[\t\r\n]+/g,' ')).join('\t'));
   copyText([head.join('\t')].concat(rows).join('\n')).then(ok => toast(ok ? 'تم نسخ الجدول كامل ✓ الصقه في Excel أو Google Sheets' : 'تعذّر النسخ', 3000));
 }
@@ -179,10 +177,10 @@ function render(){
       '<div><div class="v num" style="color:var(--bad)">'+no+'</div><div class="l">لم يتم الترويج ✕</div></div>'+
     '</div>'+
     (items.length
-      ? '<div class="tools"><span class="hint">اضغط على أي اسم أو «نسخ» لنسخه.</span><button class="btn2" onclick="copyAll()">⧉ نسخ الجدول كامل</button></div>'+
+      ? '<div class="tools"><span class="hint">اضغط على اسم المعلن لفتح حسابه، و«نسخ» لنسخ الرابط أو الكود.</span><button class="btn2" onclick="copyAll()">⧉ نسخ الجدول كامل</button></div>'+
         '<div class="sheet-wrap"><table class="sheet"><thead>'+
-          '<tr class="let"><th class="rn"></th><th>A</th><th>B</th><th>C</th><th>D</th><th>E</th><th>F</th></tr>'+
-          '<tr class="hd"><th class="rn"></th><th>الاسم</th><th>رابط الحساب</th><th>تاريخ النشر</th><th>رابط الفيديو</th><th>كود الترويج</th><th>تم الترويج</th></tr>'+
+          '<tr class="let"><th class="rn"></th><th>A</th><th>B</th><th>C</th><th>D</th></tr>'+
+          '<tr class="hd"><th class="rn"></th><th>الاسم</th><th>رابط الفيديو</th><th>كود الترويج</th><th>تم الترويج</th></tr>'+
         '</thead><tbody>'+items.map(rowHtml).join('')+'</tbody></table></div>'
       : '<div class="empty">ما نشر أحد إلى الآن.<br>أول ما يرفع المعلن رابط النشر يظهر هنا مباشرة.</div>')+
     '<div class="foot">الصفحة تتحدّث تلقائيًا كل دقيقة. من إجمالي <span class="num">'+(d.approved_count||0)+'</span> معلن معتمد في الحملة.</div>';
