@@ -17,7 +17,7 @@
   body{margin:0;background:var(--ground);color:var(--ink);
        font-family:"IBM Plex Sans Arabic","Segoe UI",Tahoma,sans-serif;
        font-size:15px;line-height:1.8;padding:24px 16px 64px}
-  .wrap{max-width:860px;margin:0 auto}
+  .wrap{max-width:1180px;margin:0 auto}
   .num{font-variant-numeric:tabular-nums;direction:ltr;display:inline-block;unicode-bidi:isolate}
   .mast{border-bottom:2px solid var(--ink);padding-bottom:18px;margin-bottom:20px}
   .kk{font-size:11.5px;font-weight:600;letter-spacing:2.4px;color:var(--accent);margin-bottom:8px}
@@ -61,6 +61,32 @@
   .err .ic{font-size:34px;margin-bottom:10px}
   .err h3{margin:0 0 8px;font-size:18px}
   .err p{margin:0;color:var(--dim);font-size:14px;line-height:1.9}
+
+  .tools{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin:0 0 10px}
+  .tools .hint{font-size:12.5px;color:var(--dim)}
+  .btn2{font-family:inherit;cursor:pointer;border:1px solid var(--line2);background:#fff;color:var(--ink);
+        border-radius:9px;padding:7px 13px;font-size:13px;font-weight:600}
+  .btn2:hover{border-color:var(--ink)}
+  .sheet-wrap{overflow-x:auto;background:var(--card);border:1px solid var(--line2);border-radius:12px;box-shadow:var(--shadow)}
+  table.sheet{border-collapse:collapse;width:100%;min-width:860px;font-size:14px}
+  .sheet th,.sheet td{border:1px solid #E3E3E3;padding:10px 12px;text-align:center;vertical-align:middle;white-space:nowrap}
+  .sheet thead tr.let th{background:#F3F4F4;color:#8A8F93;font-weight:500;font-size:12px;padding:6px}
+  .sheet thead tr.hd th{background:#E9EDEE;color:#2B2F31;font-weight:700;font-size:13.5px}
+  .sheet td.rn,.sheet th.rn{background:#F3F4F4;color:#8A8F93;width:44px;font-size:12.5px}
+  .sheet td.nm{text-align:right;font-weight:600}
+  .lnk{color:#8B1E14;font-weight:700;text-decoration:none;cursor:pointer;background:none;border:0;font-family:inherit;font-size:13.5px;padding:2px 4px;border-radius:5px}
+  .lnk:hover{background:#FFF3C4}
+  .sep{color:#C9C9C9;margin:0 6px}
+  .cp.done{background:#FFF3C4;outline:1px solid #E8C547}
+  .code{display:inline-flex;align-items:center;gap:6px}
+  .dash{color:#B5B5B5}
+  .pm2{display:inline-flex;gap:6px}
+  .pm2 button{font-family:inherit;cursor:pointer;width:40px;height:30px;border-radius:8px;border:1px solid var(--line2);
+              background:#fff;color:var(--dim);font-size:15px;font-weight:700;padding:0}
+  .pm2 button.y.on{background:var(--good);border-color:var(--good);color:#fff}
+  .pm2 button.n.on{background:var(--bad);border-color:var(--bad);color:#fff}
+  .pm2 button:disabled{opacity:.55;cursor:default}
+  .pm2 button:focus-visible,.lnk:focus-visible,.btn2:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
   #toast{position:fixed;inset-inline:16px;bottom:18px;max-width:420px;margin:0 auto;background:var(--ink);color:#fff;
          border-radius:12px;padding:13px 16px;font-size:13.5px;display:none;z-index:99;text-align:center;box-shadow:0 10px 30px rgba(0,0,0,.25)}
   @media (max-width:560px){ .band{grid-template-columns:repeat(2,1fr)} .acts{width:100%;justify-content:space-between} }
@@ -95,23 +121,47 @@ function fmtDate(s){ if(!s) return ''; const d=new Date(s); if(isNaN(d)) return 
   return d.toLocaleDateString('ar-SA-u-ca-gregory-nu-latn',{day:'numeric',month:'long',timeZone:'Asia/Riyadh'})+' · '+
          d.toLocaleTimeString('ar-SA-u-nu-latn',{hour:'numeric',minute:'2-digit',timeZone:'Asia/Riyadh'}); }
 
-function rowHtml(it){
-  const acct = safeUrl(it.account), vid = safeUrl(it.publish_link);
-  const ini = esc((it.name||'؟').trim().charAt(0));
-  const ava = safeUrl(it.avatar) ? '<div class="ava" style="background-image:url(\''+esc(it.avatar).replace(/'/g,'%27')+'\')"></div>' : '<div class="ava">'+ini+'</div>';
-  const name = acct ? '<a href="'+esc(acct)+'" target="_blank" rel="noopener">'+esc(it.name||'—')+'</a>' : esc(it.name||'—');
-  const meta = [it.followers ? '<span class="num">'+shortN(it.followers)+'</span> متابع' : '', it.published_at ? 'نُشر '+esc(fmtDate(it.published_at)) : ''].filter(Boolean).join(' · ');
-  const st = [it.views ? '👁 <span class="num">'+esc(it.views)+'</span>' : '', it.likes ? '♥ <span class="num">'+esc(it.likes)+'</span>' : '', it.comments ? '💬 <span class="num">'+esc(it.comments)+'</span>' : ''].filter(Boolean).join(' · ');
+function fmtD(s){ if(!s) return ''; const d=new Date(s); if(isNaN(d)) return '';
+  const f=new Intl.DateTimeFormat('en-GB',{day:'2-digit',month:'2-digit',year:'numeric',timeZone:'Asia/Riyadh'}); return f.format(d); }
+const COPY = {};
+function cpBtn(key, label){ return '<button class="lnk cp" onclick="copyKey(\''+key+'\', this)">'+label+'</button>'; }
+async function copyText(t){
+  try { await navigator.clipboard.writeText(t); return true; } catch(e) {
+    const ta=document.createElement('textarea'); ta.value=t; ta.style.position='fixed'; ta.style.opacity='0'; document.body.appendChild(ta); ta.select();
+    let ok=false; try{ ok=document.execCommand('copy'); }catch(_){} ta.remove(); return ok; }
+}
+async function copyKey(k, el){
+  const t = COPY[k]; if(!t) return;
+  const ok = await copyText(t);
+  if (ok){ document.querySelectorAll('.cp.done').forEach(x=>x.classList.remove('done')); if(el) el.classList.add('done'); toast('تم النسخ ✓', 1600); }
+  else toast('تعذّر النسخ');
+}
+
+function rowHtml(it, i){
+  const acct = safeUrl(it.account), vid = safeUrl(it.publish_link), code = String(it.promo_code||'').trim();
+  const id = esc(it.id);
+  COPY['n'+i] = it.name||''; if (acct) COPY['a'+i] = acct; if (vid) COPY['v'+i] = vid; if (code) COPY['c'+i] = code;
   const p = it.promoted;
-  return '<div class="row" data-id="'+esc(it.id)+'">'+ava+
-    '<div class="who"><div class="n">'+name+'</div><div class="m">'+meta+'</div>'+(st?'<div class="stats">'+st+'</div>':'')+'</div>'+
-    '<div class="acts">'+
-      (vid ? '<a class="watch" href="'+esc(vid)+'" target="_blank" rel="noopener">▶ مشاهدة الفيديو</a>' : '')+
-      '<div class="pm"><span class="lb">تم الترويج؟</span><div class="bt">'+
-        '<button class="y'+(p===true?' on':'')+'" aria-label="نعم تم الترويج" aria-pressed="'+(p===true)+'" onclick="mark(\''+esc(it.id)+'\', true, this)">✓</button>'+
-        '<button class="n'+(p===false?' on':'')+'" aria-label="لا، لم يتم الترويج" aria-pressed="'+(p===false)+'" onclick="mark(\''+esc(it.id)+'\', false, this)">✕</button>'+
-      '</div></div>'+
-    '</div></div>';
+  return '<tr>'+
+    '<td class="rn">'+(i+1)+'</td>'+
+    '<td class="nm"><span class="cp" style="cursor:copy" title="اضغط للنسخ" onclick="copyKey(\'n'+i+'\', this)">'+esc(it.name||'—')+'</span></td>'+
+    '<td>'+(acct ? '<a class="lnk" href="'+esc(acct)+'" target="_blank" rel="noopener">رابط الحساب ↗</a><span class="sep">|</span>'+cpBtn('a'+i,'نسخ ⧉') : '<span class="dash">—</span>')+'</td>'+
+    '<td class="num">'+(it.published_at ? esc(fmtD(it.published_at)) : '<span class="dash">—</span>')+'</td>'+
+    '<td>'+(vid ? '<a class="lnk" href="'+esc(vid)+'" target="_blank" rel="noopener">فتح ↗</a><span class="sep">|</span>'+cpBtn('v'+i,'نسخ ⧉') : '<span class="dash">—</span>')+'</td>'+
+    '<td>'+(code ? cpBtn('c'+i,'⧉ انسخ كود الترويج') : '<span class="dash">—</span>')+'</td>'+
+    '<td><div class="pm2">'+
+      '<button class="y'+(p===true?' on':'')+'" aria-label="تم الترويج" aria-pressed="'+(p===true)+'" onclick="mark(\''+id+'\', true, this)">✓</button>'+
+      '<button class="n'+(p===false?' on':'')+'" aria-label="لم يتم الترويج" aria-pressed="'+(p===false)+'" onclick="mark(\''+id+'\', false, this)">✕</button>'+
+    '</div></td>'+
+  '</tr>';
+}
+
+function copyAll(){
+  const items = (DATA && DATA.items) || [];
+  const head = ['الاسم','رابط الحساب','تاريخ النشر','رابط الفيديو','كود الترويج','تم الترويج'];
+  const rows = items.map(it => [it.name||'', safeUrl(it.account), fmtD(it.published_at), safeUrl(it.publish_link), String(it.promo_code||'').trim(),
+                                it.promoted===true?'نعم':it.promoted===false?'لا':''].map(x=>String(x).replace(/[\t\r\n]+/g,' ')).join('\t'));
+  copyText([head.join('\t')].concat(rows).join('\n')).then(ok => toast(ok ? 'تم نسخ الجدول كامل ✓ الصقه في Excel أو Google Sheets' : 'تعذّر النسخ', 3000));
 }
 
 function render(){
@@ -121,14 +171,20 @@ function render(){
   $('#app').innerHTML =
     '<div class="mast"><div class="kk">FLFLUENCER · '+esc(brand)+'</div>'+
     '<h1>الفيديوهات المنشورة · '+esc(d.campaign && d.campaign.title || '')+'</h1>'+
-    '<p class="sub">كل معلن ينشر يظهر هنا تلقائيًا مع رابط فيديوه. علّم ✓ إذا تم الترويج كما هو مطلوب، أو ✕ إذا لا.</p></div>'+
+    '<p class="sub">كل معلن ينشر يظهر هنا تلقائيًا. انسخ رابط الفيديو وكود الترويج، وبعد ما تروّج علّم ✓ في عمود «تم الترويج».</p></div>'+
     '<div class="band">'+
       '<div><div class="v num">'+items.length+'</div><div class="l">نُشر</div></div>'+
       '<div><div class="v num">'+(d.awaiting_publish||0)+'</div><div class="l">وافقتم على المحتوى · بانتظار النشر</div></div>'+
       '<div><div class="v num" style="color:var(--good)">'+yes+'</div><div class="l">تم الترويج ✓</div></div>'+
       '<div><div class="v num" style="color:var(--bad)">'+no+'</div><div class="l">لم يتم الترويج ✕</div></div>'+
     '</div>'+
-    (items.length ? items.map(rowHtml).join('') : '<div class="empty">ما نشر أحد إلى الآن.<br>أول ما يرفع المعلن رابط النشر يظهر هنا مباشرة.</div>')+
+    (items.length
+      ? '<div class="tools"><span class="hint">اضغط على أي اسم أو «نسخ» لنسخه.</span><button class="btn2" onclick="copyAll()">⧉ نسخ الجدول كامل</button></div>'+
+        '<div class="sheet-wrap"><table class="sheet"><thead>'+
+          '<tr class="let"><th class="rn"></th><th>A</th><th>B</th><th>C</th><th>D</th><th>E</th><th>F</th></tr>'+
+          '<tr class="hd"><th class="rn"></th><th>الاسم</th><th>رابط الحساب</th><th>تاريخ النشر</th><th>رابط الفيديو</th><th>كود الترويج</th><th>تم الترويج</th></tr>'+
+        '</thead><tbody>'+items.map(rowHtml).join('')+'</tbody></table></div>'
+      : '<div class="empty">ما نشر أحد إلى الآن.<br>أول ما يرفع المعلن رابط النشر يظهر هنا مباشرة.</div>')+
     '<div class="foot">الصفحة تتحدّث تلقائيًا كل دقيقة. من إجمالي <span class="num">'+(d.approved_count||0)+'</span> معلن معتمد في الحملة.</div>';
 }
 
@@ -151,7 +207,7 @@ async function load(silent){
   DATA = data; render();
 }
 load();
-setInterval(()=>{ if(!document.hidden && !document.querySelector('.pm button:disabled')) load(true); }, 60000);
+setInterval(()=>{ if(!document.hidden && !document.querySelector('.pm2 button:disabled')) load(true); }, 60000);
 </script>
 </body>
 </html>

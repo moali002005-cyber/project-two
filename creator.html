@@ -4288,14 +4288,16 @@ async function handleVideoUpload(input, appId) {
     input.value = '';
     return;
   }
-  // حد الخادم الفعلي لحجم الملف الواحد (إعداد Supabase) — نوقفه قبل الرفع برسالة واضحة بدل خطأ إنجليزي بعد الانتظار
+  // حد الخادم الفعلي لحجم الملف الواحد (إعداد Supabase): بدل الرفض نضغط الفيديو تلقائيًا داخل المتصفح
   if (file.size > FLF_SERVER_MAX_MB * 1024 * 1024) {
-    const mb = Math.ceil(file.size / 1048576);
-    showToast('حجم الفيديو ' + toArabic(mb) + ' ميجا — الحد ' + toArabic(FLF_SERVER_MAX_MB) + ' ميجا. '
-      + 'صدّره بجودة أقل: في CapCut اختر 1080p بدل 4K عند الحفظ، أو من إعدادات الكاميرا اختر 1080p ثم أعد التصدير.', 'error', 12000);
     input.value = '';
+    flfOfferCompress(file, appId);
     return;
   }
+  return flfStartUpload(file, appId);
+}
+
+async function flfStartUpload(file, appId) {
   const wrap = document.getElementById('vid-wrap-' + appId);
   const btn = document.getElementById('vid-btn-' + appId);
   const submitB = document.querySelector('#stage-form-' + appId + ' button[type="submit"]');
@@ -4328,8 +4330,180 @@ async function handleVideoUpload(input, appId) {
     showToast('تعذّر إكمال الرفع: ' + (e.message || 'يُرجى المحاولة مرة أخرى') + '  — يمكن إعادة المحاولة بلا فقدان أي شيء.', 'error', 6000);
     if (wrap) wrap.innerHTML = '';
     btn.textContent = '🎬 اختيار الفيديو من الجهاز'; btn.disabled = false;
-    input.value = '';
+    const inp = document.getElementById('vid-input-' + appId); if (inp) inp.value = '';
   }
+}
+
+
+// ===== ضغط الفيديو داخل المتصفح (للملفات الأكبر من حد الخادم) =====
+// يشغّل الفيديو في الصفحة ويعيد تسجيله بدقة وجودة مناسبة لتيك توك حتى ينزل تحت الحد.
+// يستغرق تقريبًا مدة الفيديو نفسها، ويشتغل على آيفون وأندرويد بدون أي تطبيق.
+const FLF_TARGET_MB = 44;
+function flfOfferCompress(file, appId) {
+  const wrap = document.getElementById('vid-wrap-' + appId);
+  const btn = document.getElementById('vid-btn-' + appId);
+  const mb = Math.ceil(file.size / 1048576);
+  if (!wrap) { showToast('حجم الفيديو كبير (' + toArabic(mb) + ' ميجا)', 'error'); return; }
+  window.__flfPendingBig = window.__flfPendingBig || {};
+  window.__flfPendingBig[appId] = file;
+  wrap.innerHTML =
+    '<div style="background:#FFF7E8;border:1px solid #F1D9A8;border-radius:12px;padding:12px 14px;font-size:13px;line-height:1.9;color:#5B3A06;">'
+    + '<b>حجم الفيديو ' + toArabic(mb) + ' ميجا، والحد ' + toArabic(FLF_SERVER_MAX_MB) + ' ميجا.</b><br>'
+    + 'لا تشيل هم، نصغّره لك هنا تلقائيًا بجودة ممتازة لتيك توك ثم نرفعه مباشرة.<br>'
+    + '<span style="color:#8A6A2E">يأخذ تقريبًا نفس مدة الفيديو. خلك في الصفحة ولا تقفل الشاشة.</span>'
+    + '<button type="button" class="sa-btn" style="margin-top:10px;width:100%;" onclick="event.stopPropagation(); flfCompressAndUpload(\'' + appId + '\')">🗜 صغّر الفيديو وارفعه</button>'
+    + '</div>';
+  if (btn) { btn.textContent = '🎬 اختيار فيديو آخر'; btn.disabled = false; }
+}
+
+async function flfCompressAndUpload(appId) {
+  const file = (window.__flfPendingBig || {})[appId];
+  const wrap = document.getElementById('vid-wrap-' + appId);
+  const btn = document.getElementById('vid-btn-' + appId);
+  if (!file || !wrap) return;
+  // آيفون يشترط أن يبدأ الصوت والتشغيل من ضغطة المستخدم نفسها — نجهّزهم هنا قبل أي انتظار
+  let ac = null;
+  try { const AC = window.AudioContext || window.webkitAudioContext; if (AC) { ac = new AC(); if (ac.resume) ac.resume().catch(() => {}); } } catch (e) { ac = null; }
+  const pv = document.createElement('video');
+  pv.playsInline = true; pv.setAttribute('playsinline', ''); pv.setAttribute('webkit-playsinline', '');
+  pv.preload = 'auto'; pv.src = URL.createObjectURL(file);
+  try { const pp = pv.play(); if (pp && pp.then) pp.then(() => { pv.pause(); pv.currentTime = 0; }).catch(() => {}); } catch (e) {}
+  if (btn) btn.disabled = true;
+  wrap.innerHTML =
+    '<div id="cmp-box-' + appId + '" style="font-size:12.5px;color:var(--ink-muted);">'
+    + '<div id="cmp-prev-' + appId + '" style="margin-bottom:8px;"></div>'
+    + '<div id="cmp-txt-' + appId + '" style="margin-bottom:6px;font-weight:600;color:var(--ink);">جاري تصغير الفيديو 0%… خلك في الصفحة</div>'
+    + '<div style="height:8px;background:#EEE;border-radius:6px;overflow:hidden;"><div id="cmp-bar-' + appId + '" style="height:100%;width:0%;background:#E8A317;transition:width .3s;"></div></div>'
+    + '</div>';
+  const txt = document.getElementById('cmp-txt-' + appId), bar = document.getElementById('cmp-bar-' + appId);
+  let wake = null;
+  try { if (navigator.wakeLock) navigator.wakeLock.request('screen').then(w => { wake = w; }).catch(() => {}); } catch (e) {}
+  try {
+    let out = await flfCompressVideo(file, FLF_TARGET_MB * 1048576, ac, pv, document.getElementById('cmp-prev-' + appId), (p) => {
+      if (txt) txt.textContent = 'جاري تصغير الفيديو ' + toArabic(p) + '%… خلك في الصفحة ولا تقفل الشاشة';
+      if (bar) bar.style.width = p + '%';
+    }, 1);
+    if (out.size > FLF_SERVER_MAX_MB * 1048576) {
+      if (txt) txt.textContent = 'نصغّره مرة ثانية بجودة أخف…';
+      out = await flfCompressVideo(file, FLF_TARGET_MB * 1048576, ac, null, document.getElementById('cmp-prev-' + appId), (p) => {
+        if (txt) txt.textContent = 'تصغير إضافي ' + toArabic(p) + '%…';
+        if (bar) bar.style.width = p + '%';
+      }, 0.6);
+    }
+    if (out.size > FLF_SERVER_MAX_MB * 1048576) throw new Error('still_big');
+    delete window.__flfPendingBig[appId];
+    showToast('تم تصغير الفيديو إلى ' + toArabic(Math.ceil(out.size / 1048576)) + ' ميجا ✓ جاري الرفع');
+    await flfStartUpload(out, appId);
+  } catch (e) {
+    console.error('compress failed:', e);
+    wrap.innerHTML =
+      '<div style="background:#FDF1F0;border:1px solid #F3C9C4;border-radius:12px;padding:12px 14px;font-size:13px;line-height:1.9;color:#7A2A22;">'
+      + '<b>ما قدرنا نصغّر الفيديو من المتصفح على هذا الجهاز.</b><br>'
+      + 'الحل السريع: افتح الفيديو في CapCut واحفظه بدقة 1080p (مو 4K)، أو من الآيفون: الإعدادات ← الكاميرا ← تسجيل الفيديو ← 1080p بمعدل 30 إطار. بعدها ارفعه من جديد.'
+      + '</div>';
+    if (btn) { btn.textContent = '🎬 اختيار الفيديو من الجهاز'; btn.disabled = false; }
+  } finally {
+    try { if (wake) wake.release(); } catch (e) {}
+    try { if (ac && ac.close) ac.close(); } catch (e) {}
+    try { URL.revokeObjectURL(pv.src); } catch (e) {}
+  }
+}
+
+function flfCompressVideo(file, targetBytes, ac, primed, previewHost, onProgress, factor) {
+  return new Promise((resolve, reject) => {
+    if (typeof MediaRecorder === 'undefined' || !HTMLCanvasElement.prototype.captureStream) { reject(new Error('unsupported')); return; }
+    // الإعادة الثانية تستعمل عنصرًا جديدًا (عنصر الفيديو لا يُربط بالصوت مرتين)
+    const url = primed ? primed.src : URL.createObjectURL(file);
+    const v = primed || document.createElement('video');
+    if (!primed) { v.playsInline = true; v.setAttribute('playsinline', ''); v.setAttribute('webkit-playsinline', ''); v.preload = 'auto'; v.src = url; }
+    v.style.cssText = 'width:100%;max-height:200px;border-radius:10px;background:#000;display:block;';
+    if (previewHost) { previewHost.innerHTML = ''; previewHost.appendChild(v); }
+    let done = false, rec = null, raf = 0, chunks = [], metaT = 0, src = null;
+    const cleanup = () => {
+      done = true; cancelAnimationFrame(raf); clearTimeout(metaT);
+      document.removeEventListener('visibilitychange', onVis);
+      try { v.pause(); } catch (e) {}
+      try { if (src) src.disconnect(); } catch (e) {}
+      if (!primed) { try { URL.revokeObjectURL(url); } catch (e) {} }
+      if (previewHost) previewHost.innerHTML = '';
+    };
+    const fail = (err) => { if (done) return; try { if (rec && rec.state !== 'inactive') rec.stop(); } catch (e) {} cleanup(); reject(err); };
+    const onVis = () => {
+      if (done || !rec) return;
+      if (document.hidden) { try { if (rec.state === 'recording') rec.pause(); } catch (e) {} }
+      else if (!v.ended) { try { if (rec.state === 'paused') rec.resume(); } catch (e) {} v.play().catch(() => {}); }
+    };
+    metaT = setTimeout(() => fail(new Error('meta_timeout')), 20000);
+    v.onerror = () => fail(new Error('decode'));
+    const onMeta = async () => {
+      if (onMeta.ran) return; onMeta.ran = true;
+      clearTimeout(metaT);
+      const dur = v.duration;
+      if (!isFinite(dur) || dur <= 0 || !v.videoWidth) { fail(new Error('no_duration')); return; }
+      const audioBps = 128000;
+      let videoBps = Math.floor((targetBytes * 8 / dur) * 0.85 * (factor || 1)) - audioBps;
+      videoBps = Math.max(700000, Math.min(videoBps, 8000000));
+      const maxSide = videoBps < 3500000 ? 1280 : 1920;
+      const sc = Math.min(1, maxSide / Math.max(v.videoWidth, v.videoHeight));
+      const W = Math.round(v.videoWidth * sc / 2) * 2, H = Math.round(v.videoHeight * sc / 2) * 2;
+      const cv = document.createElement('canvas'); cv.width = W; cv.height = H;
+      const ctx = cv.getContext('2d');
+      const stream = cv.captureStream(30);
+      try {
+        if (ac) {
+          src = ac.createMediaElementSource(v);
+          const dest = ac.createMediaStreamDestination();
+          src.connect(dest);
+          dest.stream.getAudioTracks().forEach(t => stream.addTrack(t));
+        }
+      } catch (e) { console.warn('audio capture failed', e); }
+      const types = ['video/mp4;codecs=avc1.640028,mp4a.40.2', 'video/mp4;codecs=avc1,mp4a', 'video/mp4',
+                     'video/webm;codecs=vp9,opus', 'video/webm;codecs=vp8,opus', 'video/webm'];
+      const mime = types.find(t => { try { return MediaRecorder.isTypeSupported(t); } catch (e) { return false; } }) || '';
+      try { rec = new MediaRecorder(stream, mime ? { mimeType: mime, videoBitsPerSecond: videoBps, audioBitsPerSecond: audioBps } : { videoBitsPerSecond: videoBps }); }
+      catch (e) { fail(e); return; }
+      rec.ondataavailable = (e) => { if (e.data && e.data.size) chunks.push(e.data); };
+      rec.onerror = (e) => fail(e.error || new Error('recorder'));
+      rec.onstop = () => {
+        if (done) return;
+        const type = (rec.mimeType || mime || 'video/mp4').split(';')[0];
+        const blob = new Blob(chunks, { type });
+        cleanup();
+        if (!blob.size) { reject(new Error('empty')); return; }
+        const ext = type.indexOf('webm') >= 0 ? 'webm' : 'mp4';
+        resolve(new File([blob], 'video_' + Date.now() + '.' + ext, { type }));
+      };
+      let lastP = -1;
+      const draw = () => {
+        if (done) return;
+        try { ctx.drawImage(v, 0, 0, W, H); } catch (e) {}
+        const p = Math.min(99, Math.floor((v.currentTime / dur) * 100));
+        if (p !== lastP) { lastP = p; if (onProgress) onProgress(p); }
+        raf = requestAnimationFrame(draw);
+      };
+      v.onended = () => { if (onProgress) onProgress(100); setTimeout(() => { try { rec.stop(); } catch (e) { fail(e); } }, 300); };
+      document.addEventListener('visibilitychange', onVis);
+      let started = false;
+      v.onplaying = () => {
+        if (started || done) return; started = true;
+        try { rec.start(1000); draw(); } catch (e) { fail(e); }
+      };
+      try { v.pause(); v.currentTime = 0; } catch (e) {}
+      const go = () => v.play().catch((e) => {
+        if (done) return;
+        if (e && e.name === 'NotAllowedError' && previewHost) {
+          // المتصفح يبغى ضغطة ثانية للتشغيل
+          const b = document.createElement('button');
+          b.type = 'button'; b.className = 'sa-btn'; b.style.cssText = 'width:100%;margin-top:8px;';
+          b.textContent = '▶ اضغط هنا لبدء التصغير';
+          b.onclick = (ev) => { ev.stopPropagation(); b.remove(); go(); };
+          previewHost.appendChild(b);
+        } else fail(e || new Error('play'));
+      });
+      go();
+    };
+    if (v.readyState >= 1) onMeta(); else v.onloadedmetadata = onMeta;
+  });
 }
 
 async function uploadAvatarBlob(blob){
