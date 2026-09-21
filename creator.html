@@ -2077,7 +2077,7 @@ function renderCreatorDealCard(c, a) {
            <button onclick="event.stopPropagation(); openBankModal('${a.id}')" style="margin-top:11px;width:100%;border:0;background:#6B4EE6;color:#fff;font-family:inherit;font-size:14px;font-weight:700;padding:12px;border-radius:12px;cursor:pointer">🎞 افتح مكتبة اللقطات (${toArabic(_bk.raw)} لقطة)</button>
          </div>`
       : '';
-    body = `${isCompleted ? '<div class="dc-done-banner">🎉 تمّت الحملة بنجاح — شكرًا لجهودك!</div>' : ''}${isCompleted ? '' : flfMyVideoBlock(a)}${_bankBtn}<div class="dc-strip">${strip}</div><div class="dc-action">${renderStageAction(a.id, stageNow, 'creator')}</div>`;
+    body = `${isCompleted ? '<div class="dc-done-banner">🎉 تمّت الحملة بنجاح — شكرًا لجهودك!</div>' : ''}${isCompleted ? '' : flfCountdownHtml(a, stageNow) + flfMyVideoBlock(a)}${_bankBtn}<div class="dc-strip">${strip}</div><div class="dc-action">${renderStageAction(a.id, stageNow, 'creator')}</div>`;
   } else if (awaitingApproval) {
     body = a.is_reserve
       ? `<div class="dc-note" style="background:#FFF6EC;color:#9A4B06;border-right:3px solid #E8850C;">🕓 أنت ضمن قائمة الاحتياط الجاهزة لهذي الحملة. اكتمل العدد المطلوب حاليًا، وبمجرد ما ينفتح مكان بنرقّيك للتعميد فورًا 🌿</div>`
@@ -2806,6 +2806,46 @@ async function loadMyClipCounts(appIds) {
     });
   } catch (e) { console.error('bank counts:', e); }
 }
+
+// ===== مهلة التسليم: عدّاد تنازلي من لحظة اعتماد الصفقة =====
+const FLF_DELIVER_HOURS = 48;
+function flfDeliverDeadline(a, stageNow) {
+  if (!a || !a.brand_approved_at) return null;
+  const c = a.campaigns || {};
+  if (c.campaign_type !== 'video') return null;
+  if (Number(stageNow || a.stage) !== 5) return null;          // سلّم خلاص أو لسه ما بدأ
+  return new Date(new Date(a.brand_approved_at).getTime() + FLF_DELIVER_HOURS * 3600 * 1000);
+}
+function flfCountdownText(deadlineMs) {
+  const left = deadlineMs - Date.now();
+  if (left <= 0) return { over: true, html: '⏰ <b>انتهت مهلة التسليم</b> — سلّم فيديوك الحين' };
+  const h = Math.floor(left / 3600000);
+  const m = Math.floor((left % 3600000) / 60000);
+  const t = h > 0 ? (toArabic(h) + ' ساعة' + (m ? ' و' + toArabic(m) + ' دقيقة' : '')) : (toArabic(m) + ' دقيقة');
+  return { over: false, urgent: left < 6 * 3600000, html: '⏳ باقي لك <b>' + t + '</b> لتسليم الفيديو' };
+}
+function flfCountdownHtml(a, stageNow) {
+  const d = flfDeliverDeadline(a, stageNow);
+  if (!d) return '';
+  const r = flfCountdownText(d.getTime());
+  const bg = r.over || r.urgent ? '#FDECEA' : '#FFF7E6';
+  const bd = r.over || r.urgent ? '#F5C6C0' : '#F3DDB0';
+  const fg = r.over || r.urgent ? '#A93226' : '#7A4B00';
+  return '<div class="flf-cd" data-deadline="' + d.getTime() + '" onclick="event.stopPropagation()" '
+    + 'style="margin:0 0 12px;background:' + bg + ';border:1px solid ' + bd + ';color:' + fg + ';'
+    + 'border-radius:12px;padding:11px 14px;font-size:14px;line-height:1.7;text-align:center">'
+    + r.html + '</div>';
+}
+// تحديث العدّادات الظاهرة كل ٣٠ ثانية بدون إعادة رسم الصفحة
+setInterval(function () {
+  try {
+    document.querySelectorAll('.flf-cd[data-deadline]').forEach(function (el) {
+      const r = flfCountdownText(parseInt(el.getAttribute('data-deadline'), 10));
+      el.innerHTML = r.html;
+      if (r.over || r.urgent) { el.style.background = '#FDECEA'; el.style.borderColor = '#F5C6C0'; el.style.color = '#A93226'; }
+    });
+  } catch (e) {}
+}, 30000);
 
 // بطاقة بارزة داخل الصفقة: الفيديو الجاهز + تحميله بضغطة، بلا ما يدوّر في المرفقات
 function flfMyVideoBlock(a) {
