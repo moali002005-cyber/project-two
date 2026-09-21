@@ -4276,7 +4276,7 @@ function flfAttachUploaded(appId, url, path, wrap, btn, submitB) {
   }
 }
 
-const FLF_SERVER_MAX_MB = 50;   // حد Supabase الحالي لكل ملف (سقف الإنفاق مفعّل) — يُرفع هنا إذا تغيّر الإعداد
+const FLF_SERVER_MAX_MB = 500;  // حد Supabase لكل ملف (رُفع إلى ٥٠٠ ميجا بعد إيقاف سقف الإنفاق ٢١ سبتمبر)
 async function handleVideoUpload(input, appId) {
   const file = input.files && input.files[0];
   if (!file) return;
@@ -4338,7 +4338,7 @@ async function flfStartUpload(file, appId) {
 // ===== ضغط الفيديو داخل المتصفح (للملفات الأكبر من حد الخادم) =====
 // يشغّل الفيديو في الصفحة ويعيد تسجيله بدقة وجودة مناسبة لتيك توك حتى ينزل تحت الحد.
 // يستغرق تقريبًا مدة الفيديو نفسها، ويشتغل على آيفون وأندرويد بدون أي تطبيق.
-const FLF_TARGET_MB = 44;
+const FLF_TARGET_MB = 450;
 function flfOfferCompress(file, appId) {
   const wrap = document.getElementById('vid-wrap-' + appId);
   const btn = document.getElementById('vid-btn-' + appId);

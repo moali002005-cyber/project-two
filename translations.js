@@ -1591,7 +1591,7 @@ Object.assign(window.I18N_TEXT, {
  "كل كود يُصرف تلقائياً لمعلن واحد فقط عند اعتماده. ويمكن إضافة أكواد جديدة من «تعديل الحملة» بأي وقت.": "Each code is automatically assigned to one approved creator. You can add more codes anytime from \"Edit campaign\".",
  "فيديوهات الحملة": "Campaign videos",
  "🎬 اختيار الفيديوهات من الجهاز": "🎬 Choose videos from your device",
- "MP4 / MOV / WebM حتى ٥٠ ميجا للملف (وتقدر تضيف صوراً حتى ١٠ ميجا) — تُرفع تلقائياً مع نشر الحملة وتظهر للمعلن المعتمد فقط.": "MP4 / MOV / WebM up to 50MB per file (plus images up to 10MB) — uploaded automatically when you publish, visible to approved creators only.",
+ "MP4 / MOV / WebM حتى ٥٠٠ ميجا للملف (وتقدر تضيف صوراً حتى ١٠ ميجا) — تُرفع تلقائياً مع نشر الحملة وتظهر للمعلن المعتمد فقط.": "MP4 / MOV / WebM up to 500MB per file (plus images up to 10MB) — uploaded automatically when you publish, visible to approved creators only.",
  "الكود والطلب": "Code & order",
  "تجهيز الفيديو": "Video prep",
  "🎟️ كودك وطلب المنتج": "🎟️ Your code & product order",

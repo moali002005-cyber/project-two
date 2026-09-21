@@ -1725,7 +1725,7 @@ PROMO-02" style="width:100%;box-sizing:border-box;font-family:inherit;"></textar
           <input type="file" id="video-files-input" accept="image/jpeg,image/png,image/webp,video/mp4,video/quicktime,video/webm" multiple style="display:none;" onchange="pickVideoFiles(this)">
         </label>
         <div id="video-files-list" style="margin-top:9px;display:flex;flex-direction:column;gap:6px;"></div>
-        <div class="hint">MP4 / MOV / WebM بحجم أقصى ٥٠ ميجابايت للملف، وحتى ١٥ ملفاً للحملة، مع إمكانية إضافة صور حتى ١٠ ميجابايت. تُرفع مع نشر الحملة وتظهر للمعلن المعتمد فقط.</div>
+        <div class="hint">MP4 / MOV / WebM بحجم أقصى ٥٠٠ ميجابايت للملف، وحتى ١٥ ملفاً للحملة، مع إمكانية إضافة صور حتى ١٠ ميجابايت. تُرفع مع نشر الحملة وتظهر للمعلن المعتمد فقط.</div>
         <label style="display:flex;align-items:flex-start;gap:9px;margin-top:12px;padding:11px 13px;border:1px solid #EFE8E4;border-radius:12px;background:#FBF8F6;font-size:12.5px;color:#4a423f;line-height:1.85;cursor:pointer;">
           <input type="checkbox" id="content-pending-cb" style="margin-top:4px;flex-shrink:0;width:16px;height:16px;accent-color:#E23B2E;">
           <span><b>البريف والمحتوى قيد التجهيز</b> — انشر الحملة الآن وأضِف البريف والفيديوهات لاحقًا. يظهر للمعلن المعتمد أنها قيد التجهيز، ويصله إشعار فور اكتمالها.</span>
@@ -2247,7 +2247,7 @@ function pickVideoFiles(input) {
     const isV = ['video/mp4', 'video/quicktime', 'video/webm'].indexOf(f.type) >= 0;
     const isI = ['image/jpeg', 'image/png', 'image/webp'].indexOf(f.type) >= 0;
     if (!isV && !isI) { showToast('«' + f.name + '» صيغة غير مدعومة (MP4/MOV/WebM أو صورة)', 'error'); continue; }
-    if (f.size > (isV ? 50 : 10) * 1024 * 1024) { showToast('«' + f.name + '» أكبر من الحد (' + (isV ? '٥٠' : '١٠') + ' ميجا)', 'error'); continue; }
+    if (f.size > (isV ? 500 : 10) * 1024 * 1024) { showToast('«' + f.name + '» أكبر من الحد (' + (isV ? '٥٠٠' : '١٠') + ' ميجا)', 'error'); continue; }
     window._vidFiles.push(f);
   }
   renderPickedVideos();
@@ -2295,8 +2295,8 @@ function pickReferenceVideo(input) {
     showToast('الصيغة غير مدعومة — MP4 أو MOV أو WebM فقط.', 'error');
     return;
   }
-  if (f.size > 50 * 1024 * 1024) {
-    showToast('حجم الفيديو المرجعي أكبر من ٥٠ ميجابايت.', 'error');
+  if (f.size > 500 * 1024 * 1024) {
+    showToast('حجم الفيديو المرجعي أكبر من ٥٠٠ ميجابايت.', 'error');
     return;
   }
   window._refFile = f;
