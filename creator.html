@@ -2816,7 +2816,9 @@ function flfDeliverDeadline(a, stageNow) {
   const c = a.campaigns || {};
   if (c.campaign_type !== 'video') return null;
   if (Number(stageNow || a.stage) !== 5) return null;          // سلّم خلاص أو لسه ما بدأ
-  const start = Math.max(new Date(a.brand_approved_at).getTime(), FLF_DELIVER_FROM);
+  const sd5 = (a.stage_data && a.stage_data[5]) || {};
+  const redo = Date.parse(sd5._fix_at || sd5._reject_at || '') || 0;   // طُلب تعديل → مهلة جديدة من لحظة الطلب
+  const start = Math.max(new Date(a.brand_approved_at).getTime(), FLF_DELIVER_FROM, redo);
   return new Date(start + FLF_DELIVER_HOURS * 3600 * 1000);
 }
 function flfCountdownText(deadlineMs) {

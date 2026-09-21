@@ -61,6 +61,7 @@
          font-size:13.5px;font-weight:600;padding:9px 16px}
   .ok{background:var(--accent);color:#fff}
   .no{background:#fff;color:var(--bad);border:1px solid var(--line2)}
+  .edit{background:#fff;color:var(--ink,#16110F);border:1px solid var(--line2)}
   .watch{background:var(--warn-soft);color:var(--warn);text-decoration:none;
          display:inline-block;padding:9px 14px;border-radius:10px;font-size:13.5px;font-weight:600}
   button:disabled{opacity:.5;cursor:default}
@@ -82,7 +83,7 @@
   #toast{position:fixed;inset-inline:16px;bottom:18px;max-width:420px;margin:0 auto;
          background:var(--ink);color:#fff;border-radius:12px;padding:13px 16px;
          font-size:13.5px;display:none;z-index:99;text-align:center;box-shadow:0 10px 30px rgba(0,0,0,.25)}
-  @media (max-width:560px){ .band{grid-template-columns:repeat(2,1fr)} .acts{width:100%} .acts button{flex:1} }
+  @media (max-width:560px){ .band{grid-template-columns:repeat(2,1fr)} .acts{width:100%} .acts button{flex:1} .acts .edit{flex-basis:100%} }
 </style>
 </head>
 <body>
@@ -149,7 +150,8 @@ function rowHtml(it, mode) {
     const link = it.content_link
       ? '<a class="watch" href="' + esc(it.content_link) + '" target="_blank" rel="noopener">▶ مشاهدة الفيديو</a>' : '';
     right = '<div class="acts">' + link
-          + '<button class="ok" onclick="decide(\'' + it.id + '\',\'approve_content\',this)">✓ موافقة على المحتوى</button></div>';
+          + '<button class="ok" onclick="decide(\'' + it.id + '\',\'approve_content\',this)">✓ موافقة على المحتوى</button>'
+          + '<button class="edit" onclick="decide(\'' + it.id + '\',\'request_edit\',this)">✎ طلب تعديل</button></div>';
   } else {
     const t = it.stage >= 9 ? ['g','مكتملة'] : it.stage >= 7 ? ['g','نُشر']
             : it.approved ? ['w','قيد التنفيذ'] : ['n','قيد التفاوض'];
@@ -194,6 +196,11 @@ window.decide = async function (appId, action, btn) {
     if (reason === null) return;
     if (!reason.trim()) { toast('يلزم كتابة سبب'); return; }
   }
+  if (action === 'request_edit') {
+    reason = window.prompt('وش التعديل المطلوب؟ (يوصل للمعلن مباشرة)', '');
+    if (reason === null) return;
+    if (!reason.trim()) { toast('اكتب تفاصيل التعديل'); return; }
+  }
   const row = document.getElementById('r-' + appId);
   if (row) row.querySelectorAll('button').forEach(b => b.disabled = true);
   if (btn) btn.textContent = '…';
@@ -209,7 +216,8 @@ window.decide = async function (appId, action, btn) {
                   bad_token:'رابط غير صالح.', not_in_campaign:'هذي الصفقة مو ضمن هذي الحملة.' };
       throw new Error(m[data.error] || 'تعذّر تنفيذ الطلب.');
     }
-    toast(action === 'reject' ? 'تم الاستبعاد ووصل إشعار للمعلن.'
+    toast(action === 'request_edit' ? 'تم إرسال طلب التعديل للمعلن ✎'
+        : action === 'reject' ? 'تم الاستبعاد ووصل إشعار للمعلن.'
         : action === 'approve_content' ? 'تمت الموافقة على المحتوى — الصفقة انتقلت للنشر.'
         : 'تم الاعتماد ووصل إشعار للمعلن.');
     await load();

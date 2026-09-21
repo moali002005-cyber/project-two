@@ -5519,7 +5519,7 @@ async function submitContentReview() {
       const { error } = await supabaseClient.from('applications').update({ stage: 5, stage_data: existing }).eq('id', applicationId).select();
       if (error) throw error;
       if (creatorId) {
-        try { createNotification(creatorId, 'content_rejected', 'المحتوى يحتاج تعديل', title + ' — السبب: ' + text, '/creator.html'); } catch (e) {}
+        try { createNotification(creatorId, 'workflow_update', 'المحتوى يحتاج تعديل', title + ' — السبب: ' + text, '/creator.html'); } catch (e) {}
         fetch('https://chpzecgpylxqsutjydkb.supabase.co/functions/v1/send-push', { method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + supabaseClient.supabaseKey }, body: JSON.stringify({ title: 'المحتوى يحتاج تعديل', body: title + ' — السبب: ' + text, url: '/creator.html', target_users: [creatorId] }) }).catch(function () {});
       }
       showToast('تم إرجاع المحتوى للمعلن مع السبب', 'success');
