@@ -1382,6 +1382,9 @@ async function simblExitImpersonation(){
     </a>
   </section>
 
+  <!-- إعلان الحملة المميّزة — يظهر لكل معلن أول ما يدخل، في كل الشاشات -->
+  <div id="featured-slot" style="max-width:760px;margin:14px auto 0;padding:0 16px"></div>
+
   <!-- ============ APP CONTENT ============ -->
   <div id="app-section" class="section-divider"></div>
 
@@ -2228,7 +2231,11 @@ function renderUnified() {
   }
 
   if (myDeals) myDeals.innerHTML = matrixHtml;
-  list.innerHTML = focusBanner + featuredBannerHtml() + quotaNoticeHtml() + openHtml;
+  list.innerHTML = focusBanner + quotaNoticeHtml() + openHtml;
+  try {
+    const _fs = document.getElementById('featured-slot');
+    if (_fs) _fs.innerHTML = (new URLSearchParams(location.search).get('view') === 'wallet') ? '' : featuredBannerHtml();
+  } catch (e) { console.error('featured slot:', e); }
   try { renderWallet(); } catch (e) { console.error('renderWallet:', e); }
   // بعد رسم النماذج: استرجع أي مسودّات محفوظة + فعّل الحفظ التلقائي
   try { restoreStageDrafts(); } catch (e) { console.warn('restoreStageDrafts:', e); }
@@ -3648,11 +3655,12 @@ function featuredBannerHtml() {
     });
     if (!c) return '';
 
-    const brand = c.brand || (c.users && c.users.company_name) || 'الشركة';
+    let brand = c.brand || (c.users && c.users.company_name) || 'الشركة';
+    if (/prime\s*scent/i.test(brand)) brand = 'برايم سنت';
     const price = (typeof initialPriceFromBudget === 'function') ? initialPriceFromBudget(c) : 0;
     const ready = c.campaign_type === 'video';
     const line = ready
-      ? 'فيديو <b>جاهز</b> يوصلك تنشره فقط — بلا تصوير ولا مونتاج.'
+      ? 'لقطات مصوّرة جاهزة من الفرع — تنزّلها وتركّب فيديوك حسب البريف وتنشره.'
       : 'حملة متاحة لك الآن.';
 
     return '<div style="position:relative;background:linear-gradient(135deg,#E23B2E,#B02A20);color:#fff;'
@@ -3660,11 +3668,12 @@ function featuredBannerHtml() {
       + '<button onclick="dismissFeatured(\'' + c.id + '\')" aria-label="إخفاء" '
       + 'style="position:absolute;inset-inline-end:10px;top:8px;border:0;background:rgba(255,255,255,.18);'
       + 'color:#fff;width:26px;height:26px;border-radius:50%;font-size:15px;cursor:pointer;line-height:1">×</button>'
-      + '<div style="font-size:11.5px;font-weight:700;letter-spacing:1.6px;opacity:.9;margin-bottom:6px">الحق على الفرصة</div>'
-      + '<div style="font-size:17px;font-weight:700;line-height:1.5;margin-bottom:6px">'
-      + escHtml(brand) + ' — مقاعد محدودة</div>'
+      + '<div style="font-size:11.5px;font-weight:700;letter-spacing:1.6px;opacity:.9;margin-bottom:6px">مقاعد محدودة</div>'
+      + '<div style="font-size:18px;font-weight:800;line-height:1.5;margin-bottom:6px">'
+      + 'الحق حملة ' + escHtml(brand) + ' وارفع تقييمك بالمنصة ⭐</div>'
       + '<div style="font-size:13.5px;line-height:1.9;opacity:.96;margin-bottom:13px">' + line
-      + (price ? ' والمبلغ <b>' + toArabic(price) + ' ريال</b>.' : '') + '</div>'
+      + (price ? ' والمبلغ <b>' + toArabic(price) + ' ريال</b>.' : '')
+      + '<br>كل حملة تكمّلها تضيف لتقييمك، والتقييم الأعلى يقدّمك للشركات في الحملات الجاية.</div>'
       + '<a href="/creator.html?c=' + c.id + '" style="display:inline-block;background:#fff;color:#B02A20;'
       + 'text-decoration:none;font-weight:700;font-size:14px;padding:11px 24px;border-radius:100px">'
       + 'شوف الحملة وقدّم ←</a></div>';
