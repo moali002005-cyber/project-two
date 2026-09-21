@@ -2079,10 +2079,10 @@ function renderCreatorDealCard(c, a) {
       : '';
     const _cap = String(c.caption_note || '').trim();
     window.__flfCaps = window.__flfCaps || {}; if (_cap) window.__flfCaps[a.id] = _cap;
-    const _capBox = (!isCompleted && _cap)
+    const _capBox = (!isCompleted && _cap && stageNow === 7)
       ? `<div onclick="event.stopPropagation()" style="margin:0 0 12px;border:2px solid #E8B400;background:#FFF6CC;border-radius:14px;padding:14px 16px">
-           <div style="font-size:15px;font-weight:800;color:#6B4A00;margin-bottom:6px">📝 مهم جدًا: لا تنسين كتابة الكابشن عن الفرع</div>
-           <div style="font-size:12.5px;color:#7A5A10;margin-bottom:8px">لازم يكون هذا الكلام في كابشن الفيديو لما تنشرين:</div>
+           <div style="font-size:15px;font-weight:800;color:#6B4A00;margin-bottom:6px">✅ تم اعتماد محتواك!</div>
+           <div style="font-size:14px;font-weight:700;color:#7A5A10;margin-bottom:8px">لا تنسى وأنت تنشر تكتب هذا الكابشن تحت الفيديو 👇</div>
            <div style="font-size:16px;font-weight:800;color:#2B1F00;background:#fff;border:1px dashed #E8B400;border-radius:10px;padding:11px 12px;line-height:1.8">«${escHtml(_cap)}»</div>
            <button onclick="event.stopPropagation(); flfCopyCaption('${a.id}', this)" style="margin-top:10px;width:100%;border:0;background:#E8B400;color:#2B1F00;font-family:inherit;font-size:14px;font-weight:800;padding:11px;border-radius:12px;cursor:pointer">⧉ انسخ الكابشن</button>
          </div>`
