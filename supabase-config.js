@@ -278,7 +278,7 @@ async function dbApply(applicationData) {
 async function dbGetMyApplications(creatorId) {
   // احتياط: لو عمود attachments ما انضاف بعد لقاعدة البيانات، نرجع للاستعلام القديم
   // بدل ما تنكسر صفحة المعلن كاملة (PostgREST يرمي 400 على عمود غير موجود).
-  const SEL_CODE = '*, campaigns(title, description, status, attachments, fulfillment_mode, product_url, campaign_type, payment_terms, compensation, barter_fee_sar, pickup_address, pickup_hours, pickup_map_url, users!campaigns_brand_id_fkey(company_name))';
+  const SEL_CODE = '*, campaigns(title, description, status, attachments, fulfillment_mode, product_url, campaign_type, payment_terms, compensation, barter_fee_sar, pickup_address, pickup_hours, pickup_map_url, caption_note, users!campaigns_brand_id_fkey(company_name))';
   const SEL_NEW = '*, campaigns(title, description, status, attachments, users!campaigns_brand_id_fkey(company_name))';
   const SEL_OLD = '*, campaigns(title, description, status, users!campaigns_brand_id_fkey(company_name))';
   const run = (sel) => supabaseClient

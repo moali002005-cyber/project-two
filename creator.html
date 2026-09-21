@@ -2077,7 +2077,17 @@ function renderCreatorDealCard(c, a) {
            <button onclick="event.stopPropagation(); openBankModal('${a.id}')" style="margin-top:11px;width:100%;border:0;background:#6B4EE6;color:#fff;font-family:inherit;font-size:14px;font-weight:700;padding:12px;border-radius:12px;cursor:pointer">🎞 افتح مكتبة اللقطات (${toArabic(_bk.raw)} لقطة)</button>
          </div>`
       : '';
-    body = `${isCompleted ? '<div class="dc-done-banner">🎉 تمّت الحملة بنجاح — شكرًا لجهودك!</div>' : ''}${isCompleted ? '' : flfCountdownHtml(a, stageNow) + flfMyVideoBlock(a)}${_bankBtn}<div class="dc-strip">${strip}</div><div class="dc-action">${renderStageAction(a.id, stageNow, 'creator')}</div>`;
+    const _cap = String(c.caption_note || '').trim();
+    window.__flfCaps = window.__flfCaps || {}; if (_cap) window.__flfCaps[a.id] = _cap;
+    const _capBox = (!isCompleted && _cap)
+      ? `<div onclick="event.stopPropagation()" style="margin:0 0 12px;border:2px solid #E8B400;background:#FFF6CC;border-radius:14px;padding:14px 16px">
+           <div style="font-size:15px;font-weight:800;color:#6B4A00;margin-bottom:6px">📝 مهم جدًا: لا تنسين كتابة الكابشن عن الفرع</div>
+           <div style="font-size:12.5px;color:#7A5A10;margin-bottom:8px">لازم يكون هذا الكلام في كابشن الفيديو لما تنشرين:</div>
+           <div style="font-size:16px;font-weight:800;color:#2B1F00;background:#fff;border:1px dashed #E8B400;border-radius:10px;padding:11px 12px;line-height:1.8">«${escHtml(_cap)}»</div>
+           <button onclick="event.stopPropagation(); flfCopyCaption('${a.id}', this)" style="margin-top:10px;width:100%;border:0;background:#E8B400;color:#2B1F00;font-family:inherit;font-size:14px;font-weight:800;padding:11px;border-radius:12px;cursor:pointer">⧉ انسخ الكابشن</button>
+         </div>`
+      : '';
+    body = `${isCompleted ? '<div class="dc-done-banner">🎉 تمّت الحملة بنجاح — شكرًا لجهودك!</div>' : ''}${_capBox}${isCompleted ? '' : flfCountdownHtml(a, stageNow) + flfMyVideoBlock(a)}${_bankBtn}<div class="dc-strip">${strip}</div><div class="dc-action">${renderStageAction(a.id, stageNow, 'creator')}</div>`;
   } else if (awaitingApproval) {
     body = a.is_reserve
       ? `<div class="dc-note" style="background:#FFF6EC;color:#9A4B06;border-right:3px solid #E8850C;">🕓 أنت ضمن قائمة الاحتياط الجاهزة لهذي الحملة. اكتمل العدد المطلوب حاليًا، وبمجرد ما ينفتح مكان بنرقّيك للتعميد فورًا 🌿</div>`
@@ -4504,6 +4514,19 @@ function flfCompressVideo(file, targetBytes, ac, primed, previewHost, onProgress
     };
     if (v.readyState >= 1) onMeta(); else v.onloadedmetadata = onMeta;
   });
+}
+
+
+// نسخ كابشن الفرع المطلوب من الشركة
+async function flfCopyCaption(appId, btn){
+  const t = (window.__flfCaps || {})[appId] || ''; if (!t) return;
+  let ok = false;
+  try { await navigator.clipboard.writeText(t); ok = true; } catch (e) {
+    const ta = document.createElement('textarea'); ta.value = t; ta.style.position = 'fixed'; ta.style.opacity = '0';
+    document.body.appendChild(ta); ta.select(); try { ok = document.execCommand('copy'); } catch (_) {} ta.remove();
+  }
+  if (ok) { if (btn) btn.textContent = '✓ تم نسخ الكابشن'; showToast('تم نسخ الكابشن ✓ الصقيه في وصف الفيديو'); }
+  else showToast('تعذّر النسخ — اكتبيه يدويًا', 'error');
 }
 
 async function uploadAvatarBlob(blob){
