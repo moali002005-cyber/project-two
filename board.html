@@ -65,7 +65,7 @@
   .watch{background:var(--warn-soft);color:var(--warn);text-decoration:none;
          display:inline-block;padding:9px 14px;border-radius:10px;font-size:13.5px;font-weight:600}
   button:disabled{opacity:.5;cursor:default}
-  .tag{font-size:11.5px;font-weight:600;padding:3px 10px;border-radius:7px;white-space:nowrap}
+  .tag{font-size:11.5px;font-weight:600;padding:3px 10px;border-radius:7px;line-height:1.7;text-align:center;max-width:190px}
   .tag.g{background:var(--good-soft);color:var(--good)}
   .tag.w{background:var(--warn-soft);color:var(--warn)}
   .tag.n{background:var(--line);color:var(--dim)}
@@ -153,8 +153,10 @@ function rowHtml(it, mode) {
           + '<button class="ok" onclick="decide(\'' + it.id + '\',\'approve_content\',this)">✓ موافقة على المحتوى</button>'
           + '<button class="edit" onclick="decide(\'' + it.id + '\',\'request_edit\',this)">✎ طلب تعديل</button></div>';
   } else {
-    const t = it.stage >= 9 ? ['g','مكتملة'] : it.stage >= 7 ? ['g','نُشر']
-            : it.approved ? ['w','قيد التنفيذ'] : ['n','قيد التفاوض'];
+    // ٧ = وافقت على المحتوى وبانتظار نشر المعلن · ٨ = نشر (مرحلة البيانات البنكية) · ٩ = مكتملة
+    const t = it.stage >= 9 ? ['g','مكتملة'] : it.stage === 8 ? ['g','نُشر']
+            : it.stage === 7 ? ['g','✓ وافقت على المحتوى · بانتظار النشر']
+            : it.approved ? ['w','يجهّز الفيديو'] : ['n','قيد التفاوض'];
     const pub = it.publish_link
       ? ' <a class="watch" href="' + esc(it.publish_link) + '" target="_blank" rel="noopener">▶ الفيديو</a>' : '';
     right = '<span class="tag ' + t[0] + '">' + t[1] + '</span>' + pub;
@@ -182,7 +184,7 @@ function render(d) {
     + '<h2>معلنون ينتظرون الاعتماد <span class="cnt num">' + waiting.length + '</span></h2>'
     + (waiting.length ? waiting.map(x => rowHtml(x, 'approve')).join('')
                       : '<div class="empty">ما فيه معلن ينتظر قرارًا الآن.</div>')
-    + (rest.length ? '<h2 class="ok">قيد التفاوض الآن <span class="cnt num">' + rest.length + '</span></h2>'
+    + (rest.length ? '<h2 class="ok">حالة بقية المعلنين <span class="cnt num">' + rest.length + '</span></h2>'
                      + rest.map(x => rowHtml(x, 'view')).join('') : '')
     + '<div class="foot">رابط خاص ومؤقت، تنتهي صلاحيته في '
     + '<span class="num">' + esc(String(d.expires_at || '').slice(0, 10)) + '</span>. '
