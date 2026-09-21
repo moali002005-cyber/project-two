@@ -4276,6 +4276,7 @@ function flfAttachUploaded(appId, url, path, wrap, btn, submitB) {
   }
 }
 
+const FLF_SERVER_MAX_MB = 50;   // حد Supabase الحالي لكل ملف (سقف الإنفاق مفعّل) — يُرفع هنا إذا تغيّر الإعداد
 async function handleVideoUpload(input, appId) {
   const file = input.files && input.files[0];
   if (!file) return;
@@ -4284,6 +4285,14 @@ async function handleVideoUpload(input, appId) {
   try { var _lm = (typeof simblLimit === 'function') ? await simblLimit('max_video_mb') : null; if (_lm != null) maxMB = _lm; } catch (e) {}
   if (maxMB != null && file.size > maxMB * 1024 * 1024) {
     showToast(`حجم الفيديو أكبر من ${maxMB} ميجا. يلزم فيديو أصغر أو ضغط الملف.`, 'error');
+    input.value = '';
+    return;
+  }
+  // حد الخادم الفعلي لحجم الملف الواحد (إعداد Supabase) — نوقفه قبل الرفع برسالة واضحة بدل خطأ إنجليزي بعد الانتظار
+  if (file.size > FLF_SERVER_MAX_MB * 1024 * 1024) {
+    const mb = Math.ceil(file.size / 1048576);
+    showToast('حجم الفيديو ' + toArabic(mb) + ' ميجا — الحد ' + toArabic(FLF_SERVER_MAX_MB) + ' ميجا. '
+      + 'صدّره بجودة أقل: في CapCut اختر 1080p بدل 4K عند الحفظ، أو من إعدادات الكاميرا اختر 1080p ثم أعد التصدير.', 'error', 12000);
     input.value = '';
     return;
   }
