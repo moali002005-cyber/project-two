@@ -2808,13 +2808,16 @@ async function loadMyClipCounts(appIds) {
 }
 
 // ===== مهلة التسليم: عدّاد تنازلي من لحظة اعتماد الصفقة =====
-const FLF_DELIVER_HOURS = 48;
+const FLF_DELIVER_HOURS = 4;
+// بداية احتساب المهلة للمعتمدين قبل تفعيلها — عشان ما تطلع لهم «انتهت» فورًا
+const FLF_DELIVER_FROM = Date.parse('2026-09-21T09:00:00Z');
 function flfDeliverDeadline(a, stageNow) {
   if (!a || !a.brand_approved_at) return null;
   const c = a.campaigns || {};
   if (c.campaign_type !== 'video') return null;
   if (Number(stageNow || a.stage) !== 5) return null;          // سلّم خلاص أو لسه ما بدأ
-  return new Date(new Date(a.brand_approved_at).getTime() + FLF_DELIVER_HOURS * 3600 * 1000);
+  const start = Math.max(new Date(a.brand_approved_at).getTime(), FLF_DELIVER_FROM);
+  return new Date(start + FLF_DELIVER_HOURS * 3600 * 1000);
 }
 function flfCountdownText(deadlineMs) {
   const left = deadlineMs - Date.now();
@@ -2822,7 +2825,7 @@ function flfCountdownText(deadlineMs) {
   const h = Math.floor(left / 3600000);
   const m = Math.floor((left % 3600000) / 60000);
   const t = h > 0 ? (toArabic(h) + ' ساعة' + (m ? ' و' + toArabic(m) + ' دقيقة' : '')) : (toArabic(m) + ' دقيقة');
-  return { over: false, urgent: left < 6 * 3600000, html: '⏳ باقي لك <b>' + t + '</b> لتسليم الفيديو' };
+  return { over: false, urgent: left < 3600000, html: '⏳ باقي لك <b>' + t + '</b> لتسليم الفيديو' };
 }
 function flfCountdownHtml(a, stageNow) {
   const d = flfDeliverDeadline(a, stageNow);
