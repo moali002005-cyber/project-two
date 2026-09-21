@@ -124,7 +124,12 @@ function fmtDate(s){ if(!s) return ''; const d=new Date(s); if(isNaN(d)) return 
 function fmtD(s){ if(!s) return ''; const d=new Date(s); if(isNaN(d)) return '';
   const f=new Intl.DateTimeFormat('en-GB',{day:'2-digit',month:'2-digit',year:'numeric',timeZone:'Asia/Riyadh'}); return f.format(d); }
 const COPY = {};
-function cpBtn(key, label){ return '<button class="lnk cp" onclick="copyKey(\''+key+'\', this)">'+label+'</button>'; }
+// ما تم نسخه يبقى أصفر على نفس الجهاز دائمًا
+const DONE_KEY = 'flf_copied_' + TOKEN.slice(0, 16);
+let DONE = {};
+try { DONE = JSON.parse(localStorage.getItem(DONE_KEY) || '{}') || {}; } catch (e) { DONE = {}; }
+function saveDone(){ try { localStorage.setItem(DONE_KEY, JSON.stringify(DONE)); } catch (e) {} }
+function cpBtn(key, label){ return '<button class="lnk cp'+(DONE[key]?' done':'')+'" onclick="copyKey(\''+key+'\', this)">'+label+'</button>'; }
 async function copyText(t){
   try { await navigator.clipboard.writeText(t); return true; } catch(e) {
     const ta=document.createElement('textarea'); ta.value=t; ta.style.position='fixed'; ta.style.opacity='0'; document.body.appendChild(ta); ta.select();
@@ -133,20 +138,20 @@ async function copyText(t){
 async function copyKey(k, el){
   const t = COPY[k]; if(!t) return;
   const ok = await copyText(t);
-  if (ok){ document.querySelectorAll('.cp.done').forEach(x=>x.classList.remove('done')); if(el) el.classList.add('done'); toast('تم النسخ ✓', 1600); }
+  if (ok){ DONE[k] = 1; saveDone(); if(el) el.classList.add('done'); toast('تم النسخ ✓', 1600); }
   else toast('تعذّر النسخ');
 }
 
 function rowHtml(it, i){
   const acct = safeUrl(it.account), vid = safeUrl(it.publish_link), code = String(it.promo_code||'').trim();
   const id = esc(it.id);
-  COPY['n'+i] = it.name||''; if (acct) COPY['a'+i] = acct; if (vid) COPY['v'+i] = vid; if (code) COPY['c'+i] = code;
+  const kv = it.id+'|v', kc = it.id+'|c'; if (vid) COPY[kv] = vid; if (code) COPY[kc] = code;
   const p = it.promoted;
   return '<tr>'+
     '<td class="rn">'+(i+1)+'</td>'+
     '<td class="nm">'+(acct ? '<a class="lnk" style="color:var(--ink);font-size:14px" href="'+esc(acct)+'" target="_blank" rel="noopener" title="فتح الحساب">'+esc(it.name||'—')+' ↗</a>' : esc(it.name||'—'))+'</td>'+
-    '<td>'+(vid ? '<a class="lnk" href="'+esc(vid)+'" target="_blank" rel="noopener">فتح ↗</a><span class="sep">|</span>'+cpBtn('v'+i,'نسخ ⧉') : '<span class="dash">—</span>')+'</td>'+
-    '<td>'+(code ? cpBtn('c'+i,'⧉ انسخ كود الترويج') : '<span class="dash">—</span>')+'</td>'+
+    '<td>'+(vid ? '<a class="lnk" href="'+esc(vid)+'" target="_blank" rel="noopener">فتح ↗</a><span class="sep">|</span>'+cpBtn(kv,'نسخ ⧉') : '<span class="dash">—</span>')+'</td>'+
+    '<td>'+(code ? cpBtn(kc,'⧉ انسخ كود الترويج') : '<span class="dash">—</span>')+'</td>'+
     '<td><div class="pm2">'+
       '<button class="y'+(p===true?' on':'')+'" aria-label="تم الترويج" aria-pressed="'+(p===true)+'" onclick="mark(\''+id+'\', true, this)">✓</button>'+
       '<button class="n'+(p===false?' on':'')+'" aria-label="لم يتم الترويج" aria-pressed="'+(p===false)+'" onclick="mark(\''+id+'\', false, this)">✕</button>'+
