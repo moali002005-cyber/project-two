@@ -4341,7 +4341,10 @@ function renderSingleCampaign(c) {
       if (a.status !== 'closed') return 2;          // قيد التفاوض
       return a.brand_approved === true ? 1 : 0;     // معتمدة بعد «بانتظار تعميدك»
     };
+    // داخل المعتمدين: الأبعد في المراحل أولًا — نُشر ← معتمد للنشر ← ينتظر الاعتماد ← يجهّز الفيديو
+    const stageOf = (a) => (a.status === 'closed' && a.brand_approved === true) ? (Number(a.stage) || 0) : 0;
     sheetApps.sort((x, y) => (rowRank(x) - rowRank(y))
+      || (stageOf(y) - stageOf(x))
       || (new Date(x.created_at || 0) - new Date(y.created_at || 0)));
     // الأرقام الصادقة: كل من تفاوض على هذه الحملة فعلًا
     const reserveCount = reserveCounts[c.id] || 0;
