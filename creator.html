@@ -1242,7 +1242,48 @@ async function simblExitImpersonation(){
   #city-modal .cm-save:disabled{opacity:.6;cursor:default}
   #city-modal .cm-skip{display:inline-block;margin-top:12px;font-size:13px;color:#8a8a8a;cursor:pointer;text-decoration:underline}
   #city-modal .cm-err{display:none;margin-top:10px;font-size:13px;color:#c0392b;line-height:1.6}
+  /* ===== رخصة موثوق ===== */
+  #mq-modal{position:fixed;inset:0;z-index:10001;background:rgba(12,26,24,.55);display:none;align-items:center;justify-content:center;padding:20px}
+  #mq-modal.on{display:flex}
+  #mq-modal .mq-box{background:#fff;border-radius:20px;max-width:420px;width:100%;padding:24px 22px;box-shadow:0 20px 50px rgba(0,0,0,.3);font-family:inherit;max-height:92vh;overflow:auto}
+  #mq-modal .mq-ic{font-size:36px;text-align:center;margin-bottom:6px}
+  #mq-modal h3{margin:0 0 6px;font-size:19px;color:#141414;text-align:center}
+  #mq-modal .mq-sub{margin:0 0 16px;font-size:13.5px;color:#5b5b5b;line-height:1.8;text-align:center}
+  #mq-modal label.mq-l{display:block;font-size:13.5px;font-weight:700;color:#141414;margin:0 2px 7px}
+  #mq-modal input.mq-in{width:100%;box-sizing:border-box;padding:13px 14px;border:1.5px solid #d9e2e0;border-radius:12px;font-family:inherit;font-size:16px;direction:ltr;text-align:center;letter-spacing:1px;margin-bottom:16px}
+  #mq-modal input.mq-in:focus{outline:none;border-color:var(--accent,#E23B2E)}
+  #mq-modal .mq-plats{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-bottom:6px}
+  #mq-modal .mq-p{display:flex;align-items:center;gap:9px;border:1.5px solid #e2e6e5;border-radius:12px;padding:11px 12px;cursor:pointer;font-size:14px;font-weight:600;color:#141414;user-select:none}
+  #mq-modal .mq-p input{width:18px;height:18px;accent-color:#1D8F6B;margin:0}
+  #mq-modal .mq-p.on{border-color:#1D8F6B;background:#E8F5F0}
+  #mq-modal .mq-hint{font-size:12px;color:#8a8a8a;margin:0 2px 16px;line-height:1.7}
+  #mq-modal .mq-save{width:100%;padding:13px;border:0;border-radius:100px;background:var(--accent,#E23B2E);color:#fff;font-family:inherit;font-size:15px;font-weight:700;cursor:pointer}
+  #mq-modal .mq-save:disabled{opacity:.6;cursor:default}
+  #mq-modal .mq-skip{display:block;text-align:center;margin-top:12px;font-size:13px;color:#8a8a8a;cursor:pointer;text-decoration:underline}
+  #mq-modal .mq-err{display:none;margin-bottom:12px;font-size:13px;color:#c0392b;line-height:1.6;text-align:center}
+  #mq-modal .mq-warn{display:none;background:#FDF1F0;border:1px solid #F3C9C4;color:#7A2A22;border-radius:12px;padding:10px 12px;font-size:13px;line-height:1.7;margin-bottom:14px}
 </style>
+<div id="mq-modal" role="dialog" aria-modal="true" aria-labelledby="mq-title">
+  <div class="mq-box">
+    <div class="mq-ic">🪪</div>
+    <h3 id="mq-title">رخصة موثوق</h3>
+    <p class="mq-sub">حسب أنظمة الهيئة العامة لتنظيم الإعلام، الإعلانات تكون مع معلنين عندهم رخصة موثوق سارية. عبّئ بياناتك مرة وحدة عشان تقدر تقدّم على الحملات.</p>
+    <div class="mq-warn" id="mq-warn"></div>
+    <label class="mq-l" for="mq-number">١. رقم ترخيص موثوق</label>
+    <input class="mq-in" id="mq-number" inputmode="numeric" autocomplete="off" placeholder="مثال: 123456">
+    <div class="mq-l">٢. الحسابات المتحقق منها في موثوق</div>
+    <div class="mq-plats" id="mq-plats">
+      <label class="mq-p"><input type="checkbox" value="tiktok"> تيك توك</label>
+      <label class="mq-p"><input type="checkbox" value="snapchat"> سناب شات</label>
+      <label class="mq-p"><input type="checkbox" value="instagram"> انستقرام</label>
+      <label class="mq-p"><input type="checkbox" value="x"> X (تويتر)</label>
+    </div>
+    <p class="mq-hint">علّم ✓ على كل منصة حسابك فيها موثّق ومشمول في رخصة موثوق.</p>
+    <div class="mq-err" id="mq-err"></div>
+    <button type="button" class="mq-save" id="mq-save" onclick="saveMawthooq()">حفظ البيانات</button>
+    <span class="mq-skip" onclick="closeMawthooq()">لاحقًا</span>
+  </div>
+</div>
 <div id="city-modal">
   <div class="cm-box">
     <div class="cm-ic">📍</div>
@@ -1674,6 +1715,7 @@ function maybePromptWhatsApp(){
     if(!currentUser || currentUser.role !== 'creator') return;
     var city = document.getElementById('city-modal');
     if(city && city.classList.contains('on')) return;          // لا نكدّس مودالين
+    var mq = document.getElementById('mq-modal'); if(mq && mq.classList.contains('on')) return;
     if(localStorage.getItem(WA_JOINED_KEY) === '1') return;     // انضم من قبل
     var at = Number(localStorage.getItem(WA_LATER_KEY) || 0);
     if(at && (Date.now() - at) < WA_LATER_DAYS*86400000) return; // أجّلها قريبًا
@@ -1771,6 +1813,7 @@ async function init() {
   }
 
   await maybePromptCity();
+  await maybePromptMawthooq();
   maybePromptWhatsApp();
 
   await loadData();
@@ -3815,11 +3858,99 @@ function quotaNoticeHtml() {
 }
 
 // يستخرج السبب الحقيقي من خطأ قاعدة البيانات بدل رسالة عامة تضيّع المعلن
+
+// ===== رخصة موثوق: رقم الترخيص + المنصات المتحقق منها (إلزامي قبل التقديم) =====
+let __mqAfter = null;
+function mqHasValid(u){ return !!(u && u.mawthooq_number && String(u.mawthooq_number).trim() && u.mawthooq_status !== 'rejected'); }
+async function mqRefresh(){
+  try {
+    if (!currentUser || !currentUser.id) return currentUser;
+    const { data } = await supabaseClient.from('users')
+      .select('mawthooq_number, mawthooq_platforms, mawthooq_status, mawthooq_note').eq('id', currentUser.id).maybeSingle();
+    if (data) { currentUser = Object.assign({}, currentUser, data); if (typeof saveCurrentUser === 'function') saveCurrentUser(currentUser); }
+  } catch (e) {}
+  return currentUser;
+}
+function openMawthooq(after){
+  __mqAfter = (typeof after === 'function') ? after : null;
+  const u = currentUser || {};
+  const num = document.getElementById('mq-number'); if (num) num.value = u.mawthooq_number || '';
+  const pls = Array.isArray(u.mawthooq_platforms) ? u.mawthooq_platforms : [];
+  document.querySelectorAll('#mq-plats input').forEach(cb => { cb.checked = pls.indexOf(cb.value) >= 0; cb.parentNode.classList.toggle('on', cb.checked); });
+  const w = document.getElementById('mq-warn');
+  if (w) {
+    if (u.mawthooq_status === 'rejected') { w.textContent = '⚠️ ' + (u.mawthooq_note || 'ما قدرنا نتحقق من البيانات السابقة — يُرجى مراجعتها وتعديلها.'); w.style.display = 'block'; }
+    else w.style.display = 'none';
+  }
+  const e = document.getElementById('mq-err'); if (e) e.style.display = 'none';
+  const b = document.getElementById('mq-save'); if (b) { b.disabled = false; b.textContent = 'حفظ البيانات'; }
+  const m = document.getElementById('mq-modal'); if (m) m.classList.add('on');
+  setTimeout(() => { if (num && !num.value) num.focus(); }, 60);
+}
+function closeMawthooq(){
+  const m = document.getElementById('mq-modal'); if (m) m.classList.remove('on');
+  try { sessionStorage.setItem('flf_mq_skip', '1'); } catch (e) {}
+  __mqAfter = null;
+}
+async function saveMawthooq(){
+  const num = (document.getElementById('mq-number') || {}).value || '';
+  const pls = Array.from(document.querySelectorAll('#mq-plats input:checked')).map(x => x.value);
+  const err = document.getElementById('mq-err');
+  const fail = (t) => { if (err) { err.textContent = t; err.style.display = 'block'; } };
+  if (!num.trim()) return fail('يلزم إدخال رقم ترخيص موثوق.');
+  if (!pls.length) return fail('علّم منصة وحدة على الأقل متحقق منها في موثوق.');
+  const b = document.getElementById('mq-save'); if (b) { b.disabled = true; b.textContent = 'جاري الحفظ…'; }
+  try {
+    const { data, error } = await supabaseClient.rpc('set_my_mawthooq', { p_number: num, p_platforms: pls });
+    if (error) throw error;
+    if (data && data.error) {
+      if (b) { b.disabled = false; b.textContent = 'حفظ البيانات'; }
+      return fail(data.error === 'bad_number' ? 'رقم الترخيص غير صحيح — اكتبه بالأرقام كما هو في موثوق.'
+                : data.error === 'no_platform' ? 'علّم منصة وحدة على الأقل.' : 'تعذّر الحفظ، حاول مرة ثانية.');
+    }
+    await mqRefresh();
+    const m = document.getElementById('mq-modal'); if (m) m.classList.remove('on');
+    showToast('تم حفظ بيانات موثوق ✓');
+    const next = __mqAfter; __mqAfter = null;
+    if (next) next();
+  } catch (e) {
+    console.error('mawthooq save failed', e);
+    if (b) { b.disabled = false; b.textContent = 'حفظ البيانات'; }
+    fail('تعذّر الحفظ، حاول مرة ثانية.');
+  }
+}
+// بوابة التقديم: ترجع true لو البيانات موجودة، وإلا تفتح النافذة وتكمل بعد الحفظ
+async function flfRequireMawthooq(after){
+  if (!currentUser || currentUser.role !== 'creator') return true;
+  if (mqHasValid(currentUser)) return true;
+  await mqRefresh();
+  if (mqHasValid(currentUser)) return true;
+  openMawthooq(after);
+  return false;
+}
+// عند الدخول: نطلبها مرة كل جلسة لو ناقصة (أو لو فُتح الرابط ?mawthooq=1)
+async function maybePromptMawthooq(){
+  try {
+    if (!currentUser || currentUser.role !== 'creator') return;
+    const force = new URLSearchParams(location.search).get('mawthooq') === '1';
+    const city = document.getElementById('city-modal');
+    if (!force && city && city.classList.contains('on')) return;
+    await mqRefresh();
+    if (!force && mqHasValid(currentUser)) return;
+    if (!force) { try { if (sessionStorage.getItem('flf_mq_skip') === '1') return; } catch (e) {} }
+    openMawthooq(null);
+  } catch (e) {}
+}
+document.addEventListener('change', function (ev) {
+  const t = ev.target; if (t && t.closest && t.closest('#mq-plats')) t.parentNode.classList.toggle('on', t.checked);
+});
+
 function applyErrorToast(err, fallback, btn, btnText) {
   if (btn) { btn.disabled = false; btn.textContent = btnText; }
   const msg  = String((err && (err.message || err.details || err.hint)) || '').trim();
   const code = String((err && err.code) || '');
   const esc  = (t) => String(t).replace(/[&<>"]/g, c => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;' }[c]));
+  if (/MAWTHOOQ_REQUIRED/.test(msg + ' ' + String((err && err.hint) || ''))) { openMawthooq(null); return; }
 
   // حد الباقة المجانية — نوضّحه مع طريق الترقية
   if (/باقتك المجانية/.test(msg) || (code === '23514' && /حملات|اشترك/.test(msg))) {
@@ -3834,6 +3965,7 @@ function applyErrorToast(err, fallback, btn, btnText) {
 }
 
 async function registerWaitlist(campaign, btn) {
+  if (!(await flfRequireMawthooq(() => registerWaitlist(campaign, btn)))) return;
   if (btn) { btn.disabled = true; btn.textContent = 'جاري التسجيل...'; }
   try {
     const saved = await dbApply({
@@ -3873,6 +4005,9 @@ async function enterNegotiation(campaignId, btn) {
   // لو فيه عرض سابق على نفس الإعلان، افتح محادثته مباشرة
   const existingApp = myApplications.find(a => a.campaign_id === campaignId);
   if (existingApp) { startNegotiation(existingApp.id); return; }
+
+  // رخصة موثوق إلزامية قبل أي تقديم جديد
+  if (!(await flfRequireMawthooq(() => enterNegotiation(campaignId, btn)))) return;
 
   // منع الاحتكار: ما يقدّم على حملتين لنفس الشركة خلال 24 ساعة (يمنع خطف عدة مقاعد بنفس اليوم،
   // لكن يسمح بتكرار التعاون بعد مرور يوم — لا يحسب الصفقات القديمة/المكتملة).

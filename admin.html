@@ -82,6 +82,21 @@ a{color:var(--accent);text-decoration:none}
 .tab.active{color:var(--accent-dim);border-bottom-color:var(--accent)}
 .panel{display:none}
 .panel.active{display:block}
+.mq-row{display:grid;grid-template-columns:minmax(150px,1.3fr) minmax(120px,1fr) minmax(170px,1.3fr) auto auto;gap:12px;align-items:center;padding:12px 4px;border-bottom:1px solid var(--line)}
+.mq-row:last-child{border-bottom:0}
+.mq-num{font-family:ui-monospace,Menlo,monospace;direction:ltr;font-size:14px;font-weight:600;cursor:copy}
+.mq-chip{display:inline-block;font-size:11.5px;font-weight:600;padding:2px 9px;border-radius:99px;margin:2px;background:var(--panel2);color:var(--faint);border:1px solid var(--line)}
+.mq-chip.on{background:rgba(15,157,88,.1);color:var(--good);border-color:rgba(15,157,88,.3)}
+.mq-st{font-size:12px;font-weight:700;padding:3px 10px;border-radius:8px;white-space:nowrap}
+.mq-st.submitted{background:rgba(184,134,11,.12);color:var(--warn)}
+.mq-st.verified{background:rgba(15,157,88,.12);color:var(--good)}
+.mq-st.rejected{background:rgba(210,59,59,.1);color:var(--danger)}
+.mq-st.none{background:var(--panel2);color:var(--faint)}
+.mq-acts{display:flex;gap:6px}
+.mq-acts button{font-family:var(--font);font-size:12.5px;font-weight:600;padding:6px 12px;border-radius:8px;cursor:pointer;border:1px solid var(--line2);background:#fff}
+.mq-acts .ok{background:var(--good);border-color:var(--good);color:#fff}
+.mq-acts .no{color:var(--danger)}
+@media(max-width:760px){.mq-row{grid-template-columns:1fr 1fr}.mq-acts{grid-column:1/-1}}
 
 /* ===== cards / sections ===== */
 .section{background:var(--panel);border:1px solid var(--line);border-radius:13px;padding:18px;margin-bottom:18px}
@@ -371,6 +386,7 @@ pre.json{background:var(--bg);border:1px solid var(--line);border-radius:9px;pad
   <div class="tabs">
     <button class="tab active" data-tab="overview">نظرة عامة</button>
     <button class="tab" data-tab="approvals">طلبات التفعيل<span id="pending-count"></span><span id="tier-req-count"></span></button>
+    <button class="tab" data-tab="mawthooq">موثوق<span id="mq-count"></span></button>
     <button class="tab" data-tab="support">خدمة العملاء<span id="support-count"></span></button>
     <button class="tab" data-tab="overdue">متأخرات الدفع<span id="overdue-count"></span></button>
     <a class="tab" href="/payouts.html" style="text-decoration:none;display:inline-block">صرف المستحقات ↗</a>
@@ -520,6 +536,26 @@ pre.json{background:var(--bg);border:1px solid var(--line);border-radius:9px;pad
       <p class="dim" style="font-size:13px;margin-bottom:14px;line-height:1.7">مستندات السجل المرفوعة <b>لا تُحفظ</b> ضمن النسخ الاحتياطية التلقائية. والضغط على الزر ينزّل كل المستندات على الجهاز كنسخة احتياطية مستقلة (يُفضّل أسبوعيًا).</p>
       <button class="btn btn-primary" id="cr-backup-btn" onclick="backupCrDocs()"><i class="ti ti-download"></i> تنزيل كل مستندات السجل</button>
       <div id="cr-backup-status" class="dim" style="font-size:13px;margin-top:12px"></div>
+    </div>
+  </div>
+
+  <!-- mawthooq -->
+  <div class="panel" id="panel-mawthooq">
+    <div class="section">
+      <h2><i class="ti ti-id-badge-2"></i> رخص موثوق</h2>
+      <p class="dim" style="font-size:13px;margin-bottom:14px;line-height:1.7">كل معلن يعبّئ رقم ترخيص موثوق والمنصات المتحقق منها قبل ما يقدّم على أي حملة. تحقّق من الرقم في موقع موثوق ثم علّمه «متحقق»، أو «غير صحيح» ويوصله إشعار يعدّل بياناته. (الضغط على الرقم ينسخه)</p>
+      <div class="toolbar">
+        <div class="search"><i class="ti ti-search"></i><input id="mq-search" placeholder="بحث بالاسم أو الرقم…"></div>
+        <select class="filter" id="mq-filter">
+          <option value="submitted">بانتظار التحقق</option>
+          <option value="verified">متحقق</option>
+          <option value="rejected">غير صحيح</option>
+          <option value="none">ما عبّأ</option>
+          <option value="">الكل</option>
+        </select>
+        <span class="count-tag" id="mq-tally"></span>
+      </div>
+      <div id="mq-list" style="margin-top:8px"></div>
     </div>
   </div>
 
@@ -750,6 +786,7 @@ async function fetchAllRpc(fn){
 }
 
 async function loadAll(silent){
+  try { if (typeof loadMawthooq === 'function') setTimeout(loadMawthooq, 1500); } catch(e) {}
   if(!silent){
     $('#gate').style.display='flex'; $('#dash').style.display='none';
     $('#gate-body').innerHTML = '<h1>جارٍ تحميل البيانات…</h1><p>نجمع كل أرقام منصتك</p><div class="spinner"></div>';
@@ -2266,6 +2303,64 @@ async function uploadCreatorPhoto(id, input){
     renderPhotos();
   }
 }
+
+// ===== رخص موثوق =====
+let MQ_ROWS = [];
+const MQ_PL = { tiktok:'تيك توك', snapchat:'سناب', instagram:'انستقرام', x:'X' };
+const MQ_ST = { submitted:'بانتظار التحقق', verified:'متحقق ✓', rejected:'غير صحيح', none:'ما عبّأ' };
+async function loadMawthooq(){
+  const box = $('#mq-list'); if (box && !MQ_ROWS.length) box.innerHTML = '<div class="dim">جاري التحميل…</div>';
+  try {
+    const { data, error } = await sb.rpc('admin_mawthooq_list');
+    if (error) throw error;
+    MQ_ROWS = data || [];
+    const pend = MQ_ROWS.filter(r => r.mawthooq_status === 'submitted').length;
+    const c = $('#mq-count'); if (c) c.innerHTML = pend ? ' <b style="background:var(--accent);color:#fff;border-radius:99px;padding:0 7px;font-size:11px">'+pend+'</b>' : '';
+    renderMawthooq();
+  } catch (e) { if (box) box.innerHTML = '<div class="dim">تعذّر التحميل: '+esc(e.message||e)+'</div>'; }
+}
+function renderMawthooq(){
+  const f = ($('#mq-filter')||{}).value || '';
+  const q = (($('#mq-search')||{}).value || '').trim().toLowerCase();
+  const cnt = { submitted:0, verified:0, rejected:0, none:0 };
+  MQ_ROWS.forEach(r => { cnt[r.mawthooq_status] = (cnt[r.mawthooq_status]||0) + 1; });
+  const t = $('#mq-tally'); if (t) t.textContent = 'بانتظار التحقق '+cnt.submitted+' · متحقق '+cnt.verified+' · غير صحيح '+cnt.rejected+' · ما عبّأ '+cnt.none;
+  const rows = MQ_ROWS.filter(r => (!f || r.mawthooq_status === f)
+    && (!q || String(r.name||'').toLowerCase().includes(q) || String(r.mawthooq_number||'').includes(q) || String(r.handle||'').toLowerCase().includes(q)));
+  const box = $('#mq-list'); if (!box) return;
+  if (!rows.length) { box.innerHTML = '<div class="dim" style="padding:14px 4px">لا يوجد أحد في هذي القائمة.</div>'; return; }
+  box.innerHTML = rows.slice(0, 400).map(r => {
+    const pls = Array.isArray(r.mawthooq_platforms) ? r.mawthooq_platforms : [];
+    const chips = Object.keys(MQ_PL).map(k => '<span class="mq-chip'+(pls.indexOf(k)>=0?' on':'')+'">'+(pls.indexOf(k)>=0?'✓ ':'')+MQ_PL[k]+'</span>').join('');
+    const when = r.mawthooq_submitted_at ? new Date(r.mawthooq_submitted_at).toLocaleDateString('en-GB') : '';
+    const acts = r.mawthooq_number
+      ? '<div class="mq-acts">'+(r.mawthooq_status!=='verified'?'<button class="ok" onclick="reviewMawthooq(\''+r.id+'\',true,this)">✓ متحقق</button>':'')
+        +(r.mawthooq_status!=='rejected'?'<button class="no" onclick="reviewMawthooq(\''+r.id+'\',false,this)">✗ غير صحيح</button>':'')+'</div>'
+      : '<div class="mq-acts"></div>';
+    return '<div class="mq-row">'
+      + '<div><div style="font-weight:700">'+esc(r.name||'—')+'</div><div class="dim" style="font-size:12px;direction:ltr;text-align:right">'+esc(r.handle||'')+(r.followers?' · '+Number(r.followers).toLocaleString('en-US'):'')+'</div></div>'
+      + '<div>'+(r.mawthooq_number?'<span class="mq-num" title="اضغط للنسخ" onclick="navigator.clipboard&&navigator.clipboard.writeText(\''+esc(r.mawthooq_number)+'\');this.style.color=\'var(--good)\'">'+esc(r.mawthooq_number)+'</span><div class="dim" style="font-size:11.5px">'+when+'</div>':'<span class="dim">—</span>')+'</div>'
+      + '<div>'+chips+'</div>'
+      + '<span class="mq-st '+esc(r.mawthooq_status)+'">'+(MQ_ST[r.mawthooq_status]||r.mawthooq_status)+'</span>'
+      + acts + '</div>';
+  }).join('') + (rows.length>400?'<div class="dim" style="padding:10px 4px">يظهر أول 400 — استخدم البحث.</div>':'');
+}
+async function reviewMawthooq(id, ok, btn){
+  let note = null;
+  if (!ok) { note = prompt('وش المشكلة؟ (توصل للمعلن)', 'رقم ترخيص موثوق غير صحيح أو المنصات غير مطابقة.'); if (note === null) return; }
+  if (btn) btn.disabled = true;
+  try {
+    const { error } = await sb.rpc('admin_mawthooq_review', { p_user: id, p_ok: ok, p_note: note });
+    if (error) throw error;
+    const r = MQ_ROWS.find(x => x.id === id); if (r) { r.mawthooq_status = ok ? 'verified' : 'rejected'; r.mawthooq_note = note; }
+    const pend = MQ_ROWS.filter(x => x.mawthooq_status === 'submitted').length;
+    const c = $('#mq-count'); if (c) c.innerHTML = pend ? ' <b style="background:var(--accent);color:#fff;border-radius:99px;padding:0 7px;font-size:11px">'+pend+'</b>' : '';
+    renderMawthooq();
+  } catch (e) { alert('تعذّر الحفظ: '+(e.message||e)); if (btn) btn.disabled = false; }
+}
+$('[data-tab="mawthooq"]').addEventListener('click', loadMawthooq);
+$('#mq-filter').addEventListener('change', renderMawthooq);
+$('#mq-search').addEventListener('input', renderMawthooq);
 $('[data-tab="photos"]').addEventListener('click', loadPhotos);
 if($('#sp-status')) $('#sp-status').addEventListener('change', renderSupport);
 $('#ph-search').addEventListener('input', renderPhotos);
