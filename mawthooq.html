@@ -1,0 +1,158 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<title>رخص موثوق — Flfluencer</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap">
+<style>
+  :root{
+    --ground:#FBF8F6; --card:#FFFFFF; --ink:#16110F; --dim:#8A807B;
+    --line:#EFE8E4; --line2:#E2D9D4; --accent:#E23B2E; --accent-soft:#FDF1F0;
+    --good:#1D8F6B; --good-soft:#E8F5F0; --warn:#9A4B06; --warn-soft:#FBF0E4;
+    --bad:#C0392B; --bad-soft:#FDECEA; --shadow:0 1px 2px rgba(22,17,15,.05), 0 8px 26px rgba(22,17,15,.05);
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--ground);color:var(--ink);font-family:"IBM Plex Sans Arabic","Segoe UI",Tahoma,sans-serif;font-size:15px;line-height:1.7;padding:24px 16px 64px}
+  .wrap{max-width:1180px;margin:0 auto}
+  .num{font-variant-numeric:tabular-nums;direction:ltr;display:inline-block;unicode-bidi:isolate}
+  .mast{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;border-bottom:2px solid var(--ink);padding-bottom:14px;margin-bottom:18px}
+  h1{font-size:clamp(21px,4.4vw,27px);margin:0;font-weight:700}
+  .sub{font-size:13px;color:var(--dim);margin:4px 0 0}
+  .btn2{font-family:inherit;cursor:pointer;border:1px solid var(--line2);background:#fff;color:var(--ink);border-radius:9px;padding:7px 13px;font-size:13px;font-weight:600;text-decoration:none}
+  .btn2:hover{border-color:var(--ink)}
+  .band{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:0 0 16px}
+  .band button{font-family:inherit;text-align:right;cursor:pointer;background:var(--card);border:1.5px solid var(--line);border-radius:13px;padding:12px 14px;box-shadow:var(--shadow)}
+  .band button.on{border-color:var(--ink)}
+  .band .v{font-size:23px;font-weight:700}
+  .band .l{font-size:12px;color:var(--dim)}
+  .tools{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:10px}
+  .tools input{flex:1 1 240px;font-family:inherit;font-size:14px;padding:10px 13px;border:1px solid var(--line2);border-radius:10px;background:#fff}
+  .tools input:focus{outline:2px solid var(--accent);outline-offset:1px}
+  .sheet-wrap{overflow-x:auto;background:var(--card);border:1px solid var(--line2);border-radius:12px;box-shadow:var(--shadow)}
+  table{border-collapse:collapse;width:100%;min-width:900px;font-size:14px}
+  th,td{border-bottom:1px solid var(--line);padding:11px 12px;text-align:right;vertical-align:middle}
+  thead th{background:#F3F1EF;font-size:12.5px;color:#5c534f;font-weight:700;position:sticky;top:0}
+  td.rn{color:var(--dim);font-size:12.5px;width:42px}
+  .who a{color:var(--ink);font-weight:700;text-decoration:none}
+  .who a:hover{color:var(--accent);text-decoration:underline}
+  .who .h{font-size:12px;color:var(--dim);direction:ltr;text-align:right}
+  .lic{font-family:ui-monospace,Menlo,monospace;font-weight:700;direction:ltr;cursor:copy;padding:2px 6px;border-radius:6px}
+  .lic:hover{background:#FFF3C4}
+  .chip{display:inline-block;font-size:11.5px;font-weight:600;padding:2px 9px;border-radius:99px;margin:2px;background:#F3F1EF;color:#B3AAA6;border:1px solid var(--line)}
+  .chip.on{background:var(--good-soft);color:var(--good);border-color:rgba(29,143,107,.35)}
+  .st{font-size:12px;font-weight:700;padding:3px 10px;border-radius:8px;white-space:nowrap}
+  .st.submitted{background:var(--warn-soft);color:var(--warn)}
+  .st.verified{background:var(--good-soft);color:var(--good)}
+  .st.rejected{background:var(--bad-soft);color:var(--bad)}
+  .st.none{background:#F3F1EF;color:var(--dim)}
+  .acts{display:flex;gap:6px;flex-wrap:wrap}
+  .acts button{font-family:inherit;font-size:12.5px;font-weight:700;padding:6px 12px;border-radius:8px;cursor:pointer;border:1px solid var(--line2);background:#fff}
+  .acts .ok{background:var(--good);border-color:var(--good);color:#fff}
+  .acts .no{color:var(--bad)}
+  .acts button:disabled{opacity:.5;cursor:default}
+  .note{font-size:11.5px;color:var(--bad);margin-top:3px;max-width:240px}
+  .dash{color:#C9C0BC}
+  .empty,.err{background:var(--card);border:1px dashed var(--line2);border-radius:13px;padding:28px 20px;text-align:center;color:var(--dim)}
+  #toast{position:fixed;inset-inline:16px;bottom:18px;max-width:420px;margin:0 auto;background:var(--ink);color:#fff;border-radius:12px;padding:12px 16px;font-size:13.5px;display:none;z-index:99;text-align:center}
+  @media (max-width:640px){.band{grid-template-columns:repeat(2,1fr)}}
+</style>
+</head>
+<body>
+<div class="wrap" id="app"><div class="empty">جارٍ التحميل…</div></div>
+<div id="toast"></div>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+const SB_URL = 'https://chpzecgpylxqsutjydkb.supabase.co';
+const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNocHplY2dweWx4cXN1dGp5ZGtiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQyODgxNzQsImV4cCI6MjA5OTg2NDE3NH0.q4wmWKtJ5IPx8AgzMkp3SuFLZL9F10qKc3qiX5LB7kI';
+const sb = window.supabase.createClient(SB_URL, SB_KEY, { auth: { persistSession: true, autoRefreshToken: true } });
+const $ = s => document.querySelector(s);
+const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const PL = { tiktok:'تيك توك', snapchat:'سناب شات', instagram:'انستقرام', x:'X' };
+const ST = { submitted:'بانتظار التحقق', verified:'متحقق ✓', rejected:'غير صحيح', none:'ما عبّأ' };
+let ROWS = [], FILTER = 'submitted', Q = '';
+
+function toast(m){ const t=$('#toast'); t.textContent=m; t.style.display='block'; clearTimeout(window.__t); window.__t=setTimeout(()=>t.style.display='none',2200); }
+function acctUrl(r){
+  const h = String(r.handle||'').replace(/[\s‎‏@]/g,'');
+  if (/^https?:\/\//i.test(String(r.handle||'').trim())) return String(r.handle).trim();
+  if (!h) return '';
+  const p = String(r.platform||'').toLowerCase();
+  if (p.includes('tiktok')) return 'https://www.tiktok.com/@'+h;
+  if (p.includes('insta')) return 'https://instagram.com/'+h;
+  if (p.includes('snap')) return 'https://snapchat.com/add/'+h;
+  if (p==='x'||p==='twitter') return 'https://x.com/'+h;
+  return '';
+}
+function fmtD(s){ if(!s) return ''; const d=new Date(s); return isNaN(d)?'':d.toLocaleDateString('en-GB',{timeZone:'Asia/Riyadh'}); }
+
+function render(){
+  const cnt = {submitted:0,verified:0,rejected:0,none:0};
+  ROWS.forEach(r => cnt[r.mawthooq_status] = (cnt[r.mawthooq_status]||0)+1);
+  const q = Q.trim().toLowerCase();
+  const rows = ROWS.filter(r => (!FILTER || r.mawthooq_status===FILTER)
+    && (!q || String(r.name||'').toLowerCase().includes(q) || String(r.handle||'').toLowerCase().includes(q) || String(r.mawthooq_number||'').includes(q)));
+  const band = (k,l,color) => '<button class="'+(FILTER===k?'on':'')+'" onclick="setF(\''+k+'\')"><div class="v num" style="color:'+color+'">'+(k?cnt[k]:ROWS.length)+'</div><div class="l">'+l+'</div></button>';
+  $('#app').innerHTML =
+    '<div class="mast"><div><h1>رخص موثوق</h1><p class="sub">تحقّق من رقم الترخيص في موقع موثوق، ثم علّمه «متحقق» أو «غير صحيح». الضغط على الرقم ينسخه.</p></div>'
+    + '<div style="display:flex;gap:8px;flex-wrap:wrap"><a class="btn2" href="https://mawthooq.sa" target="_blank" rel="noopener">موقع موثوق ↗</a><button class="btn2" onclick="load()">↻ تحديث</button><a class="btn2" href="/admin.html">لوحة الإدارة</a></div></div>'
+    + '<div class="band">'+band('submitted','بانتظار التحقق','var(--warn)')+band('verified','متحقق','var(--good)')+band('rejected','غير صحيح','var(--bad)')+band('none','ما عبّأ','var(--dim)')+'</div>'
+    + '<div class="tools"><input id="q" placeholder="بحث بالاسم أو الحساب أو رقم الترخيص…" value="'+esc(Q)+'" oninput="Q=this.value;renderTable()">'
+    + '<button class="btn2" onclick="setF(\'\')">عرض الكل ('+ROWS.length+')</button></div>'
+    + '<div id="tbl"></div>';
+  renderTable(rows);
+}
+function renderTable(pre){
+  const q = Q.trim().toLowerCase();
+  const rows = pre || ROWS.filter(r => (!FILTER || r.mawthooq_status===FILTER)
+    && (!q || String(r.name||'').toLowerCase().includes(q) || String(r.handle||'').toLowerCase().includes(q) || String(r.mawthooq_number||'').includes(q)));
+  const box = $('#tbl'); if (!box) return;
+  if (!rows.length) { box.innerHTML = '<div class="empty">لا يوجد أحد في هذي القائمة.</div>'; return; }
+  box.innerHTML = '<div class="sheet-wrap"><table><thead><tr><th></th><th>المعلن</th><th>رقم ترخيص موثوق</th><th>الحسابات المتحقق منها</th><th>تاريخ الإرسال</th><th>الحالة</th><th>الإجراء</th></tr></thead><tbody>'
+    + rows.map((r,i) => {
+      const u = acctUrl(r), pls = Array.isArray(r.mawthooq_platforms) ? r.mawthooq_platforms : [];
+      const chips = Object.keys(PL).map(k => '<span class="chip'+(pls.includes(k)?' on':'')+'">'+(pls.includes(k)?'✓ ':'')+PL[k]+'</span>').join('');
+      const acts = r.mawthooq_number
+        ? '<div class="acts">'+(r.mawthooq_status!=='verified'?'<button class="ok" onclick="review(\''+r.id+'\',true,this)">✓ متحقق</button>':'')
+          +(r.mawthooq_status!=='rejected'?'<button class="no" onclick="review(\''+r.id+'\',false,this)">✗ غير صحيح</button>':'')+'</div>'
+        : '<span class="dash">—</span>';
+      return '<tr><td class="rn">'+(i+1)+'</td>'
+        + '<td class="who">'+(u?'<a href="'+esc(u)+'" target="_blank" rel="noopener">'+esc(r.name||'—')+' ↗</a>':'<b>'+esc(r.name||'—')+'</b>')
+        + '<div class="h">'+esc(r.handle||'')+(r.followers?' · '+Number(r.followers).toLocaleString('en-US'):'')+'</div></td>'
+        + '<td>'+(r.mawthooq_number?'<span class="lic" title="اضغط للنسخ" onclick="cp(\''+esc(r.mawthooq_number)+'\')">'+esc(r.mawthooq_number)+'</span>':'<span class="dash">—</span>')+'</td>'
+        + '<td>'+chips+'</td>'
+        + '<td><span class="num">'+fmtD(r.mawthooq_submitted_at)+'</span></td>'
+        + '<td><span class="st '+esc(r.mawthooq_status)+'">'+(ST[r.mawthooq_status]||r.mawthooq_status)+'</span>'
+        + (r.mawthooq_status==='rejected'&&r.mawthooq_note?'<div class="note">'+esc(r.mawthooq_note)+'</div>':'')+'</td>'
+        + '<td>'+acts+'</td></tr>';
+    }).join('') + '</tbody></table></div>';
+}
+function setF(k){ FILTER = k; render(); }
+async function cp(t){ try{ await navigator.clipboard.writeText(t); toast('تم نسخ الرقم ✓'); }catch(e){ toast(t); } }
+async function review(id, ok, btn){
+  let note = null;
+  if (!ok) { note = prompt('وش المشكلة؟ (توصل للمعلن في الإشعار)', 'رقم ترخيص موثوق غير صحيح أو المنصات غير مطابقة.'); if (note === null) return; }
+  btn.disabled = true;
+  const { error } = await sb.rpc('admin_mawthooq_review', { p_user: id, p_ok: ok, p_note: note });
+  if (error) { btn.disabled = false; toast('تعذّر الحفظ'); return; }
+  const r = ROWS.find(x => x.id === id); if (r) { r.mawthooq_status = ok ? 'verified' : 'rejected'; r.mawthooq_note = note; }
+  toast(ok ? 'تم التعليم: متحقق ✓' : 'تم التعليم: غير صحيح — وصله إشعار');
+  render();
+}
+async function load(){
+  const { data, error } = await sb.rpc('admin_mawthooq_list');
+  if (error) { $('#app').innerHTML = '<div class="err">تعذّر التحميل. تأكد إنك داخل بحساب الأدمن. <a href="/login.html">تسجيل الدخول</a></div>'; return; }
+  ROWS = data || []; render();
+}
+(async function boot(){
+  const { data } = await sb.auth.getSession();
+  if (!data || !data.session) { $('#app').innerHTML = '<div class="err">يلزم تسجيل الدخول بحساب الأدمن. <a href="/login.html">تسجيل الدخول</a></div>'; return; }
+  const { data: isA } = await sb.rpc('is_platform_admin');
+  if (isA !== true) { $('#app').innerHTML = '<div class="err">هذا الحساب ما عنده صلاحية الأدمن.</div>'; return; }
+  load();
+  setInterval(() => { if (!document.hidden && !document.querySelector('.acts button:disabled')) load(); }, 60000);
+})();
+</script>
+</body>
+</html>
