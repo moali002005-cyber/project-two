@@ -1136,7 +1136,7 @@ function css(){
 function killButtons(){
  var kill=['التسجيل كمعلن','التسجيل كشركة'];
  [].slice.call(document.querySelectorAll('a,button')).forEach(function(e){
-   if(e.closest('.flf-menu')||e.closest('.nav'))return;
+   if(e.closest('.flf-menu')||e.closest('.nav')||e.closest('.doors'))return; // أزرار بطاقتي «شركة/معلن» مقصودة — لا نحذفها
    var t=(e.textContent||'').replace(/[←→\s]/g,'');
    kill.forEach(function(k){
      if(t===k.replace(/\s/g,'')){
