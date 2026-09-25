@@ -82,6 +82,21 @@ a{color:var(--accent);text-decoration:none}
 .tab.active{color:var(--accent-dim);border-bottom-color:var(--accent)}
 .panel{display:none}
 .panel.active{display:block}
+.sb-row{display:grid;grid-template-columns:minmax(170px,1.4fr) minmax(120px,.9fr) minmax(130px,1fr) minmax(120px,.9fr) minmax(160px,1.2fr) minmax(120px,1fr);gap:12px;align-items:center;padding:12px 4px;border-bottom:1px solid var(--line)}
+.sb-row.head{font-size:11.5px;color:var(--faint);font-weight:700;padding-top:4px}
+.sb-row:last-child{border-bottom:0}
+.sb-tag{display:inline-block;font-size:11px;font-weight:700;padding:2px 8px;border-radius:99px;margin:2px 0 2px 4px;white-space:nowrap}
+.sb-tag.paid{background:rgba(15,157,88,.12);color:var(--good)}
+.sb-tag.gift{background:rgba(184,134,11,.13);color:var(--warn)}
+.sb-tag.manual{background:var(--panel2);color:var(--muted)}
+.sb-tag.off{background:rgba(210,59,59,.1);color:var(--danger)}
+.sb-tag.feat{background:linear-gradient(135deg,#FBE7A6,#E8B84B);color:#5a4500}
+.sb-tag.tk{background:#111;color:#fff}
+.sb-chips{display:flex;gap:6px;flex-wrap:wrap}
+.sb-chips button{font-family:var(--font);font-size:12.5px;font-weight:600;padding:6px 12px;border-radius:99px;cursor:pointer;border:1px solid var(--line2);background:#fff}
+.sb-chips button.on{background:var(--ink,#111);color:#fff;border-color:transparent}
+.sb-mono{font-family:ui-monospace,Menlo,monospace;font-size:12px;direction:ltr;unicode-bidi:isolate}
+@media (max-width:900px){.sb-row{grid-template-columns:1fr 1fr}.sb-row.head{display:none}}
 .mq-row{display:grid;grid-template-columns:minmax(150px,1.3fr) minmax(120px,1fr) minmax(170px,1.3fr) auto auto;gap:12px;align-items:center;padding:12px 4px;border-bottom:1px solid var(--line)}
 .mq-row:last-child{border-bottom:0}
 .mq-num{font-family:ui-monospace,Menlo,monospace;direction:ltr;font-size:14px;font-weight:600;cursor:copy}
@@ -387,6 +402,7 @@ pre.json{background:var(--bg);border:1px solid var(--line);border-radius:9px;pad
     <button class="tab active" data-tab="overview">نظرة عامة</button>
     <button class="tab" data-tab="approvals">طلبات التفعيل<span id="pending-count"></span><span id="tier-req-count"></span></button>
     <button class="tab" data-tab="mawthooq">موثوق<span id="mq-count"></span></button>
+    <button class="tab" data-tab="subs">المشتركون<span id="sb-count"></span></button>
     <a class="tab" href="/b2b.html" style="text-decoration:none;display:inline-block">الدفع الآجل للشركات<span id="b2b-count"></span> ↗</a>
     <button class="tab" data-tab="support">خدمة العملاء<span id="support-count"></span></button>
     <button class="tab" data-tab="overdue">متأخرات الدفع<span id="overdue-count"></span></button>
@@ -541,6 +557,25 @@ pre.json{background:var(--bg);border:1px solid var(--line);border-radius:9px;pad
   </div>
 
   <!-- mawthooq -->
+  <div class="panel" id="panel-subs">
+    <div class="section">
+      <h2><i class="ti ti-crown"></i> المشتركون في الباقات</h2>
+      <p class="dim" style="font-size:13px;margin-bottom:14px;line-height:1.7">كل حساب عنده باقة مدفوعة (معلن أو شركة): مدفوعة فعليًا عبر ميسر، أو هدية، أو مفعّلة يدويًا — ومعها تاريخ الدفع والانتهاء وطريقة التواصل. وتحتها اللي فتحوا صفحة الدفع وما كمّلوا.</p>
+      <div class="kpi-grid" id="sb-kpis"></div>
+      <div class="toolbar">
+        <div class="search"><i class="ti ti-search"></i><input id="sb-search" placeholder="بحث بالاسم أو الإيميل أو الحساب…"></div>
+        <div class="sb-chips" id="sb-filters"></div>
+        <label class="dim" style="font-size:12.5px;display:flex;gap:6px;align-items:center"><input type="checkbox" id="sb-tests"> إظهار حسابات التجربة</label>
+      </div>
+      <div id="sb-list" style="margin-top:8px"></div>
+    </div>
+    <div class="section">
+      <h2><i class="ti ti-shopping-cart-x"></i> فتحوا صفحة الدفع وما كمّلوا</h2>
+      <p class="dim" style="font-size:13px;margin-bottom:10px">فرصة متابعة: كل واحد وكم مرة حاول، وآخر محاولة، والباقة اللي كان يبيها.</p>
+      <div id="sb-tries"></div>
+    </div>
+  </div>
+
   <div class="panel" id="panel-mawthooq">
     <div class="section">
       <h2 style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap"><span><i class="ti ti-id-badge-2"></i> رخص موثوق</span><a class="btn" href="/mawthooq.html" target="_blank" style="padding:7px 14px;font-size:13px">فتح صفحة موثوق المستقلة ↗</a></h2>
@@ -2360,6 +2395,94 @@ async function reviewMawthooq(id, ok, btn){
   } catch (e) { alert('تعذّر الحفظ: '+(e.message||e)); if (btn) btn.disabled = false; }
 }
 $('[data-tab="mawthooq"]').addEventListener('click', loadMawthooq);
+
+// ===== المشتركون =====
+let SB = { subs: [], tries: [] }, SB_F = 'active';
+const SB_SRC = { paid:'💳 مدفوع', gift:'🎁 هدية', manual:'✋ يدوي' };
+const SB_PLAN = { c_pro:'Pro', c_premium:'Premium', mild:'فلفل الاحترافي', hot:'فلفل للأعمال', fiery:'Enterprise', test_one_riyal:'تجربة دفع' };
+function sbDate(s){ if(!s) return '—'; const d=new Date(s); return isNaN(d)?'—':d.toLocaleDateString('en-GB',{timeZone:'Asia/Riyadh'}); }
+function sbDaysLeft(s){ if(!s) return null; return Math.ceil((new Date(s) - Date.now())/86400000); }
+async function loadSubs(){
+  const box = $('#sb-list'); if (box && !SB.subs.length) box.innerHTML = '<div class="dim">جاري التحميل…</div>';
+  try {
+    const { data, error } = await sb.rpc('admin_subscribers');
+    if (error) throw error;
+    SB = { subs: (data && data.subs) || [], tries: (data && data.tries) || [] };
+    renderSubs();
+  } catch (e) { if (box) box.innerHTML = '<div class="dim">تعذّر التحميل: '+esc(e.message||e)+'</div>'; }
+}
+function renderSubs(){
+  const showTests = !!($('#sb-tests')||{}).checked;
+  const q = (($('#sb-search')||{}).value||'').trim().toLowerCase();
+  const all = SB.subs.filter(r => showTests || !r.is_test);
+  const act = all.filter(r => r.active);
+  const paidAct = act.filter(r => r.source==='paid' && Number(r.paid_total)>1);
+  const revenue = all.reduce((a,r)=>a+(Number(r.paid_total)>1?Number(r.paid_total):0),0);
+  const tries = SB.tries.filter(r => showTests || !r.is_test);
+  $('#sb-kpis').innerHTML =
+      '<div class="kpi hl"><div class="lbl">مشتركين فعّالين</div><div class="val">'+act.length+'</div></div>'
+    + '<div class="kpi"><div class="lbl">💳 دفعوا فعليًا</div><div class="val">'+paidAct.length+'</div></div>'
+    + '<div class="kpi"><div class="lbl">🎁 هدية</div><div class="val">'+act.filter(r=>r.source==='gift').length+'</div></div>'
+    + '<div class="kpi"><div class="lbl">✋ مفعّل يدويًا</div><div class="val">'+act.filter(r=>r.source==='manual').length+'</div></div>'
+    + '<div class="kpi"><div class="lbl">إجمالي المدفوع</div><div class="val">'+revenue.toLocaleString('en-US')+' <small>ر.س</small></div></div>'
+    + '<div class="kpi"><div class="lbl">فتحوا الدفع وما كمّلوا</div><div class="val">'+tries.length+'</div></div>';
+  const cnt = $('#sb-count'); if (cnt) cnt.textContent = act.length ? ' ('+act.length+')' : '';
+  const F = [['active','الفعّالين'],['paid','دفعوا فعليًا'],['gift','هدية'],['manual','يدوي'],['creator','معلنين'],['brand','شركات'],['expired','منتهية'],['','الكل']];
+  $('#sb-filters').innerHTML = F.map(f => '<button class="'+(SB_F===f[0]?'on':'')+'" onclick="SB_F=\''+f[0]+'\';renderSubs()">'+f[1]+'</button>').join('');
+  const rows = all.filter(r => {
+    if (SB_F==='active' && !r.active) return false;
+    if (SB_F==='expired' && r.active) return false;
+    if (['paid','gift','manual'].includes(SB_F) && r.source!==SB_F) return false;
+    if (['creator','brand'].includes(SB_F) && r.role!==SB_F) return false;
+    if (q && ![r.name,r.email,r.handle,r.phone].some(v => String(v||'').toLowerCase().includes(q))) return false;
+    return true;
+  });
+  const box = $('#sb-list');
+  if (!rows.length) { box.innerHTML = '<div class="dim" style="padding:14px 4px">لا يوجد أحد في هذي القائمة.</div>'; }
+  else box.innerHTML = '<div class="sb-row head"><div>الحساب</div><div>الباقة</div><div>الدفع</div><div>الانتهاء</div><div>التواصل</div><div>إضافات</div></div>'
+    + rows.map(r => {
+      const ls = r.last_sub || {};
+      const left = sbDaysLeft(r.plan_expires_at);
+      const isTestPay = ls.plan === 'test_one_riyal';
+      const payCell = r.source==='paid'
+        ? '<div style="font-weight:700">'+Number(r.paid_total).toLocaleString('en-US')+' ر.س'+(r.paid_count>1?' <span class="dim">('+r.paid_count+' دفعات)</span>':'')+'</div><div class="dim" style="font-size:12px">'+(isTestPay?'تجربة دفع · ':'')+'آخر دفعة '+sbDate(ls.paid_at)+'</div>'+(ls.payment_id?'<div class="sb-mono dim" title="رقم عملية ميسر">'+esc(String(ls.payment_id).slice(0,8))+'…</div>':'')
+        : r.source==='gift'
+          ? '<div>🎁 هدية</div><div class="dim" style="font-size:12px">'+esc(ls.reason||'')+(ls.paid_at?' · '+sbDate(ls.paid_at):'')+'</div>'
+          : '<div class="dim">مفعّل يدويًا</div>';
+      const expCell = r.plan_expires_at
+        ? '<div>'+sbDate(r.plan_expires_at)+'</div><div style="font-size:12px;'+(left!=null&&left<=7?'color:var(--danger);font-weight:700':'color:var(--muted)')+'">'+(left==null?'':left<0?'انتهت من '+(-left)+' يوم':'باقي '+left+' يوم')+'</div>'
+        : '<span class="dim">—</span>';
+      const extras = (r.featured_rank?'<span class="sb-tag feat">★ مميز #'+r.featured_rank+'</span>':'')
+        + (r.tiktok_connected?'<span class="sb-tag tk">TikTok ✓</span>':'')
+        + (r.role==='creator'?'<span class="sb-tag manual">'+(r.deals_done||0)+' صفقة معتمدة</span>':'')
+        + (r.pending_tries?'<span class="sb-tag manual">'+r.pending_tries+' محاولة دفع</span>':'')
+        + (r.is_test?'<span class="sb-tag off">تجربة</span>':'');
+      return '<div class="sb-row">'
+        + '<div><div style="font-weight:700">'+esc(r.name||'—')+'</div><div class="dim" style="font-size:12px">'+(r.role==='brand'?'شركة':'معلن')+(r.handle?' · <span class="sb-mono">'+esc(r.handle)+'</span>':'')+(r.followers?' · '+Number(r.followers).toLocaleString('en-US'):'')+'</div><div class="dim" style="font-size:11.5px">انضم '+sbDate(r.joined_at)+'</div></div>'
+        + '<div><div style="font-weight:700">'+esc(SB_PLAN[r.plan_code]||r.plan_name||r.plan_code||'—')+'</div><span class="sb-tag '+(r.active?r.source:'off')+'">'+(r.active?SB_SRC[r.source]:'منتهية')+'</span></div>'
+        + '<div>'+payCell+'</div>'
+        + '<div>'+expCell+'</div>'
+        + '<div style="font-size:12.5px"><div class="sb-mono">'+esc(r.email||'')+'</div>'+(r.phone?'<div class="sb-mono">'+esc(r.phone)+'</div>':'')+'</div>'
+        + '<div>'+(extras||'<span class="dim">—</span>')+'</div>'
+        + '</div>';
+    }).join('');
+  const tb = $('#sb-tries');
+  const tq = tries.filter(r => !q || [r.name,r.email,r.handle,r.phone].some(v => String(v||'').toLowerCase().includes(q)));
+  tb.innerHTML = !tq.length ? '<div class="dim" style="padding:10px 4px">ما فيه محاولات معلّقة.</div>'
+    : '<div class="sb-row head"><div>الحساب</div><div>الباقة المطلوبة</div><div>المحاولات</div><div>آخر محاولة</div><div>التواصل</div><div></div></div>'
+      + tq.map(r => '<div class="sb-row">'
+        + '<div><div style="font-weight:700">'+esc(r.name||'—')+'</div><div class="dim" style="font-size:12px">'+(r.role==='brand'?'شركة':'معلن')+(r.handle?' · <span class="sb-mono">'+esc(r.handle)+'</span>':'')+'</div></div>'
+        + '<div>'+String(r.plans||'').split(',').map(c=>esc(SB_PLAN[c]||c)).join('، ')+'<div class="dim" style="font-size:12px">'+Number(r.max_amount||0).toLocaleString('en-US')+' ر.س</div></div>'
+        + '<div style="font-weight:700">'+r.tries+'</div>'
+        + '<div>'+sbDate(r.last_try)+'</div>'
+        + '<div style="font-size:12.5px"><div class="sb-mono">'+esc(r.email||'')+'</div>'+(r.phone?'<div class="sb-mono">'+esc(r.phone)+'</div>':'')+'</div>'
+        + '<div>'+(r.is_test?'<span class="sb-tag off">تجربة</span>':'')+'</div>'
+        + '</div>').join('');
+}
+$('[data-tab="subs"]').addEventListener('click', loadSubs);
+$('#sb-search').addEventListener('input', renderSubs);
+$('#sb-tests').addEventListener('change', renderSubs);
+setTimeout(loadSubs, 1500);
 (async function b2bBadge(){
   try {
     const { data } = await sb.rpc('b2b_admin_list');
