@@ -176,14 +176,23 @@ async function supabaseCountReserveClosed(campaignId) {
   }
 }
 
-// جلب طلبات الحملة الحيّة (غير المرفوضة وغير المكتملة) مرتّبة بالأقدم — لتحديد الدفعة وقائمة الانتظار
+// جلب طلبات الحملة الحيّة (غير المرفوضة وغير المكتملة) مرتّبة بأولوية الباقة ثم الأقدم — لتحديد الدفعة وقائمة الانتظار
+// Premium أولًا ثم Pro ثم المجاني (plans.waitlist_priority للاشتراك الساري)
 async function supabaseGetCampaignApps(campaignId) {
   if (!campaignId) return [];
   try {
-    const res = await fetch(
-      `${SUPABASE_URL}/rest/v1/applications?campaign_id=eq.${campaignId}&status=not.in.(rejected,campaign_full)&select=id,status,created_at&order=created_at.asc`,
-      { headers: { 'apikey': SUPABASE_SERVICE_KEY, 'Authorization': `Bearer ${SUPABASE_SERVICE_KEY}` } }
-    );
+    let res = await fetch(`${SUPABASE_URL}/rest/v1/rpc/campaign_live_apps_prioritized`, {
+      method: 'POST',
+      headers: { 'apikey': SUPABASE_SERVICE_KEY, 'Authorization': `Bearer ${SUPABASE_SERVICE_KEY}`, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ p_campaign: campaignId })
+    });
+    if (!res.ok) {
+      console.error('prioritized apps rpc error — fallback to oldest-first:', await res.text());
+      res = await fetch(
+        `${SUPABASE_URL}/rest/v1/applications?campaign_id=eq.${campaignId}&status=not.in.(rejected,campaign_full)&select=id,status,created_at&order=created_at.asc`,
+        { headers: { 'apikey': SUPABASE_SERVICE_KEY, 'Authorization': `Bearer ${SUPABASE_SERVICE_KEY}` } }
+      );
+    }
     if (!res.ok) { console.error('Campaign apps fetch error:', await res.text()); return []; }
     const rows = await res.json();
     return Array.isArray(rows) ? rows : [];
@@ -593,7 +602,7 @@ export default async function handler(req, res) {
   }
 
   // ============ نظام الدفعة + قائمة الانتظار (مع احتياط ثابت = 10) ============
-  // الوكيل يفاوض أول (campaignSize + RESERVE_COUNT) حسب أولوية التقديم (الأقدم أولاً).
+  // الوكيل يفاوض أول (campaignSize + RESERVE_COUNT) حسب الأولوية: المشتركون (Premium ثم Pro) ثم الأقدم تقديمًا.
   // أول (campaignSize) مقفولين = صفقات عادية تظهر للشركة.
   // الـ (RESERVE_COUNT) المقفولين بعدهم = احتياط مخفي (is_reserve=true) جاهز للترقية الفورية.
   // من تعدّى (campaignSize + RESERVE_COUNT) → قائمة انتظار (waitlisted).
@@ -619,7 +628,7 @@ export default async function handler(req, res) {
       // السبب: campaign.html يفتح التفاوض تلقائيًا *فقط لو السجل فاضٍ*. لو خزّنّا رسالة
       // الانتظار، يبقى السجل غير فاضٍ، فلما يترقّى المعلن لاحقًا لا يُفتح له تفاوض جديد
       // (يعلق على رسالة الانتظار القديمة). بإبقاء السجل فاضيًا، ينفتح التفاوض صح بعد الترقية.
-      const waitMsg = 'شكراً لاهتمامك بالحملة! العدد المطلوب اكتمل حالياً، وأنت في قائمة الانتظار حسب أولوية تقديمك. إذا انفتح مكان بننبّهك فورًا ونبدأ التفاوض معك 🌿';
+      const waitMsg = 'شكراً لاهتمامك بالحملة! العدد المطلوب اكتمل حالياً، وأنت في قائمة الانتظار حسب الأولوية (المشتركون في Pro وPremium لهم الأسبقية، ثم الأقدم تقديمًا). إذا انفتح مكان بننبّهك فورًا ونبدأ التفاوض معك 🌿';
       return res.status(200).json({
         reply: waitMsg,
         dealClosed: false,
