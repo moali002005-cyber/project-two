@@ -94,7 +94,7 @@ function b2bEnsureDom(){
     +   '<h2 id="po-title">اختر طريقة الدفع</h2><div class="pm-sub" id="po-sub"></div>'
     +   '<div class="pm-sum" id="po-sum">جاري حساب المبلغ…</div>'
     +   '<div class="pm-opt"><h3>ادفع الآن</h3><p>تنطلق الحملة فور تأكيد السداد.</p><div class="pm-btns">'
-    +     '<button onclick="b2bPayCard()">💳 بطاقة (مدى / Visa / Mastercard)</button>'
+    +     '<button onclick="b2bPayCard()">💳 مدى أو بطاقة ائتمانية</button>'
     +     '<button class="alt" onclick="b2bOpenForm(\'bank_transfer\')">🏦 تحويل بنكي</button></div></div>'
     +   '<div class="pm-opt b2b"><h3>الدفع الآجل للشركات</h3><p>للشركات اللي تدفع بنظام المشتريات وبفاتورة مؤسسية: الحملة تنطلق حسب شروط الاتفاق، والسداد في تاريخ الاستحقاق.</p>'
     +     '<div class="pm-tags"><span>عرض سعر</span><span>PO عند الحاجة</span><span>فاتورة مؤسسية</span><span>سند إلكتروني عبر نافذ</span><span>Net 15 / 30 / 60</span></div>'
@@ -157,12 +157,11 @@ function b2bPayCard(){
 }
 async function b2bMe(){
   if (B2B_CTX.me) return B2B_CTX.me;
-  try {
-    var s = await b2bSb().auth.getSession(); var uid = s.data.session.user.id;
-    var r = await b2bSb().from('users').select('id,name,email,phone,company_name,cr_number').eq('auth_id', uid).maybeSingle();
-    B2B_CTX.me = r.data || {};
-  } catch (e) { B2B_CTX.me = {}; }
-  return B2B_CTX.me;
+  var me = {};
+  try { var cu = (typeof getCurrentUser === 'function' && getCurrentUser()) || {}; me.company_name = cu.company_name; me.cr_number = cu.cr_number; me.phone = cu.phone; me.email = cu.email; } catch (e) {}
+  try { var s = await b2bSb().auth.getSession(); if (!me.email) me.email = s.data.session.user.email; } catch (e) {}
+  B2B_CTX.me = me;
+  return me;
 }
 async function b2bOpenForm(method){
   B2B_CTX.method = method;
