@@ -1512,7 +1512,7 @@ Object.assign(window.I18N_TEXT, {
   "ملاحظة": "Note",
   "تأكيد": "Confirm",
   "قائمة الانتظار": "Waitlist",
-  "المعلنون في قائمة الانتظار حسب أولوية التقديم (الأقدم أولاً). يبدأ التفاوض معهم تلقائيًا لو انفتح مكان أو استبدلت أحدًا.": "Waitlisted influencers by application priority (oldest first). Negotiation starts with them automatically if a slot opens or you replace someone.",
+  "المعلنون في قائمة الانتظار. لو انفتح مكان أو استبدلت أحدًا، يبدأ التفاوض تلقائيًا مع صاحب الأولوية: مشتركو Premium ثم Pro، ثم الأقدم تقديمًا.": "Waitlisted influencers. If a slot opens or you replace someone, negotiation starts automatically with the highest priority: Premium subscribers, then Pro, then the earliest applicants.",
   "إغلاق": "Close",
   "نص البريف الكامل للحملة — يمكن نسخه أو تعديله (يُحفظ ويظهر للجميع).": "The full campaign brief text — you can copy or edit it (saved and shown to everyone).",
   "✏️ تعديل": "✏️ Edit",
