@@ -277,6 +277,9 @@ textarea { resize: vertical; min-height: 80px; }
   .gamr-head { font-size: 14px; }
   .gamr-body { font-size: 13px; }
 }
+.pw-match { font-size: 12.5px; margin-top: 6px; min-height: 16px; font-weight: 500; }
+.pw-match.ok { color: #0F7A55; }
+.pw-match.bad { color: #C0231A; }
 </style>
 <style>/* unified brand wordmark size */
 .logo-mark{font-size:26px !important;white-space:nowrap}
@@ -651,6 +654,12 @@ textarea { resize: vertical; min-height: 80px; }
       </div>
 
       <div class="field">
+        <label>تأكيد كلمة السر</label>
+        <input type="password" name="password_confirm" required minlength="8" placeholder="اكتب كلمة السر مرة ثانية" autocomplete="new-password">
+        <div class="pw-match"></div>
+      </div>
+
+      <div class="field">
         <label>نبذة عنك (اختياري)</label>
         <textarea name="bio" placeholder="عرفي عن نفسك ونوع المحتوى الذي تقدّمنه..."></textarea>
       </div>
@@ -739,6 +748,12 @@ textarea { resize: vertical; min-height: 80px; }
         <div class="hint">تستخدمها لتسجيل الدخول لاحقاً.</div>
       </div>
 
+      <div class="field">
+        <label>تأكيد كلمة السر</label>
+        <input type="password" name="password_confirm" required minlength="8" placeholder="اكتب كلمة السر مرة ثانية" autocomplete="new-password">
+        <div class="pw-match"></div>
+      </div>
+
       <div class="checkbox-row">
         <input type="checkbox" id="brand-terms" required>
         <label for="brand-terms">أوافق على <a href="/terms.html" target="_blank">الشروط والأحكام</a> و<a href="/privacy.html" target="_blank">سياسة الخصوصية</a> الخاصة بـ Flfluencer</label>
@@ -815,6 +830,12 @@ async function submitForm(event, role) {
   const password = fd.get('password');
   if (!window.__resumeMode && String(password || '').length < 8) {
     alert('كلمة السر ضعيفة — يلزم 8 أحرف على الأقل.');
+    submitBtn.disabled = false; submitBtn.textContent = originalText;
+    return;
+  }
+  if (!window.__resumeMode && String(password || '') !== String(fd.get('password_confirm') || '')) {
+    alert('كلمتا السر غير متطابقتين — اكتب نفس كلمة السر في خانة التأكيد.');
+    const pc = form.querySelector('input[name="password_confirm"]'); if (pc) pc.focus();
     submitBtn.disabled = false; submitBtn.textContent = originalText;
     return;
   }
@@ -1035,11 +1056,29 @@ function goToDashboard(role) {
   }
 })();
 
+// ===== تأكيد كلمة السر: مطابقة مباشرة =====
+(function initPwConfirm() {
+  document.querySelectorAll('form').forEach(f => {
+    const a = f.querySelector('input[name="password"]');
+    const b = f.querySelector('input[name="password_confirm"]');
+    if (!a || !b) return;
+    const hint = b.parentElement.querySelector('.pw-match');
+    const check = () => {
+      if (!b.value) { b.setCustomValidity(''); if (hint) { hint.textContent = ''; hint.className = 'pw-match'; } return; }
+      const ok = a.value === b.value;
+      b.setCustomValidity(ok ? '' : 'كلمتا السر غير متطابقتين');
+      if (hint) { hint.textContent = ok ? '✓ كلمتا السر متطابقتين' : '✗ كلمتا السر غير متطابقتين'; hint.className = 'pw-match ' + (ok ? 'ok' : 'bad'); }
+    };
+    a.addEventListener('input', check);
+    b.addEventListener('input', check);
+  });
+})();
+
 // ===== الاسترجاع التلقائي: حساب مصادقة بلا ملف (يتيم) → وضع «إكمال الملف» =====
 function enterResumeMode(email) {
   window.__resumeMode = true;
   document.querySelectorAll('input[name="email"]').forEach(i => { if (email) i.value = email; i.readOnly = true; });
-  document.querySelectorAll('input[name="password"]').forEach(i => {
+  document.querySelectorAll('input[name="password"], input[name="password_confirm"]').forEach(i => {
     i.required = false;
     const grp = i.closest('.field') || i.parentElement;
     if (grp) grp.style.display = 'none';

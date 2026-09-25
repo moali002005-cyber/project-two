@@ -9,7 +9,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="/translations.js?v=10"></script>
+<script src="/translations.js?v=15"></script>
 <script src="/i18n.js?v=5"></script>
 <style>
 :root {
@@ -200,6 +200,17 @@ input::placeholder { color: var(--ink-faint); }
   padding: 0;
 }
 .field-hint { font-size: 12px; color: var(--ink-muted); margin-top: 6px; }
+.forgot-row { margin-top: 8px; text-align: start; }
+.forgot-row .muted-link { font-size: 13px; }
+.fp-head { margin-bottom: 20px; }
+.fp-title { font-size: 17px; font-weight: 700; color: var(--ink); margin-bottom: 4px; }
+.fp-code-input { letter-spacing: 10px; text-align: center; font-size: 22px !important; font-weight: 600; }
+.fp-back { text-align: center; margin-top: 18px; }
+.pw-match { font-size: 12.5px; margin-top: 6px; min-height: 18px; font-weight: 500; }
+.pw-match.ok { color: #0F7A55; }
+.pw-match.bad { color: #C0231A; }
+.fp-done { background: #E6F6EF; border: 1px solid #BFE6D3; color: #0F5E43; padding: 12px 14px; border-radius: 10px; font-size: 14px; font-weight: 500; margin-bottom: 16px; }
+.tabs.hidden { display: none; }
 
 .error-box {
   display: none;
@@ -269,7 +280,7 @@ input::placeholder { color: var(--ink-faint); }
 
     <div class="error-box" id="error-box"></div>
 
-    <div class="tabs">
+    <div class="tabs" id="login-tabs">
       <button type="button" class="tab active" id="tab-password" onclick="switchTab('password')" data-i18n="login_tab_password">كلمة السر</button>
       <button type="button" class="tab" id="tab-otp" onclick="switchTab('otp')" data-i18n="login_tab_otp">كود على الإيميل</button>
     </div>
@@ -297,9 +308,52 @@ input::placeholder { color: var(--ink-faint); }
               </svg>
             </button>
           </div>
+          <div class="forgot-row"><button type="button" class="muted-link" onclick="openForgot()" data-i18n="login_forgot">نسيت كلمة السر؟</button></div>
         </div>
         <button type="submit" class="btn-submit" id="pw-btn" data-i18n="login_btn">دخول</button>
       </form>
+    </div>
+
+    <!-- استرجاع كلمة السر: كود على الإيميل ← كلمة سر جديدة -->
+    <div class="pane" id="pane-forgot">
+      <div class="fp-head">
+        <div class="fp-title" data-i18n="fp_title">استرجاع كلمة السر</div>
+        <div class="field-hint" id="fp-sub" data-i18n="fp_hint">اكتب إيميلك ونرسل لك كود من 6 أرقام، وبعدها تختار كلمة سر جديدة.</div>
+      </div>
+      <!-- 1: الإيميل -->
+      <form onsubmit="fpSend(event)" id="fp-email-form">
+        <div class="field">
+          <label data-i18n="login_email">البريد الإلكتروني</label>
+          <input type="email" id="fp-email" required placeholder="example@email.com" autocomplete="email">
+        </div>
+        <button type="submit" class="btn-submit" id="fp-send-btn" data-i18n="fp_send">إرسال كود الاسترجاع</button>
+      </form>
+      <!-- 2: الكود -->
+      <form onsubmit="fpVerify(event)" id="fp-code-form" style="display:none">
+        <div class="field">
+          <label><span data-i18n="login_code_to">الكود المرسل إلى</span> <span id="fp-email-label" style="color:var(--accent-ink)"></span></label>
+          <input type="text" id="fp-code" inputmode="numeric" autocomplete="one-time-code" maxlength="6" required dir="ltr" placeholder="••••••" class="fp-code-input">
+          <div class="field-hint">
+            <span data-i18n="login_resend_q">ما وصلك الكود؟</span> <button type="button" class="muted-link" onclick="fpResend()" data-i18n="login_resend">إعادة الإرسال</button>
+            · <button type="button" class="muted-link" onclick="fpChangeEmail()" data-i18n="login_change_email">تغيير الإيميل</button>
+          </div>
+        </div>
+        <button type="submit" class="btn-submit" id="fp-verify-btn" data-i18n="fp_verify">تأكيد الكود</button>
+      </form>
+      <!-- 3: كلمة السر الجديدة -->
+      <form onsubmit="fpSave(event)" id="fp-new-form" style="display:none">
+        <div class="field">
+          <label data-i18n="fp_new_pw">كلمة السر الجديدة</label>
+          <input type="password" id="fp-pw1" required minlength="8" placeholder="8 أحرف على الأقل" autocomplete="new-password">
+        </div>
+        <div class="field">
+          <label data-i18n="fp_confirm_pw">تأكيد كلمة السر</label>
+          <input type="password" id="fp-pw2" required minlength="8" placeholder="اكتبها مرة ثانية" autocomplete="new-password">
+          <div class="pw-match" id="fp-match"></div>
+        </div>
+        <button type="submit" class="btn-submit" id="fp-save-btn" data-i18n="fp_save">حفظ كلمة السر والدخول</button>
+      </form>
+      <p class="fp-back"><button type="button" class="muted-link" onclick="closeForgot()" data-i18n="fp_back">← الرجوع لتسجيل الدخول</button></p>
     </div>
 
     <!-- طريقة كود الإيميل (OTP) -->
@@ -347,7 +401,142 @@ function switchTab(which) {
   document.getElementById('tab-otp').classList.toggle('active', !isPw);
   document.getElementById('pane-password').classList.toggle('active', isPw);
   document.getElementById('pane-otp').classList.toggle('active', !isPw);
+  document.getElementById('pane-forgot').classList.remove('active');
+  document.getElementById('login-tabs').classList.remove('hidden');
   hideError();
+}
+
+// ===== نسيت كلمة السر: كود على الإيميل ← تحقق ← كلمة سر جديدة =====
+let fpEmail = '';
+let fpBusy = false;
+function fpStep(n) {
+  document.getElementById('fp-email-form').style.display = n === 1 ? 'block' : 'none';
+  document.getElementById('fp-code-form').style.display = n === 2 ? 'block' : 'none';
+  document.getElementById('fp-new-form').style.display = n === 3 ? 'block' : 'none';
+  const sub = document.getElementById('fp-sub');
+  if (sub) sub.style.display = n === 1 ? 'block' : 'none';
+}
+function openForgot() {
+  hideError();
+  const typed = (document.getElementById('pw-email').value || '').trim();
+  if (typed) document.getElementById('fp-email').value = typed;
+  document.getElementById('pane-password').classList.remove('active');
+  document.getElementById('pane-otp').classList.remove('active');
+  document.getElementById('pane-forgot').classList.add('active');
+  document.getElementById('login-tabs').classList.add('hidden');
+  fpStep(1);
+  setTimeout(() => document.getElementById('fp-email').focus(), 50);
+}
+function closeForgot() {
+  switchTab('password');
+  if (fpEmail) document.getElementById('pw-email').value = fpEmail;
+}
+function fpChangeEmail() { hideError(); document.getElementById('fp-code').value = ''; fpStep(1); }
+function fpResend() { if (fpEmail) fpSend(); }
+function fpDigits(s) {
+  // يقبل الأرقام العربية ويحوّلها للاتينية
+  return String(s || '').replace(/[٠-٩]/g, d => String(d.charCodeAt(0) - 0x0660))
+    .replace(/[۰-۹]/g, d => String(d.charCodeAt(0) - 0x06F0)).replace(/\D/g, '');
+}
+async function fpSend(event) {
+  if (event) event.preventDefault();
+  if (fpBusy) return;
+  hideError();
+  const inp = document.getElementById('fp-email');
+  fpEmail = (inp.value || '').trim().toLowerCase();
+  if (!fpEmail) return;
+  const btn = document.getElementById('fp-send-btn');
+  fpBusy = true; btn.disabled = true; btn.textContent = 'جاري الإرسال...';
+  try {
+    const { error } = await supabaseClient.auth.signInWithOtp({ email: fpEmail, options: { shouldCreateUser: false } });
+    if (error) {
+      const m = (error.message || '').toLowerCase();
+      if (m.includes('not') && (m.includes('found') || m.includes('exist') || m.includes('signups'))) {
+        showError('لا يوجد حساب بهذا البريد. <a href="/signup.html">تسجيل حساب جديد</a>');
+      } else if (m.includes('second') || m.includes('rate') || m.includes('limit')) {
+        showError('أرسلنا لك كود قبل شوي — انتظر دقيقة وجرّب مرة ثانية.');
+      } else {
+        showError('تعذّر إرسال الكود. تأكد من الإيميل وجرّب مرة ثانية.');
+      }
+      return;
+    }
+    document.getElementById('fp-email-label').textContent = fpEmail;
+    fpStep(2);
+    setTimeout(() => document.getElementById('fp-code').focus(), 50);
+  } catch (e) {
+    console.error(e);
+    showError('حصل خطأ. يُرجى المحاولة مرة أخرى.');
+  } finally {
+    fpBusy = false; btn.disabled = false; btn.textContent = 'إرسال كود الاسترجاع';
+  }
+}
+async function fpVerify(event) {
+  event.preventDefault();
+  hideError();
+  const token = fpDigits(document.getElementById('fp-code').value);
+  if (token.length !== 6) { showError('الكود 6 أرقام — تأكد منه.'); return; }
+  const btn = document.getElementById('fp-verify-btn');
+  btn.disabled = true; btn.textContent = 'جاري التحقق...';
+  try {
+    const { error } = await supabaseClient.auth.verifyOtp({ email: fpEmail, token, type: 'email' });
+    if (error) {
+      showError('الكود غير صحيح أو منتهي. أعد المحاولة أو اطلب كود جديد.');
+      document.getElementById('fp-code').value = '';
+      return;
+    }
+    fpStep(3);
+    setTimeout(() => document.getElementById('fp-pw1').focus(), 50);
+  } catch (e) {
+    console.error(e);
+    showError('حصل خطأ. يُرجى المحاولة مرة أخرى.');
+  } finally {
+    btn.disabled = false; btn.textContent = 'تأكيد الكود';
+  }
+}
+function fpCheckMatch() {
+  const a = document.getElementById('fp-pw1').value;
+  const b = document.getElementById('fp-pw2');
+  const hint = document.getElementById('fp-match');
+  if (!b.value) { hint.textContent = ''; hint.className = 'pw-match'; b.setCustomValidity(''); return; }
+  const ok = a === b.value;
+  hint.textContent = ok ? '✓ كلمتا السر متطابقتين' : '✗ كلمتا السر غير متطابقتين';
+  hint.className = 'pw-match ' + (ok ? 'ok' : 'bad');
+  b.setCustomValidity(ok ? '' : 'كلمتا السر غير متطابقتين');
+}
+document.addEventListener('DOMContentLoaded', () => {
+  ['fp-pw1', 'fp-pw2'].forEach(id => { const el = document.getElementById(id); if (el) el.addEventListener('input', fpCheckMatch); });
+  const c = document.getElementById('fp-code');
+  if (c) c.addEventListener('input', () => { const d = fpDigits(c.value).slice(0, 6); if (c.value !== d) c.value = d; });
+  try { if (new URLSearchParams(location.search).has('forgot')) openForgot(); } catch (e) {}
+});
+async function fpSave(event) {
+  event.preventDefault();
+  hideError();
+  const p1 = document.getElementById('fp-pw1').value;
+  const p2 = document.getElementById('fp-pw2').value;
+  if (p1.length < 8) { showError('كلمة السر لازم تكون 8 أحرف على الأقل.'); return; }
+  if (p1 !== p2) { showError('كلمتا السر غير متطابقتين.'); fpCheckMatch(); return; }
+  const btn = document.getElementById('fp-save-btn');
+  btn.disabled = true; btn.textContent = 'جاري الحفظ...';
+  try {
+    const { data, error } = await supabaseClient.auth.updateUser({ password: p1 });
+    if (error) {
+      const m = (error.message || '').toLowerCase();
+      if (m.includes('different') || m.includes('same')) showError('هذي نفس كلمة السر القديمة — اختر كلمة سر جديدة.');
+      else if (m.includes('weak') || m.includes('at least') || m.includes('length')) showError('كلمة السر ضعيفة — اختر 8 أحرف أو أكثر.');
+      else if (m.includes('session') || m.includes('reauth') || m.includes('jwt')) { showError('انتهت الجلسة — اطلب كود جديد.'); fpStep(1); }
+      else showError('تعذّر حفظ كلمة السر. يُرجى المحاولة مرة أخرى.');
+      btn.disabled = false; btn.textContent = 'حفظ كلمة السر والدخول';
+      return;
+    }
+    const box = document.getElementById('fp-new-form');
+    box.insertAdjacentHTML('afterbegin', '<div class="fp-done">✓ تم تغيير كلمة السر — جاري الدخول...</div>');
+    await finishLogin(fpEmail, data && data.user);
+  } catch (e) {
+    console.error(e);
+    showError('حصل خطأ. يُرجى المحاولة مرة أخرى.');
+    btn.disabled = false; btn.textContent = 'حفظ كلمة السر والدخول';
+  }
 }
 
 function showError(html) {
