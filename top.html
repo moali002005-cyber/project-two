@@ -132,6 +132,7 @@ body{background:var(--cream);color:var(--ink);font-family:var(--font-body);font-
 .vbadge{font-size:10px;font-weight:700;padding:3px 9px;border-radius:100px;white-space:nowrap;}
 .vbadge.verified{background:rgba(226,59,46,0.14);color:var(--accent-ink);}
 .vbadge.promising{background:rgba(232,184,75,0.16);color:#8a6500;}
+.vbadge.featured{background:linear-gradient(135deg,#FBE7A6,#E8B84B);color:#5a4500;box-shadow:0 0 0 1px rgba(194,144,31,0.35);}
 
 .tside{display:flex;flex-direction:column;align-items:center;gap:5px;flex-shrink:0;min-width:62px;}
 .tscore{display:flex;flex-direction:column;align-items:center;line-height:1;}
@@ -240,7 +241,7 @@ body{background:var(--cream);color:var(--ink);font-family:var(--font-body);font-
     <div class="loading"><div class="lpill"><span class="d"></span>جاري بناء القائمة...</div></div>
   </div>
 
-  <p class="note">الترتيب يتحدّث تلقائيًا مع كل صفقة — الأسرع إنجازًا والأكثر إكمالًا يتصدّر.</p>
+  <p class="note">الترتيب يتحدّث تلقائيًا مع كل صفقة — الأسرع إنجازًا والأكثر إكمالًا يتصدّر. والحسابات المميزة تظهر في أعلى القائمة.</p>
 </main>
 
 <script>document.write('<script src="supabase-config.js?v=' + Date.now() + '"><\/script>');</script>
@@ -334,7 +335,7 @@ function trustScore(c){
 }
 
 function badgeHtml(c){
-  return '';
+return (Number(c.featured_rank)>0) ? '<span class="vbadge featured">★ حساب مميز</span>' : '';
 }
 function starsHtml(c){
   const ratings = Number(c.ratings_count)||0;
@@ -375,7 +376,7 @@ async function init(){
 
   try{
     const [dirRes, trustRes, perfRes] = await Promise.all([
-      supabaseClient.from('creator_directory').select('id, name, handle, platform, followers, category, bio, website, avatar_url, country'),
+      supabaseClient.from('creator_directory').select('id, name, handle, platform, followers, category, bio, website, avatar_url, country, featured_rank'),
       supabaseClient.from('creator_trust').select('creator_id, deals_count, ratings_count, avg_rating, avg_content, avg_punctuality, avg_communication, avg_results'),
       supabaseClient.from('simbl_creator_performance').select('creator_id, completed_deals, active_deals, avg_hours, speed_points, achievement')
     ]);
@@ -415,6 +416,7 @@ async function init(){
 
     // الترتيب: الطبقة أولًا، ثم درجة الإنجاز، ثم عدد المكتمل، ثم الأسرع، ثم الجارية، ثم المتابعون
     creators.sort((a,b) =>
+(((Number(a.featured_rank)>0)?Number(a.featured_rank):1e9) - ((Number(b.featured_rank)>0)?Number(b.featured_rank):1e9)) ||
       (b.tier - a.tier) ||
       ((Number(b.achievement)||0) - (Number(a.achievement)||0)) ||
       ((Number(b.completed_deals)||0) - (Number(a.completed_deals)||0)) ||

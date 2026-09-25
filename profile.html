@@ -2543,6 +2543,8 @@ function handleTiktokReturn(){
     if (tk === 'connected') {
       if (currentUser) { currentUser.tiktok_connected = true; saveCurrentUser(currentUser); }
       showToast('تم ربط تيك توك ✓');
+    } else if (tk === 'expired') {
+      showToast('انتهت مهلة الربط — اضغط «ربط تيك توك» مرة ثانية', 'error');
     } else if (tk === 'denied') {
       showToast('أُلغي ربط تيك توك', 'error');
     } else {
@@ -2556,7 +2558,18 @@ async function connectTiktok(){
   // قيد الباقة
   if (typeof simblGate === 'function' && !await simblGate('can_tiktok_connect', 'ربط تيك توك', 'ربط الحساب ليسحب أرقام مشاهدات وتفاعل المنشورات تلقائيًا وتظهر للشركات — متاح مع باقة Pro فأعلى.')) return;
   if (!currentUser || !currentUser.id) { showToast('يلزم تسجيل الدخول أولاً', 'error'); return; }
-  window.location.href = 'https://chpzecgpylxqsutjydkb.supabase.co/functions/v1/tiktok-auth-start?creator=' + encodeURIComponent(currentUser.id);
+  try {
+    const s = await supabaseClient.auth.getSession();
+    const token = s && s.data && s.data.session ? s.data.session.access_token : '';
+    if (!token) { showToast('يلزم تسجيل الدخول أولاً', 'error'); return; }
+    const r = await fetch('https://chpzecgpylxqsutjydkb.supabase.co/functions/v1/tiktok-auth-start', {
+      method: 'POST', headers: { 'Authorization': 'Bearer ' + token, 'Content-Type': 'application/json' }, body: '{}'
+    });
+    const out = await r.json().catch(() => ({}));
+    if (out && out.url) { window.location.href = out.url; return; }
+    const msg = { plan: 'ربط تيك توك متاح مع باقة Pro وPremium', creators_only: 'الربط متاح لحسابات المعلنين فقط', auth: 'انتهت الجلسة — سجّل دخولك من جديد', not_configured: 'ربط تيك توك غير متاح حاليًا' };
+    showToast(msg[out && out.error] || 'تعذّر بدء الربط، حاول مرة ثانية', 'error');
+  } catch (e) { showToast('تعذّر بدء الربط، حاول مرة ثانية', 'error'); }
 }
 
 // ===== بياناتي البنكية: تُحفظ مرة وحدة (عمود محمي + دوال محصورة على صاحبها) =====
