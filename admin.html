@@ -387,6 +387,7 @@ pre.json{background:var(--bg);border:1px solid var(--line);border-radius:9px;pad
     <button class="tab active" data-tab="overview">نظرة عامة</button>
     <button class="tab" data-tab="approvals">طلبات التفعيل<span id="pending-count"></span><span id="tier-req-count"></span></button>
     <button class="tab" data-tab="mawthooq">موثوق<span id="mq-count"></span></button>
+    <a class="tab" href="/b2b.html" style="text-decoration:none;display:inline-block">الدفع الآجل للشركات<span id="b2b-count"></span> ↗</a>
     <button class="tab" data-tab="support">خدمة العملاء<span id="support-count"></span></button>
     <button class="tab" data-tab="overdue">متأخرات الدفع<span id="overdue-count"></span></button>
     <a class="tab" href="/payouts.html" style="text-decoration:none;display:inline-block">صرف المستحقات ↗</a>
@@ -2359,6 +2360,13 @@ async function reviewMawthooq(id, ok, btn){
   } catch (e) { alert('تعذّر الحفظ: '+(e.message||e)); if (btn) btn.disabled = false; }
 }
 $('[data-tab="mawthooq"]').addEventListener('click', loadMawthooq);
+(async function b2bBadge(){
+  try {
+    const { data } = await sb.rpc('b2b_admin_list');
+    const n = (Array.isArray(data)?data:[]).filter(r => ['new','nafith_accepted','overdue','awaiting_nafith'].includes(r.status)).length;
+    const el = document.getElementById('b2b-count'); if (el && n) el.textContent = ' ('+n+')';
+  } catch(e){}
+})();
 $('#mq-filter').addEventListener('change', renderMawthooq);
 $('#mq-search').addEventListener('input', renderMawthooq);
 $('[data-tab="photos"]').addEventListener('click', loadPhotos);
