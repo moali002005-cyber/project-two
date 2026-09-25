@@ -307,8 +307,8 @@ textarea { resize: vertical; min-height: 80px; }
       <div class="gamr-head">
         <span>الإعلانات وفق أنظمة الهيئة العامة لتنظيم الإعلام</span>
       </div>
-      <p class="gamr-body">وفق أنظمة الهيئة العامة لتنظيم الإعلام، لا يمكن للشركات تنفيذ أي إعلان إلا مع مؤثرين لديهم رخصة موثوق سارية. ولضمان الالتزام بالضوابط، فجميع المؤثرين داخل المنصة لديهم رخصة موثوق.</p>
-      <p class="gamr-note">ملاحظة: يمكنك طلب إعلانات من المؤثرين وبدء حملاتك مباشرة دون أي خطوات إضافية، فجميعهم مستوفون لمتطلبات موثوق النظامية.</p>
+      <p class="gamr-body">وفق أنظمة الهيئة العامة لتنظيم الإعلام، لا يمكن للشركات تنفيذ أي إعلان إلا مع مؤثرين لديهم رخصة موثوق سارية. ولضمان الالتزام، ما يقدر أي مؤثر يقدّم على حملة في فلفلونسر قبل ما يسجّل رقم رخصة موثوق والحسابات المشمولة فيها، ويراجعها فريقنا.</p>
+      <p class="gamr-note">ملاحظة: تقدر تطلب إعلاناتك وتبدأ حملتك مباشرة دون أي خطوات إضافية — التحقق من رخص المؤثرين يتم من جهتنا.</p>
     </div>
 
     <div class="role-grid">
@@ -646,7 +646,7 @@ textarea { resize: vertical; min-height: 80px; }
 
       <div class="field">
         <label>كلمة السر</label>
-        <input type="password" name="password" required minlength="6" placeholder="6 أحرف على الأقل" autocomplete="new-password">
+        <input type="password" name="password" required minlength="8" placeholder="8 أحرف على الأقل" autocomplete="new-password">
         <div class="hint">تستخدمها لتسجيل الدخول لاحقاً.</div>
       </div>
 
@@ -735,7 +735,7 @@ textarea { resize: vertical; min-height: 80px; }
 
       <div class="field">
         <label>كلمة السر</label>
-        <input type="password" name="password" required minlength="6" placeholder="6 أحرف على الأقل" autocomplete="new-password">
+        <input type="password" name="password" required minlength="8" placeholder="8 أحرف على الأقل" autocomplete="new-password">
         <div class="hint">تستخدمها لتسجيل الدخول لاحقاً.</div>
       </div>
 
@@ -813,6 +813,11 @@ async function submitForm(event, role) {
   const fd = new FormData(form);
   const email = (fd.get('email') || '').trim().toLowerCase();
   const password = fd.get('password');
+  if (!window.__resumeMode && String(password || '').length < 8) {
+    alert('كلمة السر ضعيفة — يلزم 8 أحرف على الأقل.');
+    submitBtn.disabled = false; submitBtn.textContent = originalText;
+    return;
+  }
   const userData = { role };
 
   if (role === 'creator') {
@@ -984,7 +989,7 @@ async function submitForm(event, role) {
     } else if (msg.includes('duplicate') && msg.includes('email')) {
       alert('هذا البريد الإلكتروني مسجل مسبقاً. يُرجى تسجيل الدخول أو استخدام بريد آخر.');
     } else if (msg.includes('password')) {
-      alert('كلمة السر ضعيفة — يلزم 6 أحرف على الأقل.');
+      alert('كلمة السر ضعيفة — يلزم 8 أحرف على الأقل.');
     } else if (msg.includes('rate limit') || msg.includes('too many')) {
       alert('تم تجاوز عدد المحاولات. يُرجى الانتظار دقيقة ثم المحاولة مرة أخرى.');
     } else if (msg.includes('network') || msg.includes('failed to fetch')) {

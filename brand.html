@@ -1605,7 +1605,7 @@ async function simblExitImpersonation(){
   <section class="hero">
     <div class="hero-pill"><span class="hero-dot"></span><span id="hero-status">منصتك جاهزة</span></div>
     <h1 class="hero-title">أهلًا <span class="nm" id="welcome-name">بكم</span></h1>
-    <p class="hero-sub">أطلق حملتك، والوكيل يفاوض ويقفل لك.</p>
+    <p class="hero-sub">أطلق حملتك، والوكيل يفاوض ويرفع لك الاتفاقات لاعتمادها.</p>
     <div style="display: flex; gap: 12px; flex-wrap: wrap; justify-content: center;">
       <button class="hero-cta primary" onclick="goToCampaigns()">📣 متابعة الحملات<span id="hero-camp-count" style="display:none;background:rgba(255,255,255,.28);border-radius:100px;padding:1px 8px;margin-inline-start:7px;font-size:12px"></span></button>
       <button class="hero-cta" onclick="openCampaignModal()">+ حملة جديدة</button>
@@ -1636,7 +1636,7 @@ async function simblExitImpersonation(){
     <div class="hero-features">
       <span class="hero-feat"><span class="hero-feat-ic">✓</span>تُطلق الحملة</span>
       <span class="hero-feat"><span class="hero-feat-ic">✓</span>يتفاوض الوكيل</span>
-      <span class="hero-feat"><span class="hero-feat-ic">✓</span>يقفل الصفقة</span>
+      <span class="hero-feat"><span class="hero-feat-ic">✓</span>الاعتماد النهائي لك</span>
     </div>
   </section>
 
@@ -1868,7 +1868,7 @@ PROMO-02" style="width:100%;box-sizing:border-box;font-family:inherit;"></textar
       <div class="field" id="budget-field">
         <label>سعر المعلن الواحد</label>
         <input type="text" name="budget" required placeholder="مثال: 1000" inputmode="numeric">
-        <div class="hint" id="budget-hint">يعرض الوكيل هذا المبلغ على كل معلن ويقفل الاتفاق عليه.</div>
+        <div class="hint" id="budget-hint">يعرض الوكيل هذا المبلغ على كل معلن، وكل اتفاق يوصلك لاعتماده.</div>
       </div>
 
       <div class="field">
@@ -2378,7 +2378,7 @@ function updateBudgetBounds() {
   const inp = document.querySelector('[name="budget"]');
   const _sel = document.querySelector('[name="campaign_type"]:checked');
   if (_sel && _sel.value === 'video') {
-    if (hint) hint.textContent = 'السعر حرّ لحملات الفيديو الجاهز — بدون حد أدنى. ' + 'يعرض الوكيل هذا المبلغ على كل معلن ويقفل الاتفاق عليه.';
+    if (hint) hint.textContent = 'السعر حرّ لحملات الفيديو الجاهز — بدون حد أدنى. ' + 'يعرض الوكيل هذا المبلغ على كل معلن، وكل اتفاق يوصلك لاعتماده.';
     if (inp) inp.placeholder = 'مثل: 200';
     return;
   }
@@ -2387,10 +2387,10 @@ function updateBudgetBounds() {
   if (b) {
     const names = tiers.map(t => TIER_LABEL[t] || t).join('، ');
     // سعر واحد لا نطاق — الحدّان هنا مجال مسموح، مو دعوة لكتابة نطاق
-    if (hint) hint.textContent = 'السعر المقترح لتصنيف ' + names + ': من ' + b[0].toLocaleString('en-US') + ' إلى ' + b[1].toLocaleString('en-US') + ' ر.س — وبالإمكان إدخال أي مبلغ أقل. ' + 'يعرض الوكيل هذا المبلغ على كل معلن ويقفل الاتفاق عليه.';
+    if (hint) hint.textContent = 'السعر المقترح لتصنيف ' + names + ': من ' + b[0].toLocaleString('en-US') + ' إلى ' + b[1].toLocaleString('en-US') + ' ر.س — وبالإمكان إدخال أي مبلغ أقل. ' + 'يعرض الوكيل هذا المبلغ على كل معلن، وكل اتفاق يوصلك لاعتماده.';
     if (inp) inp.placeholder = 'مثل: ' + b[0];
   } else {
-    if (hint) hint.textContent = 'يعرض الوكيل هذا المبلغ على كل معلن ويقفل الاتفاق عليه.';
+    if (hint) hint.textContent = 'يعرض الوكيل هذا المبلغ على كل معلن، وكل اتفاق يوصلك لاعتماده.';
     if (inp) inp.placeholder = 'مثال: 1000';
   }
 }
@@ -3131,7 +3131,7 @@ function appCard(a) {
                       <div class="nego-ring"></div>
                       <div>
                         <div class="nego-title">الوكيل يقوم بالمفاوضة الآن</div>
-                        <div class="nego-desc">يعرض الوكيل سعرك المعتمد على المعلن ويقفل الاتفاق عليه، وعند الاتفاق يطلب تعميدك قبل إقفال الصفقة.</div>
+                        <div class="nego-desc">يعرض الوكيل سعرك المعتمد على المعلن، وعند الاتفاق يرفعه لك — ولا تُقفل الصفقة إلا بتعميدك.</div>
                       </div>
                     </div>
                     <button class="btn-negotiation" onclick="event.stopPropagation(); startNegotiation('${a.id}')">💬 عرض المفاوضة</button>` : '')}</div>` : ''}
