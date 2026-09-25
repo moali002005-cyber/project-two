@@ -20,6 +20,9 @@
     + 'background:#16110F;color:#fff;border:0;border-radius:100px;padding:12px 18px;font-family:inherit;font-size:13.5px;'
     + 'font-weight:600;cursor:pointer;box-shadow:0 10px 28px -12px rgba(0,0,0,.55);transition:transform .15s}'
     + '.flfs-btn:hover{transform:translateY(-2px)}'
+    // ما يغطي زر الإرسال: يختفي وقت الكتابة، وعلى الجوال يصير دائرة صغيرة
+    + '.flfs-btn.flfs-hide{display:none!important}'
+    + '@media (max-width:640px){.flfs-btn{width:46px;height:46px;padding:0;justify-content:center;font-size:0;bottom:84px}.flfs-btn::after{content:"💬";font-size:20px}.flfs-btn .flfs-dot{position:absolute;top:6px;inset-inline-start:6px}}'
     + '.flfs-st{border-radius:10px;padding:10px 12px;font-size:12.5px;line-height:1.7;margin-bottom:14px}'
     + '.flfs-st.ok{background:#E8F7EE;color:#1B6B3A}'
     + '.flfs-st.wait{background:#FDF4E3;color:#8A5A12}'
@@ -102,6 +105,16 @@
     btn.setAttribute('aria-label', 'التواصل مع فلفلونسر');
     btn.onclick = open;
     document.body.appendChild(btn);
+    // صفحة التفاوض فيها خانة كتابة وزر إرسال أسفل الشاشة — الزر العائم كان يغطيه، فنخفيه هناك
+    if (/\/campaign(\.html)?$/.test(location.pathname)) btn.classList.add('flfs-hide');
+    var isField = function (t) { return t && t.matches && t.matches('input:not([type=checkbox]):not([type=radio]):not([type=file]),textarea,[contenteditable="true"]'); };
+    document.addEventListener('focusin', function (e) { if (isField(e.target) && !(ov && ov.contains(e.target))) btn.classList.add('flfs-hide'); });
+    document.addEventListener('focusout', function () {
+      setTimeout(function () {
+        if (/\/campaign(\.html)?$/.test(location.pathname)) return;
+        if (!isField(document.activeElement)) btn.classList.remove('flfs-hide');
+      }, 250);
+    });
 
     ov = el('div', 'flfs-ov');
     ov.addEventListener('click', function (e) { if (e.target === ov) close(); });
