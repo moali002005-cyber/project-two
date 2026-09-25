@@ -112,7 +112,7 @@ const ST = [
   ['awaiting_nafith','بانتظار سند نافذ','s-wait'],
   ['nafith_accepted','تم قبول السند ✅','s-good'],
   ['invoiced','تم إصدار الفاتورة','s-info'],
-  ['active','الاشتراك فعّال','s-good'],
+  ['active','الحملة فعّالة','s-good'],
   ['due_soon','مستحق قريبًا','s-wait'],
   ['overdue','متأخر عن السداد ⚠️','s-bad'],
   ['paid','مدفوع ✅','s-good'],
@@ -129,10 +129,11 @@ function toast(m){ const t=$('#toast'); t.textContent=m; t.style.display='block'
 function sar(v){ return v == null || v === '' ? '' : Number(v).toLocaleString('en-US', {maximumFractionDigits:2}); }
 function fmtD(s){ if(!s) return ''; const d=new Date(s); return isNaN(d)?String(s):d.toLocaleDateString('en-GB',{timeZone:'Asia/Riyadh'}); }
 function periodAr(p){ return p==='yearly' ? 'سنوي' : 'شهري'; }
+function whatFor(r){ return r.campaign_id ? esc(r.campaign_title||'حملة')+'<span class="meth">'+(r.deals||0)+' صفقة</span>' : esc(r.plan_name||r.plan_code||'—')+'<span class="meth">باقة · '+periodAr(r.period)+'</span>'; }
 function stChip(s){ return '<span class="st '+(STC[s]||'s-off')+'">'+esc(STL[s]||s)+'</span>'; }
 function match(r, q){
   if (!q) return true;
-  return [r.ref, r.company_name, r.cr_number, r.finance_name, r.finance_email, r.po_number, r.nafith_number, r.invoice_number, r.brand_email]
+  return [r.ref, r.campaign_title, r.company_name, r.cr_number, r.finance_name, r.finance_email, r.po_number, r.nafith_number, r.invoice_number, r.brand_email]
     .some(v => String(v||'').toLowerCase().includes(q));
 }
 
@@ -146,7 +147,7 @@ function render(){
   const needAct = live.filter(r => HOT.includes(r.status)).length;
   const pill = (k,l) => '<button class="'+(FILTER===k?'on ':'')+(HOT.includes(k)&&cnt[k]?'hot':'')+'" onclick="setF(\''+k+'\')">'+esc(l)+' <b>'+(k?(cnt[k]||0):ROWS.length)+'</b></button>';
   $('#app').innerHTML =
-    '<div class="mast"><div><h1>الدفع الآجل والتحويل البنكي</h1><p class="sub">طلبات الشركات: عرض سعر ← PO عند الحاجة ← اتفاقية الخدمة ← سند نافذ ← الفاتورة ← التفعيل ← السداد. اضغط أي طلب لفتحه وتحريكه للخطوة التالية — الشركة يوصلها إشعار مع كل تغيير.</p></div>'
+    '<div class="mast"><div><h1>الدفع الآجل والتحويل البنكي</h1><p class="sub">طلبات الشركات عند دفع الحملة (بعد اعتماد أسماء المعلنين): عرض سعر ← PO عند الحاجة ← اتفاقية الخدمة ← سند نافذ ← الفاتورة ← انطلاق الحملة ← السداد. اضغط أي طلب لفتحه وتحريكه للخطوة التالية — الشركة يوصلها إشعار مع كل تغيير.</p></div>'
     + '<div style="display:flex;gap:8px;flex-wrap:wrap"><a class="btn2" href="https://nafith.sa" target="_blank" rel="noopener">منصة نافذ ↗</a><button class="btn2" onclick="load()">↻ تحديث</button><a class="btn2" href="/admin.html">لوحة الإدارة</a></div></div>'
     + '<div class="sum">'
     + '<div><div class="v num" style="color:var(--accent)">'+needAct+'</div><div class="l">تنتظر إجراء منك</div></div>'
@@ -163,16 +164,16 @@ function renderTable(){
   const q = Q.trim().toLowerCase();
   const rows = ROWS.filter(r => (!FILTER || r.status===FILTER) && match(r, q));
   const box = $('#tbl'); if (!box) return;
-  if (!rows.length) { box.innerHTML = '<div class="empty">'+(ROWS.length?'لا توجد طلبات بهذي الحالة.':'ما وصل أي طلب دفع آجل أو تحويل بنكي للحين. أول ما تطلب شركة من صفحة الباقات يظهر هنا ويوصلك إشعار.')+'</div>'; return; }
+  if (!rows.length) { box.innerHTML = '<div class="empty">'+(ROWS.length?'لا توجد طلبات بهذي الحالة.':'ما وصل أي طلب دفع آجل أو تحويل بنكي للحين. أول ما تختاره شركة عند دفع حملتها يظهر هنا ويوصلك إشعار.')+'</div>'; return; }
   box.innerHTML = '<div class="sheet-wrap"><table><thead><tr>'
-    + '<th>الطلب</th><th>الشركة</th><th>السجل التجاري</th><th>مسؤول المالية</th><th>الباقة</th><th>قيمة العقد</th><th>الشروط</th><th>رقم PO</th><th>سند نافذ</th><th>الفاتورة</th><th>الاستحقاق</th><th>السداد</th><th>الحالة</th>'
+    + '<th>الطلب</th><th>الشركة</th><th>السجل التجاري</th><th>مسؤول المالية</th><th>الحملة</th><th>قيمة العقد</th><th>الشروط</th><th>رقم PO</th><th>سند نافذ</th><th>الفاتورة</th><th>الاستحقاق</th><th>السداد</th><th>الحالة</th>'
     + '</tr></thead><tbody>'
     + rows.map(r => '<tr onclick="openEd(\''+r.id+'\')">'
       + '<td><span class="mono">'+esc(r.ref)+'</span><span class="meth">'+(r.method==='bank_transfer'?'🏦 تحويل بنكي':'💼 دفع آجل')+' · '+fmtD(r.created_at)+'</span></td>'
       + '<td class="co"><b>'+esc(r.company_name)+'</b><small>'+esc(r.brand_email||'')+'</small></td>'
       + '<td>'+(r.cr_number?'<span class="mono">'+esc(r.cr_number)+'</span>':'<span class="dash">—</span>')+'</td>'
       + '<td class="co"><b style="font-weight:600">'+esc(r.finance_name||'—')+'</b><small class="mono">'+esc(r.finance_email||'')+'</small></td>'
-      + '<td>'+esc(r.plan_name||r.plan_code)+'<span class="meth">'+periodAr(r.period)+'</span></td>'
+      + '<td>'+whatFor(r)+'</td>'
       + '<td>'+(r.contract_value!=null?'<span class="num">'+sar(r.contract_value)+'</span> ر.س':'<span class="dash">—</span>')+'</td>'
       + '<td>'+(r.method==='bank_transfer'?'<span class="dash">—</span>':'<span class="num">'+esc(TERMS[r.payment_terms]||r.payment_terms||'')+'</span>')+'</td>'
       + '<td>'+(r.po_number?'<span class="mono">'+esc(r.po_number)+'</span>':(r.po_required?'<span class="pay unpaid">مطلوب</span>':'<span class="dash">—</span>'))+'</td>'
@@ -191,6 +192,7 @@ function nextStep(r){
   if (r.status === 'cancelled' || r.status === 'paid' || (bank && r.status==='active' && r.payment_status==='paid')) return null;
   if (bank) {
     if (r.status === 'new') return { t:'أرسل الفاتورة وبيانات الحساب البنكي على إيميل المالية، ثم اكتب رقم الفاتورة هنا.', f:['invoice_number','due_date'], req:['invoice_number'], to:'invoiced', btn:'تم إصدار الفاتورة' };
+    if (r.campaign_id) return { t:'أول ما يوصل التحويل على الحساب: علّمه مدفوع — تتثبّت صفقات المعلنين كمدفوعة وتنطلق الحملة مباشرة.', to:'paid', btn:'✅ استلمنا التحويل — أطلق الحملة', green:true };
     return { t:'أول ما يوصل التحويل على الحساب: علّمه مدفوع ويتفعّل اشتراك الشركة مباشرة.', to:['paid','active'], btn:'✅ استلمنا التحويل — فعّل الاشتراك', green:true };
   }
   switch (r.status) {
@@ -202,7 +204,9 @@ function nextStep(r){
     case 'awaiting_agreement': return { t:'بانتظار الشركة توافق على الاتفاقية من صفحتها (تنتقل تلقائيًا لـ«بانتظار سند نافذ»).', to:'awaiting_nafith', btn:'وافقوا خارج المنصة ← انتقل لسند نافذ', confirm:'متأكد إن الشركة وافقت على الاتفاقية خارج المنصة؟' };
     case 'awaiting_nafith': return { t:'أصدر سند لأمر إلكتروني عبر منصة نافذ بقيمة العقد باسم المفوّض، اكتب رقم السند، وبعد ما تقبله الشركة اضغط الزر.', f:['nafith_number'], req:['nafith_number'], to:'nafith_accepted', btn:'تم قبول السند ✅', green:true };
     case 'nafith_accepted': return { t:'أصدر الفاتورة (ضريبية) واكتب رقمها. تاريخ الاستحقاق يتحسب تلقائيًا من شروط الدفع لو تركته فاضي.', f:['invoice_number','due_date'], req:['invoice_number'], to:'invoiced', btn:'تم إصدار الفاتورة' };
-    case 'invoiced': return { t:'الفاتورة صادرة. فعّل الاشتراك حسب شروط الاتفاق.', to:'active', btn:'تفعيل الاشتراك', green:true, alt:{to:'paid', btn:'سدّدوا مباشرة ← مدفوع'} };
+    case 'invoiced': return r.campaign_id
+      ? { t:'الفاتورة صادرة. أطلق الحملة حسب شروط الاتفاق — يوصل المعلنين إشعار إنهم يبدؤون، والسداد في تاريخ الاستحقاق.', to:'active', btn:'🚀 إطلاق الحملة', green:true, alt:{to:'paid', btn:'سدّدوا مباشرة ← مدفوع'} }
+      : { t:'الفاتورة صادرة. فعّل الاشتراك حسب شروط الاتفاق.', to:'active', btn:'تفعيل الاشتراك', green:true, alt:{to:'paid', btn:'سدّدوا مباشرة ← مدفوع'} };
     case 'active': case 'due_soon': case 'overdue':
       return { t: r.status==='overdue' ? 'الفاتورة متأخرة. تواصل مع مسؤول المالية، ولما يوصل السداد علّمه مدفوع.' : 'بانتظار السداد في تاريخ الاستحقاق '+(r.due_date||'')+'. لما يوصل علّمه مدفوع.', to:'paid', btn:'مدفوع ✅', green:true };
   }
@@ -240,7 +244,10 @@ function openEd(id){
     + '<label>حساب الشركة على المنصة<div class="ro mono">'+esc(r.brand_email||'—')+'</div></label>'
     + '</div>'
     + '<div class="sec">العقد والسداد</div><div class="grid">'
-    + '<label>الباقة<div class="ro">'+esc(r.plan_name||r.plan_code)+' · '+periodAr(r.period)+'</div></label>'
+    + (r.campaign_id
+        ? '<label>الحملة<div class="ro">'+esc(r.campaign_title||'')+' · '+(r.deals||0)+' صفقة</div></label>'
+          + '<label>التفصيل<div class="ro">مستحقات المعلنين '+sar(r.net_sar)+' + عمولة '+sar(r.commission_pct)+'٪ = '+sar(r.commission_sar)+' ر.س</div></label>'
+        : '<label>الباقة<div class="ro">'+esc(r.plan_name||r.plan_code)+' · '+periodAr(r.period)+'</div></label>')
     + '<label>'+FL.contract_value+inputFor('contract_value', r)+'</label>'
     + (bank ? '' : '<label>'+FL.payment_terms+inputFor('payment_terms', r)+'</label>')
     + (bank ? '' : '<label>PO مطلوب؟<select id="f_po_required"><option value="false"'+(!r.po_required?' selected':'')+'>لا</option><option value="true"'+(r.po_required?' selected':'')+'>نعم</option></select></label>')
@@ -310,7 +317,7 @@ async function saveAll(){
   const st = val('f_status');
   if (st && st !== r.status) {
     if (st === 'active' && r.contract_value == null && !p.contract_value) { toast('حدّد قيمة العقد قبل التفعيل.'); return; }
-    if (!confirm('تغيير الحالة إلى «'+STL[st]+'»؟ يوصل الشركة إشعار'+(st==='active'?' ويتفعّل اشتراكها':'')+'.')) return;
+    if (!confirm('تغيير الحالة إلى «'+STL[st]+'»؟ يوصل الشركة إشعار'+(st==='active'?(r.campaign_id?' وتنطلق الحملة':' ويتفعّل اشتراكها'):'')+(st==='paid'&&r.campaign_id?' وتتثبّت صفقات المعلنين كمدفوعة':'')+'.')) return;
     p.status = st;
   }
   if (!Object.keys(p).length) { toast('ما فيه تعديلات.'); return; }

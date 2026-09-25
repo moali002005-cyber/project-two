@@ -2186,6 +2186,7 @@ PROMO-02" style="width:100%;box-sizing:border-box;font-family:inherit;"></textar
 
 <script>document.write('<script src="supabase-config.js?v=' + Date.now() + '"><\/script>');</script>
 <script>document.write('<script src="notifications.js?v=' + Date.now() + '"><\/script>');</script>
+<script>document.write('<script src="b2b-pay.js?v=' + Date.now() + '"><\/script>');</script>
 <script>
 let currentUser = null;
 let WORKSPACE_ID = null; // مساحة العمل الفعّالة (المالك لو كان عضو فريق)
@@ -2923,6 +2924,9 @@ function dealValueText(a) {
 
 function payButtonHtml(campaignId, apps) {
   if (isFreeBarterCampaign(campaignId)) return '';
+  // طلب دفع آجل / تحويل بنكي قائم لهالحملة: نعرض حالته بدل زر الدفع
+  const _b2b = (typeof b2bReqFor === 'function') ? b2bReqFor(campaignId) : null;
+  if (_b2b) return b2bInlineHtml(_b2b);
   const unpaid = payUnpaidApps(apps);
   if (!unpaid.length) return '';
   // التفاصيل تظهر في الفاتورة عند الدفع — هنا زر واحد فقط
@@ -2931,7 +2935,7 @@ function payButtonHtml(campaignId, apps) {
       + `<button class="pay-now-btn soft" id="pay-btn-${campaignId}" onclick="event.stopPropagation(); startCampaignPayment('${campaignId}')">سدّد الآن مبكرًا</button>`;
   }
   const waitLine = `<div class="pay-wait">⏸️ الحملة ما انطلقت بعد — بانتظار سداد مستحقاتها.</div>`;
-  return `${waitLine}<button class="pay-now-btn" id="pay-btn-${campaignId}" onclick="event.stopPropagation(); startCampaignPayment('${campaignId}')">💳 الدفع الآن</button>`;
+  return `${waitLine}<button class="pay-now-btn" id="pay-btn-${campaignId}" onclick="event.stopPropagation(); (typeof openPayOptions === 'function' ? openPayOptions : startCampaignPayment)('${campaignId}')">💳 الدفع الآن</button>`;
 }
 // فاتورة الحملة: نافذة مرتّبة داخل الصفحة بدل نافذة المتصفح الافتراضية
 function invoiceConfirm(o) {
@@ -3024,6 +3028,7 @@ async function loadData() {
       if (_pr && _pr.data && !_pr.data.error) window.__PLAN = _pr.data;
     } catch (_e) { /* يعرض الصافي فقط لو تعذّر جلب الباقة */ }
     myCampaigns = await dbGetMyCampaigns(WORKSPACE_ID || currentUser.id);
+    if (typeof b2bLoad === 'function') await b2bLoad(); // طلبات الدفع الآجل / التحويل البنكي لكل حملة
 
     // جلب عروض كل الحملات بطلب واحد بدل طلب لكل حملة (إصلاح N+1)
     const campIds = myCampaigns.map(c => c.id);
