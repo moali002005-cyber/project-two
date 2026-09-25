@@ -45,6 +45,12 @@
     + '.b2b-act .agr{background:#fff;border:1px solid rgba(15,20,32,.1);border-radius:12px;padding:12px 14px;font-size:13px;line-height:1.95;max-height:240px;overflow:auto;margin-bottom:10px}'
     + '.b2b-act .agr ol{padding-inline-start:18px;margin:6px 0 0}'
     + '.b2b-info{font-size:13.5px;color:#2C3548;line-height:1.8}'
+    + '.b2b-bank{background:#fff;border:1.5px dashed #1D8F6B;border-radius:14px;padding:12px 14px;margin:12px 0;font-size:13.5px}'
+    + '.b2b-bank .h{font-weight:700;color:#1D8F6B;margin-bottom:6px}'
+    + '.b2b-bank .r{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:5px 0;border-bottom:1px solid #F0F1F4;flex-wrap:wrap}'
+    + '.b2b-bank .r span{color:#8A93A6;font-size:12px}.b2b-bank .r b{font-weight:700}.b2b-bank .mono{font-family:ui-monospace,Menlo,monospace;direction:ltr;unicode-bidi:isolate;letter-spacing:.3px}'
+    + '.b2b-bank .cp{font-family:inherit;font-size:11.5px;font-weight:700;border:1px solid #E1E4EA;background:#fff;border-radius:8px;padding:3px 9px;cursor:pointer;margin-inline-start:6px}'
+    + '.b2b-bank .note{font-size:12px;color:#2C3548;margin-top:6px}'
     + '@media (max-width:480px){.pm-f .row2{grid-template-columns:1fr}}';
   var st = document.createElement('style'); st.textContent = css; document.head.appendChild(st);
 })();
@@ -54,6 +60,22 @@ var B2B_ST = { new:'طلب دفع آجل جديد', quote_sent:'تم إرسال 
   due_soon:'مستحق قريبًا', overdue:'متأخر عن السداد ⚠️', paid:'مدفوع ✅', cancelled:'ملغى' };
 var B2B_TERMS = { net15:'Net 15', net30:'Net 30', net60:'Net 60' };
 window.B2B_REQS = [];
+// حساب فلفلونسر للتحويل البنكي (من شهادة الآيبان — مصرف الراجحي)
+var FLF_BANK = { name: 'مؤسسة فلفلونسر آي', bank: 'مصرف الراجحي', iban: 'SA9480000609608016200938', account: '609000010006086200938' };
+function b2bIbanPretty(i){ return String(i).replace(/(.{4})/g, '$1 ').trim(); }
+function b2bCopy(t, btn){
+  var done = function(){ if (btn) { var o = btn.textContent; btn.textContent = 'تم النسخ ✓'; setTimeout(function(){ btn.textContent = o; }, 1500); } };
+  try { navigator.clipboard.writeText(t).then(done, done); } catch (e) { done(); }
+}
+function b2bBankHtml(ref, amount){
+  return '<div class="b2b-bank"><div class="h">🏦 بيانات التحويل</div>'
+    + '<div class="r"><span>اسم المستفيد</span><b>' + FLF_BANK.name + '</b></div>'
+    + '<div class="r"><span>البنك</span><b>' + FLF_BANK.bank + '</b></div>'
+    + '<div class="r"><span>رقم الآيبان</span><b><span class="mono">' + b2bIbanPretty(FLF_BANK.iban) + '</span><button type="button" class="cp" onclick="b2bCopy(\'' + FLF_BANK.iban + '\', this)">نسخ</button></b></div>'
+    + '<div class="r"><span>رقم الحساب</span><b><span class="mono">' + FLF_BANK.account + '</span><button type="button" class="cp" onclick="b2bCopy(\'' + FLF_BANK.account + '\', this)">نسخ</button></b></div>'
+    + (amount != null ? '<div class="r"><span>المبلغ</span><b>' + b2bMoney(amount) + ' ر.س</b></div>' : '')
+    + '<div class="note">' + (ref ? 'اكتب رقم الطلب <b class="mono">' + b2bEsc(ref) + '</b> في وصف التحويل عشان نطابقه بسرعة.' : 'بعد ما ترسل الطلب يطلع لك رقمه — اكتبه في وصف التحويل.') + '</div></div>';
+}
 var B2B_CTX = { campaignId: null, method: 'deferred', quote: null, me: null };
 
 function b2bEsc(s){ return String(s == null ? '' : s).replace(/[&<>"']/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]; }); }
@@ -102,7 +124,7 @@ function b2bEnsureDom(){
     + '</div></div>'
     + '<div class="pm-ov" id="b2b-form-modal" role="dialog" aria-modal="true" aria-labelledby="bf-title"><div class="pm-box">'
     +   '<button class="pm-x" onclick="b2bClose(\'b2b-form-modal\')" aria-label="إغلاق">×</button>'
-    +   '<h2 id="bf-title">الدفع الآجل للشركات</h2><div class="pm-sub" id="bf-sub"></div><div class="pm-sum" id="bf-sum"></div>'
+    +   '<h2 id="bf-title">الدفع الآجل للشركات</h2><div class="pm-sub" id="bf-sub"></div><div class="pm-sum" id="bf-sum"></div><div id="bf-bank"></div>'
     +   '<div class="pm-f">'
     +     '<label for="bf-company">اسم الشركة (كما في السجل التجاري)</label><input id="bf-company" autocomplete="organization">'
     +     '<label for="bf-cr">رقم السجل التجاري</label><input id="bf-cr" inputmode="numeric">'
@@ -170,9 +192,10 @@ async function b2bOpenForm(method){
   var bank = method === 'bank_transfer';
   document.getElementById('bf-title').textContent = bank ? 'الدفع بتحويل بنكي' : 'الدفع الآجل للشركات';
   document.getElementById('bf-sub').textContent = bank
-    ? 'عبّئ بيانات الفاتورة، ونرسل الفاتورة وبيانات الحساب البنكي على إيميل المالية. تنطلق الحملة أول ما يوصلنا التحويل.'
+    ? 'حوّل المبلغ على حساب فلفلونسر أدناه، وعبّئ بيانات الفاتورة. تنطلق الحملة أول ما نتأكد من وصول التحويل.'
     : 'عبّئ بيانات شركتك، ونرسل لك عرض السعر خلال يوم عمل. بعدها: PO إذا تحتاجونه ← اتفاقية الخدمة ← سند نافذ ← الفاتورة ← انطلاق الحملة ← السداد في تاريخ الاستحقاق.';
   document.getElementById('bf-deferred-only').style.display = bank ? 'none' : '';
+  document.getElementById('bf-bank').innerHTML = bank ? b2bBankHtml(null, B2B_CTX.quote ? B2B_CTX.quote.total : null) : '';
   document.getElementById('bf-sum').innerHTML = b2bSumHtml(B2B_CTX.quote);
   document.getElementById('bf-sum').style.display = B2B_CTX.quote ? '' : 'none';
   var set = function(id, v){ var el = document.getElementById(id); if (el && !el.value) el.value = v || ''; };
@@ -203,7 +226,7 @@ async function b2bSubmit(){
       return fail(m[r.data.error] || 'تعذّر إرسال الطلب، حاول مرة ثانية.');
     }
     b2bClose('b2b-form-modal');
-    if (typeof showToast === 'function') showToast(B2B_CTX.method === 'bank_transfer' ? 'وصلنا طلبك ✓ — بنرسل الفاتورة وبيانات الحساب على إيميل المالية' : 'وصلنا طلب الدفع الآجل ✓ — نرسل لك عرض السعر خلال يوم عمل');
+    if (typeof showToast === 'function') showToast(B2B_CTX.method === 'bank_transfer' ? 'وصلنا طلبك ✓ — حوّل المبلغ واكتب رقم الطلب في وصف التحويل' : 'وصلنا طلب الدفع الآجل ✓ — نرسل لك عرض السعر خلال يوم عمل');
     if (typeof loadData === 'function') await loadData();
   } catch (e) { b.disabled = false; b.textContent = 'إرسال الطلب'; fail('تعذّر إرسال الطلب، حاول مرة ثانية.'); }
 }
@@ -261,11 +284,13 @@ function b2bOpenDetails(id){
       act = '<div class="b2b-act b2b-info">🚀 الحملة منطلقة. السداد في تاريخ الاستحقاق <b>' + b2bEsc(r.due_date || '') + '</b>.</div>';
     }
   } else if (r.status === 'new') {
-    act = '<div class="b2b-act b2b-info">⏳ بنرسل الفاتورة وبيانات الحساب البنكي على إيميل المالية. تنطلق الحملة أول ما يوصلنا التحويل.</div>';
+    act = '<div class="b2b-act b2b-info">⏳ حوّل المبلغ على الحساب أدناه — تنطلق الحملة أول ما نتأكد من وصول التحويل، ونرسل الفاتورة على إيميل المالية.</div>';
   } else if (r.status === 'invoiced' || r.status === 'due_soon') {
-    act = '<div class="b2b-act b2b-info">🧾 الفاتورة وبيانات الحساب وصلت على إيميل المالية. تنطلق الحملة أول ما يوصلنا التحويل.</div>';
+    act = '<div class="b2b-act b2b-info">🧾 صدرت الفاتورة على إيميل المالية. تنطلق الحملة أول ما نتأكد من وصول التحويل.</div>';
   }
   if (r.status === 'overdue') act = '<div class="b2b-act b2b-info" style="color:#C0392B;font-weight:600">⚠️ الفاتورة تجاوزت تاريخ الاستحقاق. يُرجى السداد لتجنّب إيقاف الحملة.</div>';
+  // بيانات الحساب: للتحويل البنكي دائمًا، وللدفع الآجل من بعد الفاتورة (للسداد في تاريخ الاستحقاق)
+  if (bank || ['invoiced','active','due_soon','overdue'].indexOf(r.status) >= 0) act += b2bBankHtml(r.ref, r.contract_value);
   document.getElementById('b2b-det').innerHTML =
     '<button class="pm-x" onclick="b2bClose(\'b2b-det-modal\')" aria-label="إغلاق">×</button>'
     + '<h2>' + (bank ? '🏦 الدفع بتحويل بنكي' : '💼 الدفع الآجل للشركات') + '</h2>'

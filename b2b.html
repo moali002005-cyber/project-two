@@ -191,7 +191,7 @@ function nextStep(r){
   const bank = r.method === 'bank_transfer';
   if (r.status === 'cancelled' || r.status === 'paid' || (bank && r.status==='active' && r.payment_status==='paid')) return null;
   if (bank) {
-    if (r.status === 'new') return { t:'أرسل الفاتورة وبيانات الحساب البنكي على إيميل المالية، ثم اكتب رقم الفاتورة هنا.', f:['invoice_number','due_date'], req:['invoice_number'], to:'invoiced', btn:'تم إصدار الفاتورة' };
+    if (r.status === 'new') return { t:'الشركة تشوف الآيبان (الراجحي SA94 8000 0609 6080 1620 0938) في صفحتها مع رقم الطلب. أرسل الفاتورة على إيميل المالية واكتب رقمها هنا — ولو وصل التحويل قبلها أطلق الحملة مباشرة.', f:['invoice_number','due_date'], req:['invoice_number'], to:'invoiced', btn:'تم إصدار الفاتورة', alt: r.campaign_id ? {to:'paid', btn:'✅ وصل التحويل — أطلق الحملة'} : null };
     if (r.campaign_id) return { t:'أول ما يوصل التحويل على الحساب: علّمه مدفوع — تتثبّت صفقات المعلنين كمدفوعة وتنطلق الحملة مباشرة.', to:'paid', btn:'✅ استلمنا التحويل — أطلق الحملة', green:true };
     return { t:'أول ما يوصل التحويل على الحساب: علّمه مدفوع ويتفعّل اشتراك الشركة مباشرة.', to:['paid','active'], btn:'✅ استلمنا التحويل — فعّل الاشتراك', green:true };
   }
