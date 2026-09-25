@@ -359,16 +359,52 @@ function simblTierMismatchSrv(creatorTier, campaign) {
   return !tiers.includes(ct);
 }
 
+// رفض صريح من المعلن — يمنع أي إقفال (حتى لو الوكيل كتب [DEAL_CLOSED] بالغلط).
+// أمثلة وقعت فعلًا: «ماقبل منتجات» · «تمام ماتناسبني» · «اعتذر مااقبل اعلن بـ 100» · «لا ماراح اوافق».
+function creatorRefused(text) {
+  if (!text) return false;
+  const s = toAsciiDigits(String(text)).replace(/[ً-ْـ]/g, '').trim();
+  // «لا بأس / لا مانع / ما عندي مانع» = موافقة، مو رفض
+  if (/(لا\s*(بأس|باس|مانع)|ما\s*عندي\s*مانع|ما\s*فيه?\s*مانع|مافيه?\s*مانع)/.test(s)) return false;
+  const bareNo = /(^|[\s،.,!؛])(لا|لأ|لاء|no|nope)([\s،.,!؛]|$)/i.test(s);
+  const strongYes = /(موافق|أوافق|اوافق|قبلت|نعم|ايوه|أيوه)/.test(s) && !/ما\s*[أاإ]?(وافق|قبل)|مو\s*موافق/.test(s);
+  if (bareNo && !strongYes) return true;
+  return /(ما\s*[أاإ]?(قبل|وافق|ناسب|يناسب|تناسب|ابي|أبي|بي|ابغى|أبغى|بغى|ابغا|اقدر|أقدر|قدر|رح|راح|يمدي|اتعامل|تعامل|حب)|ماني\s|مو\s*(مناسب|موافق|موافقة|حاب|حابة|عاجب)|مب\s*(مناسب|موافق)|مهوب\s*مناسب|غير\s*مناسب|اعتذر|أعتذر|آسف|(^|\s)اسف|معليش|رفض|ارفض|أرفض|قليل|ما\s*يناسبني|مايناسبني|ماتناسبني)/i.test(s);
+}
+
+// رد قصير «موافقة ضعيفة» (طيب/تم/تمام/اوك...) — ما يكفي وحده لإقفال صفقة إلا لو الوكيل كان سائل سؤال عرض واضح
+function creatorWeakAck(text) {
+  const s = toAsciiDigits(String(text || '')).replace(/[ً-ْـ]/g, '').replace(/[^؀-ۿa-z0-9\s]/gi, ' ').trim();
+  return s.length <= 12 && /^(طيب|تم|تمام|اوك|اوكي|أوكي|ok|okay|زين|ماشي|اوكيه|اوك تم|تمام تم)$/i.test(s);
+}
+
+// رسالة الوكيل السابقة: هل كانت سؤال عرض ينتظر نعم/لا؟ أو كانت ختام/تأجيل؟
+function agentAskedOffer(t) {
+  return /(؟|\?|شرايك|توافق|تقبل|يناسبك|تمام معك|موافق)/.test(String(t || ''));
+}
+function agentWasClosingOrDeferring(t) {
+  return /(أقدّر وقتك|أقدر وقتك|اقدر وقتك|ما توفّقنا|ما توفقنا|نتمنى لك التوفيق|إذا جاك تعاون|اذا جاك تعاون|خذي وقتك|خذ وقتك|براحتك|على راحتك)/.test(String(t || ''));
+}
+function lastAgentText(historyArr) {
+  if (!Array.isArray(historyArr)) return '';
+  for (let i = historyArr.length - 1; i >= 0; i--) {
+    const m = historyArr[i];
+    if (m && m.from === 'agent' && m.text) return String(m.text);
+  }
+  return '';
+}
+
 function creatorAcceptedExplicit(text) {
   if (!text) return false;
   const t = toAsciiDigits(String(text)).trim();
+  if (creatorRefused(t)) return false;
   // استفسار أو استمرار تفاوض → مو موافقة نهائية، خلّي الوكيل يكمل
   if (/[؟?]/.test(t)) return false;
   if (/(بس|لكن|زيد|زد|ممكن|لو |إذا|اذا|كم|أكثر|اكثر|نقص|خصم|غير|ثاني|احسب|فكر)/.test(t)) return false;
   // نفي صريح للموافقة → مو موافقة
-  if (/(^|[\s،.])(ما|مو|مب|ماني|مهوب|مش|لا)\s+[أاإ]?(موافق|وافق|قبل|أقبل|اقبل)/.test(t)) return false;
+  if (/(^|[\s،.])(ما|مو|مب|ماني|مهوب|مش|لا)\s*[أاإ]?(موافق|وافق|قبل|أقبل|اقبل)/.test(t)) return false;
   // إشارات موافقة صريحة
-  return /(موافقة|موافق|أوافق|اوافق|نوافق|قبلت|أقبل|اقبل|اتفقنا|ماشي|أوكي|اوكي|اوكيه|اوك|زين|تمام|(?:^|\s)تم(?:\s|$)|ok|okay|yes|ايوه|أيوه|(?:^|\s)نعم(?:\s|$))/i.test(t);
+  return /(موافقة|موافق|أوافق|اوافق|نوافق|قبلت|أقبل|اقبل|اتفقنا|ماشي|أوكي|اوكي|اوكيه|اوك|زين|تمام|(?:^|\s)تم(?:\s|$)|ok|okay|yes|ايوه|أيوه|(?:^|\s)نعم(?:\s|$)|لا\s*(بأس|باس|مانع))/i.test(t);
 }
 
 // آخر سعر عرضه *الوكيل* خلال المحادثة (نقرأ رسائل الوكيل فقط، مو أرقام المعلن).
@@ -858,12 +894,15 @@ ${barterValueLine}
     // لو المعلن وافق صراحةً والوكيل *نسي* وسم [DEAL_CLOSED]، نقفل تلقائيًا
     // بآخر سعر عرضه الوكيل. تمر بعدها بحماية السقف وحجم الحملة زي الإقفال العادي.
     let closedBySafetyNet = false;
-    if (!dealClosed && creatorMessage && creatorAcceptedExplicit(creatorMessage) && isBarter) {
+    const prevAgentMsg = lastAgentText(history);
+    // شبكة الأمان ما تقفل إلا لو الوكيل كان سائل سؤال عرض واضح، ومو في ختام/تأجيل
+    const safetyNetAllowed = agentAskedOffer(prevAgentMsg) && !agentWasClosingOrDeferring(prevAgentMsg);
+    if (!dealClosed && creatorMessage && safetyNetAllowed && creatorAcceptedExplicit(creatorMessage) && isBarter) {
       dealClosed = true;
       closedBySafetyNet = true;
       dealDetails = 'التعاون مقابل المنتج — بلا مقابل مادي (إقفال تلقائي بعد تأكيد موافقة المعلن).';
       console.warn(`Safety-net barter close for app ${application.id}.`);
-    } else if (!dealClosed && creatorMessage && creatorAcceptedExplicit(creatorMessage)) {
+    } else if (!dealClosed && creatorMessage && safetyNetAllowed && creatorAcceptedExplicit(creatorMessage)) {
       const offered = lastAgentOfferedPrice(history, cleanReply || agentReply);
       if (offered && (!finalCap || offered <= finalCap)) {
         dealClosed = true;
@@ -878,8 +917,20 @@ ${barterValueLine}
     // حماية إضافية: لو السعر النهائي تجاوز السقف، ألغِ الإقفال
     let safeDealClosed = dealClosed;
     let safeDealDetails = dealDetails;
-    let closeBlockedReason = null; // سبب حجب الإقفال (لعرض رسالة مناسبة بدل "اتفقنا")
-    if (dealClosed && dealDetails && !isBarter) {
+    let closeBlockedReason = null;
+
+    // حارس الرفض: المعلن رفض صراحةً → لا إقفال أبدًا، مهما كتب الوكيل
+    if (dealClosed && creatorMessage && creatorRefused(creatorMessage)) {
+      console.warn(`Refusal guard: blocked close for app ${application.id} — creator said: ${String(creatorMessage).slice(0, 80)}`);
+      safeDealClosed = false; safeDealDetails = null; closeBlockedReason = 'refused';
+    }
+    // حارس الموافقة الضعيفة: «طيب/تم/تمام» بعد رسالة ختام أو تأجيل → نطلب تأكيد صريح بدل الإقفال
+    else if (dealClosed && creatorMessage && creatorWeakAck(creatorMessage) && (agentWasClosingOrDeferring(prevAgentMsg) || !agentAskedOffer(prevAgentMsg))) {
+      console.warn(`Weak-ack guard: asked explicit confirmation for app ${application.id}`);
+      safeDealClosed = false; safeDealDetails = null; closeBlockedReason = 'confirm';
+    }
+    // (closeBlockedReason معرّف فوق — سبب حجب الإقفال لعرض رسالة مناسبة بدل "اتفقنا")
+    if (safeDealClosed && dealDetails && !isBarter) {
       const finalPrice = extractFinalPrice(dealDetails);
       if (finalPrice && finalCap && finalPrice > finalCap) {
         console.warn(`Agent attempted to close above cap: ${finalPrice} > ${finalCap}. Blocking.`);
@@ -927,7 +978,16 @@ ${barterValueLine}
 
     // لو حاول الوكيل يقفل لكن الإقفال انحجب (تجاوز سقف/امتلاء احتياط)، لا نعرض نص "اتفقنا"
     // المضلّل — نستبدله برسالة مناسبة، لأنه فعليًا ما تم حفظ أي صفقة.
-    if (dealClosed && !safeDealClosed) {
+    if (dealClosed && !safeDealClosed && closeBlockedReason === 'refused') {
+      replyToSend = isBarter
+        ? 'ولا يهمك أبدًا 🌿 أقدّر صراحتك — ما سجّلنا أي اتفاق. وإذا جاك تعاون يناسبك أكثر بنكون سعداء فيك.'
+        : 'ولا يهمك أبدًا 🌿 أقدّر صراحتك — ما سجّلنا أي اتفاق على هذا المبلغ. وإذا تغيّر رأيك أو جاك تعاون يناسبك أكثر بنكون سعداء فيك.';
+    } else if (dealClosed && !safeDealClosed && closeBlockedReason === 'confirm') {
+      const _p = !isBarter ? (extractFinalPrice(dealDetails || '') || lastAgentOfferedPrice(history, cleanReply || agentReply)) : null;
+      replyToSend = isBarter
+        ? 'حبيت أتأكد قبل ما أثبّت 🌿 توافقين على التعاون مقابل المنتج (بدون مقابل مادي)؟ اكتبي «موافقة» ونثبّت الاتفاق، أو «لا» ولا يهمك.'
+        : 'حبيت أتأكد قبل ما أثبّت 🌿 توافقين على ' + (_p ? _p + ' ريال' : 'المبلغ المعروض') + ' مقابل المحتوى؟ اكتبي «موافقة» ونثبّت الاتفاق، أو «لا» ولا يهمك.';
+    } else if (dealClosed && !safeDealClosed) {
       replyToSend = (closeBlockedReason === 'reserve_full')
         ? 'نعتذر منك، اكتمل العدد المطلوب لهذي الحملة قبل قليل، فما نقدر نعتمد الاتفاق. نتمنى نشوفك في حملة قادمة تناسبك 🌿'
         : (isBarter
