@@ -180,7 +180,7 @@ function b2bPayCard(){
 async function b2bMe(){
   if (B2B_CTX.me) return B2B_CTX.me;
   var me = {};
-  try { var cu = (typeof getCurrentUser === 'function' && getCurrentUser()) || {}; me.company_name = cu.company_name; me.cr_number = cu.cr_number; me.phone = cu.phone; me.email = cu.email; } catch (e) {}
+  try { var cu = (typeof getCurrentUser === 'function' && getCurrentUser()) || {}; me.company_name = cu.company_name; me.cr_number = /^\d{6,}$/.test(String(cu.cr_number || '').trim()) ? String(cu.cr_number).trim() : ''; me.phone = cu.phone; me.email = cu.email; } catch (e) {}
   try { var s = await b2bSb().auth.getSession(); if (!me.email) me.email = s.data.session.user.email; } catch (e) {}
   B2B_CTX.me = me;
   return me;
